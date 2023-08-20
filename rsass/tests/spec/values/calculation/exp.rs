@@ -51,7 +51,7 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: exp()}\n"),
@@ -64,7 +64,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: exp(0, 0)}\n"),
@@ -77,7 +77,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err("a {b: exp(\"0\")}\n"),
@@ -94,7 +94,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn known() {
             assert_eq!(
                 runner().err("a {b: exp(1px)}\n"),
@@ -112,7 +112,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn unknown() {
             assert_eq!(
                 runner().err("a {b: exp(1%)}\n"),
@@ -127,7 +127,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn negative() {
     assert_eq!(
         runner().ok("a {b: exp(-10.5)}\n"),
@@ -147,7 +146,6 @@ fn overridden() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn positive() {
     assert_eq!(
         runner().ok("a {b: exp(5)}\n"),
@@ -157,7 +155,6 @@ fn positive() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn result_is_infinity() {
     assert_eq!(
         runner().ok("a {b: exp(1000.65)}\n"),
@@ -167,7 +164,6 @@ fn result_is_infinity() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn simplification() {
     assert_eq!(
         runner().ok("a {\
@@ -179,7 +175,6 @@ fn simplification() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn zero() {
     assert_eq!(
         runner().ok("a {b: exp(0)}\n"),

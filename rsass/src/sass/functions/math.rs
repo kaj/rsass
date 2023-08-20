@@ -5,10 +5,12 @@ use super::{
 use crate::css::{BinOp, CallArgs, CssString, Value};
 use crate::output::Format;
 use crate::parser::input_span;
+use crate::sass::functions::css_fn_arg;
 use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Rational, Unit, UnitSet};
 use std::cmp::Ordering;
 use std::f64::consts::{E, PI};
+use std::ops::Rem;
 
 /// Create the `sass:math` standard module.
 ///
@@ -55,72 +57,115 @@ pub fn create_module() -> Scope {
         let v: Numeric = s.get(name!(number))?;
         Ok(number(v.value.abs(), v.unit))
     });
-    def_va!(f, hypot(number), |s| match s
-        .get_map(name!(number), check::va_list)?
-        .as_slice()
-    {
-        [Value::Numeric(v, _)] =>
-            Ok(number(v.value.clone().abs(), v.unit.clone())),
-        [v] => Err(is_not(v, "a number")).named(name!(number)),
-        v => {
-            if let Some((first, rest)) = v.split_first() {
-                let first = as_numeric(first)?;
-                let mut sum = f64::from(first.value.clone()).powi(2);
-                let unit = first.unit.clone();
-                for (i, v) in rest.iter().enumerate() {
-                    let v = as_numeric(v)?;
-                    let scaled = v
-                        .as_unitset(&unit)
-                        .ok_or_else(|| {
-                            diff_units_msg(&v, &first, "numbers[1]".into())
-                        })
-                        .named(format!("numbers[{}]", i + 2).into())?;
-                    sum += f64::from(scaled).powi(2);
-                }
-                Ok(number(sum.sqrt(), unit))
-            } else {
-                Err(CallError::msg("At least one argument must be passed."))
-            }
-        }
+    def_va!(f, hypot(number), |s| {
+        hypot(&s.get_map(name!(number), check::va_list)?)
     });
 
     // - - - Exponential Functions - - -
+    def!(f, exp(number), |s| {
+        s.get_map(name!(number), radians)
+            .map(|v| Value::scalar(v.exp()))
+            .or_else(|e| fallback1(s, "exp", name!(number)).map_err(|_| e))
+    });
     def!(f, log(number, base = b"null"), |s| {
-        let num = get_unitless(s, "number")?;
-        let base = s
-            .get_opt_map(name!(base), check::unitless)?
-            .map_or(E, Into::into);
-        Ok(Value::scalar(num.log(base)))
+        let num = get_unitless(s, "number");
+        let base = s.get_opt_map(name!(base), check::unitless);
+        match (num, base) {
+            (Ok(num), Ok(base)) => {
+                let base = base.map_or(E, Into::into);
+                Ok(Value::scalar(num.log(base)))
+            }
+            (Err(e), _) | (_, Err(e)) => {
+                let num = s.get_map(name!(number), expression);
+                let base = s.get_map(name!(base), expression);
+                if let (Ok(num), Ok(base)) = (num, base) {
+                    Ok(Value::Call(
+                        "log".into(),
+                        CallArgs::from_list(vec![num, base]),
+                    ))
+                } else {
+                    Err(e)
+                }
+            }
+        }
     });
     def!(f, pow(base, exponent), |s| {
-        let base = get_unitless(s, "base")?;
-        let exponent = get_unitless(s, "exponent")?;
-        Ok(Value::scalar(base.powf(exponent)))
+        let base = get_unitless(s, "base");
+        let exponent = get_unitless(s, "exponent");
+        match (base, exponent) {
+            (Ok(base), Ok(exponent)) => {
+                Ok(Value::scalar(base.powf(exponent)))
+            }
+            (Err(e), _) | (_, Err(e)) => {
+                fallback2(s, "pow", name!(base), name!(exponent))
+                    .map_err(|_| e)
+            }
+        }
     });
     def!(f, sqrt(number), |s| {
-        Ok(Value::scalar(get_unitless(s, "number")?.sqrt()))
+        get_unitless(s, "number")
+            .map(|v| Value::scalar(v.sqrt()))
+            .or_else(|e| fallback1(s, "sqrt", name!(number)).map_err(|_| e))
     });
 
     // - - - Trigonometric Functions - - -
     def!(f, cos(number), |s| {
-        Ok(Value::scalar(s.get_map(name!(number), radians)?.cos()))
+        s.get_map(name!(number), radians)
+            .map(|v| Value::scalar(v.cos()))
+            .or_else(|e| fallback1(s, "cos", name!(number)).map_err(|_| e))
     });
     def!(f, sin(number), |s| {
-        Ok(Value::scalar(s.get_map(name!(number), radians)?.sin()))
+        s.get_map(name!(number), radians)
+            .map(|v| Value::scalar(v.sin()))
+            .or_else(|e| fallback1(s, "sin", name!(number)).map_err(|_| e))
     });
     def!(f, tan(number), |s| {
-        let number = s.get_map(name!(number), radians)?;
-        Ok(Value::scalar(number.tan()))
+        s.get_map(name!(number), radians)
+            .map(|v| Value::scalar(v.tan()))
+            .or_else(|e| fallback1(s, "tan", name!(number)).map_err(|_| e))
     });
 
     def!(f, acos(number), |s| {
-        Ok(deg_value(get_unitless(s, "number")?.acos()))
+        get_unitless(s, "number")
+            .map(|v| deg_value(v.acos()))
+            .or_else(|e| {
+                s.get_map(name!(number), expression)
+                    .map(|expr| {
+                        Value::Call(
+                            "acos".into(),
+                            CallArgs::from_single(expr),
+                        )
+                    })
+                    .map_err(|_| e)
+            })
     });
     def!(f, asin(number), |s| {
-        Ok(deg_value(get_unitless(s, "number")?.asin()))
+        get_unitless(s, "number")
+            .map(|v| deg_value(v.asin()))
+            .or_else(|e| {
+                s.get_map(name!(number), expression)
+                    .map(|expr| {
+                        Value::Call(
+                            "asin".into(),
+                            CallArgs::from_single(expr),
+                        )
+                    })
+                    .map_err(|_| e)
+            })
     });
     def!(f, atan(number), |s| {
-        Ok(deg_value(get_unitless(s, "number")?.atan()))
+        get_unitless(s, "number")
+            .map(|v| deg_value(v.atan()))
+            .or_else(|e| {
+                s.get_map(name!(number), expression)
+                    .map(|expr| {
+                        Value::Call(
+                            "atan".into(),
+                            CallArgs::from_single(expr),
+                        )
+                    })
+                    .map_err(|_| e)
+            })
     });
     def!(f, atan2(y, x), |s| {
         let y: Numeric = s.get(name!(y))?;
@@ -206,8 +251,18 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(round), name!(round)),
         // - - - Distance Functions - - -
         (name!(abs), name!(abs)),
-        // Exponential and trigonometric functions are not exposed
-
+        // - - - Exponential functions - - -
+        (name!(exp), name!(exp)),
+        (name!(log), name!(log)),
+        (name!(pow), name!(pow)),
+        (name!(sqrt), name!(sqrt)),
+        // - - - Trigonometric functions - - -
+        (name!(asin), name!(asin)),
+        (name!(acos), name!(acos)),
+        (name!(atan), name!(atan)),
+        (name!(sin), name!(sin)),
+        (name!(cos), name!(cos)),
+        (name!(tan), name!(tan)),
         // - - - Unit Functions - - -
         (name!(comparable), name!(compatible)),
         (name!(unitless), name!(is_unitless)),
@@ -218,6 +273,113 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     ] {
         global.insert(gname.clone(), m.get_lfunction(lname));
     }
+
+    // Functions behave somewhat differently in the global scope vs in the math module.
+    def!(global, atan2(y, x), |s| {
+        fn real_atan2(s: &ResolvedArgs) -> Result<Value, CallError> {
+            let y: Numeric = s.get(name!(y))?;
+            if y.unit.is_percent() {
+                return Err(String::from("No percentage here"))
+                    .named(name!(y));
+            }
+            let x = s.get_map(name!(x), |v| {
+                let v = Numeric::try_from(v)?;
+                v.as_unitset(&y.unit)
+                    .ok_or_else(|| diff_units_msg(&v, &y, name!(y)))
+            })?;
+            Ok(deg_value(f64::from(y.value).atan2(f64::from(x))))
+        }
+        real_atan2(s).or_else(|e| {
+            fallback2a(s, "atan2", name!(y), name!(x)).map_err(|_| e)
+        })
+    });
+    def_va!(global, hypot(number), |s| {
+        let args = s.get_map(name!(number), check::va_list)?;
+        match hypot(&args) {
+            Ok(value) => Ok(value),
+            Err(_) => {
+                let args = args
+                    .into_iter()
+                    .map(css_fn_arg)
+                    .collect::<Result<_, _>>()?;
+                Ok(Value::Call("hypot".into(), CallArgs::from_list(args)))
+            }
+        }
+    });
+    def!(global, rem(y, x), |s| {
+        fn real_rem(s: &ResolvedArgs) -> Result<Value, CallError> {
+            let y: Numeric = s.get(name!(y))?;
+            let x = s.get_map(name!(x), |v| {
+                let v = Numeric::try_from(v)?;
+                v.as_unitset(&y.unit)
+                    .ok_or_else(|| diff_units_msg(&v, &y, name!(y)))
+            })?;
+            Ok(number(f64::from(y.value).rem(f64::from(x)), y.unit))
+        }
+        real_rem(s).or_else(|e| {
+            fallback2a(s, "rem", name!(y), name!(x)).map_err(|_| e)
+        })
+    });
+    def!(global, mod(y, x), |s| {
+        fn real_mod(s: &ResolvedArgs) -> Result<Value, CallError> {
+            let y: Numeric = s.get(name!(y))?;
+            let x = s.get_map(name!(x), |v| {
+                let v = Numeric::try_from(v)?;
+                v.as_unitset(&y.unit)
+                    .ok_or_else(|| diff_units_msg(&v, &y, name!(y)))
+            })?;
+            let unit = y.unit;
+            let y = f64::from(y.value);
+            let m = f64::from(x);
+            let mut y = y.rem(m);
+            if dbg!(dbg!(dbg!(y) * m.signum()) < 0.) { y += m; }
+            let y = y.abs() * m.signum();
+            Ok(number(y, unit))
+        }
+        real_mod(s).or_else(|e| {
+            fallback2a(s, "mod", name!(y), name!(x)).map_err(|_| e)
+        })
+    });
+    def!(global, sign(v), |s| {
+        fn real_sign(s: &ResolvedArgs) -> Result<Value, CallError> {
+            let v: Numeric = s.get(name!(v))?;
+            Ok(number(v.value.signum(), v.unit))
+        }
+        real_sign(s)
+            .or_else(|e| fallback1(s, "sign", name!(v)).map_err(|_| e))
+    });
+}
+
+fn hypot(args: &[Value]) -> Result<Value, CallError> {
+    match args {
+        [Value::Numeric(v, _)] => {
+            Ok(number(v.value.clone().abs(), v.unit.clone()))
+        }
+        [v] => Err(is_not(v, "a number")).named(name!(number)),
+        v => {
+            if let Some((first, rest)) = v.split_first() {
+                let first = as_numeric(first)?;
+                let mut sum = f64::from(first.value.clone()).powi(2);
+                let unit = first.unit.clone();
+                if first.unit.is_percent() {
+                    return Err(CallError::msg("Percentage not allowed"));
+                }
+                for (i, v) in rest.iter().enumerate() {
+                    let v = as_numeric(v)?;
+                    let scaled = v
+                        .as_unitset(&unit)
+                        .ok_or_else(|| {
+                            diff_units_msg(&v, &first, "numbers[1]".into())
+                        })
+                        .named(format!("numbers[{}]", i + 2).into())?;
+                    sum += f64::from(scaled).powi(2);
+                }
+                Ok(number(sum.sqrt(), unit))
+            } else {
+                Err(CallError::msg("At least one argument must be passed."))
+            }
+        }
+    }
 }
 
 fn radians(v: Value) -> Result<f64, String> {
@@ -225,6 +387,66 @@ fn radians(v: Value) -> Result<f64, String> {
     v.as_unit_def(Unit::Rad).map(Into::into).ok_or_else(|| {
         expected_to(&v, "have an angle unit (deg, grad, rad, turn)")
     })
+}
+
+fn fallback1(
+    s: &ResolvedArgs,
+    name: &str,
+    a1: Name,
+) -> Result<Value, CallError> {
+    s.get_map(a1, expression)
+        .map(|expr| Value::Call(name.into(), CallArgs::from_single(expr)))
+}
+
+fn fallback2(
+    s: &ResolvedArgs,
+    name: &str,
+    a1: Name,
+    a2: Name,
+) -> Result<Value, ()> {
+    let (a1, a2) = match (get_expr(s, a1), get_expr(s, a2)) {
+        (Ok(a1), Ok(a2)) => (a1, a2),
+        (Ok(a1), Err(a2 @ Value::Numeric(..))) => (a1, a2),
+        (Err(a1 @ Value::Numeric(..)), Ok(a2)) => (a1, a2),
+        _ => return Err(()),
+    };
+    Ok(Value::Call(name.into(), CallArgs::from_list(vec![a1, a2])))
+}
+fn fallback2a(
+    s: &ResolvedArgs,
+    name: &str,
+    a1: Name,
+    a2: Name,
+) -> Result<Value, ()> {
+    let (a1, a2) = match (get_expr_a(s, a1), get_expr_a(s, a2)) {
+        (Ok(a1), Ok(a2)) => (a1, a2),
+        _ => return Err(()),
+    };
+    Ok(Value::Call(name.into(), CallArgs::from_list(vec![a1, a2])))
+}
+
+fn get_expr(s: &ResolvedArgs, name: Name) -> Result<Value, Value> {
+    match s.get(name) {
+        Ok(v @ (Value::BinOp(_) | Value::Call(..))) => Ok(v),
+        Ok(v) => Err(v),
+        Err(_) => Err(Value::Null),
+    }
+}
+fn get_expr_a(s: &ResolvedArgs, name: Name) -> Result<Value, Value> {
+    match s.get(name) {
+        Ok(v @ (Value::BinOp(_) | Value::Call(..) | Value::Numeric(..))) => {
+            Ok(v)
+        }
+        Ok(v) => Err(v),
+        Err(_) => Err(Value::Null),
+    }
+}
+
+fn expression(v: Value) -> Result<Value, String> {
+    match v {
+        v @ (Value::BinOp(_) | Value::Call(..)) => Ok(v),
+        _ => Err("Expected expression".into()),
+    }
 }
 
 fn get_unitless(s: &ResolvedArgs, name: &str) -> Result<f64, CallError> {

@@ -10,7 +10,6 @@ mod base {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn negative() {
         assert_eq!(
             runner().ok("a {b: pow(-10, 10)}\n"),
@@ -35,7 +34,7 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn base_type() {
         assert_eq!(
             runner().err("a {b: pow(0, \"0\")}\n"),
@@ -48,7 +47,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn exponent_type() {
         assert_eq!(
             runner().err("a {b: pow(\"0\", 0)}\n"),
@@ -92,7 +91,7 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: pow(3)}\n"),
@@ -105,7 +104,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: pow(3, 2, 1)}\n"),
@@ -122,7 +121,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn compatible() {
             assert_eq!(
                 runner().err("a {b: pow(10px, 10px)}\n"),
@@ -135,7 +134,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn real_and_unitless() {
             assert_eq!(
                 runner().err("a {b: pow(10px, 10)}\n"),
@@ -148,7 +147,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn unknown_and_unitless() {
             assert_eq!(
                 runner().err("a {b: pow(10%, 10)}\n"),
@@ -167,7 +166,6 @@ mod exponent {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn negative() {
         assert_eq!(
             runner().ok("a {b: pow(10, -10)}\n"),
@@ -188,7 +186,6 @@ fn overridden() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn positive() {
     assert_eq!(
         runner().ok("a {b: pow(10, 10)}\n"),
@@ -211,7 +208,6 @@ mod x_infinity {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn positive() {
         assert_eq!(
             runner().ok("a {b: pow(10, infinity)}\n"),
@@ -226,7 +222,6 @@ mod y_infinity {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn positive() {
         assert_eq!(
             runner().ok("a {b: pow(infinity, 10)}\n"),
@@ -237,7 +232,6 @@ mod y_infinity {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn zeros() {
     assert_eq!(
         runner().ok("a {b: pow(0, 0)}\n"),

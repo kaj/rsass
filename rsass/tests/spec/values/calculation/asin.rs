@@ -51,7 +51,7 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: asin()}\n"),
@@ -64,7 +64,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: asin(0, 0)}\n"),
@@ -77,7 +77,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err("a {b: asin(\"0\")}\n"),
@@ -94,7 +94,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn complex() {
             assert_eq!(
                 runner().err("a {b: asin(-7px / 4em)}\n"),
@@ -107,7 +107,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn known() {
             assert_eq!(
                 runner().err("a {b: asin(1px)}\n"),
@@ -120,7 +120,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn unknown() {
             assert_eq!(
                 runner().err("a {b: asin(1%)}\n"),
@@ -135,7 +135,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn greater_than_one() {
     assert_eq!(
         runner().ok("a {b: asin(2)}\n"),
@@ -145,7 +144,6 @@ fn greater_than_one() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn less_than_negative_one() {
     assert_eq!(
         runner().ok("a {b: asin(-2)}\n"),
@@ -155,7 +153,6 @@ fn less_than_negative_one() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn negative_one() {
     assert_eq!(
         runner().ok("a {b: asin(-1)}\n"),
@@ -165,7 +162,6 @@ fn negative_one() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn one() {
     assert_eq!(
         runner().ok("a {b: asin(1)}\n"),
@@ -196,7 +192,6 @@ fn simplification() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn zero() {
     assert_eq!(
         runner().ok("a {b: asin(0)}\n"),

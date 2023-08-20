@@ -217,21 +217,6 @@ lazy_static! {
                     _ => false,
                 }
             }
-            // Note: None here is for unknown, e.g. the dimension of something that is not a number.
-            fn css_dim(v: &Value) -> Option<Vec<(CssDimension, i8)>> {
-                match v {
-                    // TODO: Handle BinOp recursively (again) (or let in_calc return (Value, CssDimension)?)
-                    Value::Numeric(num, _) => {
-                        let u = &num.unit;
-                        if u.is_known() && !u.is_percent() {
-                            Some(u.css_dimension())
-                        } else {
-                            None
-                        }
-                    }
-                    _ => None,
-                }
-            }
             fn do_eval(v: Value) -> Result<Value, CallError> {
                 match v {
                     Value::Literal(s) if s.quotes() == Quotes::None => {
@@ -262,9 +247,7 @@ lazy_static! {
                         {
                             let arg =
                                 args.positional.into_iter().next().unwrap();
-                            Ok(Value::Paren(Box::new(
-                                do_eval(arg)?,
-                            )))
+                            Ok(Value::Paren(Box::new(do_eval(arg)?)))
                         } else {
                             Ok(Value::Call(name, args))
                         }
@@ -273,75 +256,19 @@ lazy_static! {
                         let a = do_eval(op.a().clone())?;
                         let b = do_eval(op.b().clone())?;
                         let op = op.op();
-                        if let Ok(Some(result)) = op.eval(a.clone(), b.clone()) {
+                        if let Ok(Some(result)) =
+                            op.eval(a.clone(), b.clone())
+                        {
                             return Ok(result);
                         }
-                        Ok(BinOp::new(
-                            a,
-                            true,
-                            op,
-                            true,
-                            b,
-                        ).into())
+                        Ok(BinOp::new(a, true, op, true, b).into())
                     }
-                    Value::Numeric(num, c) => {
-                        Ok(Value::Numeric(num, c))
-                    }
+                    Value::Numeric(num, c) => Ok(Value::Numeric(num, c)),
                     Value::Paren(v) => match v.as_ref() {
                         l @ Value::Paren(_) => Ok(l.clone()),
                         l @ Value::BinOp(..) => Ok(l.clone()),
                         _ => Ok(Value::Paren(v)),
-                    }
-                    v => Err(CallError::msg(format!(
-                        "Value {} can't be used in a calculation.",
-                        v.format(Format::introspect())
-                    ))),
-                }
-            }
-            fn in_calc(v: Value) -> Result<Value, CallError> {
-                match v {
-                    Value::Literal(s) if s.quotes() == Quotes::None => {
-                        Ok(s.into())
-                    }
-                    Value::Call(name, args) => {
-                        Ok(Value::Call(name, args))
-                    }
-                    Value::BinOp(op) => {
-                        let a = in_calc(op.a().clone())?;
-                        let b = in_calc(op.b().clone())?;
-                        let op = op.op();
-                        if let (Some(adim), Some(bdim)) = (css_dim(&a), css_dim(&b)) {
-                            if (op == Operator::Plus || op == Operator::Minus) && adim != bdim {
-                                return Err(CallError::msg(format!(
-                                    "{} and {} are incompatible.",
-                                    a.format(Format::introspect()),
-                                    b.format(Format::introspect()),
-                                )))
-                            }
-                        }
-                        Ok(BinOp::new(
-                            a,
-                            true,
-                            op,
-                            true,
-                            b,
-                        ).into())
-                    }
-                    Value::Numeric(num, c) => {
-                        if num.unit.valid_in_css() {
-                            Ok(Value::Numeric(num, c))
-                        } else {
-                            Err(CallError::msg(format!(
-                                "Number {} isn't compatible with CSS calculations.",
-                                num.format(Format::introspect())
-                            )))
-                        }
-                    }
-                    Value::Paren(v) => match v.as_ref() {
-                        l @ Value::Paren(_) => Ok(l.clone()),
-                        l @ Value::BinOp(..) => Ok(l.clone()),
-                        _ => Ok(Value::Paren(v)),
-                    }
+                    },
                     v => Err(CallError::msg(format!(
                         "Value {} can't be used in a calculation.",
                         v.format(Format::introspect())
@@ -356,14 +283,15 @@ lazy_static! {
                     v => Ok(v),
                 }
             } else {
-                let arg = match in_calc(v)? {
-                    Value::Paren(arg) if !matches!(arg.as_ref(), Value::Call(..)) => *arg,
+                let arg = match css_fn_arg(v)? {
+                    Value::Paren(arg)
+                        if !matches!(arg.as_ref(), Value::Call(..)) =>
+                    {
+                        *arg
+                    }
                     arg => arg,
                 };
-                Ok(Value::Call(
-                    "calc".into(),
-                    CallArgs::from_single(arg),
-                ))
+                Ok(Value::Call("calc".into(), CallArgs::from_single(arg)))
             }
         });
         def!(f, clamp(min, number = b"null", max = b"null"), |s| {
@@ -390,6 +318,65 @@ lazy_static! {
         string::expose(MODULES.get("sass:string").unwrap(), &mut f);
         f
     };
+}
+
+fn css_fn_arg(v: Value) -> Result<Value, CallError> {
+    match v {
+        Value::Literal(s) if s.quotes() == Quotes::None => Ok(s.into()),
+        Value::Call(name, args) => Ok(Value::Call(name, args)),
+        Value::BinOp(op) => {
+            let a = css_fn_arg(op.a().clone())?;
+            let b = css_fn_arg(op.b().clone())?;
+            let op = op.op();
+            if let (Some(adim), Some(bdim)) = (css_dim(&a), css_dim(&b)) {
+                if (op == Operator::Plus || op == Operator::Minus)
+                    && adim != bdim
+                {
+                    return Err(CallError::msg(format!(
+                        "{} and {} are incompatible.",
+                        a.format(Format::introspect()),
+                        b.format(Format::introspect()),
+                    )));
+                }
+            }
+            Ok(BinOp::new(a, true, op, true, b).into())
+        }
+        Value::Numeric(num, c) => {
+            if num.unit.valid_in_css() {
+                Ok(Value::Numeric(num, c))
+            } else {
+                Err(CallError::msg(format!(
+                    "Number {} isn't compatible with CSS calculations.",
+                    num.format(Format::introspect())
+                )))
+            }
+        }
+        Value::Paren(v) => match v.as_ref() {
+            l @ Value::Paren(_) => Ok(l.clone()),
+            l @ Value::BinOp(..) => Ok(l.clone()),
+            _ => Ok(Value::Paren(v)),
+        },
+        v => Err(CallError::msg(format!(
+            "Value {} can't be used in a calculation.",
+            v.format(Format::introspect())
+        ))),
+    }
+}
+
+// Note: None here is for unknown, e.g. the dimension of something that is not a number.
+fn css_dim(v: &Value) -> Option<Vec<(CssDimension, i8)>> {
+    match v {
+        // TODO: Handle BinOp recursively (again) (or let in_calc return (Value, CssDimension)?)
+        Value::Numeric(num, _) => {
+            let u = &num.unit;
+            if u.is_known() && !u.is_percent() {
+                Some(u.css_dimension())
+            } else {
+                None
+            }
+        }
+        _ => None,
+    }
 }
 
 // argument helpers for the actual functions

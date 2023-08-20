@@ -20,7 +20,7 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn first_type() {
         assert_eq!(
             runner().err("a {b: hypot(\"0\", 1px, 1px)}\n"),
@@ -46,7 +46,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn second_type() {
         assert_eq!(
             runner().err("a {b: hypot(1px, \"0\", 1px)}\n"),
@@ -176,7 +176,6 @@ mod infinity {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn first() {
         assert_eq!(
             runner().ok("a {b: hypot(infinity, 1, 1)}\n"),
@@ -186,7 +185,6 @@ mod infinity {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn second() {
         assert_eq!(
             runner().ok("a {b: hypot(1, infinity, 1)}\n"),
@@ -207,7 +205,6 @@ fn overridden() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn simplification() {
     assert_eq!(
         runner().ok("a {\
@@ -223,7 +220,6 @@ mod units {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn compatible() {
         assert_eq!(
             runner().ok("a {b: hypot(13cm, 4mm, 5q, 6in, 7px)}\n"),
@@ -244,7 +240,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn none() {
         assert_eq!(
             runner().ok("a {b: hypot(3, 4, 5, 6, 7)}\n"),
@@ -274,7 +269,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn same_fake() {
         assert_eq!(
             runner().ok("a {\

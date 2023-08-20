@@ -10,7 +10,6 @@ mod base {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn between_zero_and_one() {
         assert_eq!(
             runner().ok("a {b: log(2, 0.5)}\n"),
@@ -20,7 +19,6 @@ mod base {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative() {
         assert_eq!(
             runner().ok("a {b: log(2, -1)}\n"),
@@ -30,7 +28,6 @@ mod base {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn one() {
         assert_eq!(
             runner().ok("a {b: log(2, 1)}\n"),
@@ -40,7 +37,6 @@ mod base {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn positive() {
         assert_eq!(
             runner().ok("a {b: log(2, 10)}\n"),
@@ -50,7 +46,6 @@ mod base {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn zero() {
         assert_eq!(
             runner().ok("a {b: log(2, 0)}\n"),
@@ -75,7 +70,7 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn base_type() {
         assert_eq!(
             runner().err("a {b: log(0, \"0\")}\n"),
@@ -88,7 +83,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn number_type() {
         assert_eq!(
             runner().err("a {b: log(\"0\")}\n"),
@@ -132,7 +127,7 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: log()}\n"),
@@ -145,7 +140,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: log(0, 0, 0)}\n"),
@@ -175,7 +170,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn known() {
             assert_eq!(
                 runner().err("a {b: log(3px)}\n"),
@@ -188,7 +183,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn known_incompatible() {
             assert_eq!(
                 runner().err("a {b: log(1deg, 1px)}\n"),
@@ -201,7 +196,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn unitless_and_real() {
             assert_eq!(
                 runner().err("a {b: log(1, 1px)}\n"),
@@ -214,7 +209,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn unknown() {
             assert_eq!(
                 runner().err("a {b: log(1%)}\n"),
@@ -229,7 +224,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn infinity() {
     assert_eq!(
         runner().ok("a {b: log(infinity)}\n"),
@@ -239,7 +233,6 @@ fn infinity() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn negative() {
     assert_eq!(
         runner().ok("a {b: log(-1)}\n"),
@@ -259,7 +252,6 @@ fn overridden() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn positive() {
     assert_eq!(
         runner().ok("a {b: log(2)}\n"),
@@ -280,7 +272,6 @@ fn simplification() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn zero() {
     assert_eq!(
         runner().ok("a {b: log(0)}\n"),

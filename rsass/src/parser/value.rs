@@ -476,6 +476,9 @@ pub fn function_call_or_string(input: Span) -> PResult<Value> {
 
 fn literal_or_color(s: SassString) -> Value {
     if let Some(val) = s.single_raw() {
+        if val == "infinity" {
+            return Value::scalar(f64::INFINITY);
+        }
         if let Some(rgba) = Rgba::from_name(val) {
             return Value::Color(rgba, Some(val.to_string()));
         }

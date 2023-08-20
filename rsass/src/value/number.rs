@@ -214,7 +214,7 @@ impl Div for &NumValue {
     type Output = NumValue;
     fn div(self, rhs: Self) -> NumValue {
         if rhs.is_zero() {
-            return (f64::from(self) / 0.).into();
+            return (f64::from(self) / f64::from(rhs)).into();
         }
         match (self, rhs) {
             (NumValue::Rational(s), NumValue::Rational(r)) => s
@@ -352,6 +352,21 @@ impl NumValue {
             NumValue::Float(r) => r.round().into(),
         }
     }
+    pub fn signum(&self) -> NumValue {
+        match self {
+            NumValue::Rational(r) => r.signum().into(),
+            NumValue::BigRational(r) => r.signum().into(),
+            NumValue::Float(r) => {
+                // The sass spec says sign(-0) is -0
+                // ... which may be a bug, but here's to compatibility:
+                if r.is_zero() {
+                    (*r).into()
+                } else {
+                    r.signum().into()
+                }
+            }
+        }
+    }
     pub fn as_ratio(&self) -> Result<Rational, BadNumber> {
         match self {
             NumValue::Rational(r) => Ok(*r),
@@ -408,6 +423,12 @@ impl Number {
     pub fn round(&self) -> Self {
         Number {
             value: self.value.round(),
+        }
+    }
+    /// Get the sign of this number.
+    pub fn signum(&self) -> Self {
+        Number {
+            value: self.value.signum(),
         }
     }
     /// Computes the absolute value of the number, retaining the flags.

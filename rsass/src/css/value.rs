@@ -97,7 +97,13 @@ impl Value {
         match *self {
             ref v if v.is_calculation() => "calculation",
             Value::ArgList(..) => "arglist",
-            Value::Call(..) => "string",
+            Value::Call(ref f, _) => {
+                if f == "var" {
+                    "variable"
+                } else {
+                    "string"
+                }
+            }
             Value::Color(..) => "color",
             Value::Literal(..) => "string",
             Value::BinOp(_) => "string",

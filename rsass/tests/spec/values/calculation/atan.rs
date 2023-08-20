@@ -33,7 +33,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: atan()}\n"),
@@ -46,7 +46,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: atan(0, 0)}\n"),
@@ -59,7 +59,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err("a {b: atan(\"0\")}\n"),
@@ -76,7 +76,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn complex() {
             assert_eq!(
                 runner().err("a {b: atan(-7px / 4em)}\n"),
@@ -89,7 +89,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn known() {
             assert_eq!(
                 runner().err("a {b: atan(1px)}\n"),
@@ -102,7 +102,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn unknown() {
             assert_eq!(
                 runner().err("a {b: atan(1%)}\n"),
@@ -117,7 +117,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn infinity() {
     assert_eq!(
         runner().ok("a {b: atan(infinity)}\n"),
@@ -127,7 +126,6 @@ fn infinity() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn negative_infinity() {
     assert_eq!(
         runner().ok("a {b: atan(-infinity)}\n"),
@@ -137,7 +135,6 @@ fn negative_infinity() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn one() {
     assert_eq!(
         runner().ok("a {b: atan(1)}\n"),
@@ -168,7 +165,6 @@ fn simplification() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn zero() {
     assert_eq!(
         runner().ok("a {b: atan(0)}\n"),

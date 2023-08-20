@@ -16,7 +16,6 @@ fn case_insensitive() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn deg() {
     assert_eq!(
         runner().ok("a {b: cos(1deg)}\n"),
@@ -61,7 +60,7 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: cos()}\n"),
@@ -74,7 +73,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: cos(0, 0)}\n"),
@@ -87,7 +86,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err("a {b: cos(\"0\")}\n"),
@@ -104,7 +103,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn complex() {
             assert_eq!(
         runner().err(
@@ -119,7 +117,6 @@ mod error {
     );
         }
         #[test]
-        #[ignore] // missing error
         fn known() {
             assert_eq!(
         runner().err(
@@ -134,7 +131,6 @@ mod error {
     );
         }
         #[test]
-        #[ignore] // missing error
         fn unknown() {
             assert_eq!(
         runner().err(
@@ -151,7 +147,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn grad() {
     assert_eq!(
         runner().ok("a {b: cos(1grad)}\n"),
@@ -161,7 +156,6 @@ fn grad() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn infinity() {
     assert_eq!(
         runner().ok("a {b: cos(infinity)}\n"),
@@ -171,7 +165,6 @@ fn infinity() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn negative_infinity() {
     assert_eq!(
         runner().ok("a {b: cos(-infinity)}\n"),
@@ -191,7 +184,6 @@ fn overridden() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn rad() {
     assert_eq!(
         runner().ok("a {b: cos(1rad)}\n"),
@@ -212,7 +204,6 @@ fn simplification() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn turn() {
     assert_eq!(
         runner().ok("a {b: cos(1turn)}\n"),
@@ -222,7 +213,6 @@ fn turn() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn zero() {
     assert_eq!(
         runner().ok("a {b: cos(0)}\n"),
