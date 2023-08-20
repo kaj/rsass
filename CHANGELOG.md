@@ -22,6 +22,7 @@ project adheres to
 * Refactored some parsers for less backtracking, making it easier to point
   parse errors at the right place in the code and maybe making parsing
   slightly more efficient.
+* Updated sass-spec test suite to 2023-08-17.
 
 
 ## Release 0.28.2.

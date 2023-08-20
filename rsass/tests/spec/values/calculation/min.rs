@@ -113,7 +113,7 @@ mod error {
          \n  input.scss 1:11  root stylesheet",
         );
     }
-    mod unitless_and_real {
+    mod unitless_and_unit {
         #[allow(unused)]
         use super::runner;
 
@@ -156,23 +156,7 @@ mod extra_whitespace {
         );
     }
 }
-mod math {
-    #[allow(unused)]
-    use super::runner;
-
-    #[test]
-    fn slash_as_division() {
-        assert_eq!(
-            runner().ok("b { \
-             \n  a: 2px / min(1.5);\
-             \n}\n"),
-            "b {\
-         \n  a: 1.3333333333px;\
-         \n}\n"
-        );
-    }
-}
-mod preserved {
+mod perserved {
     #[allow(unused)]
     use super::runner;
 
@@ -208,43 +192,6 @@ mod preserved {
             );
         }
     }
-    mod operation {
-        #[allow(unused)]
-        use super::runner;
-
-        mod unitless_and_real {
-            #[allow(unused)]
-            use super::runner;
-
-            #[test]
-            fn in_calc() {
-                assert_eq!(
-                    runner().ok("a {b: calc(min(1%, 2.5 + 0.9px))}\n"),
-                    "a {\
-         \n  b: min(1%, 3.4px);\
-         \n}\n"
-                );
-            }
-            #[test]
-            fn minus() {
-                assert_eq!(
-                    runner().ok("a {b: min(1%, 2.5 - 0.9px)}\n"),
-                    "a {\
-         \n  b: min(1%, 1.6px);\
-         \n}\n"
-                );
-            }
-            #[test]
-            fn plus() {
-                assert_eq!(
-                    runner().ok("a {b: min(1%, 2.5 + 0.9px)}\n"),
-                    "a {\
-         \n  b: min(1%, 3.4px);\
-         \n}\n"
-                );
-            }
-        }
-    }
     mod unit {
         #[allow(unused)]
         use super::runner;
@@ -275,6 +222,48 @@ mod preserved {
          \n  b: min(1px, 2px, 3%);\
          \n}\n"
             );
+        }
+    }
+}
+mod preserved {
+    #[allow(unused)]
+    use super::runner;
+
+    mod operation {
+        #[allow(unused)]
+        use super::runner;
+
+        mod unitless_and_unit {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn in_calc() {
+                assert_eq!(
+                    runner().ok("a {b: calc(min(1%, 2.5 + 0.9px))}\n"),
+                    "a {\
+         \n  b: min(1%, 3.4px);\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn minus() {
+                assert_eq!(
+                    runner().ok("a {b: min(1%, 2.5 - 0.9px)}\n"),
+                    "a {\
+         \n  b: min(1%, 1.6px);\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn plus() {
+                assert_eq!(
+                    runner().ok("a {b: min(1%, 2.5 + 0.9px)}\n"),
+                    "a {\
+         \n  b: min(1%, 3.4px);\
+         \n}\n"
+                );
+            }
         }
     }
     #[test]
@@ -324,7 +313,7 @@ mod simplified {
         use super::runner;
 
         #[test]
-        fn unitless_and_real() {
+        fn unitless_and_unit() {
             assert_eq!(
                 runner().ok("a {b: min(1px, 2.5 + 0.9px)}\n"),
                 "a {\
@@ -352,7 +341,7 @@ mod simplified {
         );
     }
     #[test]
-    fn unitless_and_real() {
+    fn unitless_and_unit() {
         assert_eq!(
             runner().ok("a {b: min(1px, 2.5, 0.9px)}\n"),
             "a {\
