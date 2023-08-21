@@ -198,61 +198,13 @@ where
 }
 
 pub fn single_value(input: Span) -> PResult<Value> {
-    if let Ok((input0, _p)) = preceded(tag("("), opt_spacelike)(input) {
-        if let Ok((input, first_key)) = simple_space_list(input0) {
-            let (input, value) = if let Ok((mut input, first_val)) =
-                preceded(colon, space_list)(input)
-            {
-                let mut items = vec![(first_key, first_val)];
-                while let Ok((rest, (key, val))) = pair(
-                    preceded(comma, simple_space_list),
-                    preceded(colon, space_list),
-                )(input)
-                {
-                    items.push((key, val));
-                    input = rest;
-                }
-                let (input, _) = opt(comma)(input)?;
-                (input, Value::Map(items))
-            } else {
-                (input, Value::Paren(Box::new(first_key), false))
-            };
-            if let Ok((input, _)) = end_paren(input) {
-                return Ok((input, value));
-            }
-        }
-        terminated(fallback_in_paren, end_paren)(input0)
-    } else {
-        simple_value(input)
-    }
-}
-
-fn comma(input: Span) -> PResult<Span> {
-    delimited(opt_spacelike, tag(","), opt_spacelike)(input)
-}
-
-fn colon(input: Span) -> PResult<Span> {
-    delimited(opt_spacelike, tag(":"), opt_spacelike)(input)
-}
-
-fn fallback_in_paren(input: Span) -> PResult<Value> {
-    alt((
-        map(value_expression, |v| Value::Paren(Box::new(v), false)),
-        value(Value::List(vec![], None, false), tag("")),
-    ))(input)
-}
-
-fn end_paren(input: Span) -> PResult<Span> {
-    preceded(opt_spacelike, tag(")"))(input)
-}
-
-fn simple_value(input: Span) -> PResult<Value> {
     match input.first() {
         Some(b'!') => bang(input),
         Some(b'&') => value(Value::HereSelector, tag("&"))(input),
         Some(b'"') => map(sass_string_dq, Value::Literal)(input),
         Some(b'\'') => map(sass_string_sq, Value::Literal)(input),
         Some(b'[') => bracket_list(input),
+        Some(b'(') => value_in_parens(input),
         _ => alt((
             value(Value::True, tag("true")),
             value(Value::False, tag("false")),
@@ -283,6 +235,51 @@ fn bang(input: Span) -> PResult<Value> {
         ),
         Value::Bang,
     )(input)
+}
+
+pub fn value_in_parens(input: Span) -> PResult<Value> {
+    let (input0, _p) = preceded(tag("("), opt_spacelike)(input)?;
+    if let Ok((input, first_key)) = simple_space_list(input0) {
+        let (input, value) = if let Ok((mut input, first_val)) =
+            preceded(colon, space_list)(input)
+        {
+            let mut items = vec![(first_key, first_val)];
+            while let Ok((rest, (key, val))) = pair(
+                preceded(comma, simple_space_list),
+                preceded(colon, space_list),
+            )(input)
+            {
+                items.push((key, val));
+                input = rest;
+            }
+            let (input, _) = opt(comma)(input)?;
+            (input, Value::Map(items))
+        } else {
+            (input, Value::Paren(Box::new(first_key), false))
+        };
+        if let Ok((input, _)) = end_paren(input) {
+            return Ok((input, value));
+        }
+    }
+    terminated(
+        alt((
+            map(value_expression, |v| Value::Paren(Box::new(v), false)),
+            map(tag(""), |_| Value::List(vec![], None, false))
+        )),
+        end_paren,
+    )(input0)
+}
+
+fn comma(input: Span) -> PResult<Span> {
+    delimited(opt_spacelike, tag(","), opt_spacelike)(input)
+}
+
+fn colon(input: Span) -> PResult<Span> {
+    delimited(opt_spacelike, tag(":"), opt_spacelike)(input)
+}
+
+fn end_paren(input: Span) -> PResult<Span> {
+    preceded(opt_spacelike, tag(")"))(input)
 }
 
 fn unicode_range(input: Span) -> PResult<Value> {
