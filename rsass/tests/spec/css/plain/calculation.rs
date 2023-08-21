@@ -41,7 +41,6 @@ fn parentheses() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn simplified() {
     let runner = runner().with_cwd("simplified");
     assert_eq!(

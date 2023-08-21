@@ -264,7 +264,7 @@ pub fn value_in_parens(input: Span) -> PResult<Value> {
     terminated(
         alt((
             map(value_expression, |v| Value::Paren(Box::new(v), false)),
-            map(tag(""), |_| Value::List(vec![], None, false))
+            map(tag(""), |_| Value::List(vec![], None, false)),
         )),
         end_paren,
     )(input0)

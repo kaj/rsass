@@ -80,7 +80,22 @@ impl<'a> Display for Formatted<'a, Value> {
                 Ok(())
             }
             Value::Call(ref name, ref arg) => {
-                write!(out, "{name}({arg})")
+                // TODO: Converting calc(1px) to 1px should probably be done earlier.
+                // it is for scss, but not when loading plain css.
+                if let Some(arg) = (name == "calc")
+                    .then_some(arg)
+                    .and_then(|a| a.get_single().ok())
+                    .and_then(|a| match a {
+                        Value::Numeric(n, _) if n.unit.valid_in_css() => {
+                            Some(n)
+                        }
+                        _ => None,
+                    })
+                {
+                    write!(out, "{}", arg.format(self.format))
+                } else {
+                    write!(out, "{name}({arg})")
+                }
             }
             Value::BinOp(ref op) => op.format(self.format).fmt(out),
             Value::UnaryOp(ref op, ref v) => {
