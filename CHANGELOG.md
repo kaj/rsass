@@ -16,7 +16,7 @@ project adheres to
 * Handle trailing comma in function arguments in plain css correctly.
 * Refactored function name/plain string handling in scss values to not parse
   the same unquoted string twice.
-* Remove separate backref membere from `css::Selectors` for cleanup before
+* Remove separate backref member from `css::Selectors` for cleanup before
   implementing more selector functions.  Instead, add it to an internal
   struct `SelectorCtx` (PR #179).
 * Refactored some parsers for less backtracking, making it easier to point
