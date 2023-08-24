@@ -1,6 +1,6 @@
-use super::Value;
+use super::{CallArgs, Value};
 use crate::output::Formatted;
-use crate::value::{ListSeparator, Operator};
+use crate::value::{ListSeparator, Numeric, Operator};
 use std::fmt::{self, Display, Write};
 
 impl<'a> Display for Formatted<'a, Value> {
@@ -82,16 +82,7 @@ impl<'a> Display for Formatted<'a, Value> {
             Value::Call(ref name, ref arg) => {
                 // TODO: Converting calc(1px) to 1px should probably be done earlier.
                 // it is for scss, but not when loading plain css.
-                if let Some(arg) = (name == "calc")
-                    .then_some(arg)
-                    .and_then(|a| a.get_single().ok())
-                    .and_then(|a| match a {
-                        Value::Numeric(n, _) if n.unit.valid_in_css() => {
-                            Some(n)
-                        }
-                        _ => None,
-                    })
-                {
+                if let Some(arg) = is_calc_result(name, arg) {
                     write!(out, "{}", arg.format(self.format))
                 } else {
                     write!(out, "{name}({arg})")
@@ -170,5 +161,17 @@ impl<'a> Display for Formatted<'a, Value> {
                 Ok(())
             }
         }
+    }
+}
+
+/// If a css `calc` can be evaluated to a static numerical result, return that value.
+fn is_calc_result<'a>(name: &str, arg: &'a CallArgs) -> Option<&'a Numeric> {
+    if name == "calc" {
+        arg.get_single().ok().and_then(|a| match a {
+            Value::Numeric(n, _) if n.unit.valid_in_css() => Some(n),
+            _ => None,
+        })
+    } else {
+        None
     }
 }
