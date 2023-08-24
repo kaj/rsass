@@ -261,10 +261,9 @@ fn value_to_selectors(v: &Value) -> Result<Selectors, BadSelector0> {
                 Ok(Selectors::new(vv))
             }
             Some(ListSeparator::Space) => {
-                let (mut outer, last) = vv.iter().fold(
-                    Result::<_, BadSelector0>::Ok((vec![], vec![])),
-                    |a, v: &Value| {
-                        let (mut outer, mut a) = a?;
+                let (mut outer, last) = vv.iter().try_fold(
+                    (vec![], vec![]),
+                    |(mut outer, mut a), v: &Value| {
                         if let Ok(ref mut s) = check_selector_str(v) {
                             push_descendant(&mut a, s);
                         } else {
@@ -278,7 +277,7 @@ fn value_to_selectors(v: &Value) -> Result<Selectors, BadSelector0> {
                             }
                             outer.extend(s.s);
                         }
-                        Ok((outer, a))
+                        Result::<_, BadSelector0>::Ok((outer, a))
                     },
                 )?;
                 outer.push(Selector(last));
@@ -437,17 +436,15 @@ fn value_to_selector(v: &Value) -> Result<Selector, BadSelector0> {
 }
 
 fn list_to_selector(list: &[Value]) -> Result<Selector, BadSelector0> {
-    Ok(Selector(list.iter().fold(
-        Result::<_, BadSelector0>::Ok(vec![]),
-        |a, v| {
-            let mut a = a?;
+    list.iter()
+        .try_fold(vec![], |mut a, v| {
             if !a.is_empty() {
                 a.push(SelectorPart::Descendant);
             }
             a.push(value_to_selector_part(v)?);
             Ok(a)
-        },
-    )?))
+        })
+        .map(Selector)
 }
 
 /// A selector consist of a sequence of these parts.
