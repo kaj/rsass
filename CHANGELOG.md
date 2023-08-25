@@ -19,6 +19,9 @@ project adheres to
 * Remove separate backref member from `css::Selectors` for cleanup before
   implementing more selector functions.  Instead, add it to an internal
   struct `SelectorCtx` (PR #179).
+* Simplify units early in numeric division and multiplication.  I
+  think this is a bit uglier, but it is more consistent with dart
+  sass.
 * Refactored some parsers for less backtracking, making it easier to point
   parse errors at the right place in the code and maybe making parsing
   slightly more efficient.

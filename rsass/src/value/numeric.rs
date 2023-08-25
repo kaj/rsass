@@ -136,18 +136,24 @@ impl Neg for &Numeric {
 impl Div for &Numeric {
     type Output = Numeric;
     fn div(self, rhs: Self) -> Self::Output {
+        let value = &self.value / &rhs.value;
+        let mut unit = &self.unit / &rhs.unit;
+        let scale = unit.simplify();
         Numeric {
-            value: &self.value / &rhs.value,
-            unit: &self.unit / &rhs.unit,
+            value: value * scale,
+            unit,
         }
     }
 }
 impl Mul for &Numeric {
     type Output = Numeric;
     fn mul(self, rhs: Self) -> Self::Output {
+        let value = &self.value * &rhs.value;
+        let mut unit = &self.unit * &rhs.unit;
+        let scale = unit.simplify();
         Numeric {
-            value: &self.value * &rhs.value,
-            unit: &self.unit * &rhs.unit,
+            value: value * scale,
+            unit,
         }
     }
 }
