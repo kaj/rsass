@@ -1,11 +1,15 @@
 use super::{check, CallError, FunctionMap, ResolvedArgs};
-use crate::css::{BadSelector, Selectors, Value};
+use crate::css::{BadSelector, LogicalSelectorSet, Selectors, Value};
 use crate::sass::Name;
 use crate::Scope;
 
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:selector");
-    // TODO: is_superselector
+    def!(f, is_superselector(super, sub), |s| {
+        let sup: LogicalSelectorSet = s.get(name!(super))?;
+        let sub: LogicalSelectorSet = s.get(name!(sub))?;
+        Ok(sup.is_superselector(&sub).into())
+    });
     def_va!(f, append(selectors), |s| {
         let mut s = get_selectors(s, name!(selectors))?.into_iter();
         if let Some(base) = s.next() {
@@ -44,7 +48,7 @@ fn get_selectors(
 pub fn expose(m: &Scope, global: &mut FunctionMap) {
     for (gname, lname) in &[
         // - - - Mixins - - -
-        //(name!(is_superselector), name!(is_superselector)),
+        (name!(is_superselector), name!(is_superselector)),
         (name!(selector_append), name!(append)),
         //(name!(selector_extend), name!(extend)),
         (name!(selector_nest), name!(nest)),

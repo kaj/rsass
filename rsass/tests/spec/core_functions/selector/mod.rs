@@ -9,7 +9,7 @@ mod append;
 
 // Ignoring "extend", not expected to work yet.
 
-// Ignoring "is_superselector", not expected to work yet.
+mod is_superselector;
 
 mod nest;
 

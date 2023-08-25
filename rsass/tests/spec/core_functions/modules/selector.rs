@@ -122,7 +122,6 @@ fn extend() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn is_superselector() {
     assert_eq!(
         runner().ok("@use \"sass:selector\";\

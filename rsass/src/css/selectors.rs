@@ -14,6 +14,9 @@ use crate::value::ListSeparator;
 use std::fmt;
 use std::io::Write;
 
+mod logical;
+pub(crate) use logical::SelectorSet as LogicalSelectorSet;
+
 /// A full set of selectors.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Selectors {
@@ -364,6 +367,19 @@ impl Selector {
         }
     }
 
+    /// Validate that this selector is ok to use in css.
+    ///
+    /// `Selectors` can contain backref (`&`), but those must be
+    /// resolved before using the `Selectors` in css.
+    pub fn css_ok(self) -> Result<Self, BadSelector> {
+        if self.has_backref() {
+            let slf = self.to_string();
+            Err(BadSelector::Backref(input_span(slf)))
+        } else {
+            Ok(self)
+        }
+    }
+
     fn has_backref(&self) -> bool {
         self.0.iter().any(SelectorPart::has_backref)
     }
@@ -411,10 +427,11 @@ impl Selector {
     }
 }
 
-impl TryInto<Selector> for Value {
+impl TryFrom<Value> for Selector {
     type Error = BadSelector;
-    fn try_into(self) -> Result<Selector, Self::Error> {
-        value_to_selector(&self).map_err(move |e| e.ctx(self))
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        value_to_selector(&value).map_err(move |e| e.ctx(value))
     }
 }
 // Internal, the api is try_into.
@@ -461,6 +478,7 @@ pub enum SelectorPart {
     /// An attribute selector
     Attribute {
         /// The attribute name
+        // TODO: Why not a raw String?
         name: CssString,
         /// An operator
         op: String,
