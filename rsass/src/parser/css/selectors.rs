@@ -7,7 +7,7 @@ use nom::bytes::complete::tag;
 use nom::character::complete::one_of;
 use nom::combinator::{into, map, map_res, opt, value};
 use nom::multi::{many1, separated_list1};
-use nom::sequence::{delimited, pair, terminated, tuple};
+use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 
 pub fn selectors(input: Span) -> PResult<Selectors> {
     map(
@@ -17,18 +17,27 @@ pub fn selectors(input: Span) -> PResult<Selectors> {
 }
 
 pub fn selector(input: Span) -> PResult<Selector> {
-    let (input, mut s) = many1(selector_part)(input)?;
+    let (input, mut s) = selector_parts(input)?;
     if s.last() == Some(&SelectorPart::Descendant) {
         s.pop();
     }
     Ok((input, Selector(s)))
 }
 
-pub fn selector_part(input: Span) -> PResult<SelectorPart> {
-    let (input, mark) =
-        alt((tag("*"), tag("&"), tag("::"), tag(":"), tag("["), tag("")))(
-            input,
-        )?;
+pub(crate) fn selector_parts(input: Span) -> PResult<Vec<SelectorPart>> {
+    many1(selector_part)(input)
+}
+
+fn selector_part(input: Span) -> PResult<SelectorPart> {
+    let (input, mark) = alt((
+        tag("*"),
+        tag("&"),
+        tag("::"),
+        tag(":"),
+        tag("."),
+        tag("["),
+        tag(""),
+    ))(input)?;
     match mark.fragment() {
         b"*" => value(SelectorPart::Simple("*".into()), tag(""))(input),
         b"&" => value(SelectorPart::BackRef, tag(""))(input),
@@ -46,12 +55,16 @@ pub fn selector_part(input: Span) -> PResult<SelectorPart> {
             ),
             |(name, arg)| SelectorPart::Pseudo { name, arg },
         )(input),
+        b"." => map(simple_part, |mut s| {
+            s.insert(0, '.');
+            SelectorPart::Simple(s)
+        })(input),
         b"[" => delimited(
             opt_spacelike,
             alt((
                 map(
                     tuple((
-                        terminated(css_string, opt_spacelike),
+                        terminated(name_opt_ns, opt_spacelike),
                         terminated(
                             map_res(
                                 alt((
@@ -82,7 +95,7 @@ pub fn selector_part(input: Span) -> PResult<SelectorPart> {
                         modifier,
                     },
                 ),
-                map(terminated(css_string, opt_spacelike), |name| {
+                map(terminated(name_opt_ns, opt_spacelike), |name| {
                     SelectorPart::Attribute {
                         name: name.into(),
                         op: "".to_string(),
@@ -111,9 +124,28 @@ pub fn selector_part(input: Span) -> PResult<SelectorPart> {
     }
 }
 
+fn name_opt_ns(input: Span) -> PResult<String> {
+    alt((
+        map(preceded(tag("|"), css_string), |mut s| {
+            s.insert(0, '|');
+            s
+        }),
+        map(
+            pair(css_string, opt(preceded(tag("|"), css_string))),
+            |(a, b)| {
+                if let Some(b) = b {
+                    format!("{}|{}", a, b)
+                } else {
+                    a
+                }
+            },
+        ),
+    ))(input)
+}
+
 fn simple_part(input: Span) -> PResult<String> {
     let (rest, (pre, mut s, post)) =
-        tuple((opt(tag("%")), css_string, opt(tag("%"))))(input)?;
+        tuple((opt(tag("%")), name_opt_ns, opt(tag("%"))))(input)?;
     if pre.is_some() {
         s.insert(0, '%');
     }

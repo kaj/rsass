@@ -42,7 +42,7 @@ fn line_noise() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn namespaced_function() {
     let runner = runner().with_cwd("namespaced_function");
     assert_eq!(

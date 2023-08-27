@@ -6,7 +6,7 @@ use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, take};
 use nom::character::complete::one_of;
 use nom::combinator::{
-    into, map, map_opt, map_res, not, opt, peek, recognize, value,
+    into, map, map_opt, map_res, not, opt, peek, recognize, value, verify,
 };
 use nom::multi::{fold_many0, fold_many1, many0, many_m_n};
 use nom::sequence::{delimited, preceded, terminated};
@@ -18,7 +18,7 @@ pub fn css_string_any(input: Span) -> PResult<CssString> {
 
 pub fn css_string(input: Span) -> PResult<String> {
     let (input, first) = alt((
-        map(selector_plain_part, String::from),
+        selector_plain_part,
         normalized_first_escaped_char,
         map(hash_no_interpolation, String::from),
     ))(input)?;
@@ -26,7 +26,7 @@ pub fn css_string(input: Span) -> PResult<String> {
         // Note: This could probably be a whole lot more efficient,
         // but try to get stuff correct before caring too much about that.
         alt((
-            map(selector_plain_part, String::from),
+            selector_plain_part,
             normalized_escaped_char,
             map(hash_no_interpolation, String::from),
         )),
@@ -101,11 +101,17 @@ fn normalized_escaped_char_q(input: Span) -> PResult<String> {
     Ok((rest, result))
 }
 
-fn selector_plain_part(input: Span) -> PResult<&str> {
-    // FIXME: This should be the other way around, allowing only
-    // letters and digits (and not starting with a digit).
-    // Or at the very least, it should forbid ".".
-    map_res(is_not("\r\n\t %<>$\"'\\#+*/()[]{}:;,=!&@~"), input_to_str)(input)
+fn selector_plain_part(input: Span) -> PResult<String> {
+    fold_many1(
+        verify(take_char, |ch| {
+            ch.is_alphanumeric() || *ch == '-' || *ch == '_'
+        }),
+        String::new,
+        |mut acc, chr: char| {
+            acc.push(chr);
+            acc
+        },
+    )(input)
 }
 
 fn hash_no_interpolation(input: Span) -> PResult<&str> {

@@ -25,7 +25,7 @@ pub fn selector(input: Span) -> PResult<Selector> {
     Ok((input, Selector::new(s)))
 }
 
-pub(crate) fn selector_part(input: Span) -> PResult<SelectorPart> {
+fn selector_part(input: Span) -> PResult<SelectorPart> {
     alt((
         map(
             tuple((opt(tag("%")), sass_string, opt(tag("%")))),

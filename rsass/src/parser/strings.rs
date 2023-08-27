@@ -127,7 +127,7 @@ pub fn sass_string_ext(input: Span) -> PResult<SassString> {
 
 fn unquoted_first_part(input: Span) -> PResult<String> {
     let (input, first) = alt((
-        map(selector_plain_part, String::from),
+        map(str_plain_part, String::from),
         normalized_first_escaped_char,
         map(hash_no_interpolation, String::from),
     ))(input)?;
@@ -135,7 +135,7 @@ fn unquoted_first_part(input: Span) -> PResult<String> {
         // Note: This could probably be a whole lot more efficient,
         // but try to get stuff correct before caring too much about that.
         alt((
-            map(selector_plain_part, String::from),
+            map(str_plain_part, String::from),
             normalized_escaped_char,
             map(hash_no_interpolation, String::from),
         )),
@@ -151,7 +151,7 @@ fn unquoted_part(input: Span) -> PResult<String> {
         // Note: This could probably be a whole lot more efficient,
         // but try to get stuff correct before caring too much about that.
         alt((
-            map(selector_plain_part, String::from),
+            map(str_plain_part, String::from),
             normalized_escaped_char,
             map(hash_no_interpolation, String::from),
         )),
@@ -208,7 +208,16 @@ pub fn special_function_misc(input: Span) -> PResult<SassString> {
                         )),
                         |_| (),
                     ),
-                    map(preceded(tag("progid:"), selector_string), |_| ()),
+                    map(
+                        preceded(
+                            tag("progid:"),
+                            many1(alt((
+                                map(tag("."), |_| ()),
+                                map(selector_string, |_| ()),
+                            ))),
+                        ),
+                        |_| (),
+                    ),
                 )),
                 tag("("),
             )),
@@ -257,8 +266,7 @@ pub fn special_url(input: Span) -> PResult<SassString> {
     let (input, _trim) = many0(is_a(" "))(input)?;
     let (input, mut parts) = many1(alt((
         string_part_interpolation,
-        map(map_res(tag("\\)"), input_to_string), StringPart::Raw),
-        map(selector_string, StringPart::Raw),
+        map(unquoted_part, StringPart::Raw),
         map(
             map_res(is_a("\":.;,!+/="), input_to_string),
             StringPart::Raw,
@@ -364,7 +372,7 @@ fn selector_string(input: Span) -> PResult<String> {
         // Note: This could probably be a whole lot more efficient,
         // but try to get stuff correct before caring too much about that.
         alt((
-            map(selector_plain_part, String::from),
+            selector_plain_part,
             map(tag("\\ "), |_| "\\ ".to_string()),
             map(tag("\\\""), |_| "\\\"".to_string()),
             map(tag("\\\'"), |_| "\\\'".to_string()),
@@ -380,7 +388,20 @@ fn selector_string(input: Span) -> PResult<String> {
     )(input)
 }
 
-fn selector_plain_part(input: Span) -> PResult<&str> {
+fn selector_plain_part(input: Span) -> PResult<String> {
+    fold_many1(
+        verify(take_char, |ch| {
+            ch.is_alphanumeric() || *ch == '-' || *ch == '_'
+        }),
+        String::new,
+        |mut acc, chr: char| {
+            acc.push(chr);
+            acc
+        },
+    )(input)
+}
+
+fn str_plain_part(input: Span) -> PResult<&str> {
     // TODO: This should probably be based on unicode alphanumeric.
     map_res(is_not("\r\n\t %<>$\"'\\#+*/()[]{}:;,=!&@~"), input_to_str)(input)
 }
