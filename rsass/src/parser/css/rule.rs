@@ -1,5 +1,3 @@
-use std::str::from_utf8;
-
 use super::super::util::opt_spacelike;
 use super::super::{PResult, Span};
 use super::strings::custom_value;
@@ -7,6 +5,7 @@ use super::{comment, import2, selectors, strings, values};
 use crate::css::{BodyItem, CustomProperty, Property, Rule};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
+use nom::character::complete::one_of;
 use nom::combinator::{into, map, opt};
 use nom::multi::many_till;
 use nom::sequence::{delimited, pair, preceded, terminated};
@@ -43,10 +42,11 @@ pub fn property(input: Span) -> PResult<BodyItem> {
 
 fn property_name(input: Span) -> PResult<String> {
     map(
-        pair(alt((tag("*"), tag(":"), tag(""))), strings::css_string),
-        |(pre, main)| {
-            let mut main = main;
-            main.insert_str(0, from_utf8(pre.fragment()).unwrap());
+        pair(opt(one_of("*:.")), strings::css_string),
+        |(pre, mut main)| {
+            if let Some(pre) = pre {
+                main.insert(0, pre);
+            }
             main
         },
     )(input)

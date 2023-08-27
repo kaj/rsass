@@ -8,7 +8,7 @@
 //! leafs of simple selectors in some future release.
 use super::{is_not, CssString, Value};
 use crate::input::SourcePos;
-use crate::parser::css::{selector, selector_part, selectors};
+use crate::parser::css::{selector, selector_parts, selectors};
 use crate::parser::{input_span, ParseError};
 use crate::value::ListSeparator;
 use std::fmt;
@@ -441,7 +441,7 @@ fn list_to_selector(list: &[Value]) -> Result<Selector, BadSelector0> {
             if !a.is_empty() {
                 a.push(SelectorPart::Descendant);
             }
-            a.push(value_to_selector_part(v)?);
+            a.extend(value_to_selector_parts(v)?);
             Ok(a)
         })
         .map(Selector)
@@ -599,15 +599,11 @@ impl SelectorPart {
     }
 }
 
-impl TryInto<SelectorPart> for Value {
-    type Error = BadSelector;
-    fn try_into(self) -> Result<SelectorPart, Self::Error> {
-        value_to_selector_part(&self).map_err(move |e| e.ctx(self))
-    }
-}
-fn value_to_selector_part(v: &Value) -> Result<SelectorPart, BadSelector0> {
+fn value_to_selector_parts(
+    v: &Value,
+) -> Result<Vec<SelectorPart>, BadSelector0> {
     match v {
-        Value::Literal(s) => Ok(ParseError::check(selector_part(
+        Value::Literal(s) => Ok(ParseError::check(selector_parts(
             input_span(s.value()).borrow(),
         ))?),
         _ => Err(BadSelector0::Value),
