@@ -74,15 +74,13 @@ fn string_or_call(input: Span) -> PResult<Value> {
                 let args = CallArgs::from_single(args);
                 return Ok((rest, Value::Call(string.take_value(), args)));
             }
-        } else {
-            if let Ok((rest, args)) = delimited(
-                terminated(tag("("), opt_spacelike),
-                terminated(call_args, opt_spacelike),
-                tag(")"),
-            )(rest)
-            {
-                return Ok((rest, Value::Call(string.take_value(), args)));
-            }
+        } else if let Ok((rest, args)) = delimited(
+            terminated(tag("("), opt_spacelike),
+            terminated(call_args, opt_spacelike),
+            tag(")"),
+        )(rest)
+        {
+            return Ok((rest, Value::Call(string.take_value(), args)));
         }
     }
     Ok((rest, string.into()))
