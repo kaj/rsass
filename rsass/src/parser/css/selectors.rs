@@ -29,17 +29,11 @@ pub(crate) fn selector_parts(input: Span) -> PResult<Vec<SelectorPart>> {
 }
 
 fn selector_part(input: Span) -> PResult<SelectorPart> {
-    let (input, mark) = alt((
-        tag("*"),
-        tag("&"),
-        tag("::"),
-        tag(":"),
-        tag("."),
-        tag("["),
-        tag(""),
-    ))(input)?;
+    let (input, mark) =
+        alt((tag("&"), tag("::"), tag(":"), tag("."), tag("["), tag("")))(
+            input,
+        )?;
     match mark.fragment() {
-        b"*" => value(SelectorPart::Simple("*".into()), tag(""))(input),
         b"&" => value(SelectorPart::BackRef, tag(""))(input),
         b"::" => map(
             pair(
@@ -125,13 +119,16 @@ fn selector_part(input: Span) -> PResult<SelectorPart> {
 }
 
 fn name_opt_ns(input: Span) -> PResult<String> {
+    fn name_part(input: Span) -> PResult<String> {
+        alt((value(String::from("*"), tag("*")), css_string))(input)
+    }
     alt((
-        map(preceded(tag("|"), css_string), |mut s| {
+        map(preceded(tag("|"), name_part), |mut s| {
             s.insert(0, '|');
             s
         }),
         map(
-            pair(css_string, opt(preceded(tag("|"), css_string))),
+            pair(name_part, opt(preceded(tag("|"), name_part))),
             |(a, b)| {
                 if let Some(b) = b {
                     format!("{}|{}", a, b)
