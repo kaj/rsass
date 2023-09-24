@@ -5,6 +5,16 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("min")
 }
 
+#[test]
+#[ignore] // wrong result
+fn case_insensitive() {
+    assert_eq!(
+        runner().ok("a {b: MiN(1px)}\n"),
+        "a {\
+         \n  b: 1px;\
+         \n}\n"
+    );
+}
 mod error {
     #[allow(unused)]
     use super::runner;
@@ -87,10 +97,11 @@ mod error {
             );
         }
         #[test]
+        #[ignore] // wrong error
         fn no_args() {
             assert_eq!(
                 runner().err("a {b: min()}\n"),
-                "Error: At least one argument must be passed.\
+                "Error: Missing argument.\
          \n  ,\
          \n1 | a {b: min()}\
          \n  |       ^^^^^\
@@ -113,7 +124,7 @@ mod error {
          \n  input.scss 1:11  root stylesheet",
         );
     }
-    mod unitless_and_unit {
+    mod unitless_and_real {
         #[allow(unused)]
         use super::runner;
 
@@ -156,7 +167,33 @@ mod extra_whitespace {
         );
     }
 }
-mod perserved {
+mod math {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn slash_as_division() {
+        assert_eq!(
+            runner().ok("b { \
+             \n  a: 2px / min(1.5);\
+             \n}\n"),
+            "b {\
+         \n  a: 1.3333333333px;\
+         \n}\n"
+        );
+    }
+}
+#[test]
+fn overridden() {
+    assert_eq!(
+        runner().ok("@function min($arg1, $arg2) {@return $arg1}\
+             \na {b: min(2, 1)}\n"),
+        "a {\
+         \n  b: 2;\
+         \n}\n"
+    );
+}
+mod preserved {
     #[allow(unused)]
     use super::runner;
 
@@ -192,48 +229,11 @@ mod perserved {
             );
         }
     }
-    mod unit {
-        #[allow(unused)]
-        use super::runner;
-
-        #[test]
-        fn first() {
-            assert_eq!(
-                runner().ok("a {b: min(1%, 2px)}\n"),
-                "a {\
-         \n  b: min(1%, 2px);\
-         \n}\n"
-            );
-        }
-        #[test]
-        fn second() {
-            assert_eq!(
-                runner().ok("a {b: min(1px, 2%)}\n"),
-                "a {\
-         \n  b: min(1px, 2%);\
-         \n}\n"
-            );
-        }
-        #[test]
-        fn third() {
-            assert_eq!(
-                runner().ok("a {b: min(1px, 2px, 3%)}\n"),
-                "a {\
-         \n  b: min(1px, 2px, 3%);\
-         \n}\n"
-            );
-        }
-    }
-}
-mod preserved {
-    #[allow(unused)]
-    use super::runner;
-
     mod operation {
         #[allow(unused)]
         use super::runner;
 
-        mod unitless_and_unit {
+        mod unitless_and_real {
             #[allow(unused)]
             use super::runner;
 
@@ -264,6 +264,38 @@ mod preserved {
          \n}\n"
                 );
             }
+        }
+    }
+    mod unit {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn first() {
+            assert_eq!(
+                runner().ok("a {b: min(1%, 2px)}\n"),
+                "a {\
+         \n  b: min(1%, 2px);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn second() {
+            assert_eq!(
+                runner().ok("a {b: min(1px, 2%)}\n"),
+                "a {\
+         \n  b: min(1px, 2%);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn third() {
+            assert_eq!(
+                runner().ok("a {b: min(1px, 2px, 3%)}\n"),
+                "a {\
+         \n  b: min(1px, 2px, 3%);\
+         \n}\n"
+            );
         }
     }
     #[test]
@@ -313,7 +345,7 @@ mod simplified {
         use super::runner;
 
         #[test]
-        fn unitless_and_unit() {
+        fn unitless_and_real() {
             assert_eq!(
                 runner().ok("a {b: min(1px, 2.5 + 0.9px)}\n"),
                 "a {\
@@ -341,7 +373,7 @@ mod simplified {
         );
     }
     #[test]
-    fn unitless_and_unit() {
+    fn unitless_and_real() {
         assert_eq!(
             runner().ok("a {b: min(1px, 2.5, 0.9px)}\n"),
             "a {\

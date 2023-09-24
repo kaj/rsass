@@ -191,19 +191,6 @@ mod interpolation {
     use super::runner;
 
     #[test]
-    fn line_noise() {
-        assert_eq!(
-        runner().ok(
-            "// Interpolation shifts the parser into a special mode where it allows any\
-             \n// interpolated declaration value.\
-             \na {b: calc(!{@}#$%^&*#{c}_-[+]=)}\n"
-        ),
-        "a {\
-         \n  b: calc(!{@}#$%^&*c_-[+]=);\
-         \n}\n"
-    );
-    }
-    #[test]
     fn nested() {
         assert_eq!(
             runner().ok("a {b: calc(calc(#{c}))}\n"),
@@ -226,6 +213,7 @@ mod interpolation {
     );
     }
     #[test]
+    #[ignore] // wrong result
     fn parens() {
         assert_eq!(
         runner().ok(
@@ -234,7 +222,7 @@ mod interpolation {
              \na {b: calc((#{1px + 2px}))}\n"
         ),
         "a {\
-         \n  b: calc(3px);\
+         \n  b: calc((3px));\
          \n}\n"
     );
     }
@@ -312,15 +300,6 @@ mod number {
         );
     }
 }
-#[test]
-fn parentheses() {
-    assert_eq!(
-        runner().ok("a {b: calc((1px))}\n"),
-        "a {\
-         \n  b: 1px;\
-         \n}\n"
-    );
-}
 mod syntax {
     #[allow(unused)]
     use super::runner;
@@ -368,24 +347,6 @@ mod var {
             runner().ok("a {b: calc(var(--c))}\n"),
             "a {\
          \n  b: calc(var(--c));\
-         \n}\n"
-        );
-    }
-    #[test]
-    fn double_parenthesized() {
-        assert_eq!(
-            runner().ok("a {b: calc(((var(--c))))}\n"),
-            "a {\
-         \n  b: calc((var(--c)));\
-         \n}\n"
-        );
-    }
-    #[test]
-    fn parenthesized() {
-        assert_eq!(
-            runner().ok("a {b: calc((var(--c)))}\n"),
-            "a {\
-         \n  b: calc((var(--c)));\
          \n}\n"
         );
     }

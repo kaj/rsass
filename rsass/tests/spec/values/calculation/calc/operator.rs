@@ -178,46 +178,54 @@ mod precedence {
             use super::runner;
 
             #[test]
-            fn lhs() {
+            #[ignore] // wrong result
+            fn asterisk() {
                 assert_eq!(
-                    runner().ok("a {b: calc(calc(#{c}) + 1)}\n"),
+                    runner().ok("a {b: calc(calc(#{\"c*\"}))}\n"),
                     "a {\
-         \n  b: calc((c) + 1);\
+         \n  b: calc((c*));\
          \n}\n"
                 );
             }
             #[test]
-            fn rhs() {
+            fn plain() {
                 assert_eq!(
-                    runner().ok("a {b: calc(1 + calc(#{c}))}\n"),
+                    runner().ok("a {b: calc(calc(#{c}))}\n"),
                     "a {\
-         \n  b: calc(1 + (c));\
+         \n  b: calc(c);\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn slash() {
+                assert_eq!(
+                    runner().ok("a {b: calc(calc(#{\"c/\"}))}\n"),
+                    "a {\
+         \n  b: calc((c/));\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn whitespace() {
+                assert_eq!(
+                    runner().ok("a {b: calc(calc(#{\"c \"}))}\n"),
+                    "a {\
+         \n  b: calc((c ));\
          \n}\n"
                 );
             }
         }
-        mod parens {
-            #[allow(unused)]
-            use super::runner;
-
-            #[test]
-            fn lhs() {
-                assert_eq!(
-                    runner().ok("a {b: calc((#{c}) + 1)}\n"),
-                    "a {\
-         \n  b: calc((c) + 1);\
+        #[test]
+        #[ignore] // wrong result
+        fn parens() {
+            assert_eq!(
+                runner().ok("a {b: calc((#{c}))}\n"),
+                "a {\
+         \n  b: calc((c));\
          \n}\n"
-                );
-            }
-            #[test]
-            fn rhs() {
-                assert_eq!(
-                    runner().ok("a {b: calc(1 + (#{c}))}\n"),
-                    "a {\
-         \n  b: calc(1 + (c));\
-         \n}\n"
-                );
-            }
+            );
         }
     }
     mod preserved {
@@ -548,6 +556,15 @@ mod var {
     #[allow(unused)]
     use super::runner;
 
+    #[test]
+    fn calculation() {
+        assert_eq!(
+            runner().ok("a {b: calc(1 + calc(var(--c)))}\n"),
+            "a {\
+         \n  b: calc(1 + (var(--c)));\
+         \n}\n"
+        );
+    }
     #[test]
     fn directly_parenthesized() {
         assert_eq!(

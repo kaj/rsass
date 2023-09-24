@@ -14,12 +14,12 @@ fn empty() {
     let runner = runner().with_cwd("empty");
     assert_eq!(
         runner.err("@import \'plain\'"),
-        "Error: Parentheses aren\'t allowed in plain CSS.\
+        "Error: Expected expression.\
          \n  ,\
          \n2 |   x: ();\
-         \n  |      ^\
+         \n  |       ^\
          \n  \'\
-         \n  plain.css 2:6   @import\
+         \n  plain.css 2:7   @import\
          \n  input.scss 1:9  root stylesheet",
     );
 }
@@ -29,12 +29,12 @@ fn empty_comma() {
     let runner = runner().with_cwd("empty_comma");
     assert_eq!(
         runner.err("@import \'plain\'"),
-        "Error: Parentheses aren\'t allowed in plain CSS.\
+        "Error: Expected expression.\
          \n  ,\
          \n2 |   x: (,);\
-         \n  |      ^\
+         \n  |       ^\
          \n  \'\
-         \n  plain.css 2:6   @import\
+         \n  plain.css 2:7   @import\
          \n  input.scss 1:9  root stylesheet",
     );
 }

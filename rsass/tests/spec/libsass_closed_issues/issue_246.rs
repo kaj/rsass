@@ -6,6 +6,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("$content-width: 960px;\r\
@@ -21,11 +22,11 @@ fn test() {
              \n  padding: 0 calc(100%/2 - #{$content-width/2}); }"),
         "/* demo.css: */\
          \n.selector {\
-         \n  padding: 0 calc(100%/2 - 480px);\
+         \n  padding: 0 calc(50% - 480px);\
          \n}\
          \n/* bin/sassc demo.scss */\
          \n.selector {\
-         \n  padding: 0 calc(100%/2 - 480px);\
+         \n  padding: 0 calc(50% - 480px);\
          \n}\n"
     );
 }

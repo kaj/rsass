@@ -15,7 +15,7 @@ fn test() {
         "Error: Parentheses aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: (y);\
-         \n  |      ^\
+         \n  |      ^^^\
          \n  \'\
          \n  plain.css 2:6   @import\
          \n  input.scss 1:9  root stylesheet",

@@ -32,12 +32,12 @@ fn line_noise() {
     let runner = runner().with_cwd("line_noise");
     assert_eq!(
         runner.err("@use \"plain\";\n"),
-        "Error: Expected number, variable, function, or calculation.\
+        "Error: Expected identifier.\
          \n  ,\
          \n1 | a {b: calc(#%^&)}\
-         \n  |            ^\
+         \n  |             ^\
          \n  \'\
-         \n  plain.css 1:12  @use\
+         \n  plain.css 1:13  @use\
          \n  input.scss 1:1  root stylesheet",
     );
 }
@@ -77,12 +77,12 @@ fn wrong_args() {
     let runner = runner().with_cwd("wrong_args");
     assert_eq!(
         runner.err("@use \"plain\";\n"),
-        "Error: Expected number, variable, function, or calculation.\
+        "Error: Missing argument.\
          \n  ,\
          \n1 | a {b: calc()}\
-         \n  |            ^\
+         \n  |       ^^^^^^\
          \n  \'\
-         \n  plain.css 1:12  @use\
+         \n  plain.css 1:7   @use\
          \n  input.scss 1:1  root stylesheet",
     );
 }

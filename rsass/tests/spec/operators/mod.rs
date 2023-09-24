@@ -7,6 +7,8 @@ fn runner() -> crate::TestRunner {
 
 mod minus;
 
+mod modulo;
+
 mod plus;
 
 mod slash;

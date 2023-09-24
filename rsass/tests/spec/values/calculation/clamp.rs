@@ -5,6 +5,16 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("clamp")
 }
 
+#[test]
+#[ignore] // wrong result
+fn case_insensitive() {
+    assert_eq!(
+        runner().ok("a {b: ClAmP(1px, 0px, 3px)}\n"),
+        "a {\
+         \n  b: 1px;\
+         \n}\n"
+    );
+}
 mod error {
     #[allow(unused)]
     use super::runner;
@@ -78,12 +88,12 @@ mod error {
         fn four_args() {
             assert_eq!(
                 runner().err("a {b: clamp(1px, 2px, 3px, 4px)}\n"),
-                "Error: expected \"+\", \"-\", \"*\", \"/\", or \")\".\
+                "Error: Only 3 arguments allowed, but 4 were passed.\
          \n  ,\
          \n1 | a {b: clamp(1px, 2px, 3px, 4px)}\
-         \n  |                          ^\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:26  root stylesheet",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -104,12 +114,12 @@ mod error {
         fn no_args() {
             assert_eq!(
                 runner().err("a {b: clamp()}\n"),
-                "Error: Expected number, variable, function, or calculation.\
+                "Error: Missing argument.\
          \n  ,\
          \n1 | a {b: clamp()}\
-         \n  |             ^\
+         \n  |       ^^^^^^^\
          \n  \'\
-         \n  input.scss 1:13  root stylesheet",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -129,16 +139,14 @@ mod error {
         #[ignore] // missing error
         fn rest() {
             assert_eq!(
-        runner().err(
-            "a {b: clamp(1px 2px 3px...)}\n"
-        ),
-        "Error: expected \"+\", \"-\", \"*\", \"/\", \",\", or \")\".\
+                runner().err("a {b: clamp(1px 2px 3px...)}\n"),
+                "Error: Rest arguments can\'t be used with calculations.\
          \n  ,\
          \n1 | a {b: clamp(1px 2px 3px...)}\
-         \n  |                 ^\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:17  root stylesheet",
-    );
+         \n  input.scss 1:7  root stylesheet",
+            );
         }
         #[test]
         #[ignore] // missing error

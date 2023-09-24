@@ -11,6 +11,8 @@ mod known_incompatible;
 
 mod operator;
 
+mod space;
+
 mod syntax;
 
 mod value;

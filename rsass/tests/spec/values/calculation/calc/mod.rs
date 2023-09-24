@@ -13,4 +13,8 @@ mod no_operator;
 
 mod operator;
 
+mod parens;
+
 mod simplify;
+
+mod space;
