@@ -95,7 +95,7 @@ mod error {
     );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn known_incompatible() {
             assert_eq!(
                 runner().err("a {b: atan2(1deg, 1px)}\n"),
@@ -109,7 +109,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn unitless_and_real() {
             assert_eq!(
                 runner().err("a {b: atan2(1, 1px)}\n"),

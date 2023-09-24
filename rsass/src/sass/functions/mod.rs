@@ -2,7 +2,7 @@ use super::{Call, Closure, FormalArgs, Name};
 use crate::css::{self, is_not, BinOp, CallArgs, CssString, Value};
 use crate::input::SourcePos;
 use crate::output::{Format, Formatted};
-use crate::value::{CssDimension, Operator, Quotes};
+use crate::value::{CssDimensionSet, Operator, Quotes};
 use crate::{Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -289,7 +289,10 @@ lazy_static! {
             } else {
                 let arg = match css_fn_arg(v)? {
                     Value::Paren(arg)
-                        if !matches!(arg.as_ref(), Value::Call(..)) =>
+                        if !matches!(
+                            arg.as_ref(),
+                            Value::Call(..) | Value::Literal(_)
+                        ) =>
                     {
                         *arg
                     }
@@ -300,12 +303,25 @@ lazy_static! {
         });
         def!(f, clamp(min, number = b"null", max = b"null"), |s| {
             self::math::clamp_fn(s).or_else(|_| {
-                let mut args = vec![s.get(name!(min))?];
+                let mut args = vec![s.get::<Value>(name!(min))?];
                 if let Some(b) = s.get_opt(name!(number))? {
                     args.push(b);
                 }
                 if let Some(c) = s.get_opt(name!(max))? {
                     args.push(c);
+                }
+                if let Some((a, rest)) = args.split_first() {
+                    if let Some(adim) = css_dim(a) {
+                        for b in rest {
+                            if let Some(bdim) = css_dim(b) {
+                                if adim != bdim {
+                                    return Err(
+                                        CallError::incompatible_values(a, b),
+                                    );
+                                }
+                            }
+                        }
+                    }
                 }
                 Ok(css::Value::Call(
                     "clamp".into(),
@@ -368,7 +384,7 @@ fn css_fn_arg(v: Value) -> Result<Value, CallError> {
 }
 
 // Note: None here is for unknown, e.g. the dimension of something that is not a number.
-fn css_dim(v: &Value) -> Option<Vec<(CssDimension, i8)>> {
+fn css_dim(v: &Value) -> Option<CssDimensionSet> {
     match v {
         // TODO: Handle BinOp recursively (again) (or let in_calc return (Value, CssDimension)?)
         Value::Numeric(num, _) => {

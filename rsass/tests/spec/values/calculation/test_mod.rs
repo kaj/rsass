@@ -130,7 +130,7 @@ mod error {
     );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn incompatible() {
             assert_eq!(
                 runner().err("a {b: mod(16px, 5deg)}\n"),
@@ -144,7 +144,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn real_and_unitless() {
             assert_eq!(
                 runner().err("a {b: mod(16px, 5)}\n"),
@@ -164,7 +164,6 @@ mod nan {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn negative_and_positive_infinity() {
         assert_eq!(
             runner().ok("a {b: mod(-5, infinity)}\n"),
@@ -174,7 +173,6 @@ mod nan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative_zero_and_positive_infinity() {
         assert_eq!(
             runner().ok("a {b: mod(-0, infinity)}\n"),
@@ -184,7 +182,6 @@ mod nan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn positive_and_negative_infinity() {
         assert_eq!(
             runner().ok("a {b: mod(5, -infinity)}\n"),
@@ -194,7 +191,6 @@ mod nan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn zero_and_negative_infinity() {
         assert_eq!(
             runner().ok("a {b: mod(0, -infinity)}\n"),
@@ -353,7 +349,6 @@ mod x_infinity {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn negative() {
         assert_eq!(
             runner().ok("a {b: mod(10, -infinity)}\n"),
@@ -363,7 +358,6 @@ mod x_infinity {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn positive() {
         assert_eq!(
             runner().ok("a {b: mod(-10, infinity)}\n"),

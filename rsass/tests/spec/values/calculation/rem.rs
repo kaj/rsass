@@ -130,7 +130,7 @@ mod error {
     );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn incompatible() {
             assert_eq!(
                 runner().err("a {b: rem(16px, 5deg)}\n"),
@@ -144,7 +144,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn real_and_unitless() {
             assert_eq!(
                 runner().err("a {b: rem(16px, 5)}\n"),

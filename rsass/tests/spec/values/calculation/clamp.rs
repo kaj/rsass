@@ -36,7 +36,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn first() {
             assert_eq!(
                 runner().err("a {b: clamp(1s, 2px, 3px)}\n"),
@@ -50,7 +50,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn second() {
             assert_eq!(
                 runner().err("a {b: clamp(1px, 2s, 3px)}\n"),
@@ -64,7 +64,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn third() {
             assert_eq!(
                 runner().err("a {b: clamp(1px, 2px, 3s)}\n"),

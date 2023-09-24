@@ -25,7 +25,6 @@ fn double_preserved() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn identifier() {
     assert_eq!(
         runner().ok("a {b: calc((d))}\n"),
@@ -35,7 +34,6 @@ fn identifier() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn interpolation() {
     assert_eq!(
         runner().ok("a {b: calc((#{\"1 + 2\"}))}\n"),
@@ -87,7 +85,6 @@ mod var {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn variable() {
     assert_eq!(
         runner().ok("$c: unquote(\"1 + 2\");\

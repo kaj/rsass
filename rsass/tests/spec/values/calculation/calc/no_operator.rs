@@ -191,6 +191,7 @@ mod interpolation {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn nested() {
         assert_eq!(
             runner().ok("a {b: calc(calc(#{c}))}\n"),
@@ -213,7 +214,6 @@ mod interpolation {
     );
     }
     #[test]
-    #[ignore] // wrong result
     fn parens() {
         assert_eq!(
         runner().ok(

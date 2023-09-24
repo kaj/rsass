@@ -90,7 +90,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn nan() {
     assert_eq!(
         runner().ok("a {b: sign(NaN)}\n"),

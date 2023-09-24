@@ -1,5 +1,5 @@
 use super::{
-    check, expected_to, is_not, is_special, CallError, CheckedArg,
+    check, css_dim, expected_to, is_not, is_special, CallError, CheckedArg,
     FunctionMap, ResolvedArgs, Scope,
 };
 use crate::css::{BinOp, CallArgs, CssString, Value};
@@ -323,16 +323,21 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     def!(global, mod(y, x), |s| {
         fn real_mod(s: &ResolvedArgs) -> Result<Value, CallError> {
             let y: Numeric = s.get(name!(y))?;
-            let x = s.get_map(name!(x), |v| {
-                let v = Numeric::try_from(v)?;
-                v.as_unitset(&y.unit)
-                    .ok_or_else(|| diff_units_msg(&v, &y, name!(y)))
-            })?;
+            let x: Numeric = s.get(name!(x))?;
+            let x = x.as_unitset(&y.unit)
+                    .ok_or_else(|| CallError::msg(diff_units_msg2(&y, &x)))?;
             let unit = y.unit;
             let y = f64::from(y.value);
             let m = f64::from(x);
             let mut y = y.rem(m);
-            if dbg!(dbg!(dbg!(y) * m.signum()) < 0.) { y += m; }
+            if (y * m.signum()).is_sign_negative() {
+                if m.is_finite() {
+                    y += m;
+                    y = y.rem(m);
+                } else {
+                    y = f64::NAN;
+                }
+            }
             let y = y.abs() * m.signum();
             Ok(number(y, unit))
         }
@@ -419,7 +424,15 @@ fn fallback2a(
     a2: Name,
 ) -> Result<Value, ()> {
     let (a1, a2) = match (get_expr_a(s, a1), get_expr_a(s, a2)) {
-        (Ok(a1), Ok(a2)) => (a1, a2),
+        (Ok(a1), Ok(a2)) => {
+            let dim1 = css_dim(&a1);
+            let dim2 = css_dim(&a2);
+            if (dim1 == dim2) || dim1.is_none() || dim2.is_none() {
+                (a1, a2)
+            } else {
+                return Err(());
+            }
+        }
         _ => return Err(()),
     };
     Ok(Value::Call(name.into(), CallArgs::from_list(vec![a1, a2])))
@@ -569,6 +582,19 @@ fn diff_units_msg(
         "{} and ${}: {} have incompatible units{}.",
         one.format(Format::introspect()),
         other_name,
+        other.format(Format::introspect()),
+        if one.is_no_unit() || other.is_no_unit() {
+            " (one has units and the other doesn't)"
+        } else {
+            ""
+        }
+    )
+}
+
+fn diff_units_msg2(one: &Numeric, other: &Numeric) -> String {
+    format!(
+        "{} and {} are incompatible{}.",
+        one.format(Format::introspect()),
         other.format(Format::introspect()),
         if one.is_no_unit() || other.is_no_unit() {
             " (one has units and the other doesn't)"

@@ -58,9 +58,10 @@ impl UnitSet {
             .collect::<Vec<_>>()
     }
 
-    pub(crate) fn css_dimension(&self) -> Vec<(CssDimension, i8)> {
+    pub(crate) fn css_dimension(&self) -> CssDimensionSet {
         use std::collections::BTreeMap;
-        self.units
+        let dim = self
+            .units
             .iter()
             .fold(BTreeMap::new(), |mut map, (unit, power)| {
                 let dim = CssDimension::from(unit.dimension());
@@ -71,15 +72,12 @@ impl UnitSet {
             })
             .into_iter()
             .filter(|(_d, power)| *power != 0)
-            .collect::<Vec<_>>()
+            .collect::<Vec<_>>();
+        CssDimensionSet { dim }
     }
+
     pub(crate) fn valid_in_css(&self) -> bool {
-        let dim = self.css_dimension();
-        match &dim[..] {
-            [] => true,
-            [(_d, p)] => *p == 1,
-            _ => false,
-        }
+        self.css_dimension().valid_in_css()
     }
 
     /// Get a scaling factor to convert this unit to another unit.
@@ -248,5 +246,33 @@ impl fmt::Debug for UnitSet {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         out.write_str("UnitSet ")?;
         out.debug_list().entries(&self.units).finish()
+    }
+}
+
+/// The dimension of a numeric value.
+///
+/// May be e.g. lenght, or something complex like length^17*angle*time^-3.
+#[derive(Debug, Default, PartialEq, Eq)]
+pub struct CssDimensionSet {
+    dim: Vec<(CssDimension, i8)>,
+}
+impl CssDimensionSet {
+    /// Return true for the empty dimension, i.e. the dimension of a unitless number.
+    pub fn is_empty(&self) -> bool {
+        self.dim.is_empty()
+    }
+    /// Return true if any unknown unit is part of the dimension.
+    pub fn is_unknown(&self) -> bool {
+        self.dim
+            .iter()
+            .any(|(dim, _)| matches!(dim, CssDimension::Unknown(_)))
+    }
+
+    pub(crate) fn valid_in_css(&self) -> bool {
+        match &self.dim[..] {
+            [] => true,
+            [(_d, p)] => *p == 1,
+            _ => false,
+        }
     }
 }

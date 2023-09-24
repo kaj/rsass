@@ -16,5 +16,5 @@ pub use self::numeric::Numeric;
 pub use self::operator::{BadOp, Operator};
 pub use self::quotes::Quotes;
 pub use self::unit::{CssDimension, Dimension, Unit};
-pub use self::unitset::UnitSet;
+pub use self::unitset::{CssDimensionSet, UnitSet};
 pub(crate) use range::{RangeError, ValueRange};

@@ -479,6 +479,9 @@ fn literal_or_color(s: SassString) -> Value {
         if val == "infinity" {
             return Value::scalar(f64::INFINITY);
         }
+        if val == "NaN" {
+            return Value::scalar(f64::NAN);
+        }
         if let Some(rgba) = Rgba::from_name(val) {
             return Value::Color(rgba, Some(val.to_string()));
         }

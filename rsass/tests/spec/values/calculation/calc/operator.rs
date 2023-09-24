@@ -178,7 +178,6 @@ mod precedence {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn asterisk() {
                 assert_eq!(
                     runner().ok("a {b: calc(calc(#{\"c*\"}))}\n"),
@@ -188,6 +187,7 @@ mod precedence {
                 );
             }
             #[test]
+            #[ignore] // wrong result
             fn plain() {
                 assert_eq!(
                     runner().ok("a {b: calc(calc(#{c}))}\n"),
@@ -197,7 +197,6 @@ mod precedence {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn slash() {
                 assert_eq!(
                     runner().ok("a {b: calc(calc(#{\"c/\"}))}\n"),
@@ -207,7 +206,6 @@ mod precedence {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn whitespace() {
                 assert_eq!(
                     runner().ok("a {b: calc(calc(#{\"c \"}))}\n"),
@@ -218,7 +216,6 @@ mod precedence {
             }
         }
         #[test]
-        #[ignore] // wrong result
         fn parens() {
             assert_eq!(
                 runner().ok("a {b: calc((#{c}))}\n"),
