@@ -56,7 +56,6 @@ mod base {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn case_insensitive() {
     assert_eq!(
         runner().ok("a {b: LoG(2)}\n"),

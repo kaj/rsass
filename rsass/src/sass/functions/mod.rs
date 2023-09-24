@@ -118,7 +118,11 @@ impl Functions for Scope {
 impl Function {
     /// Get a built-in function by name.
     pub fn get_builtin(name: &Name) -> Option<&'static Function> {
-        FUNCTIONS.get(name)
+        FUNCTIONS.get(name).or_else(|| {
+            // Builtin function names are caseless.
+            let name = name.as_ref().to_lowercase();
+            FUNCTIONS.get(&name.into())
+        })
     }
 
     /// Create a new `Function` from a rust implementation.

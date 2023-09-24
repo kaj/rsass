@@ -6,7 +6,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn case_insensitive() {
     assert_eq!(
         runner().ok("a {b: RoUnD(117, 25)}\n"),

@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn case_insensitive() {
     assert_eq!(
         runner().ok("a {b: sQrT(2)}\n"),

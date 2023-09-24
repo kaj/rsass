@@ -20,7 +20,6 @@ mod base {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn case_insensitive() {
     assert_eq!(
         runner().ok("a {b: pOw(10, 10)}\n"),
