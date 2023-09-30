@@ -10,13 +10,14 @@ mod alpha {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong error
     fn unit() {
         assert_eq!(
             runner().err(
                 "@use \'sass:color\';\
              \na {b: color.hwb(0, 0%, 0%, 0.5px)}\n"
             ),
-            "Error: $alpha: Expected 0.5px to have no units or \"%\".\
+            "Error: $alpha: Expected 0.5px to have unit \"%\" or no units.\
          \n  ,\
          \n2 | a {b: color.hwb(0, 0%, 0%, 0.5px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\

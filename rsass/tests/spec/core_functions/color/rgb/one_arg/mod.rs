@@ -9,4 +9,6 @@ mod alpha;
 
 mod no_alpha;
 
+mod relative_color;
+
 mod special_functions;

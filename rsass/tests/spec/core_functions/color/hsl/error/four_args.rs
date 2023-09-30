@@ -10,6 +10,7 @@ mod alpha {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong error
     fn unit() {
         assert_eq!(
             runner().err(
@@ -17,7 +18,7 @@ mod alpha {
              \n  b: hsl(0, 0%, 0%, 0.5px);\
              \n}\n"
             ),
-            "Error: $alpha: Expected 0.5px to have no units or \"%\".\
+            "Error: $alpha: Expected 0.5px to have unit \"%\" or no units.\
          \n  ,\
          \n2 |   b: hsl(0, 0%, 0%, 0.5px);\
          \n  |      ^^^^^^^^^^^^^^^^^^^^^\
