@@ -2,7 +2,7 @@ use super::{Call, Closure, FormalArgs, Name};
 use crate::css::{self, is_not, BinOp, CallArgs, CssString, Value};
 use crate::input::SourcePos;
 use crate::output::{Format, Formatted};
-use crate::value::{CssDimensionSet, Operator, Quotes};
+use crate::value::{CssDimensionSet, Numeric, Operator, Quotes};
 use crate::{Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -301,34 +301,6 @@ lazy_static! {
                 Ok(Value::Call("calc".into(), CallArgs::from_single(arg)))
             }
         });
-        def!(f, clamp(min, number = b"null", max = b"null"), |s| {
-            self::math::clamp_fn(s).or_else(|_| {
-                let mut args = vec![s.get::<Value>(name!(min))?];
-                if let Some(b) = s.get_opt(name!(number))? {
-                    args.push(b);
-                }
-                if let Some(c) = s.get_opt(name!(max))? {
-                    args.push(c);
-                }
-                if let Some((a, rest)) = args.split_first() {
-                    if let Some(adim) = css_dim(a) {
-                        for b in rest {
-                            if let Some(bdim) = css_dim(b) {
-                                if adim != bdim {
-                                    return Err(
-                                        CallError::incompatible_values(a, b),
-                                    );
-                                }
-                            }
-                        }
-                    }
-                }
-                Ok(css::Value::Call(
-                    "clamp".into(),
-                    css::CallArgs::from_list(args),
-                ))
-            })
-        });
         color::expose(MODULES.get("sass:color").unwrap(), &mut f);
         list::expose(MODULES.get("sass:list").unwrap(), &mut f);
         map::expose(MODULES.get("sass:map").unwrap(), &mut f);
@@ -387,15 +359,16 @@ fn css_fn_arg(v: Value) -> Result<Value, CallError> {
 fn css_dim(v: &Value) -> Option<CssDimensionSet> {
     match v {
         // TODO: Handle BinOp recursively (again) (or let in_calc return (Value, CssDimension)?)
-        Value::Numeric(num, _) => {
-            let u = &num.unit;
-            if u.is_known() && !u.is_percent() {
-                Some(u.css_dimension())
-            } else {
-                None
-            }
-        }
+        Value::Numeric(num, _) => known_dim(num),
         _ => None,
+    }
+}
+fn known_dim(v: &Numeric) -> Option<CssDimensionSet> {
+    let u = &v.unit;
+    if u.is_known() && !u.is_percent() {
+        Some(u.css_dimension())
+    } else {
+        None
     }
 }
 

@@ -2,15 +2,17 @@ use super::{
     check, css_dim, expected_to, is_not, is_special, CallError, CheckedArg,
     FunctionMap, ResolvedArgs, Scope,
 };
-use crate::css::{BinOp, CallArgs, CssString, Value};
+use crate::css::{BinOp, CallArgs, CssString, InvalidCss, Value};
 use crate::output::Format;
 use crate::parser::input_span;
-use crate::sass::functions::css_fn_arg;
+use crate::sass::functions::{css_fn_arg, known_dim};
 use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Rational, Unit, UnitSet};
 use std::cmp::Ordering;
 use std::f64::consts::{E, PI};
 use std::ops::Rem;
+
+mod round;
 
 /// Create the `sass:math` standard module.
 ///
@@ -47,10 +49,7 @@ pub fn create_module() -> Scope {
         let numbers = s.get_map(name!(numbers), check::va_list)?;
         find_extreme(&numbers, Ordering::Less)
     });
-    def!(f, round(number), |s| {
-        let val: Numeric = s.get(name!(number))?;
-        Ok(number(val.value.round(), val.unit))
-    });
+    def!(f, round(number), round::sass_round);
 
     // - - - Distance Functions - - -
     def!(f, abs(number), |s| {
@@ -248,7 +247,6 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(floor), name!(floor)),
         (name!(max), name!(max)),
         (name!(min), name!(min)),
-        (name!(round), name!(round)),
         // - - - Distance Functions - - -
         (name!(abs), name!(abs)),
         // - - - Exponential functions - - -
@@ -275,6 +273,31 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 
     // Functions behave somewhat differently in the global scope vs in the math module.
+    def!(global, clamp(min, number = b"null", max = b"null"), |s| {
+        clamp_fn(s).or_else(|_| {
+            let mut args = vec![s.get::<Value>(name!(min))?];
+            if let Some(b) = s.get_opt(name!(number))? {
+                args.push(b);
+            }
+            if let Some(c) = s.get_opt(name!(max))? {
+                args.push(c);
+            }
+            if let Some((a, rest)) = args.split_first() {
+                if let Some(adim) = css_dim(a) {
+                    for b in rest {
+                        if let Some(bdim) = css_dim(b) {
+                            if adim != bdim {
+                                return Err(CallError::incompatible_values(
+                                    a, b,
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+            Ok(Value::Call("clamp".into(), CallArgs::from_list(args)))
+        })
+    });
     def!(global, atan2(y, x), |s| {
         fn real_atan2(s: &ResolvedArgs) -> Result<Value, CallError> {
             let y: Numeric = s.get(name!(y))?;
@@ -345,6 +368,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
             fallback2a(s, "mod", name!(y), name!(x)).map_err(|_| e)
         })
     });
+    def_va!(global, round(kwargs), round::css_round);
     def!(global, sign(v), |s| {
         fn real_sign(s: &ResolvedArgs) -> Result<Value, CallError> {
             let v: Numeric = s.get(name!(v))?;
@@ -524,11 +548,7 @@ fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, CallError> {
             if a_dim.is_empty() || b_dim.is_empty() || a_dim == b_dim {
                 Ok(as_call())
             } else {
-                Err(CallError::msg(format!(
-                    "{} and {} have incompatible units.",
-                    a.format(Format::introspect()),
-                    b.format(Format::introspect()),
-                )))
+                Err(CallError::msg(InvalidCss::Incompat(a, b)))
             }
         }
         Err(_) => Ok(as_call()),
@@ -593,14 +613,9 @@ fn diff_units_msg(
 
 fn diff_units_msg2(one: &Numeric, other: &Numeric) -> String {
     format!(
-        "{} and {} are incompatible{}.",
+        "{} and {} are incompatible.",
         one.format(Format::introspect()),
         other.format(Format::introspect()),
-        if one.is_no_unit() || other.is_no_unit() {
-            " (one has units and the other doesn't)"
-        } else {
-            ""
-        }
     )
 }
 

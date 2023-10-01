@@ -345,6 +345,13 @@ impl NumValue {
             NumValue::Float(r) => r.floor().into(),
         }
     }
+    pub fn trunc(&self) -> NumValue {
+        match self {
+            NumValue::Rational(r) => r.trunc().into(),
+            NumValue::BigRational(r) => r.trunc().into(),
+            NumValue::Float(r) => r.trunc().into(),
+        }
+    }
     pub fn round(&self) -> NumValue {
         match self {
             NumValue::Rational(r) => r.round().into(),
@@ -413,10 +420,16 @@ impl Number {
             value: self.value.ceil(),
         }
     }
-    /// Get a copy of this number, rounded towards zero.
+    /// Get a copy of this number, rounded down.
     pub fn floor(&self) -> Self {
         Number {
             value: self.value.floor(),
+        }
+    }
+    /// Get a copy of this number, rounded towards zero.
+    pub fn trunc(&self) -> Self {
+        Number {
+            value: self.value.trunc(),
         }
     }
     /// Get a copy of this number, rounded to nearest integer.
@@ -432,8 +445,8 @@ impl Number {
         }
     }
     /// Computes the absolute value of the number, retaining the flags.
-    pub fn abs(self) -> Self {
-        match self.value {
+    pub fn abs(&self) -> Self {
+        match &self.value {
             NumValue::Rational(s) => s.abs().into(),
             NumValue::BigRational(s) => s.abs().into(),
             NumValue::Float(s) => s.abs().into(),

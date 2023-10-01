@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn case_insensitive() {
     assert_eq!(
         runner().ok("a {b: RoUnD(117, 25)}\n"),
@@ -16,7 +15,6 @@ fn case_insensitive() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn equals() {
     assert_eq!(
         runner().ok("a {b: round(10px, 10px)}\n"),
@@ -30,7 +28,6 @@ mod lower_multiple {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn number_is_bigger() {
         assert_eq!(
             runner().ok("a {b: round(13px, 10px)}\n"),
@@ -40,7 +37,6 @@ mod lower_multiple {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn number_is_negative() {
         assert_eq!(
             runner().ok("a {b: round(-18px, 10px)}\n"),
@@ -55,7 +51,6 @@ mod math {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn unknown_units() {
         assert_eq!(
             runner().ok("a {\
@@ -68,7 +63,6 @@ mod math {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn nan() {
     assert_eq!(
         runner().ok("a {b: round(NaN, NaN)}\n"),
@@ -86,7 +80,6 @@ mod negative_step {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn number_is_bigger() {
             assert_eq!(
                 runner().ok("a {b: round(13px, -10px)}\n"),
@@ -96,7 +89,6 @@ mod negative_step {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn number_is_negative() {
             assert_eq!(
                 runner().ok("a {b: round(-18px, -10px)}\n"),
@@ -111,7 +103,6 @@ mod negative_step {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn number_is_bigger() {
             assert_eq!(
                 runner().ok("a {b: round(23px, -10px)}\n"),
@@ -121,7 +112,6 @@ mod negative_step {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn number_is_half() {
             assert_eq!(
                 runner().ok("a {b: round(15px, -10px)}\n"),
@@ -131,7 +121,6 @@ mod negative_step {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn number_is_negative() {
             assert_eq!(
                 runner().ok("a {b: round(-13px, -10px)}\n"),
@@ -141,7 +130,6 @@ mod negative_step {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn number_is_smaller() {
             assert_eq!(
                 runner().ok("a {b: round(18px, -10px)}\n"),
@@ -157,7 +145,6 @@ mod negative_zero {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn negative_infinity() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -168,7 +155,6 @@ mod negative_zero {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn positive_infinity() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -194,7 +180,6 @@ mod positive_zero {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn negative_infinity() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -205,7 +190,6 @@ mod positive_zero {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn positive_infinity() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -221,7 +205,6 @@ mod preserved {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn interpolation() {
         assert_eq!(
             runner().ok("a {\
@@ -234,7 +217,6 @@ mod preserved {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn simplification() {
     assert_eq!(
         runner().ok("a {b: round(3.4px + 10%, 1px + 4px)}\n"),
@@ -244,7 +226,6 @@ fn simplification() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn step_is_zero() {
     assert_eq!(
         runner().ok("a {b: round(5px, 0px)}\n"),
@@ -258,7 +239,6 @@ mod units {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn compatible() {
         assert_eq!(
             runner().ok("a {b: round(117cm, 25mm)}\n"),
@@ -268,7 +248,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn fake() {
         assert_eq!(
             runner().ok("a {\
@@ -280,7 +259,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn none() {
         assert_eq!(
             runner().ok("a {b: round(117, 25)}\n"),
@@ -290,7 +268,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn real_and_fake() {
         assert_eq!(
             runner().ok("a {\
@@ -302,7 +279,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn real_and_unknown() {
         assert_eq!(
             runner().ok("a {b: round(1px, 10%)}\n"),
@@ -312,7 +288,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn same_fake() {
         assert_eq!(
             runner().ok("a {\
@@ -324,7 +299,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn unknown() {
         assert_eq!(
             runner().ok("a {\
@@ -337,7 +311,6 @@ mod units {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn unknown_variable() {
     assert_eq!(
         runner().ok("a {\
@@ -353,7 +326,6 @@ mod upper_multiple {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn number_is_bigger() {
         assert_eq!(
             runner().ok("a {b: round(23px, 10px)}\n"),
@@ -363,7 +335,6 @@ mod upper_multiple {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn number_is_half() {
         assert_eq!(
             runner().ok("a {b: round(15px, 10px)}\n"),
@@ -373,7 +344,6 @@ mod upper_multiple {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn number_is_negative() {
         assert_eq!(
             runner().ok("a {b: round(-13px, 10px)}\n"),
@@ -383,7 +353,6 @@ mod upper_multiple {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn number_is_smaller() {
         assert_eq!(
             runner().ok("a {b: round(18px, 10px)}\n"),

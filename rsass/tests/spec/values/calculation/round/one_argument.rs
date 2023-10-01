@@ -63,7 +63,6 @@ mod preserved {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn variable() {
         assert_eq!(
             runner().ok("a {\

@@ -10,7 +10,6 @@ mod step {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn unknown_variable() {
         assert_eq!(
             runner().ok("a {\
@@ -27,7 +26,6 @@ mod strategy {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn interpolation() {
         assert_eq!(
             runner().ok("a {\
@@ -39,7 +37,6 @@ mod strategy {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn unknown_variable() {
         assert_eq!(
             runner().ok("a {\
@@ -56,7 +53,6 @@ mod units {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn real_and_unknown() {
         assert_eq!(
             runner().ok("a {b: round(nearest, 1px, 10%)}\n"),
@@ -66,7 +62,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn unknown() {
         assert_eq!(
             runner().ok("a {\
