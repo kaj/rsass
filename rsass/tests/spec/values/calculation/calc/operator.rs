@@ -187,7 +187,6 @@ mod precedence {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn plain() {
                 assert_eq!(
                     runner().ok("a {b: calc(calc(#{c}))}\n"),

@@ -245,13 +245,14 @@ lazy_static! {
                         }
                     }
                     Value::Call(name, args) => {
-                        if name == "calc"
-                            && args.check_no_named().is_ok()
-                            && args.positional.len() == 1
-                        {
-                            let arg =
-                                args.positional.into_iter().next().unwrap();
-                            Ok(Value::Paren(Box::new(do_eval(arg)?)))
+                        if name == "calc" {
+                            let arg = args.get_single().unwrap();
+                            match do_eval(arg.clone())? {
+                                Value::Literal(s) if s.is_name() => {
+                                    Ok(s.into())
+                                }
+                                arg => Ok(Value::Paren(Box::new(arg))),
+                            }
                         } else {
                             Ok(Value::Call(name, args))
                         }
@@ -287,17 +288,7 @@ lazy_static! {
                     v => Ok(v),
                 }
             } else {
-                let arg = match css_fn_arg(v)? {
-                    Value::Paren(arg)
-                        if !matches!(
-                            arg.as_ref(),
-                            Value::Call(..) | Value::Literal(_)
-                        ) =>
-                    {
-                        *arg
-                    }
-                    arg => arg,
-                };
+                let arg = css_fn_arg(v)?;
                 Ok(Value::Call("calc".into(), CallArgs::from_single(arg)))
             }
         });
@@ -324,11 +315,7 @@ fn css_fn_arg(v: Value) -> Result<Value, CallError> {
                 if (op == Operator::Plus || op == Operator::Minus)
                     && adim != bdim
                 {
-                    return Err(CallError::msg(format!(
-                        "{} and {} are incompatible.",
-                        a.format(Format::introspect()),
-                        b.format(Format::introspect()),
-                    )));
+                    return Err(CallError::incompatible_values(&a, &b));
                 }
             }
             Ok(BinOp::new(a, true, op, true, b).into())
