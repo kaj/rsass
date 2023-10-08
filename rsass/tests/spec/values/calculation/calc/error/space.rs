@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong error
 fn number_calc() {
     assert_eq!(
         runner().err("a {b: calc(1 calc(1px + 1%))}\n"),
@@ -19,7 +18,6 @@ fn number_calc() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn number_number() {
     assert_eq!(
         runner().err("a {b: calc(1 2)}\n"),
@@ -45,7 +43,6 @@ fn number_number_string() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn number_operation() {
     assert_eq!(
         runner().err("a {b: calc(1 3 + 4)}\n"),
@@ -58,7 +55,6 @@ fn number_operation() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn number_paren() {
     assert_eq!(
         runner().err("a {b: calc(1 (3))}\n"),
@@ -71,7 +67,6 @@ fn number_paren() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn operation_operation() {
     assert_eq!(
         runner().err("a {b: calc(1 + 2 3 + 4)}\n"),
@@ -97,7 +92,6 @@ fn string_number_number() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn through_variable() {
     assert_eq!(
         runner().err(

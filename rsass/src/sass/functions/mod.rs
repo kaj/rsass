@@ -274,6 +274,29 @@ lazy_static! {
                         l @ Value::BinOp(..) => Ok(l.clone()),
                         _ => Ok(Value::Paren(v)),
                     },
+                    Value::List(v, sep, bra) => {
+                        fn seems_numeric(v: &Value) -> bool {
+                            match v {
+                                Value::Numeric(..) => true,
+                                Value::Call(n, _) if n == "calc" => true,
+                                Value::Literal(s) => {
+                                    // FIXME: This requires more ops, and
+                                    // are still a silly way to do it.
+                                    s.quotes() == Quotes::None
+                                        && !s.value().starts_with('-')
+                                        && !s.value().starts_with('+')
+                                        && !s.value().ends_with('-')
+                                        && !s.value().ends_with('+')
+                                }
+                                _ => false,
+                            }
+                        }
+                        if v.windows(2).all(|p| p.iter().all(seems_numeric)) {
+                            Err(CallError::msg("Missing math operator."))
+                        } else {
+                            Ok(Value::List(v, sep, bra))
+                        }
+                    }
                     v => Err(CallError::msg(format!(
                         "Value {} can't be used in a calculation.",
                         v.format(Format::introspect())
@@ -335,6 +358,10 @@ fn css_fn_arg(v: Value) -> Result<Value, CallError> {
             l @ Value::BinOp(..) => Ok(l.clone()),
             _ => Ok(Value::Paren(v)),
         },
+        list @ Value::List(..) => {
+            // FIXME: Check if list seems good, as above?
+            Ok(list)
+        }
         v => Err(CallError::msg(format!(
             "Value {} can't be used in a calculation.",
             v.format(Format::introspect())

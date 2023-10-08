@@ -42,7 +42,6 @@ mod var {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn after() {
         assert_eq!(
             runner().ok("a {b: calc(1 var(--c))}\n"),
@@ -52,7 +51,6 @@ mod var {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn before() {
         assert_eq!(
             runner().ok("a {b: calc(var(--c) 1)}\n"),
@@ -62,7 +60,6 @@ mod var {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn between() {
         assert_eq!(
             runner().ok("a {b: calc(1 var(--c) 2)}\n"),
@@ -77,7 +74,6 @@ mod variable {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn after() {
         assert_eq!(
             runner().ok("$c: unquote(\"+ 2\");\
@@ -88,7 +84,6 @@ mod variable {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn before() {
         assert_eq!(
             runner().ok("$c: unquote(\"1 +\");\
@@ -99,7 +94,6 @@ mod variable {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn between() {
         assert_eq!(
             runner().ok("$c: unquote(\"+ 2 +\");\
