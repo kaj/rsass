@@ -76,7 +76,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: hypot()}\n"),

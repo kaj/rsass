@@ -12,6 +12,7 @@ use std::cmp::Ordering;
 use std::f64::consts::{E, PI};
 use std::ops::Rem;
 
+mod distance;
 mod round;
 
 /// Create the `sass:math` standard module.
@@ -52,13 +53,7 @@ pub fn create_module() -> Scope {
     def!(f, round(number), round::sass_round);
 
     // - - - Distance Functions - - -
-    def!(f, abs(number), |s| {
-        let v: Numeric = s.get(name!(number))?;
-        Ok(number(v.value.abs(), v.unit))
-    });
-    def_va!(f, hypot(number), |s| {
-        hypot(&s.get_map(name!(number), check::va_list)?)
-    });
+    distance::in_module(&mut f);
 
     // - - - Exponential Functions - - -
     def!(f, exp(number), |s| {
@@ -247,8 +242,6 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(floor), name!(floor)),
         (name!(max), name!(max)),
         (name!(min), name!(min)),
-        // - - - Distance Functions - - -
-        (name!(abs), name!(abs)),
         // - - - Exponential functions - - -
         (name!(exp), name!(exp)),
         (name!(log), name!(log)),
@@ -273,6 +266,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 
     // Functions behave somewhat differently in the global scope vs in the math module.
+    distance::global(global);
     def!(global, clamp(min, number = b"null", max = b"null"), |s| {
         clamp_fn(s).or_else(|_| {
             let mut args = vec![s.get::<Value>(name!(min))?];
@@ -315,19 +309,6 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         real_atan2(s).or_else(|e| {
             fallback2a(s, "atan2", name!(y), name!(x)).map_err(|_| e)
         })
-    });
-    def_va!(global, hypot(number), |s| {
-        let args = s.get_map(name!(number), check::va_list)?;
-        match hypot(&args) {
-            Ok(value) => Ok(value),
-            Err(_) => {
-                let args = args
-                    .into_iter()
-                    .map(css_fn_arg)
-                    .collect::<Result<_, _>>()?;
-                Ok(Value::Call("hypot".into(), CallArgs::from_list(args)))
-            }
-        }
     });
     def!(global, rem(y, x), |s| {
         fn real_rem(s: &ResolvedArgs) -> Result<Value, CallError> {
@@ -377,38 +358,6 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         real_sign(s)
             .or_else(|e| fallback1(s, "sign", name!(v)).map_err(|_| e))
     });
-}
-
-fn hypot(args: &[Value]) -> Result<Value, CallError> {
-    match args {
-        [Value::Numeric(v, _)] => {
-            Ok(number(v.value.clone().abs(), v.unit.clone()))
-        }
-        [v] => Err(is_not(v, "a number")).named(name!(number)),
-        v => {
-            if let Some((first, rest)) = v.split_first() {
-                let first = as_numeric(first)?;
-                let mut sum = f64::from(first.value.clone()).powi(2);
-                let unit = first.unit.clone();
-                if first.unit.is_percent() {
-                    return Err(CallError::msg("Percentage not allowed"));
-                }
-                for (i, v) in rest.iter().enumerate() {
-                    let v = as_numeric(v)?;
-                    let scaled = v
-                        .as_unitset(&unit)
-                        .ok_or_else(|| {
-                            diff_units_msg(&v, &first, "numbers[1]".into())
-                        })
-                        .named(format!("numbers[{}]", i + 2).into())?;
-                    sum += f64::from(scaled).powi(2);
-                }
-                Ok(number(sum.sqrt(), unit))
-            } else {
-                Err(CallError::msg("At least one argument must be passed."))
-            }
-        }
-    }
 }
 
 fn radians(v: Value) -> Result<f64, String> {
@@ -488,11 +437,6 @@ fn expression(v: Value) -> Result<Value, String> {
 
 fn get_unitless(s: &ResolvedArgs, name: &str) -> Result<f64, CallError> {
     s.get_map(name.into(), check::unitless).map(Into::into)
-}
-
-// Only used by hypot function, which treats arguments as unnamed.
-fn as_numeric(v: &Value) -> Result<Numeric, CallError> {
-    Numeric::try_from(v.clone()).map_err(CallError::msg)
 }
 
 fn number(v: impl Into<Number>, unit: impl Into<UnitSet>) -> Value {

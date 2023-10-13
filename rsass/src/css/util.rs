@@ -1,3 +1,4 @@
+use super::Value;
 use crate::output::{Format, Formatted};
 
 pub fn is_not<'a, T>(value: &'a T, expected: &str) -> String
@@ -12,6 +13,41 @@ where
         },
         expected,
     )
+}
+
+#[derive(Debug)]
+pub struct IsNot {
+    got: Value,
+    expected: &'static str,
+}
+impl IsNot {
+    pub fn new(got: Value, expected: &'static str) -> Self {
+        IsNot { got, expected }
+    }
+    pub fn value(&self) -> &Value {
+        &self.got
+    }
+}
+
+impl std::fmt::Display for IsNot {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} is not {}.",
+            Formatted {
+                value: &self.got,
+                format: Format::introspect()
+            },
+            self.expected,
+        )
+    }
+}
+
+// Needed for error propagation
+impl From<IsNot> for String {
+    fn from(value: IsNot) -> Self {
+        value.to_string()
+    }
 }
 
 /// Return true iff s is a valid _css_ function name.

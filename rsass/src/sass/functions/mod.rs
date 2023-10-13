@@ -268,7 +268,7 @@ lazy_static! {
                         }
                         Ok(BinOp::new(a, true, op, true, b).into())
                     }
-                    Value::Numeric(num, c) => Ok(Value::Numeric(num, c)),
+                    num @ Value::Numeric(..) => Ok(num),
                     Value::Paren(v) => match v.as_ref() {
                         l @ Value::Paren(_) => Ok(l.clone()),
                         l @ Value::BinOp(..) => Ok(l.clone()),

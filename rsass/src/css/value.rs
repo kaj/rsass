@@ -1,3 +1,4 @@
+use super::util::IsNot;
 use super::{is_calc_name, is_not, BinOp, CallArgs, CssString};
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
@@ -382,12 +383,12 @@ impl TryFrom<Value> for Color {
 }
 
 impl TryFrom<Value> for Numeric {
-    type Error = String;
+    type Error = IsNot;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
             Value::Numeric(num, ..) => Ok(num),
-            v => Err(is_not(&v, "a number")),
+            v => Err(IsNot::new(v, "a number")),
         }
     }
 }
