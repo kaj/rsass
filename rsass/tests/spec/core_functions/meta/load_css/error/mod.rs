@@ -5,6 +5,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
+mod content;
+
 mod from_other;
 
 mod load;

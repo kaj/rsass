@@ -19,6 +19,8 @@ mod list;
 
 mod map;
 
+mod mixin;
+
 mod null;
 
 mod number;

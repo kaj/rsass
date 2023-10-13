@@ -5,6 +5,10 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("meta")
 }
 
+mod accepts_content;
+
+mod apply;
+
 mod calc_args;
 
 mod calc_name;
@@ -19,6 +23,8 @@ mod function_exists;
 
 mod get_function;
 
+mod get_mixin;
+
 mod global_variable_exists;
 
 mod inspect;
@@ -30,6 +36,8 @@ mod load_css;
 mod mixin_exists;
 
 mod module_functions;
+
+mod module_mixins;
 
 mod module_variables;
 

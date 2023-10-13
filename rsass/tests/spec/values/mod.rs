@@ -17,6 +17,8 @@ mod lists;
 
 mod maps;
 
+mod mixins;
+
 mod numbers;
 
 mod strings;

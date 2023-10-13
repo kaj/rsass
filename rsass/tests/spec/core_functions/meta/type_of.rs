@@ -178,6 +178,34 @@ mod map {
         );
     }
 }
+mod mixin {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // unexepected error
+    fn builtin() {
+        assert_eq!(
+            runner().ok("@use \"sass:meta\";\
+             \na {b: type-of(meta.get-mixin(load-css, meta))}\n"),
+            "a {\
+         \n  b: mixin;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn user_defined() {
+        assert_eq!(
+            runner().ok("@use \"sass:meta\";\
+             \n@mixin a() {}\
+             \na {b: type-of(meta.get-mixin(a))}\n"),
+            "a {\
+         \n  b: mixin;\
+         \n}\n"
+        );
+    }
+}
 #[test]
 fn named() {
     assert_eq!(
