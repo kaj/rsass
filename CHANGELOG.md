@@ -19,6 +19,13 @@ project adheres to
 * Remove separate backref member from `css::Selectors` for cleanup before
   implementing more selector functions.  Instead, add it to an internal
   struct `SelectorCtx` (PR #179).
+* Implemented a bunch of css math functions.  They differ from the
+  functions in the math module in that they fallback to themself if
+  the answer cant be calculated but isn't obviously wrong
+  (e.g. `min(var(--gap), 2em)` is preserved while `min(1em, 2em)` is
+  evaluated to `1em` and `min(1s, 1em)` yields an error).  This also
+  includes some improvements in handling numeric zeroes and
+  infinities. (PR #184).
 * Simplify units early in numeric division and multiplication.  I
   think this is a bit uglier, but it is more consistent with dart
   sass.
