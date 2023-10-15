@@ -117,18 +117,43 @@ impl Mul for &NumValue {
     type Output = NumValue;
     fn mul(self, rhs: Self) -> NumValue {
         match (self, rhs) {
-            (NumValue::Rational(s), NumValue::Rational(r)) => s
-                .checked_mul(r)
-                .map(Into::into)
-                .unwrap_or_else(|| (biggen(s) * biggen(r)).into()),
+            (NumValue::Rational(s), NumValue::Rational(r)) => {
+                if (s.is_zero() && r.is_negative())
+                    || (r.is_zero() && s.is_negative())
+                {
+                    (-0.0).into()
+                } else {
+                    s.checked_mul(r)
+                        .map(Into::into)
+                        .unwrap_or_else(|| (biggen(s) * biggen(r)).into())
+                }
+            }
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                (biggen(s) * r.as_ref()).into()
+                if (s.is_zero() && r.is_negative())
+                    || (r.is_zero() && s.is_negative())
+                {
+                    (-0.0).into()
+                } else {
+                    (biggen(s) * r.as_ref()).into()
+                }
             }
             (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                (s.as_ref() * biggen(r)).into()
+                if (s.is_zero() && r.is_negative())
+                    || (r.is_zero() && s.is_negative())
+                {
+                    (-0.0).into()
+                } else {
+                    (s.as_ref() * biggen(r)).into()
+                }
             }
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
-                (s.as_ref() * r.as_ref()).into()
+                if (s.is_zero() && r.is_negative())
+                    || (r.is_zero() && s.is_negative())
+                {
+                    (-0.0).into()
+                } else {
+                    (s.as_ref() * r.as_ref()).into()
+                }
             }
             (NumValue::Float(s), r) => (s * f64::from(r)).into(),
             (s, NumValue::Float(r)) => (f64::from(s) * r).into(),

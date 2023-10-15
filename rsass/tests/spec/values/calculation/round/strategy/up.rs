@@ -79,7 +79,6 @@ mod strategy {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn positive_infinity() {
                 assert_eq!(
                     runner().ok("@use \"sass:math\";\

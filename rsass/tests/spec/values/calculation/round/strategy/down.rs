@@ -70,7 +70,6 @@ mod negative_zero {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn positive_infinity() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
