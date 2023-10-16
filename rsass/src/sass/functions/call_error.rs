@@ -1,6 +1,7 @@
 use super::super::{ArgsError, Name};
-use crate::css::BadSelector;
+use crate::css::{BadSelector, Value};
 use crate::input::SourcePos;
+use crate::output::Format;
 use crate::{Error, Invalid, ScopeError};
 use std::fmt;
 
@@ -24,6 +25,15 @@ impl CallError {
     /// sass-implemented function.
     pub fn msg<S: ToString>(msg: S) -> Self {
         CallError::Invalid(Invalid::AtError(msg.to_string()))
+    }
+
+    /// The values were expected to be compatible, but wasn't.
+    pub fn incompatible_values(a: &Value, b: &Value) -> Self {
+        Self::msg(format!(
+            "{} and {} are incompatible.",
+            a.format(Format::introspect()),
+            b.format(Format::introspect()),
+        ))
     }
 
     /// Map this error to a [`crate::Error`].

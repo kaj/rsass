@@ -10,7 +10,6 @@ mod infinity {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn negative() {
         assert_eq!(
             runner().ok("a {b: round(nearest, -infinity, -infinity)}\n"),
@@ -20,7 +19,6 @@ mod infinity {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn negative_and_positive() {
         assert_eq!(
             runner().ok("a {b: round(nearest, -infinity, infinity)}\n"),
@@ -30,7 +28,6 @@ mod infinity {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn positive_and_negative() {
         assert_eq!(
             runner().ok("a {b: round(nearest, infinity, -infinity)}\n"),
@@ -40,7 +37,6 @@ mod infinity {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn positive_and_positive() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -52,7 +48,6 @@ mod infinity {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn infinity_and_negative() {
     assert_eq!(
         runner().ok("a {b: round(nearest, infinity, -5)}\n"),
@@ -62,7 +57,6 @@ fn infinity_and_negative() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn infinity_and_positive() {
     assert_eq!(
         runner().ok("a {b: round(nearest, infinity, 5)}\n"),
@@ -76,7 +70,6 @@ mod lower_multiple {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn number_is_bigger() {
         assert_eq!(
             runner().ok("a {b: round(nearest, 13px, 10px)}\n"),
@@ -86,7 +79,6 @@ mod lower_multiple {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn number_is_negative() {
         assert_eq!(
             runner().ok("a {b: round(nearest, -18px, 10px)}\n"),
@@ -97,7 +89,6 @@ mod lower_multiple {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn negative() {
     assert_eq!(
         runner().ok("a {b: round(nearest, -101, -25)}\n"),
@@ -107,7 +98,6 @@ fn negative() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn negative_and_infinity() {
     assert_eq!(
         runner().ok("@use \"sass:math\";\
@@ -118,7 +108,6 @@ fn negative_and_infinity() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn negative_infinity_and_negative() {
     assert_eq!(
         runner().ok("a {b: round(nearest, -infinity, -5)}\n"),
@@ -128,7 +117,6 @@ fn negative_infinity_and_negative() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn negative_infinity_and_positive() {
     assert_eq!(
         runner().ok("a {b: round(nearest, -infinity, 5)}\n"),
@@ -138,7 +126,6 @@ fn negative_infinity_and_positive() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn number_is_multiple_of_step() {
     assert_eq!(
         runner().ok("a {b: round(nearest, 25px, 5px)}\n"),
@@ -148,7 +135,6 @@ fn number_is_multiple_of_step() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn positive() {
     assert_eq!(
         runner().ok("a {b: round(nearest, 117px, 25px)}\n"),
@@ -158,7 +144,6 @@ fn positive() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn positive_and_infinity() {
     assert_eq!(
         runner().ok("@use \"sass:math\";\
@@ -169,7 +154,6 @@ fn positive_and_infinity() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn simplification() {
     assert_eq!(
         runner().ok(
@@ -182,7 +166,6 @@ fn simplification() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn step_is_multiple_of_number() {
     assert_eq!(
         runner().ok("a {b: round(nearest, 5px, 25px)}\n"),
@@ -192,7 +175,6 @@ fn step_is_multiple_of_number() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn step_is_zero() {
     assert_eq!(
         runner().ok("a {b: round(nearest, 10px, 0px)}\n"),
@@ -206,7 +188,6 @@ mod upper_multiple {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn number_is_bigger() {
         assert_eq!(
             runner().ok("a {b: round(nearest, 23px, 10px)}\n"),
@@ -216,7 +197,6 @@ mod upper_multiple {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn number_is_half() {
         assert_eq!(
             runner().ok("a {b: round(nearest, 15px, 10px)}\n"),
@@ -226,7 +206,6 @@ mod upper_multiple {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn number_is_negative() {
         assert_eq!(
             runner().ok("a {b: round(nearest, -13px, 10px)}\n"),
@@ -236,7 +215,6 @@ mod upper_multiple {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn number_is_smaller() {
         assert_eq!(
             runner().ok("a {b: round(nearest, 18px, 10px)}\n"),

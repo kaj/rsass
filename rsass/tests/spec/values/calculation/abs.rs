@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn case_insensitive() {
     assert_eq!(
         runner().ok("a {b: AbS(-2)}\n"),
@@ -50,7 +49,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: abs()}\n"),
@@ -63,7 +61,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: abs(1, 2)}\n"),
@@ -169,7 +166,6 @@ fn sass_script() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn simplification() {
     assert_eq!(
         runner().ok("a {\

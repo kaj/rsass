@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn case_insensitive() {
     assert_eq!(
         runner().ok("a {b: MoD(7, 3)}\n"),
@@ -16,7 +15,6 @@ fn case_insensitive() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn equals() {
     assert_eq!(
         runner().ok("a {b: mod(1, 1)}\n"),
@@ -30,7 +28,7 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn dividend_type() {
         assert_eq!(
             runner().err("a {b: mod(\"0\", 0)}\n"),
@@ -43,7 +41,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn modulus_type() {
         assert_eq!(
             runner().err("a {b: mod(0, \"0\")}\n"),
@@ -87,7 +85,7 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: mod(3)}\n"),
@@ -100,7 +98,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: mod(3, 2, 1)}\n"),
@@ -132,7 +130,7 @@ mod error {
     );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn incompatible() {
             assert_eq!(
                 runner().err("a {b: mod(16px, 5deg)}\n"),
@@ -146,7 +144,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn real_and_unitless() {
             assert_eq!(
                 runner().err("a {b: mod(16px, 5)}\n"),
@@ -166,7 +164,6 @@ mod nan {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn negative_and_positive_infinity() {
         assert_eq!(
             runner().ok("a {b: mod(-5, infinity)}\n"),
@@ -176,7 +173,6 @@ mod nan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative_zero_and_positive_infinity() {
         assert_eq!(
             runner().ok("a {b: mod(-0, infinity)}\n"),
@@ -186,7 +182,6 @@ mod nan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn positive_and_negative_infinity() {
         assert_eq!(
             runner().ok("a {b: mod(5, -infinity)}\n"),
@@ -196,7 +191,6 @@ mod nan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn zero_and_negative_infinity() {
         assert_eq!(
             runner().ok("a {b: mod(0, -infinity)}\n"),
@@ -207,7 +201,6 @@ mod nan {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn negative() {
     assert_eq!(
         runner().ok("a {b: mod(-2, -5)}\n"),
@@ -217,7 +210,6 @@ fn negative() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn negative_and_positive() {
     assert_eq!(
         runner().ok("a {b: mod(-2, 5)}\n"),
@@ -227,7 +219,6 @@ fn negative_and_positive() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn negative_zero() {
     assert_eq!(
         runner().ok("@use \"sass:math\";\
@@ -248,7 +239,6 @@ fn overridden() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn positive_and_negative() {
     assert_eq!(
         runner().ok("a {b: mod(2, -5)}\n"),
@@ -258,7 +248,6 @@ fn positive_and_negative() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn positive_zero() {
     assert_eq!(
         runner().ok("@use \"sass:math\";\
@@ -284,7 +273,6 @@ mod units {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn compatible() {
         assert_eq!(
             runner().ok("a {b: mod(5px, 3px)}\n"),
@@ -305,7 +293,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn none() {
         assert_eq!(
             runner().ok("a {b: mod(7, 3)}\n"),
@@ -335,7 +322,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn same_fake() {
         assert_eq!(
             runner().ok("a {\
@@ -347,7 +333,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn unknown() {
         assert_eq!(
             runner().ok("a {\
@@ -364,7 +349,6 @@ mod x_infinity {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn negative() {
         assert_eq!(
             runner().ok("a {b: mod(10, -infinity)}\n"),
@@ -374,7 +358,6 @@ mod x_infinity {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn positive() {
         assert_eq!(
             runner().ok("a {b: mod(-10, infinity)}\n"),
@@ -385,7 +368,6 @@ mod x_infinity {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn x_zero() {
     assert_eq!(
         runner().ok("a {b: mod(0, 6)}\n"),
@@ -399,7 +381,6 @@ mod y_infinity {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn positive() {
         assert_eq!(
             runner().ok("a {b: mod(infinity, 10)}\n"),
@@ -410,7 +391,6 @@ mod y_infinity {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn y_zero() {
     assert_eq!(
         runner().ok("a {b: mod(6, 0)}\n"),
@@ -420,7 +400,6 @@ fn y_zero() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn zeros() {
     assert_eq!(
         runner().ok("a {b: mod(0, 0)}\n"),

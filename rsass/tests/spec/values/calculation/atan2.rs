@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn case_insensitive() {
     assert_eq!(
         runner().ok("a {b: aTaN2(1, -10)}\n"),
@@ -51,7 +50,7 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: atan2(0)}\n"),
@@ -64,7 +63,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: atan2(0, 0, 0)}\n"),
@@ -96,7 +95,7 @@ mod error {
     );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn known_incompatible() {
             assert_eq!(
                 runner().err("a {b: atan2(1deg, 1px)}\n"),
@@ -110,7 +109,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn unitless_and_real() {
             assert_eq!(
                 runner().err("a {b: atan2(1, 1px)}\n"),
@@ -125,7 +124,7 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn x_type() {
         assert_eq!(
             runner().err("a {b: atan2(0, \"0\")}\n"),
@@ -138,7 +137,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn y_type() {
         assert_eq!(
             runner().err("a {b: atan2(\"0\", 0)}\n"),
@@ -177,7 +176,6 @@ mod units {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn compatible() {
         assert_eq!(
             runner().ok("a {b: atan2(1cm, -10mm)}\n"),
@@ -198,7 +196,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn none() {
         assert_eq!(
             runner().ok("a {b: atan2(1, -10)}\n"),
@@ -228,7 +225,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn same_fake() {
         assert_eq!(
             runner().ok("a {\

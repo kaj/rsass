@@ -14,7 +14,6 @@ mod strategy {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:math\";\
@@ -29,7 +28,6 @@ mod strategy {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn number_is_bigger() {
                 assert_eq!(
                     runner().ok("a {b: round(up, 13px, 10px)}\n"),
@@ -39,7 +37,6 @@ mod strategy {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn number_is_negative() {
                 assert_eq!(
                     runner().ok("a {b: round(up, -18px, 10px)}\n"),
@@ -50,7 +47,6 @@ mod strategy {
             }
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative() {
             assert_eq!(
                 runner().ok("a {b: round(up, -101, -25)}\n"),
@@ -60,7 +56,6 @@ mod strategy {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_and_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:math\";\
@@ -71,7 +66,6 @@ mod strategy {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_step() {
             assert_eq!(
                 runner().ok("a {b: round(up, 12px, -7px)}\n"),
@@ -85,7 +79,6 @@ mod strategy {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn positive_infinity() {
                 assert_eq!(
                     runner().ok("@use \"sass:math\";\
@@ -97,7 +90,6 @@ mod strategy {
             }
         }
         #[test]
-        #[ignore] // unexepected error
         fn number_is_multiple_of_step() {
             assert_eq!(
                 runner().ok("a {b: round(up, 25px, 5px)}\n"),
@@ -107,7 +99,6 @@ mod strategy {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive() {
             assert_eq!(
                 runner().ok("a {b: round(up, 101px, 25px)}\n"),
@@ -117,7 +108,6 @@ mod strategy {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive_and_infinity() {
             assert_eq!(
                 runner().ok("a {b: round(up, 10, infinity)}\n"),
@@ -131,7 +121,6 @@ mod strategy {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn one() {
                 assert_eq!(
                     runner().ok("a {b: round(up, 1, infinity)}\n"),
@@ -141,7 +130,6 @@ mod strategy {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn zero() {
                 assert_eq!(
                     runner().ok("@use \"sass:math\";\
@@ -153,7 +141,6 @@ mod strategy {
             }
         }
         #[test]
-        #[ignore] // unexepected error
         fn step_is_multiple_of_number() {
             assert_eq!(
                 runner().ok("a {b: round(up, 5px, 25px)}\n"),
@@ -163,7 +150,6 @@ mod strategy {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn step_is_zero() {
             assert_eq!(
                 runner().ok("a {b: round(up, 10px, 0px)}\n"),
@@ -177,7 +163,6 @@ mod strategy {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn number_is_bigger() {
                 assert_eq!(
                     runner().ok("a {b: round(up, 23px, 10px)}\n"),
@@ -187,7 +172,6 @@ mod strategy {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn number_is_half() {
                 assert_eq!(
                     runner().ok("a {b: round(up, 15px, 10px)}\n"),
@@ -197,7 +181,6 @@ mod strategy {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn number_is_negative() {
                 assert_eq!(
                     runner().ok("a {b: round(up, -13px, 10px)}\n"),
@@ -207,7 +190,6 @@ mod strategy {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn number_is_smaller() {
                 assert_eq!(
                     runner().ok("a {b: round(up, 18px, 10px)}\n"),

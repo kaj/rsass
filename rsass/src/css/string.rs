@@ -69,9 +69,7 @@ impl CssString {
     }
     /// If the value is name-like, make it unquoted.
     pub fn opt_unquote(self) -> Self {
-        let mut chars = self.value.chars();
-        let t = chars.next().map_or(false, char::is_alphabetic)
-            && chars.all(|c| c.is_alphanumeric() || c == '-');
+        let t = is_namelike(&self.value);
         CssString {
             value: self.value,
             quotes: if t { Quotes::None } else { self.quotes },
@@ -118,6 +116,10 @@ impl CssString {
     pub fn is_null(&self) -> bool {
         self.value.is_empty() && self.quotes.is_none()
     }
+    pub(crate) fn is_name(&self) -> bool {
+        self.quotes == Quotes::None && is_namelike(&self.value)
+    }
+
     /// Return true if this is a css special function call.
     pub(crate) fn is_css_fn(&self) -> bool {
         let value = self.value();
@@ -203,6 +205,14 @@ impl From<CssString> for crate::sass::Name {
     fn from(s: CssString) -> Self {
         s.value.into()
     }
+}
+
+fn is_namelike(s: &str) -> bool {
+    let mut chars = s.chars();
+    chars
+        .next()
+        .map_or(false, |c| c.is_alphabetic() || c == '_')
+        && chars.all(|c| c.is_alphanumeric() || c == '-' || c == '_')
 }
 
 fn is_private_use(c: char) -> bool {

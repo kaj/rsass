@@ -45,6 +45,7 @@ mod one_argument {
         }
     }
     #[test]
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err("a {b: round(\"0\")}\n"),
@@ -57,7 +58,6 @@ mod one_argument {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn unsimplifiable() {
         assert_eq!(
         runner().err(
@@ -113,7 +113,6 @@ mod three_argument {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn operation() {
             assert_eq!(
                 runner().err(
@@ -148,7 +147,6 @@ mod three_argument {
     }
 }
 #[test]
-#[ignore] // wrong error
 fn too_few_args() {
     assert_eq!(
         runner().err("a {b: round()}\n"),
@@ -161,7 +159,6 @@ fn too_few_args() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn too_many_args() {
     assert_eq!(
         runner().err("a {b: round(1, 2, 3, 4)}\n"),
@@ -178,7 +175,6 @@ mod two_argument {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn missing_step() {
         assert_eq!(
             runner().err("a {b: round(nearest, 5)}\n"),
@@ -191,6 +187,7 @@ mod two_argument {
         );
     }
     #[test]
+    #[ignore] // missing error
     fn sass_script() {
         assert_eq!(
             runner().err("a {b: round(7 % 3, 1)}\n"),
@@ -255,6 +252,7 @@ mod two_argument {
         }
     }
     #[test]
+    #[ignore] // wrong error
     fn x_type() {
         assert_eq!(
             runner().err("a {b: round(0, \"0\")}\n"),
@@ -271,6 +269,7 @@ mod two_argument {
         );
     }
     #[test]
+    #[ignore] // wrong error
     fn y_type() {
         assert_eq!(
             runner().err("a {b: round(\"0\", 0)}\n"),

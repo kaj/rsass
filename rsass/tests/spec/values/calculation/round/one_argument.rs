@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn case_insensitive() {
     assert_eq!(
         runner().ok("a {b: rOuNd(1)}\n"),
@@ -64,7 +63,6 @@ mod preserved {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn variable() {
         assert_eq!(
             runner().ok("a {\

@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn case_insensitive() {
     assert_eq!(
         runner().ok("a {b: sQrT(2)}\n"),
@@ -50,7 +49,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn too_few_args() {
             assert_eq!(
                 runner().err("a {b: sqrt()}\n"),
@@ -64,7 +63,7 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: sqrt(3, 4)}\n"),
@@ -77,7 +76,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err("a {b: sqrt(\"0\")}\n"),
@@ -94,7 +93,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn real() {
             assert_eq!(
                 runner().err("a {b: sqrt(16px)}\n"),
@@ -107,7 +106,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn unknown() {
             assert_eq!(
                 runner().err("a {b: sqrt(1%)}\n"),
@@ -122,7 +121,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn negative() {
     assert_eq!(
         runner().ok("a {b: sqrt(-9)}\n"),
@@ -142,7 +140,6 @@ fn overridden() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn simplification() {
     assert_eq!(
         runner().ok("a {\
@@ -158,7 +155,6 @@ mod units {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn unitless() {
         assert_eq!(
             runner().ok("a {b: sqrt(2)}\n"),
@@ -169,7 +165,6 @@ mod units {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn zero() {
     assert_eq!(
         runner().ok("a {b: sqrt(0)}\n"),

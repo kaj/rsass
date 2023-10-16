@@ -1,6 +1,6 @@
 use super::{is_function_name, InvalidCss, Value};
 use crate::output::{Format, Formatted};
-use crate::value::{CssDimension, Numeric, Operator};
+use crate::value::{CssDimensionSet, Numeric, Operator};
 use std::fmt::{self, Display, Write};
 
 /// A binary operation.
@@ -59,9 +59,7 @@ impl BinOp {
                 if self.a.is_calculation() || self.b.is_calculation() {
                     Err(InvalidCss::UndefOp(self.into()))
                 } else {
-                    fn cmp_dim(
-                        x: &Numeric,
-                    ) -> Option<Vec<(CssDimension, i8)>> {
+                    fn cmp_dim(x: &Numeric) -> Option<CssDimensionSet> {
                         let u = &x.unit;
                         if u.is_known() && !u.is_percent() {
                             Some(u.css_dimension())

@@ -213,7 +213,6 @@ mod interpolation {
     );
     }
     #[test]
-    #[ignore] // wrong result
     fn parens() {
         assert_eq!(
         runner().ok(

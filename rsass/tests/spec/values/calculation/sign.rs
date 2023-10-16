@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn case_insensitive() {
     assert_eq!(
         runner().ok("a {b: sIgN(3)}\n"),
@@ -51,7 +50,7 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: sign()}\n"),
@@ -64,7 +63,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: sign(0, 0)}\n"),
@@ -77,7 +76,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err("a {b: sign(\"0\")}\n"),
@@ -91,7 +90,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn nan() {
     assert_eq!(
         runner().ok("a {b: sign(NaN)}\n"),
@@ -101,7 +99,6 @@ fn nan() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn negative() {
     assert_eq!(
         runner().ok("a {b: sign(-5.6)}\n"),
@@ -111,7 +108,6 @@ fn negative() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn negative_zero() {
     assert_eq!(
         runner().ok("@use \"sass:math\";\
@@ -132,7 +128,6 @@ fn overridden() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn positive() {
     assert_eq!(
         runner().ok("a {b: sign(3)}\n"),
@@ -142,7 +137,6 @@ fn positive() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn preserves_units() {
     assert_eq!(
         runner().ok("a {b: sign(-7px / 4em) * 1em}\n"),
@@ -152,7 +146,6 @@ fn preserves_units() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn simplification() {
     assert_eq!(
         runner().ok("a {\
@@ -164,7 +157,6 @@ fn simplification() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn zero() {
     assert_eq!(
         runner().ok("@use \"sass:math\";\
@@ -175,7 +167,6 @@ fn zero() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn zero_fuzzy() {
     assert_eq!(
         runner().ok("a {b: sign(0.000000000001)}\n"),
