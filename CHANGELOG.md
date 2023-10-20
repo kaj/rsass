@@ -26,6 +26,7 @@ project adheres to
   evaluated to `1em` and `min(1s, 1em)` yields an error).  This also
   includes some improvements in handling numeric zeroes and
   infinities. (PR #184).
+* Implemented css relative color functions (PR #185).
 * Simplify units early in numeric division and multiplication.  I
   think this is a bit uglier, but it is more consistent with dart
   sass.

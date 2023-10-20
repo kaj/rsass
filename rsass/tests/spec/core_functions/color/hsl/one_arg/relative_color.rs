@@ -10,7 +10,6 @@ mod calc {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn alpha() {
         assert_eq!(
             runner().ok("a {b: hsl(from #aaa calc(h + 180deg) s l / 25%)}\n"),
@@ -20,7 +19,6 @@ mod calc {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn no_alpha() {
         assert_eq!(
             runner().ok("a {b: hsl(from #aaa calc(h + 180deg) s l)}\n"),
@@ -35,7 +33,6 @@ mod different_case {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn alpha() {
         assert_eq!(
             runner().ok("a {b: hsl(From #aaa h s l / 25%)}\n"),
@@ -45,7 +42,6 @@ mod different_case {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn no_alpha() {
         assert_eq!(
             runner().ok("a {b: hsl(From #aaa h s l)}\n"),
@@ -119,7 +115,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn slash_list_alpha() {
     assert_eq!(
         runner().ok("@use \"sass:list\";\
@@ -134,7 +129,6 @@ mod test_static {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn alpha() {
         assert_eq!(
             runner().ok("a {b: hsl(from #aaa h s l / 25%)}\n"),
@@ -144,7 +138,6 @@ mod test_static {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn no_alpha() {
         assert_eq!(
             runner().ok("a {b: hsl(from #aaa h s l)}\n"),
@@ -159,7 +152,6 @@ mod var {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn alpha() {
         assert_eq!(
             runner().ok("a {b: hsl(from var(--c) h s l / 25%)}\n"),
@@ -169,7 +161,6 @@ mod var {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn no_alpha() {
         assert_eq!(
             runner().ok("a {b: hsl(from var(--c) h s l)}"),

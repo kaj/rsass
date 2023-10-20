@@ -1,7 +1,8 @@
 use super::channels::Channels;
 use super::{
     check_alpha, check_channel, check_pct_range, eval_inner, is_not,
-    is_special, make_call, CallError, CheckedArg, FunctionMap, ResolvedArgs,
+    is_special, make_call, relative_color, CallError, CheckedArg,
+    FunctionMap, ResolvedArgs,
 };
 use crate::css::{CallArgs, Value};
 use crate::sass::{ArgsError, FormalArgs, Name};
@@ -149,6 +150,9 @@ fn do_rgba(fn_name: &Name, s: &ResolvedArgs) -> Result<Value, CallError> {
         one_arg!(alpha),
     ]);
     let args = s.get_map(name!(kwargs), CallArgs::from_value)?;
+    if relative_color(&args) {
+        return Ok(Value::Call(fn_name.to_string(), args));
+    }
     match eval_inner(fn_name, &a1, s, args.clone()) {
         Ok(s) => Channels::try_from(s.get::<Value>(name!(channels))?)
             .map_err(|e| e.conv(&["red", "green", "blue"]))
