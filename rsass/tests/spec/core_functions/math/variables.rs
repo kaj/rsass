@@ -169,7 +169,6 @@ fn max_safe_integer() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn min_number() {
     assert_eq!(
         runner().ok(

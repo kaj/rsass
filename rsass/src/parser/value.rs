@@ -351,7 +351,8 @@ pub fn number(input: Span) -> PResult<Number> {
             };
             if let Some((e_sign, e_val)) = exp {
                 let e_val = if e_sign == Some(b"-") { -e_val } else { e_val };
-                value * Number::from(10f64.powi(e_val))
+                // Note: powi sounds right, but looses some precision.
+                value * Number::from(10f64.powf(e_val.into()))
             } else {
                 value
             }
