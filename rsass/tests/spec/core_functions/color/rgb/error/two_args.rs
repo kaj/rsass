@@ -26,7 +26,6 @@ mod alpha {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn unit() {
         assert_eq!(
             runner().err(

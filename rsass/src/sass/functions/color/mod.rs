@@ -66,7 +66,9 @@ fn check_alpha(v: Value) -> Result<Rational, String> {
         v => {
             let num = Numeric::try_from(v)?;
             num.as_unit(Unit::None)
-                .ok_or_else(|| expected_to(&num, "have no units or \"%\""))?
+                .ok_or_else(|| {
+                    expected_to(&num, "have unit \"%\" or no units")
+                })?
                 .as_ratio()?
         }
     })
