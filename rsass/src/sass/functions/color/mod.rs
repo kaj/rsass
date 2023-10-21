@@ -2,11 +2,11 @@ use super::{
     expected_to, is_not, is_special, CallError, CheckedArg, FunctionMap,
     ResolvedArgs,
 };
-use crate::css::{CallArgs, Value};
+use crate::css::{CallArgs, CssString, Value};
 use crate::input::SourcePos;
 use crate::output::Format;
 use crate::sass::{FormalArgs, Name};
-use crate::value::{Number, Numeric, Rational, Unit};
+use crate::value::{ListSeparator, Number, Numeric, Quotes, Rational, Unit};
 use crate::Scope;
 use num_traits::{one, zero, Signed};
 mod channels;
@@ -222,4 +222,22 @@ fn not_in_module(nm: &Name, col: &Value, an: &Name, av: &Value) -> CallError {
         an,
         av.format(Format::introspect()),
     ))
+}
+
+fn relative_color(args: &CallArgs) -> bool {
+    fn is_from(s: &CssString) -> bool {
+        s.quotes() == Quotes::None && s.value().eq_ignore_ascii_case("from")
+    }
+    fn inner(arg: &Value) -> bool {
+        match arg {
+            Value::List(l, Some(ListSeparator::Space), false) => {
+                matches!(l.get(0), Some(Value::Literal(s)) if is_from(s))
+            }
+            Value::List(l, Some(ListSeparator::Slash), false) => {
+                l.len() == 2 && inner(&l[0])
+            }
+            _ => false,
+        }
+    }
+    args.get_single().map(inner).unwrap_or(false)
 }

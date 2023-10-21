@@ -124,8 +124,12 @@ impl CssString {
     pub(crate) fn is_css_fn(&self) -> bool {
         let value = self.value();
         self.quotes() == Quotes::None
-            && value.ends_with(')')
-            && (value.starts_with("calc(") || value.starts_with("var("))
+            && (value.ends_with(')')
+                && (value.starts_with("calc(") || value.starts_with("var(")))
+            // The following is only relevant in relative colors
+            // but I don't see how to get that context to where its needed,
+            // and I don't see any real harm in puttin them like this.
+            || ["h", "s", "l", "r", "g", "b"].iter().any(|s| value == *s)
     }
     /// Return true if this is a css special function call.
     pub(crate) fn is_css_calc(&self) -> bool {
