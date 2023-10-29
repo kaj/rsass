@@ -30,7 +30,7 @@ fn use_module_star() {
     init_logger();
     assert_eq!(
         rsass(
-            b"@use 'tests/basic/defs' as *;\
+            b"@use 'tests/misc/paths/defs' as *;\
               \ndiv {\
               \n  color: $color;\
               \n  col1: foo(1);\
@@ -55,7 +55,7 @@ fn use_module() {
     init_logger();
     assert_eq!(
         rsass(
-            b"@use 'tests/basic/defs';\
+            b"@use 'tests/misc/paths/defs';\
               \ndiv {\
               \n  color: defs.$color;\
               \n  col1: defs.foo(1);\
@@ -78,7 +78,7 @@ fn use_module() {
 #[test]
 fn t14_imports() {
     init_logger();
-    let path = "tests/basic/14_imports/input.scss";
+    let path = "tests/misc/14_imports/input.scss";
     assert_eq!(
         String::from_utf8(
             compile_scss_path(path.as_ref(), Default::default()).unwrap()
@@ -114,7 +114,7 @@ fn t15_arithmetic_and_lists_abcd() {
 #[test]
 fn t33_ambigous_imports() {
     init_logger();
-    let path = "tests/basic/33_ambiguous_imports/input.scss";
+    let path = "tests/misc/33_ambiguous_imports/input.scss";
     assert_eq!(
         String::from_utf8(
             compile_scss_path(path.as_ref(), Default::default()).unwrap()
@@ -479,7 +479,7 @@ fn minmax_interpolation() {
 #[test]
 fn use_raw_css() {
     assert_eq!(
-        rsass(b"@use 'tests/basic/misc.css'").unwrap(),
+        rsass(b"@use 'tests/misc/paths/misc.css'").unwrap(),
         "/* Some raw css for testing. */\
          \n@media screen and (min-width: 42em) {\
          \n  /* Do this for wide viewports */\
@@ -497,7 +497,7 @@ fn use_raw_css() {
 #[test]
 fn import_raw_css() {
     assert_eq!(
-        rsass(b"@import 'tests/basic/misc.css'").unwrap(),
+        rsass(b"@import 'tests/misc/paths/misc.css'").unwrap(),
         "/* Some raw css for testing. */\
          \n@media screen and (min-width: 42em) {\
          \n  /* Do this for wide viewports */\
@@ -518,7 +518,7 @@ fn load_raw_css() {
     assert_eq!(
         rsass(
             b"@use 'sass:meta';\
-              \n@include meta.load-css('tests/basic/misc.css');"
+              \n@include meta.load-css('tests/misc/paths/misc.css');"
         )
         .unwrap(),
         "/* Some raw css for testing. */\
@@ -544,7 +544,8 @@ fn open_by_path_and_use() {
     // url format.
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("tests")
-        .join("basic");
+        .join("misc")
+        .join("paths");
     let result =
         compile_scss_path(&path.join("using.scss"), Default::default())
             .unwrap_or_else(|e| panic!("{}", e));
@@ -561,7 +562,8 @@ fn open_by_path_and_import() {
     // url format.
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("tests")
-        .join("basic");
+        .join("misc")
+        .join("paths");
     let result =
         compile_scss_path(&path.join("importing.scss"), Default::default())
             .unwrap_or_else(|e| panic!("{}", e));

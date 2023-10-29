@@ -8,7 +8,7 @@
 //! ```
 //! use rsass::{compile_scss_path, output};
 //!
-//! let path = "tests/basic/14_imports/a.scss".as_ref();
+//! let path = "tests/misc/14_imports/a.scss".as_ref();
 //! let format = output::Format {
 //!     style: output::Style::Compressed,
 //!     .. Default::default()
@@ -114,7 +114,7 @@ pub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
 ///
 /// assert_eq!(
 ///     compile_scss_path(
-///         "tests/basic/14_imports/a.scss".as_ref(),
+///         "tests/misc/14_imports/a.scss".as_ref(),
 ///         Format { style: Style::Compressed, precision: 5 },
 ///     ).unwrap(),
 ///     b"div span{moo:goo}\n"

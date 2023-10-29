@@ -1,3 +1,4 @@
+//! Check that non-ascii output is properly tagged as beeing utf-8.
 use rsass::{compile_scss, output};
 
 #[test]
