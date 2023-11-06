@@ -67,6 +67,7 @@ fn top_level_item(input: Span) -> PResult<Item> {
                     let (input, body) = preceded(
                         opt_spacelike,
                         alt((
+                            map(tag(";"), |_| None),
                             map(
                                 delimited(
                                     terminated(tag("{"), opt_spacelike),
@@ -86,7 +87,6 @@ fn top_level_item(input: Span) -> PResult<Item> {
                                 ),
                                 Some,
                             ),
-                            map(tag(";"), |_| None),
                         )),
                     )(input)?;
                     Ok((

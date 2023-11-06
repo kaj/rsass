@@ -2,6 +2,7 @@
 
 mod basic;
 mod compressed;
+mod css_parser;
 mod fuzz_cases;
 mod rust_functions;
 mod scss;
