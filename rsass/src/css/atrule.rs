@@ -1,6 +1,6 @@
 use super::{
-    BodyItem, Comment, CustomProperty, Import, MediaRule, Property, Rule,
-    Value,
+    BodyItem, Comment, CustomProperty, Import, Keyframes, MediaRule,
+    Property, Rule, Value,
 };
 use crate::output::CssBuf;
 use std::io::{self, Write};
@@ -71,6 +71,8 @@ pub enum AtRuleBodyItem {
     MediaRule(MediaRule),
     /// An `@` rule.
     AtRule(AtRule),
+    /// Keyframes
+    Keyframes(Keyframes),
 }
 
 impl AtRuleBodyItem {
@@ -83,6 +85,7 @@ impl AtRuleBodyItem {
             AtRuleBodyItem::CustomProperty(cp) => cp.write(buf),
             AtRuleBodyItem::MediaRule(rule) => rule.write(buf)?,
             AtRuleBodyItem::AtRule(rule) => rule.write(buf)?,
+            AtRuleBodyItem::Keyframes(rule) => rule.write(buf)?,
         }
         Ok(())
     }
@@ -126,5 +129,10 @@ impl From<BodyItem> for AtRuleBodyItem {
             BodyItem::Comment(c) => AtRuleBodyItem::Comment(c),
             BodyItem::ARule(r) => AtRuleBodyItem::AtRule(r),
         }
+    }
+}
+impl From<Keyframes> for AtRuleBodyItem {
+    fn from(value: Keyframes) -> Self {
+        AtRuleBodyItem::Keyframes(value)
     }
 }

@@ -472,7 +472,7 @@ fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, CallError> {
         Err(ExtremeError::NonNumeric(v)) => {
             if let Value::Literal(s) = &v {
                 if s.quotes().is_none()
-                    && crate::parser::value::number(
+                    && crate::parser::value::numeric(
                         input_span(s.value()).borrow(),
                     )
                     .is_ok()

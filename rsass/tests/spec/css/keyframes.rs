@@ -220,7 +220,6 @@ mod selector {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_exponent() {
                 assert_eq!(
                     runner().ok("@keyframes a {\
@@ -236,7 +235,6 @@ mod selector {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn positive_exponent() {
                 assert_eq!(
                     runner().ok("@keyframes a {\
