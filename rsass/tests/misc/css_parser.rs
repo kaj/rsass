@@ -26,7 +26,6 @@ fn error_in_right_place() {
 }
 
 #[test]
-#[ignore]
 fn url_as_function() {
     assert_eq!(
         parse_css("x { src: url(../fonts/memGs12-U_rX-h.woff2); }\n"),

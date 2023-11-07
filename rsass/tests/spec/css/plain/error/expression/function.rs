@@ -46,7 +46,7 @@ fn keyword_arguments() {
     );
 }
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn variable_arguments() {
     let runner = runner().with_cwd("variable_arguments");
     assert_eq!(

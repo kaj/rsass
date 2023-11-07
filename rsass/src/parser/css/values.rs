@@ -1,11 +1,13 @@
 use super::strings;
 use super::{opt_spacelike, PResult, Span};
 use crate::css::{BinOp, CallArgs, Value};
+use crate::parser::input_to_str;
 use crate::parser::value::numeric;
 use crate::value::{ListSeparator, Operator};
 use nom::branch::alt;
-use nom::bytes::complete::tag;
-use nom::combinator::{into, map, opt, peek, value};
+use nom::bytes::complete::{tag, is_not};
+use nom::character::complete::one_of;
+use nom::combinator::{into, map, opt, peek, value, map_opt};
 use nom::multi::{fold_many0, many0, separated_list0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 
@@ -146,7 +148,7 @@ fn call_args(input: Span) -> PResult<CallArgs> {
         .into_iter()
         .map(|(name, val)| (name.into(), val))
         .collect();
-    let (rest, positional) = separated_list0(spaced(","), single)(rest)?;
+    let (rest, positional) = separated_list0(spaced(","), single_arg)(rest)?;
     let (rest, trail) = opt(tag(","))(rest)?;
     Ok((
         rest,
@@ -156,6 +158,26 @@ fn call_args(input: Span) -> PResult<CallArgs> {
             trailing_comma: trail.is_some(),
         },
     ))
+}
+
+fn single_arg(input: Span) -> PResult<Value> {
+    fn end(input: Span) -> PResult<()> {
+        peek(preceded(opt_spacelike, map(one_of(",)"), |_| ())))(input)
+    }
+    alt((
+        terminated(single, end),
+        terminated(into(ext_arg_as_string), end),
+    ))(input)
+}
+
+fn ext_arg_as_string(input: Span) -> PResult<String> {
+    map_opt(is_not("\"\\;{}()[] ,"), |s: Span| {
+        if s.is_empty() {
+            None
+        } else {
+            Some(input_to_str(s).ok()?.to_owned())
+        }
+    })(input)
 }
 
 fn spaced<'a>(
