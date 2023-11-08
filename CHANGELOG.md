@@ -37,7 +37,7 @@ project adheres to
   parse errors at the right place in the code and maybe making parsing
   slightly more efficient.
 * Improve selector / name parsing by beeing more restrictive (PR #183).
-* Updated sass-spec test suite to 2023-10-05.
+* Updated sass-spec test suite to 2023-10-31.
 
 
 ## Release 0.28.2.
