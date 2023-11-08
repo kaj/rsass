@@ -34,9 +34,11 @@ fn url_as_function() {
 }
 
 #[test]
-#[ignore]
 fn uncode_range() {
-    todo!();
+    assert_eq!(
+        parse_css("@font-face { unicode-range: U+0460-052F, U+20B4; }"),
+        Ok("@font-face {\n  unicode-range: U+0460-052F, U+20B4;\n}\n".into())
+    );
 }
 
 fn parse_css(data: &str) -> Result<String, String> {

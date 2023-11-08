@@ -2,12 +2,12 @@ use super::strings;
 use super::{opt_spacelike, PResult, Span};
 use crate::css::{BinOp, CallArgs, Value};
 use crate::parser::input_to_str;
-use crate::parser::value::numeric;
+use crate::parser::value::{numeric, unicode_range_inner};
 use crate::value::{ListSeparator, Operator};
 use nom::branch::alt;
-use nom::bytes::complete::{tag, is_not};
+use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::one_of;
-use nom::combinator::{into, map, opt, peek, value, map_opt};
+use nom::combinator::{into, map, map_opt, opt, peek, value};
 use nom::multi::{fold_many0, many0, separated_list0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 
@@ -59,7 +59,10 @@ pub fn single(input: Span) -> PResult<Value> {
             },
         )(input),
         Some(c) if b'0' <= *c && *c <= b'9' => into(numeric)(input),
-        _ => string_or_call(input),
+        _ => alt((
+            map(unicode_range_inner, Value::UnicodeRange),
+            string_or_call,
+        ))(input),
     }
 }
 

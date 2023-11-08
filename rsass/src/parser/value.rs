@@ -283,19 +283,19 @@ fn end_paren(input: Span) -> PResult<Span> {
 }
 
 fn unicode_range(input: Span) -> PResult<Value> {
+    map(unicode_range_inner, Value::UnicodeRange)(input)
+}
+pub(crate) fn unicode_range_inner(input: Span) -> PResult<String> {
     let (rest, _) = tag_no_case("U+")(input)?;
     let (rest, a) = many_m_n(0, 6, one_of("0123456789ABCDEFabcdef"))(rest)?;
     let (rest, _) = alt((
         preceded(tag("-"), many_m_n(1, 6, one_of("0123456789ABCDEFabcdef"))),
         many_m_n(0, 6 - a.len(), one_of("?")),
     ))(rest)?;
-    let length = input.fragment().len() - rest.fragment().len();
+    let length = rest.location_offset() - input.location_offset();
     let matched = &input.fragment()[0..length];
-    Ok((
-        rest,
-        // The unwrap should be ok, as only ascii is matched.
-        Value::UnicodeRange(from_utf8(matched).unwrap().to_string()),
-    ))
+    // The unwrap should be ok, as only ascii is matched.
+    Ok((rest, from_utf8(matched).unwrap().to_string()))
 }
 
 pub fn bracket_list(input: Span) -> PResult<Value> {
