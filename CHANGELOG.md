@@ -13,7 +13,10 @@ project adheres to
   (they are still parsed of the internal data representation, so they
   can be used when implementing `@extend`) (PR #180).
 * Filter out some other illegal / never-matching selectors (PR #181).
-* Handle trailing comma in function arguments in plain css correctly.
+* Some improvements in plain css parsing:
+  - trailing comma in function arguments.
+  - unqoted urls (contining slash and dot) in function arguments.
+  - unicode-ranges.
 * Refactored function name/plain string handling in scss values to not parse
   the same unquoted string twice.
 * Remove separate backref member from `css::Selectors` for cleanup before
