@@ -41,6 +41,31 @@ fn uncode_range() {
     );
 }
 
+#[test]
+fn plain_negative() {
+    assert_eq!(
+        parse_css("sub { bottom: -0.25em; }\n"),
+        Ok("sub {\n  bottom: -0.25em;\n}\n".into()),
+    );
+}
+
+#[test]
+fn func_complex_args() {
+    assert_eq!(
+        parse_css(
+            "body{\
+             \nbackground:linear-gradient(166deg, transparent 10em, \
+             var(--col-flare) 17em, transparent 40em)\
+             \n}\n"
+        ),
+        Ok("body {\
+            \n  background: linear-gradient(166deg, transparent 10em, \
+            var(--col-flare) 17em, transparent 40em);\
+            \n}\n"
+            .into()),
+    );
+}
+
 fn parse_css(data: &str) -> Result<String, String> {
     FsContext::for_cwd()
         .with_format(Default::default())

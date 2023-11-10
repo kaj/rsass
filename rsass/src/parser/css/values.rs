@@ -59,6 +59,9 @@ pub fn single(input: Span) -> PResult<Value> {
             },
         )(input),
         Some(c) if b'0' <= *c && *c <= b'9' => into(numeric)(input),
+        Some(c) if *c == b'-' || *c == b'.' => {
+            alt((into(numeric), string_or_call))(input)
+        }
         _ => alt((
             map(unicode_range_inner, Value::UnicodeRange),
             string_or_call,
@@ -69,23 +72,16 @@ pub fn single(input: Span) -> PResult<Value> {
 fn string_or_call(input: Span) -> PResult<Value> {
     let (rest, string) = strings::css_string_any(input)?;
     if string.quotes().is_none() {
-        if string.value() == "calc" {
-            if let Ok((rest, args)) = delimited(
-                terminated(tag("("), opt_spacelike),
-                terminated(calc_expression, opt_spacelike),
-                tag(")"),
-            )(rest)
-            {
+        if let Ok((rest, _)) = terminated(tag("("), opt_spacelike)(rest) {
+            let endp = preceded(opt_spacelike, tag(")"));
+            if string.value() == "calc" {
+                let (rest, args) = terminated(calc_expression, endp)(rest)?;
                 let args = CallArgs::from_single(args);
                 return Ok((rest, Value::Call(string.take_value(), args)));
+            } else {
+                let (rest, args) = terminated(call_args, endp)(rest)?;
+                return Ok((rest, Value::Call(string.take_value(), args)));
             }
-        } else if let Ok((rest, args)) = delimited(
-            terminated(tag("("), opt_spacelike),
-            terminated(call_args, opt_spacelike),
-            tag(")"),
-        )(rest)
-        {
-            return Ok((rest, Value::Call(string.take_value(), args)));
         }
     }
     Ok((rest, string.into()))
@@ -168,7 +164,7 @@ fn single_arg(input: Span) -> PResult<Value> {
         peek(preceded(opt_spacelike, map(one_of(",)"), |_| ())))(input)
     }
     alt((
-        terminated(single, end),
+        terminated(space_list, end),
         terminated(into(ext_arg_as_string), end),
     ))(input)
 }
