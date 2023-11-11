@@ -16,7 +16,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn built_in() {
     let runner = runner().with_cwd("built_in");
     assert_eq!(
