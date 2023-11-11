@@ -52,7 +52,7 @@ fn top_level_item(input: Span) -> PResult<Item> {
                         delimited(
                             terminated(tag("{"), opt_spacelike),
                             many0(terminated(
-                                alt((into(comment), into(rule::rule))),
+                                map_res(top_level_item, TryInto::try_into),
                                 opt_spacelike,
                             )),
                             tag("}"),
@@ -114,13 +114,13 @@ fn import2(input: Span) -> PResult<Import> {
 
 // Arguments for unknwn at-rules.  Should probably be more permitting.
 fn atrule_args(input: Span) -> PResult<Span> {
-    recognize(preceded(
+    recognize(opt(preceded(
         is_not("()/{}"),
         opt(terminated(
             delimited(tag("("), atrule_args, tag(")")),
             atrule_args,
         )),
-    ))(input)
+    )))(input)
 }
 
 pub fn comment(input: Span) -> PResult<Comment> {

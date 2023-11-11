@@ -1,6 +1,6 @@
 use super::{
-    BodyItem, Comment, CustomProperty, Import, MediaRule, Property, Rule,
-    Value,
+    BodyItem, Comment, CustomProperty, Import, Item, MediaRule, Property,
+    Rule, Value,
 };
 use crate::output::CssBuf;
 use std::io::{self, Write};
@@ -125,6 +125,21 @@ impl From<BodyItem> for AtRuleBodyItem {
             BodyItem::CustomProperty(p) => AtRuleBodyItem::CustomProperty(p),
             BodyItem::Comment(c) => AtRuleBodyItem::Comment(c),
             BodyItem::ARule(r) => AtRuleBodyItem::AtRule(r),
+        }
+    }
+}
+
+impl TryFrom<Item> for AtRuleBodyItem {
+    type Error = &'static str;
+
+    fn try_from(value: Item) -> Result<Self, Self::Error> {
+        match value {
+            Item::Comment(x) => Ok(x.into()),
+            Item::Import(x) => Ok(x.into()),
+            Item::Rule(x) => Ok(x.into()),
+            Item::MediaRule(x) => Ok(x.into()),
+            Item::AtRule(x) => Ok(x.into()),
+            Item::Separator => Err("separator not supported here"),
         }
     }
 }

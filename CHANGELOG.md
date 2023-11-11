@@ -18,6 +18,7 @@ project adheres to
   - unqoted urls (contining slash and dot) in function arguments.
   - Negative numbers and numbers starting with a decimal dot.
   - unicode-ranges.
+* Allow at-rules in at-rules when parsing plain css.
 * Refactored function name/plain string handling in scss values to not parse
   the same unquoted string twice.
 * Remove separate backref member from `css::Selectors` for cleanup before

@@ -66,6 +66,31 @@ fn func_complex_args() {
     );
 }
 
+#[test]
+fn pages_in_media() {
+    assert_eq!(
+        parse_css(
+            "@media print{\
+             \n  @page{margin:7mm 9mm 12mm 25mm}\
+             \n  @page :left{margin:7mm 25mm 12mm 9mm}\
+             \n  body{background:white}\
+             \n}\n"
+        ),
+        Ok("@media print {\
+            \n  @page {\
+            \n    margin: 7mm 9mm 12mm 25mm;\
+            \n  }\
+            \n  @page :left {\
+            \n    margin: 7mm 25mm 12mm 9mm;\
+            \n  }\
+            \n  body {\
+            \n    background: white;\
+            \n  }\
+            \n}\n"
+            .into())
+    )
+}
+
 fn parse_css(data: &str) -> Result<String, String> {
     FsContext::for_cwd()
         .with_format(Default::default())
