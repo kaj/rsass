@@ -10,7 +10,7 @@ project adheres to
 ## Release 0.28.4
 
 Released 2023-11-11.
-.
+Progress: 5208 of 7637 tests passed.
 
 * Filter out placeholder selectors when writing the resulting css
   (they are still parsed of the internal data representation, so they
