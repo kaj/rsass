@@ -7,7 +7,10 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.28.4
+
+Released 2023-11-11.
+.
 
 * Filter out placeholder selectors when writing the resulting css
   (they are still parsed of the internal data representation, so they
