@@ -7,6 +7,11 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+* Set workspace resolver to two.
+
+
 ## Release 0.28.6
 
 Released 2023-11-12.

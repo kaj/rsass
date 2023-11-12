@@ -6,3 +6,5 @@ members = [
    "rsass-macros",
    "spectest",
 ]
+
+resolver = "2"
