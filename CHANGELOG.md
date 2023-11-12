@@ -7,7 +7,10 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.28.6
+
+Released 2023-11-12.
+Progress: 5332 of 7637 tests passed.
 
 * The 0.28.4 release accidentally included partial support for the
   `is_superselector` sass function, so clean that up a bit.

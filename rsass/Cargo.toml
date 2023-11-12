@@ -1,6 +1,6 @@
 [package]
 name = "rsass"
-version = "0.28.5-PRE"
+version = "0.28.6"
 authors = ["Rasmus Kaj <kaj@kth.se>"]
 categories = ["web-programming"]
 keywords = ["scss", "sass", "css", "web"]
