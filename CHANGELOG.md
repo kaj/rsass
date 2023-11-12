@@ -15,8 +15,9 @@ Progress: 5332 of 7637 tests passed.
 * The 0.28.4 release accidentally included partial support for the
   `is_superselector` sass function, so clean that up a bit.
 
+See 0.28.4 for further changes.
 
-## Release 0.28.4
+## Release 0.28.4 (yanked)
 
 Released 2023-11-11.
 Progress: 5208 of 7637 tests passed.
