@@ -65,34 +65,28 @@ impl Selector {
         self.element
             .iter()
             .all(|e| elem_matches(e, sub.element.as_deref().unwrap_or("*")))
-            && self
-                .classes
-                .iter()
-                .all(|ac| sub.classes.iter().any(|bc| ac == bc))
+            && all_any(&self.classes, &sub.classes, |ac, bc| ac == bc)
             && self.id.iter().all(|id| sub.id.as_ref() == Some(id))
-            && self
-                .attr
-                .iter()
-                .all(|aa| sub.attr.iter().any(|ba| aa.is_superselector(ba)))
-            && self
-                .pseudo
-                .iter()
-                .all(|aa| sub.pseudo.iter().any(|ba| aa.is_superselector(ba)))
-            && dbg!(self.pseudo_element.as_ref()).map_or_else(
+            && all_any(&self.attr, &sub.attr, |a, b| a.is_superselector(b))
+            && all_any(&self.pseudo, &sub.pseudo, |a, b| {
+                a.is_superselector(b)
+            })
+            && self.pseudo_element.as_ref().map_or_else(
                 || sub.pseudo_element.is_none(),
                 |aa| {
-                    dbg!(sub.pseudo_element.as_ref())
+                    sub.pseudo_element
+                        .as_ref()
                         .map_or(false, |ba| aa.is_superselector(ba))
                 },
             )
             && self.rel_of.as_deref().map_or(true, |(kind, s)| {
-                match dbg!(kind) {
+                match kind {
                     RelKind::Ancestor => {
                         let mut t = sub.rel_of.as_deref();
                         while let Some((ss_kind, ss)) = t {
                             match ss_kind {
                                 RelKind::Ancestor | RelKind::Parent => {
-                                    if dbg!(s).is_superselector(dbg!(ss)) {
+                                    if s.is_superselector(ss) {
                                         return true;
                                     }
                                     // else keep looking up the hieararchy!
@@ -107,7 +101,7 @@ impl Selector {
                     RelKind::Parent => {
                         let t = sub.rel_of.as_deref();
                         if let Some((RelKind::Parent, ss)) = t {
-                            dbg!(s).is_superselector(dbg!(ss))
+                            s.is_superselector(ss)
                         } else {
                             false
                         }
@@ -120,7 +114,7 @@ impl Selector {
                             {
                                 return false;
                             }
-                            if dbg!(s).is_superselector(dbg!(ss)) {
+                            if s.is_superselector(ss) {
                                 return true;
                             }
                             t = ss.rel_of.as_deref();
@@ -132,7 +126,7 @@ impl Selector {
                         if let Some((RelKind::AdjacentSibling, ss)) =
                             sub.rel_of.as_deref()
                         {
-                            dbg!(s).is_superselector(dbg!(ss))
+                            s.is_superselector(ss)
                         } else {
                             false
                         }
@@ -140,6 +134,15 @@ impl Selector {
                 }
             })
     }
+}
+
+/// Return true if all elements of `one` has an element in `other` for
+/// whitch `cond` is true.
+fn all_any<T, F>(one: &[T], other: &[T], cond: F) -> bool
+where
+    F: Fn(&T, &T) -> bool,
+{
+    one.iter().all(|a| other.iter().any(|b| cond(a, b)))
 }
 
 fn elem_matches(e: &str, sub: &str) -> bool {

@@ -7,6 +7,12 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+* The 0.28.4 release accidentally included partial support for the
+  `is_superselector` sass function, so clean that up a bit.
+
+
 ## Release 0.28.4
 
 Released 2023-11-11.

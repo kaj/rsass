@@ -459,7 +459,7 @@ pub fn special_function(input: Span) -> PResult<Value> {
 pub fn function_call_or_string(input: Span) -> PResult<Value> {
     let (rest, name) = sass_string(input)?;
     /* TODO: true, false and null should end up here, but can't as long as '.' is a normal part of a string.
-    if let Some(special) = name.single_raw().and_then(|s| match dbg!(s) {
+    if let Some(special) = name.single_raw().and_then(|s| match s {
         "true" => return Some(Value::True),
         "false" => return Some(Value::False),
         "null" => return Some(Value::Null),
