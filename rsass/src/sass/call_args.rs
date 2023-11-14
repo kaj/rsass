@@ -158,32 +158,28 @@ impl CallArgs {
                     css::Value::List(items, ..) => {
                         if let Some(v) = items.get(num - i) {
                             return Ok(v.clone());
-                        } else {
-                            i += items.len();
                         }
+                        i += items.len();
                     }
                     css::Value::Null => (),
                     v => {
                         if i == num {
                             return Ok(v);
-                        } else {
-                            i += 1;
                         }
+                        i += 1;
                     }
                 },
                 Some(splat) => {
                     if let Some(v) = splat.get(num - i) {
                         return v.do_evaluate(scope, true);
-                    } else {
-                        i += splat.len();
                     }
+                    i += splat.len();
                 }
                 None => {
                     if i == num {
                         return a.do_evaluate(scope, true);
-                    } else {
-                        i += 1;
                     }
+                    i += 1;
                 }
             }
         }

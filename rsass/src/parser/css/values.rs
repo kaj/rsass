@@ -55,7 +55,7 @@ pub fn single(input: Span) -> PResult<Value> {
             ),
             |v| match v {
                 Value::List(v, sep, false) => Value::List(v, sep, true),
-                v => Value::List(vec![v], Default::default(), true),
+                v => Value::List(vec![v], None, true),
             },
         )(input),
         Some(c) if b'0' <= *c && *c <= b'9' => into(numeric)(input),
@@ -74,20 +74,18 @@ fn string_or_call(input: Span) -> PResult<Value> {
     if string.quotes().is_none() {
         if let Ok((rest, _)) = terminated(tag("("), opt_spacelike)(rest) {
             let endp = preceded(opt_spacelike, tag(")"));
-            if string.value() == "calc" {
-                let (rest, args) = terminated(calc_expression, endp)(rest)?;
-                let args = CallArgs::from_single(args);
-                return Ok((rest, Value::Call(string.take_value(), args)));
+            let (rest, args) = if string.value() == "calc" {
+                map(terminated(calc_expr, endp), CallArgs::from_single)(rest)?
             } else {
-                let (rest, args) = terminated(call_args, endp)(rest)?;
-                return Ok((rest, Value::Call(string.take_value(), args)));
-            }
+                terminated(call_args, endp)(rest)?
+            };
+            return Ok((rest, Value::Call(string.take_value(), args)));
         }
     }
     Ok((rest, string.into()))
 }
 
-fn calc_expression(input: Span) -> PResult<Value> {
+fn calc_expr(input: Span) -> PResult<Value> {
     let (rest, first) = single_factor(input)?;
     fold_many0(
         tuple((
@@ -130,7 +128,7 @@ fn single_term(input: Span) -> PResult<Value> {
     match input.first() {
         Some(b'(') => delimited(
             terminated(tag("("), opt_spacelike),
-            calc_expression,
+            calc_expr,
             preceded(opt_spacelike, tag(")")),
         )(input),
         Some(c) if b'0' <= *c && *c <= b'9' => into(numeric)(input),

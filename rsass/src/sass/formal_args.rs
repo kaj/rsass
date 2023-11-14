@@ -58,11 +58,11 @@ impl FormalArgs {
             let m = args.len();
             if m > n {
                 let n_p = args.positional.len();
-                if n_p != m && n_p > n {
-                    return Err(ArgsError::TooManyPos(n, n_p));
+                return Err(if n_p != m && n_p > n {
+                    ArgsError::TooManyPos(n, n_p)
                 } else {
-                    return Err(ArgsError::TooMany(n, n_p));
-                }
+                    ArgsError::TooMany(n, n_p)
+                });
             }
         }
         let positional = args.take_positional(self.0.len());

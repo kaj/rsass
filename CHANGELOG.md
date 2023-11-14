@@ -9,7 +9,7 @@ project adheres to
 
 ## Unreleased
 
-* Set workspace resolver to two.
+* Some internal cleanup (including setting workspace resolver to 2).
 
 
 ## Release 0.28.6
