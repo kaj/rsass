@@ -81,15 +81,15 @@ jobs:
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
       - run: cargo test -q
 
-  test-lib:
-    name: Lib Tests
+  test-macros:
+    name: Test macros and lib use with old compilers
     needs: [clippy, rustfmt]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         rust:
           - 1.68.2
-          - 1.64.0
+          - 1.66.1
           - 1.61.0
     steps:
       - uses: actions/checkout@v3
