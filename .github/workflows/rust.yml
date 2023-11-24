@@ -45,6 +45,7 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
+      - run: cargo build
       - run: cargo test -q
 
   test-windows:
@@ -81,15 +82,14 @@ jobs:
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
       - run: cargo test -q
 
-  test-macros:
-    name: Test macros and lib use with old compilers
+  test-old:
+    name: Old rust
     needs: [clippy, rustfmt]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         rust:
           - 1.68.2
-          - 1.66.1
           - 1.61.0
     steps:
       - uses: actions/checkout@v3
@@ -99,20 +99,3 @@ jobs:
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
       - run: sed -i 's/"rsass-cli",/# \0/' Cargo.toml
       - run: cargo test --package rsass-macros -q
-
-  commandline:
-    name: Build cli
-    needs: [clippy, rustfmt]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust:
-          - stable
-          - nightly
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust }}
-      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo build --package rsass-cli
