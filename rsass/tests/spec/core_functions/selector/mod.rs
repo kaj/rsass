@@ -17,4 +17,4 @@ mod parse;
 
 mod replace;
 
-// Ignoring "unify", not expected to work yet.
+mod unify;
