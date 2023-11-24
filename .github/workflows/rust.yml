@@ -98,7 +98,7 @@ jobs:
           toolchain: ${{ matrix.rust }}
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
       - run: sed -i 's/"rsass-cli",/# \0/' Cargo.toml
-      - run: cargo test --package rsass -q
+      - run: cargo test --package rsass-macros -q
 
   commandline:
     name: Build cli
