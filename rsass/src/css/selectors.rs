@@ -102,7 +102,7 @@ impl Selectors {
         let s = self
             .s
             .iter()
-            .filter_map(|s| s.no_placeholder())
+            .filter_map(Selector::no_placeholder)
             .collect::<Vec<_>>();
         if s.is_empty() {
             None
@@ -394,7 +394,7 @@ impl Selector {
         let v = self
             .0
             .iter()
-            .map(|s| s.no_placeholder())
+            .map(SelectorPart::no_placeholder)
             .collect::<Option<Vec<_>>>()?;
         let mut v2 = Vec::with_capacity(v.len());
         let mut has_sel = false;
@@ -553,22 +553,22 @@ impl SelectorPart {
             SelectorPart::Pseudo { name, arg } => match name.value() {
                 "is" => arg
                     .as_ref()
-                    .and_then(|a| a.no_placeholder())
-                    .and_then(|a| a.no_leading_combinator())
+                    .and_then(Selectors::no_placeholder)
+                    .and_then(Selectors::no_leading_combinator)
                     .map(|arg| SelectorPart::Pseudo {
                         name: name.clone(),
                         arg: Some(arg),
                     }),
                 "matches" | "any" | "where" | "has" => arg
                     .as_ref()
-                    .and_then(|a| a.no_placeholder())
+                    .and_then(Selectors::no_placeholder)
                     .map(|arg| SelectorPart::Pseudo {
                         name: name.clone(),
                         arg: Some(arg),
                     }),
                 "not" => {
                     if let Some(arg) =
-                        arg.as_ref().and_then(|a| a.no_placeholder())
+                        arg.as_ref().and_then(Selectors::no_placeholder)
                     {
                         Some(SelectorPart::Pseudo {
                             name: name.clone(),

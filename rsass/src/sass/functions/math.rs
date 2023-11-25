@@ -212,10 +212,16 @@ pub fn create_module() -> Scope {
     f.define(name!(e), Value::scalar(E)).unwrap();
     f.define(name!(epsilon), Value::scalar(f64::EPSILON))
         .unwrap();
-    f.define(name!(max_safe_integer), Value::scalar(9007199254740991f64))
-        .unwrap();
-    f.define(name!(min_safe_integer), Value::scalar(-9007199254740991f64))
-        .unwrap();
+    f.define(
+        name!(max_safe_integer),
+        Value::scalar(9_007_199_254_740_991_f64),
+    )
+    .unwrap();
+    f.define(
+        name!(min_safe_integer),
+        Value::scalar(-9_007_199_254_740_991_f64),
+    )
+    .unwrap();
     f.define(name!(max_number), Value::scalar(f64::MAX))
         .unwrap();
     f.define(

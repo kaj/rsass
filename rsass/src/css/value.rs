@@ -106,8 +106,7 @@ impl Value {
                 }
             }
             Value::Color(..) => "color",
-            Value::Literal(..) => "string",
-            Value::BinOp(_) => "string",
+            Value::Literal(..) | Value::BinOp(_) => "string",
             Value::Map(..) => "map",
             Value::Numeric(..) => "number",
             Value::List(..) => "list",

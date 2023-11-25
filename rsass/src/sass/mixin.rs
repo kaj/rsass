@@ -65,14 +65,14 @@ impl MixinDecl {
                 let with = get_opt_map(&argscope, name!(with))?;
 
                 if url.value().starts_with("sass:") {
-                    if with.unwrap_or_default().is_empty() {
-                        return Ok(Mixin::empty(scope));
+                    return if with.unwrap_or_default().is_empty() {
+                        Ok(Mixin::empty(scope))
                     } else {
-                        return Err(CallError::msg(format!(
+                        Err(CallError::msg(format!(
                             "Built-in module {} can't be configured.",
                             url.value()
-                        )));
-                    }
+                        )))
+                    };
                 }
                 let source = file_context
                     .find_file(url.value(), SourceKind::load_css(call_pos))?

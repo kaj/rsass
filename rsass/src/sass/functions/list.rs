@@ -79,8 +79,8 @@ pub fn create_module() -> Scope {
     });
     def!(f, separator(list), |s| {
         let sep = match s.get(name!(list))? {
-            Value::ArgList(..) => "comma",
-            Value::List(_, Some(ListSeparator::Comma), _) => "comma",
+            Value::List(_, Some(ListSeparator::Comma), _)
+            | Value::ArgList(..) => "comma",
             Value::List(_, Some(ListSeparator::Slash), _) => "slash",
             Value::Map(ref map) if !map.is_empty() => "comma",
             _ => "space",

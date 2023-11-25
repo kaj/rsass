@@ -67,10 +67,8 @@ impl Selector {
             .all(|e| elem_matches(e, sub.element.as_deref().unwrap_or("*")))
             && all_any(&self.classes, &sub.classes, |ac, bc| ac == bc)
             && self.id.iter().all(|id| sub.id.as_ref() == Some(id))
-            && all_any(&self.attr, &sub.attr, |a, b| a.is_superselector(b))
-            && all_any(&self.pseudo, &sub.pseudo, |a, b| {
-                a.is_superselector(b)
-            })
+            && all_any(&self.attr, &sub.attr, Attribute::is_superselector)
+            && all_any(&self.pseudo, &sub.pseudo, Pseudo::is_superselector)
             && self.pseudo_element.as_ref().map_or_else(
                 || sub.pseudo_element.is_none(),
                 |aa| {

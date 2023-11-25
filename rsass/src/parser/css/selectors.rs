@@ -131,7 +131,7 @@ fn name_opt_ns(input: Span) -> PResult<String> {
             pair(name_part, opt(preceded(tag("|"), name_part))),
             |(a, b)| {
                 if let Some(b) = b {
-                    format!("{}|{}", a, b)
+                    format!("{a}|{b}")
                 } else {
                     a
                 }

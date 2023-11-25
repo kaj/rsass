@@ -487,11 +487,10 @@ fn property_or_namespace_rule(input: Span) -> PResult<Item> {
         tag("{")(input)?
     };
 
-    let (input, body) = match next.fragment() {
-        b"{" => map(body_block2, Some)(input)?,
-        b";" => (input, None),
-        b"" => (input, None),
-        _ => (input, None), // error?
+    let (input, body) = if next.fragment() == b"{" {
+        map(body_block2, Some)(input)?
+    } else {
+        (input, None)
     };
     let (input, _) = opt_spacelike(input)?;
     Ok((input, ns_or_prop_item(name, val, body, pos)))

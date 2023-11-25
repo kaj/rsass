@@ -62,7 +62,7 @@ impl Operator {
             }
         }
         Ok(match *self {
-            Operator::And => Some(if !a.is_true() { a } else { b }),
+            Operator::And => Some(if a.is_true() { b } else { a }),
             Operator::Or => Some(if a.is_true() { a } else { b }),
             Operator::Equal => Some(Value::from(a == b)),
             Operator::EqualSingle => cmp(a, b, &|a, b| a == b),
@@ -186,7 +186,7 @@ impl Operator {
             Operator::Not => return Err(BadOp::UndefinedOperation),
         })
     }
-    pub(crate) fn is_cmp(&self) -> bool {
+    pub(crate) fn is_cmp(self) -> bool {
         matches!(
             self,
             Operator::Equal
@@ -202,10 +202,10 @@ impl Operator {
 
 fn valid_operand(v: &Value) -> bool {
     match v {
-        Value::Numeric(..) => true,
-        Value::Call(..) => true,
-        Value::BinOp(_) => true,
-        Value::Literal(_) => true,
+        Value::Numeric(..)
+        | Value::Call(..)
+        | Value::BinOp(_)
+        | Value::Literal(_) => true,
         Value::Paren(v) => valid_operand(v),
         _ => false,
     }
@@ -213,11 +213,10 @@ fn valid_operand(v: &Value) -> bool {
 
 fn add_as_join(v: &Value) -> bool {
     match v {
-        Value::List(..) => true,
+        Value::List(..) | Value::True | Value::False => true,
         Value::Literal(ref s) => !s.is_css_fn(),
         Value::Call(ref name, _) => !is_function_name(name),
         Value::BinOp(op) => op.add_as_join(),
-        Value::True | Value::False => true,
         _ => false,
     }
 }

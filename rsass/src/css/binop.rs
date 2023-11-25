@@ -179,11 +179,10 @@ impl Display for Formatted<'_, BinOp> {
 
 fn add_as_join(v: &Value) -> bool {
     match v {
-        Value::List(..) => true,
+        Value::List(..) | Value::True | Value::False => true,
         Value::Literal(ref s) => !s.is_css_fn(),
         Value::Call(ref name, _) => !is_function_name(name),
         Value::BinOp(op) => op.add_as_join(),
-        Value::True | Value::False => true,
         _ => false,
     }
 }

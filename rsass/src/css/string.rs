@@ -221,5 +221,7 @@ fn is_namelike(s: &str) -> bool {
 
 fn is_private_use(c: char) -> bool {
     // https://en.wikipedia.org/wiki/Private_Use_Areas
-    matches!(c as u32, 0xE000..=0xF8FF | 0xF0000..=0xFFFFD | 0x100000..=0x10FFFD)
+    ('\u{E000}'..='\u{F8FF}').contains(&c)
+        || ('\u{F0000}'..='\u{FFFFD}').contains(&c)
+        || ('\u{100000}'..='\u{10FFFD}').contains(&c)
 }

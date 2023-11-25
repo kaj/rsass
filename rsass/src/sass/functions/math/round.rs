@@ -37,13 +37,13 @@ pub fn css_round(s: &ResolvedArgs) -> Result<Value, CallError> {
                     (Ok(s), num, None) => (Some(s), num, None),
                     (Ok(s), num, Some(step)) => (Some(s), num, Some(step)),
                     (Err(()), num, Some(step)) => {
-                        if v0.type_name() == "variable" {
-                            return fallback(Some(v0), num, Some(step));
+                        return if v0.type_name() == "variable" {
+                            fallback(Some(v0), num, Some(step))
                         } else {
-                            return Err(CallError::msg(format!(
+                            Err(CallError::msg(format!(
                         "{} must be either nearest, up, down or to-zero.",
                         v0.format(Format::introspect()),
-                    )));
+                    )))
                         };
                     }
                     (Err(()), step, None) => (None, v0, Some(step)),
@@ -115,7 +115,7 @@ fn fallback(
     let mut args = Vec::new();
     let is_single = strategy.is_none() && step.is_none();
     if let Some(v) = strategy {
-        args.push(v)
+        args.push(v);
     }
     if is_single && matches!(&number, Value::BinOp(_)) {
         return Err(CallError::msg(format!(
