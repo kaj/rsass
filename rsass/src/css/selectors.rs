@@ -455,10 +455,13 @@ fn value_to_selector(v: &Value) -> Result<Selector, BadSelector0> {
 fn list_to_selector(list: &[Value]) -> Result<Selector, BadSelector0> {
     list.iter()
         .try_fold(vec![], |mut a, v| {
-            if !a.is_empty() {
+            let parts = value_to_selector_parts(v)?;
+            if !parts.first().map_or(true, SelectorPart::is_operator)
+                && !a.last().map_or(true, SelectorPart::is_operator)
+            {
                 a.push(SelectorPart::Descendant);
             }
-            a.extend(value_to_selector_parts(v)?);
+            a.extend(parts);
             Ok(a)
         })
         .map(Selector)

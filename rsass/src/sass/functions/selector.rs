@@ -31,7 +31,13 @@ pub fn create_module() -> Scope {
     def!(f, parse(selector), |s| {
         Ok(s.get_map(name!(selector), parse_selectors_x)?.into())
     });
-    // TODO: replace, unify, simple_selectors
+    // TODO: replace, simple_selectors
+    def!(f, unify(selector1, selector2), |s| {
+        let a: LogicalSelectorSet = s.get(name!(selector1))?;
+        let b: LogicalSelectorSet = s.get(name!(selector2))?;
+        Ok(a.unify(b).into())
+    });
+
     f
 }
 
@@ -54,7 +60,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(selector_nest), name!(nest)),
         (name!(selector_parse), name!(parse)),
         //(name!(selector_replace), name!(replace)),
-        //(name!(selector_unify), name!(unify)),
+        (name!(selector_unify), name!(unify)),
         //(name!(simple_selectors), name!(simple_selectors)),
     ] {
         global.insert(gname.clone(), m.get_lfunction(lname));

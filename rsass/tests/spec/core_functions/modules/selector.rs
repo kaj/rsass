@@ -174,7 +174,6 @@ fn simple_selectors() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn unify() {
     assert_eq!(
         runner().ok("@use \"sass:selector\";\
