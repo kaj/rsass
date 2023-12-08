@@ -435,19 +435,27 @@ fn hex_color(input: Span) -> PResult<Value> {
 
 pub fn unary_op(input: Span) -> PResult<Value> {
     map(
-        pair(
-            terminated(
-                alt((
-                    value(Operator::Plus, tag("+")),
-                    value(Operator::Minus, tag("-")),
-                    value(Operator::Div, terminated(tag("/"), spacelike2)),
-                    value(Operator::Not, terminated(tag("not"), spacelike2)),
-                )),
-                opt_spacelike,
-            ),
+        tuple((
+            alt((
+                value(Operator::Plus, tag("+")),
+                value(Operator::Minus, tag("-")),
+                value(Operator::Div, terminated(tag("/"), spacelike2)),
+                value(Operator::Not, terminated(tag("not"), spacelike2)),
+            )),
+            ignore_comments,
             single_value,
-        ),
-        |(op, v)| Value::UnaryOp(op, Box::new(v)),
+        )),
+        |(op, s, v)| match (op, s, v) {
+            (
+                Operator::Minus | Operator::Plus,
+                false,
+                Value::Literal(mut s),
+            ) if s.is_unquoted() => {
+                s.prepend(&op.to_string());
+                Value::Literal(s)
+            }
+            (op, _, v) => Value::UnaryOp(op, Box::new(v)),
+        },
     )(input)
 }
 
