@@ -172,9 +172,7 @@ impl Operator {
             },
             Operator::Modulo => match (a, b) {
                 (Value::Numeric(a, _), Value::Numeric(b, _)) => {
-                    if a.unit == b.unit {
-                        Some(Value::scalar(&a.value % &b.value))
-                    } else if b.is_no_unit() {
+                    if a.unit == b.unit || b.is_no_unit() {
                         Some(Numeric::new(&a.value % &b.value, a.unit).into())
                     } else {
                         None

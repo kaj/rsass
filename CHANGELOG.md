@@ -11,6 +11,7 @@ project adheres to
 
 * Added support for the `selector.unify` function (PR #187).
 * Improved parsing of binary / unary operations and other uses of `-`.
+* Fixed som special cases in the sass `%` operator.
 * Some internal cleanup (including setting workspace resolver to 2).
 * Msrv is 1.70 for rsass-cli, and 1.61 for the lib and macros (and
   1.63 for running the tests of rsass, because some extra logging).

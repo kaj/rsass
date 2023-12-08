@@ -213,6 +213,13 @@ impl Rem for &NumValue {
         if rhs.is_zero() {
             return (f64::from(self) % 0.).into();
         }
+        fn float_rem(s: f64, r: f64) -> f64 {
+            if r.is_infinite() && s.signum() * r.signum() < 0. {
+                f64::NAN
+            } else {
+                s % r
+            }
+        }
         match (self, rhs) {
             (NumValue::Rational(s), NumValue::Rational(r)) => (s % r).into(),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
@@ -224,8 +231,8 @@ impl Rem for &NumValue {
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 (s.as_ref() % r.as_ref()).into()
             }
-            (NumValue::Float(s), r) => (s % f64::from(r)).into(),
-            (s, NumValue::Float(r)) => (f64::from(s) % r).into(),
+            (NumValue::Float(s), r) => float_rem(*s, r.into()).into(),
+            (s, NumValue::Float(r)) => float_rem(s.into(), *r).into(),
         }
     }
 }

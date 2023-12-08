@@ -18,7 +18,6 @@ mod degenerate {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn negative_and_negative() {
                 assert_eq!(
                     runner().ok("a {b: -1px % calc(-infinity * 1px)}\n"),
@@ -28,7 +27,6 @@ mod degenerate {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_and_positive() {
                 assert_eq!(
                     runner().ok("a {b: -1px % calc(infinity * 1px)}\n"),
@@ -38,7 +36,6 @@ mod degenerate {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn positive_and_negative() {
                 assert_eq!(
                     runner().ok("a {b: 1px % calc(-infinity * 1px)}\n"),
@@ -48,7 +45,6 @@ mod degenerate {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn positive_and_positive() {
                 assert_eq!(
                     runner().ok("a {b: 1px % calc(infinity * 1px)}\n"),
