@@ -142,8 +142,8 @@ where
 {
     let (rest, v) = term(input)?;
     fold_many0(
-        tuple((
-            verify(
+        verify(
+            tuple((
                 tuple((
                     ignore_comments,
                     alt((
@@ -152,11 +152,16 @@ where
                     )),
                     ignore_comments,
                 )),
-                |(s1, op, s2)| op == &Operator::Plus || !*s1 || *s2,
-            ),
-            term,
-            position,
-        )),
+                term,
+                position,
+            )),
+            |((s1, op, s2), t2, _)| {
+                use Value::*;
+                *s2 || !*s1
+                    || op == &Operator::Plus
+                    || !matches!(&t2, Literal(_) | Numeric(_) | BinOp(_))
+            },
+        ),
         move || v.clone(),
         |v, ((s1, op, s2), v2, end)| {
             let pos = input.up_to(&end).to_owned();

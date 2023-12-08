@@ -59,7 +59,6 @@ mod syntax {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn newline() {
                 assert_eq!(
                     runner().ok("a {b: c\
@@ -70,7 +69,6 @@ mod syntax {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn space() {
                 assert_eq!(
                     runner().ok("a {b: c -(d)}\n"),
@@ -80,7 +78,6 @@ mod syntax {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn tab() {
                 assert_eq!(
                     runner().ok("a {b: c\t-(d)}\n"),
