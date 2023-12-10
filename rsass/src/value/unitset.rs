@@ -23,6 +23,9 @@ impl UnitSet {
     pub fn is_none(&self) -> bool {
         self.units.iter().all(|(u, _)| *u == Unit::None)
     }
+    pub(crate) fn is_pos(&self) -> bool {
+        self.units.iter().any(|(u, p)| *u != Unit::None && *p > 0)
+    }
     /// Check if this `UnitSet` conains only known units.
     pub fn is_known(&self) -> bool {
         !self
@@ -77,7 +80,7 @@ impl UnitSet {
     }
 
     pub(crate) fn valid_in_css(&self) -> bool {
-        self.css_dimension().valid_in_css()
+        self.units.len() < 2 && self.css_dimension().valid_in_css()
     }
 
     /// Get a scaling factor to convert this unit to another unit.
@@ -190,6 +193,8 @@ impl From<Unit> for UnitSet {
 
 impl Display for UnitSet {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        // "short" format is used (only?) by the math.units(..) function.
+        let short = out.alternate();
         let pos: Vec<_> =
             self.units.iter().filter(|(_u, p)| *p > 0).collect();
         let neg: Vec<_> =
@@ -198,18 +203,18 @@ impl Display for UnitSet {
         if let Some(((u, p), rest)) = pos.split_first() {
             write_one(out, u, *p)?;
             for (u, p) in rest {
-                out.write_str("*")?;
+                out.write_str(if short { "*" } else { " * 1" })?;
                 write_one(out, u, p.abs())?;
             }
             if let Some(((u, p), rest)) = neg.split_first() {
-                out.write_str("/")?;
+                out.write_str(if short { "/" } else { " / 1" })?;
                 write_one(out, u, p.abs())?;
                 for (u, p) in rest {
-                    out.write_str("*")?;
+                    out.write_str(if short { "*" } else { " / 1" })?;
                     write_one(out, u, p.abs())?;
                 }
             }
-        } else {
+        } else if short {
             match neg.split_first() {
                 None => (),
                 Some(((u, p), [])) => {
@@ -225,6 +230,11 @@ impl Display for UnitSet {
                     out.write_str(")^-1")?;
                 }
             }
+        } else {
+            for (u, p) in neg {
+                out.write_str(" / 1")?;
+                write_one(out, u, p.abs())?;
+            }
         }
         Ok(())
     }
@@ -234,7 +244,7 @@ fn write_one(out: &mut fmt::Formatter, u: &Unit, p: i8) -> fmt::Result {
     u.fmt(out)?;
     if (0..=3).contains(&p) {
         for _ in 1..p {
-            write!(out, "*{u}")?;
+            write!(out, " * 1{u}")?;
         }
     } else {
         write!(out, "^{p}")?;

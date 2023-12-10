@@ -121,7 +121,7 @@ mod error {
         runner().err(
             "a {b: rem(1px*2px, 10%)}\n"
         ),
-        "Error: Number 2px*px isn\'t compatible with CSS calculations.\
+        "Error: Number calc(2px * 1px) isn\'t compatible with CSS calculations.\
          \n  ,\
          \n1 | a {b: rem(1px*2px, 10%)}\
          \n  |           ^^^^^^^\

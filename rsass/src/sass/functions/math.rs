@@ -183,7 +183,7 @@ pub fn create_module() -> Scope {
     def!(f, unit(number), |s| {
         let mut unit = s.get::<Numeric>(name!(number))?.unit;
         unit.simplify();
-        Ok(CssString::new(unit.to_string(), Quotes::Double).into())
+        Ok(CssString::new(format!("{unit:#}"), Quotes::Double).into())
     });
 
     // - - - Other Functions - - -
@@ -369,7 +369,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
 fn radians(v: Value) -> Result<f64, String> {
     let v = Numeric::try_from(v)?;
     v.as_unit_def(Unit::Rad).map(Into::into).ok_or_else(|| {
-        expected_to(&v, "have an angle unit (deg, grad, rad, turn)")
+        expected_to(v, "have an angle unit (deg, grad, rad, turn)")
     })
 }
 

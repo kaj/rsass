@@ -67,7 +67,7 @@ fn check_alpha(v: Value) -> Result<Rational, String> {
             let num = Numeric::try_from(v)?;
             num.as_unit(Unit::None)
                 .ok_or_else(|| {
-                    expected_to(&num, "have unit \"%\" or no units")
+                    expected_to(num, "have unit \"%\" or no units")
                 })?
                 .as_ratio()?
         }
@@ -78,7 +78,7 @@ fn check_alpha_range(v: Value) -> Result<Rational, String> {
     let v = Numeric::try_from(v)?;
     let r = v.as_ratio()?;
     if r < zero() || r > one() {
-        Err(expected_to(&v, "be within 0 and 1"))
+        Err(expected_to(v, "be within 0 and 1"))
     } else {
         Ok(r)
     }
@@ -87,7 +87,7 @@ fn check_alpha_pm(v: Value) -> Result<Rational, String> {
     let v = Numeric::try_from(v)?;
     let r = v.as_ratio()?;
     if r.abs() > one() {
-        Err(expected_to(&v, "be within -1 and 1"))
+        Err(expected_to(v, "be within -1 and 1"))
     } else {
         Ok(r)
     }
@@ -131,10 +131,10 @@ fn check_pct(v: Value) -> Result<Number, String> {
 fn check_expl_pct(v: Value) -> Result<Rational, String> {
     let val = Numeric::try_from(v)?;
     if !val.unit.is_percent() {
-        return Err(expected_to(&val, "have unit \"%\""));
+        return Err(expected_to(val, "have unit \"%\""));
     }
     if val.value < zero() || val.value > 100.into() {
-        Err(expected_to(&val, "be within 0% and 100%"))
+        Err(expected_to(val, "be within 0% and 100%"))
     } else {
         Ok(val.as_ratio()? / 100)
     }
@@ -144,7 +144,7 @@ fn check_pct_range(v: Value) -> Result<Rational, String> {
     let val = check_pct(v)?;
     if val < zero() || val > 100.into() {
         Err(expected_to(
-            &Numeric::new(val, Unit::Percent),
+            Numeric::new(val, Unit::Percent),
             "be within 0% and 100%",
         ))
     } else {
@@ -155,7 +155,7 @@ fn check_pct_range(v: Value) -> Result<Rational, String> {
 fn check_amount(v: Value) -> Result<Rational, String> {
     let val = check_pct(v)?;
     if val < zero() || val > 100.into() {
-        Err(expected_to(&val, "be within 0 and 100"))
+        Err(expected_to(Value::scalar(val), "be within 0 and 100"))
     } else {
         Ok(val.as_ratio()? / 100)
     }
@@ -168,7 +168,7 @@ fn check_channel_range(v: Value) -> Result<Rational, String> {
     let v = Numeric::try_from(v)?;
     let r = num2chan(&v)?;
     if r > Rational::from_integer(255) || r < zero() {
-        Err(expected_to(&v, "be within 0 and 255"))
+        Err(expected_to(v, "be within 0 and 255"))
     } else {
         Ok(r)
     }
@@ -177,7 +177,7 @@ fn check_channel_pm(v: Value) -> Result<Rational, String> {
     let v = Numeric::try_from(v)?;
     let r = num2chan(&v)?;
     if r.abs() > Rational::from_integer(255) {
-        Err(expected_to(&v, "be within -255 and 255"))
+        Err(expected_to(v, "be within -255 and 255"))
     } else {
         Ok(r)
     }

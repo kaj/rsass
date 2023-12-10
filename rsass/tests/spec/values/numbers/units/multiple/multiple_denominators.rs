@@ -12,7 +12,7 @@ fn test() {
              \n  b: inspect((1 / 1px / 1rad));\
              \n}\n"),
         "a {\
-         \n  b: 1(px*rad)^-1;\
+         \n  b: calc(1 / 1px / 1rad);\
          \n}\n"
     );
 }

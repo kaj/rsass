@@ -20,7 +20,7 @@ mod error {
                     "@use \'sass:math\';\
              \na {b: math.div(1, 0px)}\n"
                 ),
-                "Error: calc(Infinitypx^-1) isn\'t a valid CSS value.\
+                "Error: calc(infinity / 1px) isn\'t a valid CSS value.\
          \n  ,\
          \n2 | a {b: math.div(1, 0px)}\
          \n  |       ^^^^^^^^^^^^^^^^\
@@ -35,7 +35,7 @@ mod error {
                     "@use \'sass:math\';\
              \na {b: math.div(1px * 1em, 0)}\n"
                 ),
-                "Error: calc(Infinitypx*em) isn\'t a valid CSS value.\
+                "Error: calc(infinity * 1px * 1em) isn\'t a valid CSS value.\
          \n  ,\
          \n2 | a {b: math.div(1px * 1em, 0)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
@@ -44,14 +44,13 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn numerator_and_denominator_unit() {
             assert_eq!(
                 runner().err(
                     "@use \'sass:math\';\
              \na {b: math.div(1px, 0em)}\n"
                 ),
-                "Error: calc(Infinitypx/em) isn\'t a valid CSS value.\
+                "Error: calc(infinity * 1px / 1em) isn\'t a valid CSS value.\
          \n  ,\
          \n2 | a {b: math.div(1px, 0em)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
@@ -71,7 +70,7 @@ mod error {
                     "@use \'sass:math\';\
              \na {b: math.div(-1, 0px)}\n"
                 ),
-                "Error: calc(-Infinitypx^-1) isn\'t a valid CSS value.\
+                "Error: calc(-infinity / 1px) isn\'t a valid CSS value.\
          \n  ,\
          \n2 | a {b: math.div(-1, 0px)}\
          \n  |       ^^^^^^^^^^^^^^^^^\
@@ -82,33 +81,32 @@ mod error {
         #[test]
         fn multiple_numerator_units() {
             assert_eq!(
-                runner().err(
-                    "@use \'sass:math\';\
+        runner().err(
+            "@use \'sass:math\';\
              \na {b: math.div(-1px * 1em, 0)}\n"
-                ),
-                "Error: calc(-Infinitypx*em) isn\'t a valid CSS value.\
+        ),
+        "Error: calc(-infinity * 1px * 1em) isn\'t a valid CSS value.\
          \n  ,\
          \n2 | a {b: math.div(-1px * 1em, 0)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-            );
+    );
         }
         #[test]
-        #[ignore] // missing error
         fn numerator_and_denominator_unit() {
             assert_eq!(
-                runner().err(
-                    "@use \'sass:math\';\
+        runner().err(
+            "@use \'sass:math\';\
              \na {b: math.div(-1px, 0em)}\n"
-                ),
-                "Error: calc(-Infinitypx/em) isn\'t a valid CSS value.\
+        ),
+        "Error: calc(-infinity * 1px / 1em) isn\'t a valid CSS value.\
          \n  ,\
          \n2 | a {b: math.div(-1px, 0em)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-            );
+    );
         }
     }
     mod nan {
@@ -122,7 +120,7 @@ mod error {
                     "@use \'sass:math\';\
              \na {b: math.div(0, 0px)}\n"
                 ),
-                "Error: calc(NaNpx^-1) isn\'t a valid CSS value.\
+                "Error: calc(NaN / 1px) isn\'t a valid CSS value.\
          \n  ,\
          \n2 | a {b: math.div(0, 0px)}\
          \n  |       ^^^^^^^^^^^^^^^^\
@@ -137,7 +135,7 @@ mod error {
                     "@use \'sass:math\';\
              \na {b: math.div(0px * 0em, 0)}\n"
                 ),
-                "Error: calc(NaNpx*em) isn\'t a valid CSS value.\
+                "Error: calc(NaN * 1px * 1em) isn\'t a valid CSS value.\
          \n  ,\
          \n2 | a {b: math.div(0px * 0em, 0)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
@@ -146,14 +144,13 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn numerator_and_denominator_unit() {
             assert_eq!(
                 runner().err(
                     "@use \'sass:math\';\
              \na {b: math.div(0px, 0em)}\n"
                 ),
-                "Error: calc(NaNpx/em) isn\'t a valid CSS value.\
+                "Error: calc(NaN * 1px / 1em) isn\'t a valid CSS value.\
          \n  ,\
          \n2 | a {b: math.div(0px, 0em)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\

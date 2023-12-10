@@ -13,7 +13,7 @@ fn test() {
              \n  b: inspect($number * (1 / 1px));\
              \n}\n"),
         "a {\
-         \n  b: 1rad/ms*Hz;\
+         \n  b: calc(1rad / 1ms / 1Hz);\
          \n}\n"
     );
 }

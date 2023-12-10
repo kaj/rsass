@@ -16,7 +16,7 @@ fn test() {
              \n}\n"
         ),
         "a {\
-         \n  b: 1bar/baz*qux;\
+         \n  b: calc(1bar / 1baz / 1qux);\
          \n}\n"
     );
 }

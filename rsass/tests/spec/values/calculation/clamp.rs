@@ -22,14 +22,16 @@ mod error {
     #[ignore] // wrong error
     fn complex_unit() {
         assert_eq!(
-            runner().err("a {b: clamp(1px*1px, 2%*2%, 3px*3px)}\n"),
-            "Error: Number 1px*px isn\'t compatible with CSS calculations.\
+        runner().err(
+            "a {b: clamp(1px*1px, 2%*2%, 3px*3px)}\n"
+        ),
+        "Error: Number calc(1px * 1px) isn\'t compatible with CSS calculations.\
          \n  ,\
          \n1 | a {b: clamp(1px*1px, 2%*2%, 3px*3px)}\
          \n  |             ^^^^^^^\
          \n  \'\
          \n  input.scss 1:13  root stylesheet",
-        );
+    );
     }
     mod known_incompatible {
         #[allow(unused)]

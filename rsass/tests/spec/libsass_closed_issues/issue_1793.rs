@@ -14,7 +14,7 @@ fn test() {
              \n  foo { bar: baz; }\
              \n}\n"
         ),
-        "Error: 10px*in isn\'t a valid CSS value.\
+        "Error: calc(10px * 1in) isn\'t a valid CSS value.\
          \n  ,\
          \n1 | @media (max-width: (2px*5in)) {\
          \n  |                    ^^^^^^^^^\

@@ -1,7 +1,7 @@
 use super::{Call, Closure, FormalArgs, Name};
 use crate::css::{self, is_not, BinOp, CallArgs, CssString, Value};
 use crate::input::SourcePos;
-use crate::output::{Format, Formatted};
+use crate::output::Format;
 use crate::value::{CssDimensionSet, Numeric, Operator, Quotes};
 use crate::{Scope, ScopeRef};
 use lazy_static::lazy_static;
@@ -349,7 +349,7 @@ fn css_fn_arg(v: Value) -> Result<Value, CallError> {
             } else {
                 Err(CallError::msg(format!(
                     "Number {} isn't compatible with CSS calculations.",
-                    num.format(Format::introspect())
+                    Value::Numeric(num, c).introspect()
                 )))
             }
         }
@@ -397,18 +397,8 @@ impl<T, E: ToString> CheckedArg<T> for Result<T, E> {
     }
 }
 
-fn expected_to<'a, T>(value: &'a T, cond: &str) -> String
-where
-    Formatted<'a, T>: std::fmt::Display,
-{
-    format!(
-        "Expected {} to {}.",
-        Formatted {
-            value,
-            format: Format::introspect()
-        },
-        cond,
-    )
+fn expected_to<T: Into<Value>>(value: T, cond: &str) -> String {
+    format!("Expected {} to {}.", value.into().introspect(), cond)
 }
 
 fn is_special(v: &Value) -> bool {
@@ -443,7 +433,7 @@ mod check {
         if val.is_no_unit() {
             Ok(val.value)
         } else {
-            Err(expected_to(&val, "have no units"))
+            Err(expected_to(val, "have no units"))
         }
     }
     pub fn unitless_int(v: Value) -> Result<i64, String> {

@@ -136,8 +136,8 @@ impl Value {
     }
 
     fn needs_calc(&self) -> bool {
-        if let Value::Numeric(Numeric { value, unit: _ }, _) = self {
-            !value.is_finite()
+        if let Value::Numeric(Numeric { value, unit }, _) = self {
+            !value.is_finite() || unit.valid_in_css()
         } else {
             false
         }
@@ -272,11 +272,7 @@ impl Value {
     }
     /// Format this value for error messages.
     pub fn introspect(&self) -> String {
-        // Note: The replaceing here is a silly workaround for
-        // https://github.com/sass/sass-spec/issues/1905
         self.to_string(Format::introspect())
-            .replace("infinity * 1", "Infinity")
-            .replace("NaN * 1", "NaN")
     }
 }
 
@@ -445,8 +441,8 @@ impl std::fmt::Display for InvalidCss {
             InvalidCss::Incompat(a, b) => write!(
                 f,
                 "{} and {} have incompatible units.",
-                a.format(Format::introspect()),
-                b.format(Format::introspect()),
+                Value::from(a.clone()).introspect(),
+                Value::from(b.clone()).introspect(),
             ),
         }
     }

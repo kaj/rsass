@@ -154,13 +154,13 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn unsimplifiable() {
         assert_eq!(
         runner().err(
             "a {b: hypot(-7px / 4em)}\n"
         ),
-        "Error: Number -1.75px/em isn\'t compatible with CSS calculations.\
+        "Error: Number calc(-1.75px / 1em) isn\'t compatible with CSS calculations.\
          \n  ,\
          \n1 | a {b: hypot(-7px / 4em)}\
          \n  |             ^^^^^^^^^^\

@@ -163,7 +163,7 @@ impl<'a> Display for Formatted<'a, Numeric> {
         let mut unit = self.value.unit.clone();
         let value = &self.value.value * &unit.simplify();
         value.format(self.format).fmt(out)?;
-        if !(unit.is_none() || value.is_finite()) {
+        if !value.is_finite() && unit.is_pos() {
             out.write_str(" * 1")?;
         }
         unit.fmt(out)

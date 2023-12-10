@@ -13,7 +13,7 @@ fn test() {
              \n  err: 2px - 2px*2px;\r\
              \n}"
         ),
-        "Error: 2px and 4px*px have incompatible units.\
+        "Error: 2px and calc(4px * 1px) have incompatible units.\
          \n  ,\
          \n2 |   err: 2px - 2px*2px;\
          \n  |        ^^^^^^^^^^^^^\

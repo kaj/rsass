@@ -107,7 +107,7 @@ mod error {
         runner().err(
             "a {b: cos(-7px / 4em)}\n"
         ),
-        "Error: $number: Expected -1.75px/em to have an angle unit (deg, grad, rad, turn).\
+        "Error: $number: Expected calc(-1.75px / 1em) to have an angle unit (deg, grad, rad, turn).\
          \n  ,\
          \n1 | a {b: cos(-7px / 4em)}\
          \n  |       ^^^^^^^^^^^^^^^\

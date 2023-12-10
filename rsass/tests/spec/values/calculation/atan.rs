@@ -79,7 +79,7 @@ mod error {
         fn complex() {
             assert_eq!(
                 runner().err("a {b: atan(-7px / 4em)}\n"),
-                "Error: Expected -1.75px/em to have no units.\
+                "Error: Expected calc(-1.75px / 1em) to have no units.\
          \n  ,\
          \n1 | a {b: atan(-7px / 4em)}\
          \n  |       ^^^^^^^^^^^^^^^^\

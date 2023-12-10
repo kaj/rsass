@@ -8,8 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn denominator_and_denominators() {
     assert_eq!(
-        runner().err("a {b: calc(1/1px + 1/1px/1px)}\n"),
-        "Error: Number 1px^-1 isn\'t compatible with CSS calculations.\
+        runner().err(
+            "a {b: calc(1/1px + 1/1px/1px)}\n"
+        ),
+        "Error: Number calc(1 / 1px) isn\'t compatible with CSS calculations.\
          \n  ,\
          \n1 | a {b: calc(1/1px + 1/1px/1px)}\
          \n  |            ^^^^^^^^^^^^^^^^^\
@@ -20,8 +22,10 @@ fn denominator_and_denominators() {
 #[test]
 fn mismatched_denominators() {
     assert_eq!(
-        runner().err("a {b: calc(1/1px/1s + 1/1px/1px)}\n"),
-        "Error: Number 1(px*s)^-1 isn\'t compatible with CSS calculations.\
+        runner().err(
+            "a {b: calc(1/1px/1s + 1/1px/1px)}\n"
+        ),
+        "Error: Number calc(1 / 1px / 1s) isn\'t compatible with CSS calculations.\
          \n  ,\
          \n1 | a {b: calc(1/1px/1s + 1/1px/1px)}\
          \n  |            ^^^^^^^^^^^^^^^^^^^^\
@@ -32,8 +36,10 @@ fn mismatched_denominators() {
 #[test]
 fn mismatched_numerators() {
     assert_eq!(
-        runner().err("a {b: calc(1px*1s + 1px*1px)}\n"),
-        "Error: Number 1px*s isn\'t compatible with CSS calculations.\
+        runner().err(
+            "a {b: calc(1px*1s + 1px*1px)}\n"
+        ),
+        "Error: Number calc(1px * 1s) isn\'t compatible with CSS calculations.\
          \n  ,\
          \n1 | a {b: calc(1px*1s + 1px*1px)}\
          \n  |            ^^^^^^^^^^^^^^^^\
@@ -44,8 +50,10 @@ fn mismatched_numerators() {
 #[test]
 fn numerator_and_denominator() {
     assert_eq!(
-        runner().err("a {b: calc(1px + 1/1px)}\n"),
-        "Error: Number 1px^-1 isn\'t compatible with CSS calculations.\
+        runner().err(
+            "a {b: calc(1px + 1/1px)}\n"
+        ),
+        "Error: Number calc(1 / 1px) isn\'t compatible with CSS calculations.\
          \n  ,\
          \n1 | a {b: calc(1px + 1/1px)}\
          \n  |            ^^^^^^^^^^^\
@@ -56,8 +64,10 @@ fn numerator_and_denominator() {
 #[test]
 fn numerator_and_numerators() {
     assert_eq!(
-        runner().err("a {b: calc(1px + 1px*1px)}\n"),
-        "Error: Number 1px*px isn\'t compatible with CSS calculations.\
+        runner().err(
+            "a {b: calc(1px + 1px*1px)}\n"
+        ),
+        "Error: Number calc(1px * 1px) isn\'t compatible with CSS calculations.\
          \n  ,\
          \n1 | a {b: calc(1px + 1px*1px)}\
          \n  |            ^^^^^^^^^^^^^\
@@ -73,14 +83,16 @@ mod unitless {
     #[ignore] // wrong error
     fn and_denominator() {
         assert_eq!(
-            runner().err("a {b: calc(1 + 1/1px)}\n"),
-            "Error: Number 1px^-1 isn\'t compatible with CSS calculations.\
+        runner().err(
+            "a {b: calc(1 + 1/1px)}\n"
+        ),
+        "Error: Number calc(1 / 1px) isn\'t compatible with CSS calculations.\
          \n  ,\
          \n1 | a {b: calc(1 + 1/1px)}\
          \n  |            ^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:12  root stylesheet",
-        );
+    );
     }
     #[test]
     #[ignore] // missing error

@@ -160,7 +160,7 @@ mod error {
         fn complex_and_unknown() {
             assert_eq!(
                 runner().err("a {b: log(1px*2px, 10%)}\n"),
-                "Error: Expected 2px*px to have no units.\
+                "Error: Expected calc(2px * 1px) to have no units.\
          \n  ,\
          \n1 | a {b: log(1px*2px, 10%)}\
          \n  |       ^^^^^^^^^^^^^^^^^\
