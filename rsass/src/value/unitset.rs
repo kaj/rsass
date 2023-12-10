@@ -49,16 +49,15 @@ impl UnitSet {
         use std::collections::BTreeMap;
         self.units
             .iter()
-            .fold(BTreeMap::new(), |mut map, (unit, power)| {
-                let dim = unit.dimension();
-                if dim != Dimension::None {
-                    *map.entry(unit.dimension()).or_insert(0) += *power;
-                }
+            .map(|(unit, p)| (unit.dimension(), p))
+            .filter(|(dim, _p)| *dim != Dimension::None)
+            .fold(BTreeMap::new(), |mut map, (dim, power)| {
+                *map.entry(dim).or_insert(0) += *power;
                 map
             })
             .into_iter()
             .filter(|(_d, power)| *power != 0)
-            .collect::<Vec<_>>()
+            .collect()
     }
 
     pub(crate) fn css_dimension(&self) -> CssDimensionSet {
@@ -66,16 +65,15 @@ impl UnitSet {
         let dim = self
             .units
             .iter()
-            .fold(BTreeMap::new(), |mut map, (unit, power)| {
-                let dim = CssDimension::from(unit.dimension());
-                if dim != CssDimension::None {
-                    *map.entry(dim).or_insert(0) += *power;
-                }
+            .map(|(unit, p)| (CssDimension::from(unit.dimension()), p))
+            .filter(|(dim, _p)| *dim != CssDimension::None)
+            .fold(BTreeMap::new(), |mut map, (dim, power)| {
+                *map.entry(dim).or_insert(0) += *power;
                 map
             })
             .into_iter()
             .filter(|(_d, power)| *power != 0)
-            .collect::<Vec<_>>();
+            .collect();
         CssDimensionSet { dim }
     }
 
@@ -195,35 +193,35 @@ impl Display for UnitSet {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         // "short" format is used (only?) by the math.units(..) function.
         let short = out.alternate();
-        let pos: Vec<_> =
-            self.units.iter().filter(|(_u, p)| *p > 0).collect();
-        let neg: Vec<_> =
-            self.units.iter().filter(|(_u, p)| *p < 0).collect();
+        let mut pos = self.units.iter().filter(|(_u, p)| *p > 0);
+        let mut neg = self.units.iter().filter(|(_u, p)| *p < 0);
 
-        if let Some(((u, p), rest)) = pos.split_first() {
+        if let Some((u, p)) = pos.next() {
             write_one(out, u, *p)?;
-            for (u, p) in rest {
+            for (u, p) in pos {
                 out.write_str(if short { "*" } else { " * 1" })?;
                 write_one(out, u, p.abs())?;
             }
-            if let Some(((u, p), rest)) = neg.split_first() {
+            if let Some((u, p)) = neg.next() {
                 out.write_str(if short { "/" } else { " / 1" })?;
                 write_one(out, u, p.abs())?;
-                for (u, p) in rest {
+                for (u, p) in neg {
                     out.write_str(if short { "*" } else { " / 1" })?;
                     write_one(out, u, p.abs())?;
                 }
             }
         } else if short {
-            match neg.split_first() {
-                None => (),
-                Some(((u, p), [])) => {
+            match (neg.next(), neg.next()) {
+                (None, _) => (),
+                (Some((u, p)), None) => {
                     write_one(out, u, *p)?;
                 }
-                Some(((u, p), rest)) => {
+                (Some((u, p)), Some((nu, np))) => {
                     out.write_str("(")?;
                     write_one(out, u, p.abs())?;
-                    for (u, p) in rest {
+                    out.write_str("*")?;
+                    write_one(out, nu, np.abs())?;
+                    for (u, p) in neg {
                         out.write_str("*")?;
                         write_one(out, u, p.abs())?;
                     }
