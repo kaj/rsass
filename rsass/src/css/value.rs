@@ -137,7 +137,7 @@ impl Value {
 
     fn needs_calc(&self) -> bool {
         if let Value::Numeric(Numeric { value, unit }, _) = self {
-            !value.is_finite() || unit.valid_in_css()
+            !value.is_finite() || !unit.valid_in_css()
         } else {
             false
         }
