@@ -15,7 +15,7 @@ project adheres to
 * Some internal cleanup (including setting workspace resolver to 2).
 * Msrv is 1.70 for rsass-cli, and 1.61 for the lib and macros (and
   1.63 for running the tests of rsass, because some extra logging).
-* Updated sass-spec test suite to 2023-12-07.
+* Updated sass-spec test suite to 2023-12-14.
 
 
 ## Release 0.28.6
