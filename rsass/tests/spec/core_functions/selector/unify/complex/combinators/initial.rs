@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn different() {
     assert_eq!(
         runner().ok(
@@ -54,7 +53,6 @@ mod supersequence {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn contiguous() {
         assert_eq!(
             runner().ok(
@@ -64,7 +62,6 @@ mod supersequence {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn non_contiguous() {
         assert_eq!(
             runner().ok(

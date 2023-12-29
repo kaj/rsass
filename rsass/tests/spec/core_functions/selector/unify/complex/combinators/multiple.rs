@@ -10,7 +10,6 @@ mod in_a_row {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn different() {
         assert_eq!(
         runner().ok(
@@ -22,7 +21,6 @@ mod in_a_row {
     );
     }
     #[test]
-    #[ignore] // wrong result
     fn same() {
         assert_eq!(
             runner().ok(
@@ -36,7 +34,6 @@ mod in_a_row {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn contiguous() {
             assert_eq!(
         runner().ok(
@@ -46,7 +43,6 @@ mod in_a_row {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn non_contiguous() {
             assert_eq!(
         runner().ok(

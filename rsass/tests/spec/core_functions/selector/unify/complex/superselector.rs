@@ -10,7 +10,6 @@ mod three_level {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn inner() {
         assert_eq!(
         runner().ok(

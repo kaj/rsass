@@ -93,27 +93,7 @@ pub(crate) struct Selector {
 impl Selector {
     /// Return true iff this selector is a superselector of `sub`.
     fn is_superselector(&self, sub: &Self) -> bool {
-        fn elem_or_default(e: &Option<ElemType>) -> &ElemType {
-            lazy_static! {
-                static ref DEF: ElemType = ElemType::default();
-            }
-            e.as_ref().unwrap_or(&DEF)
-        }
-        elem_or_default(&self.element)
-            .is_superselector(elem_or_default(&sub.element))
-            && all_any(&self.placeholders, &sub.placeholders, PartialEq::eq)
-            && all_any(&self.classes, &sub.classes, PartialEq::eq)
-            && self.id.iter().all(|id| sub.id.as_ref() == Some(id))
-            && all_any(&self.attr, &sub.attr, Attribute::is_superselector)
-            && all_any(&self.pseudo, &sub.pseudo, Pseudo::is_superselector)
-            && self.pseudo_element().as_ref().map_or_else(
-                || sub.pseudo_element().is_none(),
-                |aa| {
-                    sub.pseudo_element()
-                        .as_ref()
-                        .map_or(false, |ba| aa.is_superselector(ba))
-                },
-            )
+        self.is_local_superselector(sub)
             && self.rel_of.as_deref().map_or(true, |(kind, s)| {
                 match kind {
                     RelKind::Ancestor => {
@@ -168,6 +148,30 @@ impl Selector {
                     }
                 }
             })
+    }
+
+    fn is_local_superselector(&self, sub: &Self) -> bool {
+        fn elem_or_default(e: &Option<ElemType>) -> &ElemType {
+            lazy_static! {
+                static ref DEF: ElemType = ElemType::default();
+            }
+            e.as_ref().unwrap_or(&DEF)
+        }
+        elem_or_default(&self.element)
+            .is_superselector(elem_or_default(&sub.element))
+            && all_any(&self.placeholders, &sub.placeholders, PartialEq::eq)
+            && all_any(&self.classes, &sub.classes, PartialEq::eq)
+            && self.id.iter().all(|id| sub.id.as_ref() == Some(id))
+            && all_any(&self.attr, &sub.attr, Attribute::is_superselector)
+            && all_any(&self.pseudo, &sub.pseudo, Pseudo::is_superselector)
+            && self.pseudo_element().as_ref().map_or_else(
+                || sub.pseudo_element().is_none(),
+                |aa| {
+                    sub.pseudo_element()
+                        .as_ref()
+                        .map_or(false, |ba| aa.is_superselector(ba))
+                },
+            )
     }
 
     fn unify(self, other: Selector) -> Vec<Selector> {
@@ -253,24 +257,33 @@ impl Selector {
             return None;
         }
 
-        if rel_of.is_empty() {
-            Some(vec![self])
+        Some(if rel_of.is_empty() {
+            vec![self]
+        } else if self.is_local_empty() {
+            vec![]
         } else if rel_of.len() == 1 {
             let mut rel_of = rel_of;
             self.rel_of = Some(rel_of.pop().unwrap());
-            Some(vec![self])
+            vec![self]
         } else {
-            Some(
-                rel_of
-                    .into_iter()
-                    .map(|r| {
-                        let mut t = self.clone();
-                        t.rel_of = Some(r);
-                        t
-                    })
-                    .collect(),
-            )
-        }
+            rel_of
+                .into_iter()
+                .map(|r| {
+                    let mut t = self.clone();
+                    t.rel_of = Some(r);
+                    t
+                })
+                .collect()
+        })
+    }
+
+    fn is_local_empty(&self) -> bool {
+        self.element.is_none()
+            && self.placeholders.is_empty()
+            && self.classes.is_empty()
+            && self.id.is_none()
+            && self.attr.is_empty()
+            && self.pseudo.is_empty()
     }
 
     fn with_rel_of(mut self, rel: RelKind, other: Selector) -> Vec<Selector> {
@@ -364,10 +377,11 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
         ((k @ AdjacentSibling, a), (AdjacentSibling, b))
         | ((k @ Parent, a), (Parent, b)) => as_rel_vec(k, b._unify(a)?),
         ((Ancestor, a), (Ancestor, b)) => {
-            if have_same(&a.id, &b.id)
+            if b.is_local_superselector(&a) {
+                as_rel_vec(Ancestor, a._unify(b)?)
+            } else if a.is_local_superselector(&b)
+                || have_same(&a.id, &b.id)
                 || have_same(&a.pseudo_element(), &b.pseudo_element())
-                || a.is_superselector(&b)
-                || b.is_superselector(&a)
             {
                 as_rel_vec(Ancestor, b._unify(a)?)
             } else {
