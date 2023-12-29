@@ -233,7 +233,7 @@ fn relative_color(args: &CallArgs) -> bool {
     fn inner(arg: &Value) -> bool {
         match arg {
             Value::List(l, Some(ListSeparator::Space), false) => {
-                matches!(l.get(0), Some(Value::Literal(s)) if is_from(s))
+                matches!(l.first(), Some(Value::Literal(s)) if is_from(s))
             }
             Value::List(l, Some(ListSeparator::Slash), false) => {
                 l.len() == 2 && inner(&l[0])

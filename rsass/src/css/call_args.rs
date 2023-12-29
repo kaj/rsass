@@ -80,7 +80,7 @@ impl CallArgs {
     pub(crate) fn get_single(&self) -> Result<&Value, ArgsError> {
         self.check_no_named()?;
         match self.positional.len() {
-            1 => Ok(self.positional.get(0).unwrap()),
+            1 => Ok(self.positional.first().unwrap()),
             0 => Ok(&Value::Null),
             n => Err(ArgsError::TooMany(1, n)),
         }
