@@ -8,6 +8,7 @@ use super::{BadSelector, SelectorPart, Selectors};
 use crate::css::{CssString, Value};
 use crate::parser::input_span;
 use crate::value::ListSeparator;
+use crate::Invalid;
 use lazy_static::lazy_static;
 use std::iter::once;
 use std::mem::swap;
@@ -27,6 +28,27 @@ impl SelectorSet {
             .iter()
             .all(|sub| self.s.iter().any(|sup| sup.is_superselector(sub)))
     }
+    pub fn replace(
+        self,
+        original: &SelectorSet,
+        replacement: &SelectorSet,
+    ) -> Result<Self, Invalid> {
+        for original in &original.s {
+            if original.rel_of.is_some() {
+                let s = original.clone().into_string_vec().join(" ");
+                return Err(Invalid::AtError(format!(
+                    "Can\'t extend complex selector {s}."
+                )));
+            }
+        }
+        let result = self
+            .s
+            .into_iter()
+            .flat_map(|s| s.replace(original, replacement))
+            .collect();
+        Ok(Self { s: result })
+    }
+
     pub fn unify(self, other: SelectorSet) -> SelectorSet {
         SelectorSet {
             s: self
@@ -60,6 +82,13 @@ impl TryFrom<&Selectors> for SelectorSet {
             .map(Selector::try_from)
             .collect::<Result<Vec<_>, _>>()
             .map(|s| SelectorSet { s })
+    }
+}
+impl TryFrom<SelectorSet> for Selectors {
+    type Error = BadSelector;
+
+    fn try_from(value: SelectorSet) -> Result<Self, Self::Error> {
+        Value::from(value).try_into()
     }
 }
 
@@ -172,6 +201,43 @@ impl Selector {
                         .map_or(false, |ba| aa.is_superselector(ba))
                 },
             )
+    }
+
+    fn replace(
+        mut self,
+        original: &SelectorSet,
+        replacement: &SelectorSet,
+    ) -> Vec<Self> {
+        self.pseudo = self
+            .pseudo
+            .into_iter()
+            .map(|p| dbg!(p.replace(original, replacement)))
+            .collect();
+
+        let mut result = vec![self];
+        for original in &original.s {
+            result = result
+                .into_iter()
+                .flat_map(|mut s| {
+                    if original.is_superselector(&s) {
+                        if original.element == s.element {
+                            s.element = None;
+                        }
+                        s.classes.retain(|c| {
+                            !original.classes.iter().any(|o| c == o)
+                        });
+                        replacement
+                            .s
+                            .iter()
+                            .flat_map(|r| s.clone().unify(r.clone()))
+                            .collect()
+                    } else {
+                        vec![s]
+                    }
+                })
+                .collect();
+        }
+        result
     }
 
     fn unify(self, other: Selector) -> Vec<Selector> {
@@ -305,7 +371,7 @@ impl Selector {
             if let Some((kind, sel)) = self.rel_of.take().map(|b| *b) {
                 let mut vec = sel.into_string_vec();
                 if let Some(symbol) = kind.symbol() {
-                    vec.push(symbol.to_string())
+                    vec.push(symbol.to_string());
                 }
                 vec
             } else {
@@ -455,7 +521,7 @@ where
     one.iter().all(|a| other.iter().any(|b| cond(a, b)))
 }
 
-// Combine all alements from `v` that is not made rundant by `other`
+// Combine all alements from `v` that is not made redundant by `other`
 // with those from `other` that is not redunant with `v`, into `v`
 // (leaving `other` empty).
 fn combine_vital<T, Q>(v: &mut Vec<T>, other: &mut Vec<T>, q: Q)
@@ -464,7 +530,7 @@ where
 {
     v.retain(|a| !other.iter().any(|b| q(b, a)));
     other.retain(|a| !v.iter().any(|b| q(b, a)));
-    v.append(other)
+    v.append(other);
 }
 
 impl TryFrom<Value> for Selector {
@@ -577,7 +643,7 @@ impl From<Selector> for Value {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 struct ElemType {
     s: String,
 }
@@ -760,6 +826,36 @@ impl Pseudo {
             self.name.value(),
             &["host", "host-context", "root", "scope"],
         )
+    }
+
+    pub fn replace(
+        mut self,
+        original: &SelectorSet,
+        replacement: &SelectorSet,
+    ) -> Self {
+        if name_in(
+            self.name.value(),
+            &[
+                "is",
+                "matches",
+                "not",
+                "any",
+                "where",
+                "has",
+                "host",
+                "host-context",
+            ],
+        ) {
+            self.arg = self.arg.map(|s| {
+                SelectorSet::try_from(&s)
+                    .unwrap()
+                    .replace(original, replacement)
+                    .unwrap()
+                    .try_into()
+                    .unwrap()
+            });
+        }
+        self
     }
 
     fn write_to_buf(&self, buf: &mut String) {

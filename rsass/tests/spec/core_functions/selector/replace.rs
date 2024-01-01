@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn complex() {
     assert_eq!(
         runner().ok("a {b: selector-replace(\"c d\", \"d\", \"e f\")}\n"),
@@ -16,7 +15,6 @@ fn complex() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn compound() {
     assert_eq!(
         runner().ok("a {b: selector-replace(\"c.d\", \"c\", \"e\")}\n"),
@@ -38,7 +36,6 @@ mod error {
             use super::runner;
 
             #[test]
-            #[ignore] // missing error
             fn list() {
                 assert_eq!(
                     runner()
@@ -52,7 +49,6 @@ mod error {
                 );
             }
             #[test]
-            #[ignore] // missing error
             fn string() {
                 assert_eq!(
                     runner().err(
@@ -68,7 +64,7 @@ mod error {
             }
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn invalid() {
             assert_eq!(
                 runner()
@@ -87,7 +83,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn parent() {
             assert_eq!(
                 runner()
@@ -106,7 +101,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn test_type() {
             assert_eq!(
         runner().err(
@@ -127,7 +121,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn invalid() {
             assert_eq!(
                 runner()
@@ -146,7 +140,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn parent() {
             assert_eq!(
                 runner()
@@ -165,7 +158,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn test_type() {
             assert_eq!(
         runner().err(
@@ -186,7 +178,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn invalid() {
             assert_eq!(
                 runner()
@@ -205,7 +197,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn parent() {
             assert_eq!(
                 runner()
@@ -224,7 +215,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn test_type() {
             assert_eq!(
         runner().err(
@@ -241,7 +231,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn too_few_args() {
         assert_eq!(
         runner().err(
@@ -260,7 +249,6 @@ mod error {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn too_many_args() {
         assert_eq!(
         runner().err(
@@ -292,7 +280,6 @@ mod format {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn compound() {
                 assert_eq!(
                     runner().ok(
@@ -304,7 +291,6 @@ mod format {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn list() {
                 assert_eq!(
         runner().ok(
@@ -316,7 +302,6 @@ mod format {
     );
             }
             #[test]
-            #[ignore] // wrong result
             fn list_of_compound() {
                 assert_eq!(
         runner().ok(
@@ -333,7 +318,6 @@ mod format {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn extendee() {
                 assert_eq!(
         runner().ok(
@@ -345,7 +329,6 @@ mod format {
     );
             }
             #[test]
-            #[ignore] // wrong result
             fn extender() {
                 assert_eq!(
                     runner().ok(
@@ -357,7 +340,6 @@ mod format {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn selector() {
                 assert_eq!(
                     runner().ok(
@@ -371,7 +353,6 @@ mod format {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn output() {
         assert_eq!(
             runner().ok(
@@ -389,7 +370,6 @@ mod format {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok(
@@ -401,7 +381,6 @@ fn named() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn no_op() {
     assert_eq!(
         runner().ok("a {b: selector-replace(\"c\", \"d\", \"e\")}\n"),
@@ -411,7 +390,6 @@ fn no_op() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn partial_no_op() {
     assert_eq!(
         runner().ok("a {b: selector-replace(\"c, d\", \"d\", \"e\")}\n"),
@@ -425,7 +403,6 @@ mod selector_pseudo {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn is() {
         assert_eq!(
             runner()
@@ -436,7 +413,6 @@ mod selector_pseudo {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn matches() {
         assert_eq!(
             runner().ok(
@@ -448,7 +424,6 @@ mod selector_pseudo {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn not() {
         assert_eq!(
             runner()
@@ -459,7 +434,6 @@ mod selector_pseudo {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn test_where() {
         assert_eq!(
             runner()
@@ -471,7 +445,6 @@ mod selector_pseudo {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn simple() {
     assert_eq!(
         runner().ok("a {b: selector-replace(\"c\", \"c\", \"d\")}\n"),
