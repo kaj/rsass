@@ -211,7 +211,7 @@ impl Selector {
         self.pseudo = self
             .pseudo
             .into_iter()
-            .map(|p| dbg!(p.replace(original, replacement)))
+            .map(|p| p.replace(original, replacement))
             .collect();
 
         let mut result = vec![self];
