@@ -1,6 +1,6 @@
 [package]
 name = "rsass-macros"
-version = "0.28.1-PRE"
+version = "0.28.8"
 categories = ["web-programming"]
 keywords = ["scss", "sass", "css", "web", "macro"]
 description = "Sass as a rust function-like macro."
@@ -15,7 +15,7 @@ rust-version = "1.61.0"
 proc-macro = true
 
 [dependencies]
-rsass = { path = "../rsass" }
+rsass = { path = "../rsass", version = "0.28.8" }
 proc-macro2 = "1.0.32"
 quote = "1.0.22"
 syn = "2.0.2"

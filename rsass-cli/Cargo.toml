@@ -1,6 +1,6 @@
 [package]
 name = "rsass-cli"
-version = "0.28.1-PRE"
+version = "0.28.8"
 authors = ["Rasmus Kaj <kaj@kth.se>"]
 description = "Commandline interface for rsass, compiles scss to css."
 categories = ["command-line-utilities", "web-programming"]
@@ -19,5 +19,5 @@ path = "src/main.rs"
 unimplemented_args = []
 
 [dependencies]
-rsass = { path = "../rsass" }
+rsass = { path = "../rsass", version = "0.28.8" }
 clap = { version = "4.1.1", features = ["derive", "wrap_help"] }
