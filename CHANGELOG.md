@@ -10,6 +10,7 @@ project adheres to
 ## Unreleased
 
 * Added support for the `selector.unify` function (PR #187).
+* Added support for the `selector.replace` function (PR #188).
 * Improved parsing of binary / unary operations and other uses of `-`.
 * Fixed som special cases in the sass `%` operator.
 * Some internal cleanup (including setting workspace resolver to 2).

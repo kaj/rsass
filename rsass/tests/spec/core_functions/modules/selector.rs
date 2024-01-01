@@ -152,7 +152,6 @@ fn parse() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn replace() {
     assert_eq!(
         runner().ok("@use \"sass:selector\";\
