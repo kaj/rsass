@@ -7,10 +7,14 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+* (Nothing yet)
+
+
 ## Release 0.28.8
 
 Released 2024-01-01.
-See also <https://rasmus.krats.se/2023/rsass028.en>
 Progress: 5565 of 7637 tests passed.
 
 * Added support for the `selector.unify` function (PR #187).
