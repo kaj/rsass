@@ -10,7 +10,6 @@ mod selector1 {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn invalid() {
         assert_eq!(
             runner().err("a {b: selector-unify(\"[c\", \"d\")}\n"),
@@ -65,7 +64,6 @@ mod selector2 {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn invalid() {
         assert_eq!(
             runner().err("a {b: selector-unify(\"c\", \"[d\")}\n"),

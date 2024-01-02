@@ -137,7 +137,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn invalid() {
         assert_eq!(
             runner().err("a {b: selector-append(\"[c\", \"d\")}\n"),

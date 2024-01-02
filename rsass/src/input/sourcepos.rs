@@ -35,6 +35,10 @@ impl SourcePos {
     pub fn fragment(&self) -> &[u8] {
         &self.source.data()[self.range()]
     }
+    /// Return true if the pos is at the end of the source.
+    pub fn is_at_end(&self) -> bool {
+        self.start == self.source.data().len()
+    }
 
     /// Return the line number for (the beginning of) this span.
     pub fn line_no(&self) -> usize {

@@ -10,7 +10,6 @@ mod invalid {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn initial() {
         assert_eq!(
             runner().err("a {b: selector-nest(\"[c\")}\n"),
@@ -28,7 +27,6 @@ mod invalid {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn later() {
         assert_eq!(
             runner().err("a {b: selector-nest(\"c\", \"[d\")}\n"),

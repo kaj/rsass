@@ -35,10 +35,12 @@ impl ParseError {
     where
         Msg: Into<String>,
     {
-        ParseError {
-            msg: msg.into(),
-            pos,
-        }
+        let msg = if pos.is_at_end() {
+            String::from("expected more input.")
+        } else {
+            msg.into()
+        };
+        ParseError { msg, pos }
     }
 }
 

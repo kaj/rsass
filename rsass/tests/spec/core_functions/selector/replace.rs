@@ -64,7 +64,6 @@ mod error {
             }
         }
         #[test]
-        #[ignore] // wrong error
         fn invalid() {
             assert_eq!(
                 runner()
@@ -121,7 +120,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn invalid() {
             assert_eq!(
                 runner()
@@ -178,7 +176,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn invalid() {
             assert_eq!(
                 runner()

@@ -10,7 +10,6 @@ mod sub {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn invalid() {
         assert_eq!(
             runner().err("a {b: is-superselector(\"c\", \"[d\")}\n"),
@@ -63,7 +62,6 @@ mod test_super {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn invalid() {
         assert_eq!(
             runner().err("a {b: is-superselector(\"[c\", \"d\")}\n"),

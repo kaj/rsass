@@ -73,7 +73,6 @@ mod parse {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn invalid() {
         assert_eq!(
             runner().err("a {b: selector-parse(\"[c\")}\n"),
