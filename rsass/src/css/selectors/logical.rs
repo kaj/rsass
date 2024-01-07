@@ -4,11 +4,12 @@
 //! In the future, I might use this as the primary (only) css selector
 //! implementation.  But as that is a major breaking change, I keep
 //! these types internal for now.
-use super::{BadSelector, SelectorPart, Selectors};
+use super::pseudo::Pseudo;
+use super::{BadSelector, CssSelectorSet, SelectorPart, Selectors};
 use crate::css::{CssString, Value};
-use crate::parser::input_span;
+use crate::input::{SourceFile, SourceName, SourcePos};
 use crate::value::ListSeparator;
-use crate::Invalid;
+use crate::{Invalid, ParseError};
 use lazy_static::lazy_static;
 use std::iter::once;
 use std::mem::swap;
@@ -16,13 +17,13 @@ use std::mem::swap;
 /// A set of selectors.
 /// This is the normal top-level selector, which can be a single
 /// [`Selector`] or a comma-separated list (set) of such selectors.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct SelectorSet {
-    s: Vec<Selector>,
+    pub(super) s: Vec<Selector>,
 }
 
 impl SelectorSet {
-    pub fn is_superselector(&self, other: &Self) -> bool {
+    pub(super) fn is_superselector(&self, other: &Self) -> bool {
         other
             .s
             .iter()
@@ -48,19 +49,28 @@ impl SelectorSet {
             .collect();
         Ok(Self { s: result })
     }
-
-    pub fn unify(self, other: SelectorSet) -> SelectorSet {
+    pub(super) fn write_to_buf(&self, buf: &mut String) {
+        fn write_one(s: &Selector, buf: &mut String) {
+            buf.push_str(&s.clone().into_string_vec().join(" "));
+        }
+        if let Some((first, rest)) = self.s.split_first() {
+            write_one(first, buf);
+            for one in rest {
+                buf.push_str(", "); // TODO: Only ',' is compressed!
+                write_one(one, buf);
+            }
+        }
+    }
+    pub(super) fn has_backref(&self) -> bool {
+        self.s.iter().any(Selector::has_backref)
+    }
+    pub(super) fn resolve_ref(self, ctx: &CssSelectorSet) -> Self {
         SelectorSet {
             s: self
                 .s
                 .into_iter()
-                .flat_map(|s| {
-                    other
-                        .s
-                        .iter()
-                        .flat_map(move |o| s.clone().unify(o.clone()))
-                })
-                .collect(),
+                .flat_map(|o| o.resolve_ref(ctx))
+                .collect::<Vec<_>>(),
         }
     }
 }
@@ -69,7 +79,7 @@ impl TryFrom<Value> for SelectorSet {
     type Error = BadSelector;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
-        Self::try_from(&Selectors::try_from(value)?.css_ok()?)
+        Self::try_from(&Selectors::try_from(value)?)
     }
 }
 impl TryFrom<&Selectors> for SelectorSet {
@@ -108,8 +118,9 @@ type RelBox = Box<(RelKind, Selector)>;
 /// A selector more aimed at making it easy to implement selector functions.
 ///
 /// A logical selector is fully resolved (cannot contain an `&` backref).
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub(crate) struct Selector {
+    backref: Option<()>,
     element: Option<ElemType>,
     placeholders: Vec<String>,
     classes: Vec<String>,
@@ -120,6 +131,87 @@ pub(crate) struct Selector {
 }
 
 impl Selector {
+    pub(super) fn nest(&self, other: &Self) -> Self {
+        let mut result = other.clone();
+        /*if result.has_backref() {
+            result = Self::resolve_ref(result, self);
+        } else*/
+        if let Some(rel) = result.rel_of.take() {
+            result.rel_of = Some(Box::new((rel.0, self.nest(&rel.1))));
+        } else {
+            result.rel_of = Some(Box::new((RelKind::Ancestor, self.clone())));
+        }
+        result
+    }
+
+    pub(super) fn resolve_ref(mut self, ctx: &CssSelectorSet) -> Vec<Self> {
+        self = self.resolve_ref_in_pseudo(ctx);
+        let rel_of = self.rel_of.take();
+
+        let result = if self.backref.is_some() {
+            self.backref = None;
+            ctx.s
+                .s
+                .iter()
+                .flat_map(|s| {
+                    let mut slf = self.clone();
+                    let mut s = s.clone();
+                    slf.element = match (s.element.take(), slf.element.take())
+                    {
+                        (None, None) => None,
+                        (Some(e), None) | (None, Some(e)) => Some(e),
+                        (Some(a), Some(b)) => Some(ElemType {
+                            s: format!("{}{}", a.s, b.s),
+                        }),
+                    };
+                    slf.unify(s)
+                })
+                .collect()
+        } else {
+            vec![self]
+        };
+        if let Some(rel_of) = rel_of {
+            let rels = rel_of.1.resolve_ref(ctx);
+            rels.into_iter()
+                .flat_map(|rel| {
+                    result
+                        .iter()
+                        .map(|r| {
+                            let mut r = r.to_owned();
+                            let mut t = &mut r.rel_of;
+                            loop {
+                                if let Some(next) = t {
+                                    t = &mut next.1.rel_of;
+                                } else {
+                                    let _ = t.insert(Box::new((
+                                        rel_of.0,
+                                        rel.clone(),
+                                    )));
+                                    break;
+                                }
+                            }
+                            r
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect()
+        } else {
+            result
+        }
+    }
+
+    pub(super) fn resolve_ref_in_pseudo(
+        mut self,
+        ctx: &CssSelectorSet,
+    ) -> Self {
+        // FIXME: Handle rel_of!
+        self.pseudo = self
+            .pseudo
+            .into_iter()
+            .map(|p| p.resolve_ref(ctx))
+            .collect();
+        self
+    }
     /// Return true iff this selector is a superselector of `sub`.
     fn is_superselector(&self, sub: &Self) -> bool {
         self.is_local_superselector(sub)
@@ -240,7 +332,7 @@ impl Selector {
         result
     }
 
-    fn unify(self, other: Selector) -> Vec<Selector> {
+    pub(super) fn unify(self, other: Selector) -> Vec<Selector> {
         self._unify(other).unwrap_or_default()
     }
 
@@ -315,7 +407,7 @@ impl Selector {
             self.pseudo.push(pseudo_element);
         }
         if self.pseudo.iter().any(Pseudo::is_host)
-            && (self.pseudo.iter().any(|p| p.name.value() == "hover")
+            && (self.pseudo.iter().any(Pseudo::is_hover)
                 || self.element.is_some()
                 || !self.classes.is_empty()
                 || !rel_of.is_empty())
@@ -352,6 +444,15 @@ impl Selector {
             && self.pseudo.is_empty()
     }
 
+    pub(super) fn has_backref(&self) -> bool {
+        self.backref.is_some()
+            || self.pseudo.iter().any(Pseudo::has_backref)
+            || self
+                .rel_of
+                .as_deref()
+                .map_or(false, |(_, s)| s.has_backref())
+    }
+
     fn with_rel_of(mut self, rel: RelKind, other: Selector) -> Vec<Selector> {
         if self.rel_of.is_some() {
             self.unify(Selector {
@@ -366,7 +467,7 @@ impl Selector {
         }
     }
 
-    fn into_string_vec(mut self) -> Vec<String> {
+    pub(super) fn into_string_vec(mut self) -> Vec<String> {
         let mut vec =
             if let Some((kind, sel)) = self.rel_of.take().map(|b| *b) {
                 let mut vec = sel.into_string_vec();
@@ -383,6 +484,9 @@ impl Selector {
 
     fn last_compound_str(self) -> String {
         let mut buf = String::new();
+        if self.backref.is_some() {
+            buf.push('&');
+        }
         if let Some(e) = self.element {
             if !e.is_any()
                 || (self.classes.is_empty()
@@ -537,7 +641,7 @@ impl TryFrom<Value> for Selector {
     type Error = BadSelector;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
-        Self::try_from(&super::Selector::try_from(value)?.css_ok()?)
+        Self::try_from(&super::Selector::try_from(value)?)
     }
 }
 
@@ -582,19 +686,11 @@ impl TryFrom<&[SelectorPart]> for Selector {
                     });
                 }
                 SelectorPart::Pseudo { name, arg } => {
-                    result.pseudo.push(Pseudo {
-                        name: name.clone(),
-                        arg: arg.clone(),
-                        element: false,
-                    });
+                    result.pseudo.push(Pseudo::class(name, arg));
                 }
                 SelectorPart::PseudoElement { name, arg } => {
-                    assert!(result.pseudo_element().is_none()); // ?
-                    result.pseudo.push(Pseudo {
-                        name: name.clone(),
-                        arg: arg.clone(),
-                        element: true,
-                    });
+                    assert!(result.pseudo_element().is_none()); // FIXME: Error or ignore?
+                    result.pseudo.push(Pseudo::element(name, arg));
                 }
                 SelectorPart::Descendant => {
                     let mut t = Self::default();
@@ -619,9 +715,18 @@ impl TryFrom<&[SelectorPart]> for Selector {
                     result.rel_of = Some(Box::new((kind, t)));
                 }
                 SelectorPart::BackRef => {
-                    // I hope backrefs should be resolved before here.
-                    // The real span should be retained in the selector.
-                    return Err(BadSelector::Backref(input_span("&")));
+                    if !result.is_local_empty() {
+                        let msg = "\"&\" may only used at the beginning of a compound selector.";
+                        let s = format!("{}&", result.last_compound_str());
+                        let l = s.len();
+                        let f =
+                            SourceFile::css_bytes(s, SourceName::root("-"));
+                        let pos = SourcePos::new_range(f, l - 1..l);
+                        return Err(BadSelector::Parse(ParseError::new(
+                            msg, pos,
+                        )));
+                    }
+                    result.backref = Some(());
                 }
             }
         }
@@ -643,7 +748,7 @@ impl From<Selector> for Value {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 struct ElemType {
     s: String,
 }
@@ -728,7 +833,7 @@ impl RelKind {
 }
 
 /// A logical attribute selector.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct Attribute {
     /// The attribute name
     // TODO: Why not a raw String?
@@ -758,142 +863,5 @@ impl Attribute {
             buf.push(m);
         }
         buf.push(']');
-    }
-}
-
-/// A pseudo-class or a css2 pseudo-element (:foo)
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct Pseudo {
-    /// The name of the pseudo-class
-    name: CssString,
-    /// Arguments to the pseudo-class
-    arg: Option<Selectors>,
-    /// True if this is a `::psedu-element`, false for a `:pseudo-class`.
-    element: bool,
-}
-
-impl Pseudo {
-    fn is_superselector(&self, b: &Self) -> bool {
-        fn map_sel(s: &Option<Selectors>) -> Option<SelectorSet> {
-            s.as_ref().and_then(|s| SelectorSet::try_from(s).ok())
-        }
-        if self.is_element() != b.is_element() || self.name != b.name {
-            return false;
-        }
-        // Note: A better implementetation of is/matches/any would be
-        // different from has, host, and host-context.
-        if name_in(
-            self.name.value(),
-            &[
-                "is",
-                "matches",
-                "any",
-                "where",
-                "has",
-                "host",
-                "host-context",
-            ],
-        ) {
-            if self.arg == b.arg {
-                true
-            } else if let (Some(a), Some(b)) =
-                (map_sel(&self.arg), map_sel(&b.arg))
-            {
-                a.is_superselector(&b)
-            } else {
-                false
-            }
-        } else if name_in(self.name.value(), &["not"]) {
-            if let (Some(a), Some(b)) = (map_sel(&self.arg), map_sel(&b.arg))
-            {
-                b.is_superselector(&a) // NOTE: Reversed!
-            } else {
-                false
-            }
-        } else {
-            self.name == b.name && self.arg == b.arg
-        }
-    }
-
-    fn is_element(&self) -> bool {
-        self.element || is_pseudo_element(self.name.value())
-    }
-    fn is_host(&self) -> bool {
-        name_in(self.name.value(), &["host", "host-context"])
-    }
-    fn is_rootish(&self) -> bool {
-        name_in(
-            self.name.value(),
-            &["host", "host-context", "root", "scope"],
-        )
-    }
-
-    pub fn replace(
-        mut self,
-        original: &SelectorSet,
-        replacement: &SelectorSet,
-    ) -> Self {
-        if name_in(
-            self.name.value(),
-            &[
-                "is",
-                "matches",
-                "not",
-                "any",
-                "where",
-                "has",
-                "host",
-                "host-context",
-            ],
-        ) {
-            self.arg = self.arg.map(|s| {
-                SelectorSet::try_from(&s)
-                    .unwrap()
-                    .replace(original, replacement)
-                    .unwrap()
-                    .try_into()
-                    .unwrap()
-            });
-        }
-        self
-    }
-
-    fn write_to_buf(&self, buf: &mut String) {
-        buf.push(':');
-        if self.element {
-            buf.push(':');
-        }
-        buf.push_str(self.name.value());
-        if let Some(arg) = &self.arg {
-            use std::fmt::Write;
-            write!(buf, "({arg})").unwrap();
-        }
-    }
-}
-
-fn is_pseudo_element(n: &str) -> bool {
-    let pse = [
-        "after",
-        "before",
-        "file-selector-button",
-        "first-letter",
-        "first-line",
-        "grammar-error",
-        "marker",
-        "placeholder",
-        "selection",
-        "spelling-error",
-        "target-text",
-    ];
-    pse.binary_search(&n).is_ok()
-}
-
-fn name_in(name: &str, known: &[&str]) -> bool {
-    if name.starts_with('-') {
-        known.iter().any(|end| {
-            name.strip_suffix(end).map_or(false, |s| s.ends_with('-'))
-        })
-    } else {
-        known.iter().any(|known| name == *known)
     }
 }

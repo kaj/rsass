@@ -66,7 +66,6 @@ mod parent {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn non_initial() {
         assert_eq!(
         runner().err(
@@ -86,7 +85,6 @@ mod parent {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn prefix() {
         assert_eq!(
         runner().err(

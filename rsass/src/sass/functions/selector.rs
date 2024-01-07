@@ -1,13 +1,15 @@
-use super::{check, CallError, FunctionMap, ResolvedArgs};
-use crate::css::{BadSelector, LogicalSelectorSet, Selectors, Value};
+use super::{
+    check, unnamed, CallError, CheckedArg, FunctionMap, ResolvedArgs,
+};
+use crate::css::{BadSelector, CssSelectorSet, Selectors, Value};
 use crate::sass::Name;
 use crate::Scope;
 
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:selector");
     def!(f, is_superselector(super, sub), |s| {
-        let sup: LogicalSelectorSet = s.get(name!(super))?;
-        let sub: LogicalSelectorSet = s.get(name!(sub))?;
+        let sup: CssSelectorSet = s.get(name!(super))?;
+        let sub: CssSelectorSet = s.get(name!(sub))?;
         Ok(sup.is_superselector(&sub).into())
     });
     def_va!(f, append(selectors), |s| {
@@ -24,23 +26,27 @@ pub fn create_module() -> Scope {
     });
     // TODO: extend
     def_va!(f, nest(selectors), |s| {
-        let mut v = get_selectors(s, name!(selectors))?.into_iter();
-        let first = v.next().unwrap().css_ok()?;
-        Ok(v.fold(first, |b, e| e.inside(&b.into())).into())
+        let mut v = unnamed(s.get_va(name!(selectors)))?.into_iter();
+        let first = v
+            .next()
+            .ok_or("At least one selector must be passed.")
+            .named(name!(selectors))?;
+        let first = CssSelectorSet::try_from(first)?;
+        Ok(v.fold(first, |b, e| b.nest(e)).into())
     });
     def!(f, parse(selector), |s| {
         Ok(s.get_map(name!(selector), parse_selectors_x)?.into())
     });
     def!(f, replace(selector, original, replacement), |s| {
-        let selector: LogicalSelectorSet = s.get(name!(selector))?;
-        let original: LogicalSelectorSet = s.get(name!(original))?;
-        let replacement: LogicalSelectorSet = s.get(name!(replacement))?;
+        let selector: CssSelectorSet = s.get(name!(selector))?;
+        let original: CssSelectorSet = s.get(name!(original))?;
+        let replacement: CssSelectorSet = s.get(name!(replacement))?;
         Ok(selector.replace(&original, &replacement)?.into())
     });
     // TODO: simple_selectors
     def!(f, unify(selector1, selector2), |s| {
-        let a: LogicalSelectorSet = s.get(name!(selector1))?;
-        let b: LogicalSelectorSet = s.get(name!(selector2))?;
+        let a: CssSelectorSet = s.get(name!(selector1))?;
+        let b: CssSelectorSet = s.get(name!(selector2))?;
         Ok(a.unify(b).into())
     });
 

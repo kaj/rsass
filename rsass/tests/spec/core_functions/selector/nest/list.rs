@@ -78,7 +78,6 @@ mod list {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn multiple() {
             assert_eq!(
                 runner().ok("a {b: selector-nest(\"c, d\", \"&.e &.f\")}\n"),
@@ -92,7 +91,6 @@ mod list {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn is() {
                 assert_eq!(
                     runner()
@@ -103,7 +101,6 @@ mod list {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn matches() {
                 assert_eq!(
                     runner().ok(
@@ -115,7 +112,6 @@ mod list {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn test_where() {
                 assert_eq!(
                     runner().ok(

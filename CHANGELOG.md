@@ -9,7 +9,11 @@ project adheres to
 
 ## Unreleased
 
-* (Oops: Removed a missing dbg call.)
+* Improve support for the `selector.nest` function (PR #189).
+* Some internal cleanup and improvements in the next-generation css
+  selector implementation (which is currently internal and used only
+  for selector functions, but should replace the old css selector
+  implementation in release 0.29).
 
 
 ## Release 0.28.8

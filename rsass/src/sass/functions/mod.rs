@@ -416,6 +416,18 @@ fn looks_like_call(s: &CssString) -> bool {
         && s.value().ends_with(')')
 }
 
+/// Convert an error for a specific argument to not mentioning the argument.
+///
+/// Ok results and other errors are returned unmodified.
+/// This is used in some cases to make errors from rsass the same as
+/// the expected errors for dart sass.
+fn unnamed<T>(result: Result<T, CallError>) -> Result<T, CallError> {
+    match result {
+        Err(CallError::BadArgument(_name, msg)) => Err(CallError::msg(msg)),
+        other => other,
+    }
+}
+
 mod check {
     use super::{expected_to, is_not};
     use crate::css::Value;

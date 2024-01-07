@@ -31,7 +31,7 @@ impl ParseError {
         }
     }
 
-    fn new<Msg>(msg: Msg, pos: SourcePos) -> Self
+    pub(crate) fn new<Msg>(msg: Msg, pos: SourcePos) -> Self
     where
         Msg: Into<String>,
     {
