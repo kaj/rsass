@@ -1,6 +1,6 @@
-use crate::{css::Value, parser::input_span, Invalid};
-
-use super::{logical::SelectorSet, BadSelector};
+use super::logical::SelectorSet;
+use super::BadSelector;
+use crate::{css::Value, parser::input_span, sass::CallError, Invalid};
 
 /// A CssSelectorset is like a [Selectorset] but valid in css.
 ///
@@ -14,6 +14,23 @@ pub struct CssSelectorSet {
 impl CssSelectorSet {
     pub fn is_superselector(&self, sub: &CssSelectorSet) -> bool {
         self.s.is_superselector(&sub.s)
+    }
+
+    pub(crate) fn append(self, ext: Self) -> Result<Self, CallError> {
+        Ok(CssSelectorSet {
+            s: SelectorSet {
+                s: self
+                    .s
+                    .s
+                    .into_iter()
+                    .flat_map(|b| {
+                        ext.s.s.iter().map(move |e| {
+                            b.append(e).map_err(|err| err.context(e, &b))
+                        })
+                    })
+                    .collect::<Result<_, _>>()?,
+            },
+        })
     }
 
     pub(crate) fn nest(&self, other: SelectorSet) -> Self {

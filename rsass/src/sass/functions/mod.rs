@@ -464,15 +464,6 @@ mod check {
             single => Ok(vec![single]),
         }
     }
-    pub fn va_list_nonempty(v: Value) -> Result<Vec<Value>, String> {
-        let result = va_list(v)?;
-        if result.is_empty() {
-            // TODO: Parameterize "selector"?  Or rename fn va_selectors?
-            Err("At least one selector must be passed.".into())
-        } else {
-            Ok(result)
-        }
-    }
 }
 
 #[test]

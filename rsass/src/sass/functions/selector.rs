@@ -1,8 +1,5 @@
-use super::{
-    check, unnamed, CallError, CheckedArg, FunctionMap, ResolvedArgs,
-};
-use crate::css::{BadSelector, CssSelectorSet, Selectors, Value};
-use crate::sass::Name;
+use super::{unnamed, CheckedArg, FunctionMap};
+use crate::css::{CssSelectorSet, Selectors, Value};
 use crate::Scope;
 
 pub fn create_module() -> Scope {
@@ -13,15 +10,13 @@ pub fn create_module() -> Scope {
         Ok(sup.is_superselector(&sub).into())
     });
     def_va!(f, append(selectors), |s| {
-        let mut s = get_selectors(s, name!(selectors))?.into_iter();
+        let mut s = unnamed(s.get_va::<CssSelectorSet>(name!(selectors)))?
+            .into_iter();
         if let Some(base) = s.next() {
-            if base.has_trailing_combinator() {
-                return Err(CallError::msg(format!("Selector \"{base}\" can't be used as a parent in a compound selector.")));
-            }
-            Ok(s.try_fold(base, Selectors::append)?.into())
+            Ok(s.try_fold(base, |base, s| base.append(s))?.into())
         } else {
-            // Not really reachable, get_selectors requires at least one item.
-            Ok(Selectors::root().into())
+            Err("At least one selector must be passed.")
+                .named(name!(selectors))
         }
     });
     // TODO: extend
@@ -51,16 +46,6 @@ pub fn create_module() -> Scope {
     });
 
     f
-}
-
-fn get_selectors(
-    s: &ResolvedArgs,
-    name: Name,
-) -> Result<Vec<Selectors>, CallError> {
-    Ok(s.get_map(name, check::va_list_nonempty)?
-        .into_iter()
-        .map(TryInto::try_into)
-        .collect::<Result<_, BadSelector>>()?)
 }
 
 pub fn expose(m: &Scope, global: &mut FunctionMap) {

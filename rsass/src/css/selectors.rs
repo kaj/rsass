@@ -63,32 +63,6 @@ impl Selectors {
         self.s.first().cloned().unwrap_or_else(Selector::root)
     }
 
-    pub(crate) fn append(self, ext: Self) -> Result<Self, BadSelector> {
-        let ext = ext.css_ok()?;
-        Ok(Selectors::new(
-            self.s
-                .into_iter()
-                .flat_map(|b| {
-                    ext.s.iter().map(move |e| {
-                        if e.0[0].is_operator()
-                            || e.0[0].is_wildcard()
-                            || matches!(
-                                &e.0[0],
-                                SelectorPart::Simple(s) if s.starts_with('|')
-                            )
-                        {
-                            return Err(BadSelector::Append(
-                                e.clone(),
-                                b.clone(),
-                            ));
-                        }
-                        parse_selector(&format!("{b}{e}"))
-                    })
-                })
-                .collect::<Result<_, _>>()?,
-        ))
-    }
-
     /// Create the full selector for when self is used inside a parent selector.
     pub(crate) fn inside(&self, parent: &SelectorCtx) -> Self {
         SelectorCtx::from(self.clone()).inside(parent).real()
@@ -814,7 +788,4 @@ impl From<ParseError> for BadSelector {
     fn from(e: ParseError) -> Self {
         BadSelector::Parse(e)
     }
-}
-fn parse_selector(s: &str) -> Result<Selector, BadSelector> {
-    Ok(ParseError::check(selector(input_span(s).borrow()))?)
 }

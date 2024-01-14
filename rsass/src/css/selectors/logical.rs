@@ -8,6 +8,9 @@ use super::pseudo::Pseudo;
 use super::{BadSelector, CssSelectorSet, SelectorPart, Selectors};
 use crate::css::{CssString, Value};
 use crate::input::{SourceFile, SourceName, SourcePos};
+use crate::parser::css::selector;
+use crate::parser::input_span;
+use crate::sass::CallError;
 use crate::value::ListSeparator;
 use crate::{Invalid, ParseError};
 use lazy_static::lazy_static;
@@ -29,6 +32,7 @@ impl SelectorSet {
             .iter()
             .all(|sub| self.s.iter().any(|sup| sup.is_superselector(sub)))
     }
+
     pub fn replace(
         self,
         original: &SelectorSet,
@@ -131,11 +135,40 @@ pub(crate) struct Selector {
 }
 
 impl Selector {
+    pub(super) fn append(&self, other: &Self) -> Result<Self, AppendError> {
+        if self.is_local_empty() {
+            return Err(AppendError::Parent);
+        }
+
+        let mut result = other.to_owned();
+        if let Some(rel) = result.rel_of.take() {
+            result.rel_of = Some(Box::new((rel.0, self.append(&rel.1)?)));
+            Ok(result)
+        } else {
+            let rel = self.rel_of.clone();
+            if result.is_local_empty() {
+                return Err(AppendError::Sub);
+            }
+            let s = self.clone().last_compound_str();
+            let other = result.last_compound_str();
+            if other
+                .bytes()
+                .next()
+                .map_or(true, |c| c == b'*' || c == b'|')
+            {
+                return Err(AppendError::Sub);
+            }
+            let s = s + &other;
+            let span = input_span(s);
+            let mut result =
+                Self::try_from(&ParseError::check(selector(span.borrow()))?)?;
+            result.rel_of = rel;
+            Ok(result)
+        }
+    }
+
     pub(super) fn nest(&self, other: &Self) -> Self {
         let mut result = other.clone();
-        /*if result.has_backref() {
-            result = Self::resolve_ref(result, self);
-        } else*/
         if let Some(rel) = result.rel_of.take() {
             result.rel_of = Some(Box::new((rel.0, self.nest(&rel.1))));
         } else {
@@ -478,7 +511,10 @@ impl Selector {
             } else {
                 Vec::new()
             };
-        vec.push(self.last_compound_str());
+        let last = self.last_compound_str();
+        if !last.is_empty() {
+            vec.push(last);
+        }
         vec
     }
 
@@ -521,6 +557,49 @@ impl Selector {
 
     fn pseudo_element(&self) -> Option<&Pseudo> {
         self.pseudo.iter().find(|p| p.is_element())
+    }
+}
+
+pub(super) enum AppendError {
+    Parent,
+    Sub,
+    Selector(BadSelector),
+}
+
+impl AppendError {
+    pub(super) fn context(self, e: &Selector, b: &Selector) -> CallError {
+        match self {
+            AppendError::Parent => {
+                CallError::msg(
+                    format!(
+                        "Selector {:?} can't be used as a parent in a compound selector.",
+                        show(b)
+                    )
+                )
+            },
+            AppendError::Sub => {
+                CallError::msg(
+                    format!("Can't append {} to {}.", show(e), show(b))
+                )
+            },
+            AppendError::Selector(b) => b.into(),
+        }
+    }
+}
+
+fn show(s: &Selector) -> String {
+    s.clone().into_string_vec().join(" ")
+}
+
+impl From<ParseError> for AppendError {
+    fn from(value: ParseError) -> Self {
+        AppendError::Selector(value.into())
+    }
+}
+
+impl From<BadSelector> for AppendError {
+    fn from(value: BadSelector) -> Self {
+        AppendError::Selector(value)
     }
 }
 
