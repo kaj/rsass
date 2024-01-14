@@ -16,8 +16,9 @@ use std::io::Write;
 
 mod cssselectorset;
 mod logical;
-pub(crate) use cssselectorset::CssSelectorSet;
 mod pseudo;
+pub(crate) use cssselectorset::CssSelectorSet;
+pub(crate) use logical::Selector as LogicalSelector;
 
 /// A full set of selectors.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]

@@ -500,6 +500,32 @@ impl Selector {
         }
     }
 
+    pub(crate) fn simple_selectors(&self) -> Result<Vec<String>, Invalid> {
+        if self.rel_of.is_some() {
+            return Err(Invalid::AtError(
+                "Combinators not allowed in simple-selectors.".into(),
+            ));
+        }
+        let mut result = Vec::new();
+        if let Some(element) = &self.element {
+            result.push(element.s.clone());
+        }
+        result.extend(self.placeholders.iter().map(|p| format!("%{p}")));
+        result.extend(self.classes.iter().map(|c| format!(".{c}")));
+        result.extend(self.id.iter().map(|id| format!("#{id}")));
+        result.extend(self.attr.iter().map(|a| {
+            let mut s = String::new();
+            a.write_to_buf(&mut s);
+            s
+        }));
+        result.extend(self.pseudo.iter().map(|p| {
+            let mut s = String::new();
+            p.write_to_buf(&mut s);
+            s
+        }));
+        Ok(result)
+    }
+
     pub(super) fn into_string_vec(mut self) -> Vec<String> {
         let mut vec =
             if let Some((kind, sel)) = self.rel_of.take().map(|b| *b) {

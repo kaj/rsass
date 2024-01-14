@@ -9,8 +9,9 @@ project adheres to
 
 ## Unreleased
 
-* Improve support for the `selector.nest` function (PR #189).
-* Move `selector.append` to new selector implementation (PR #190).
+* Improved support for the `selector.nest` function (PR #189).
+* Moved `selector.append` to new selector implementation (PR #190).
+* Implemented the `selector.simple-selectors` function (PR #191).
 * Some internal cleanup and improvements in the next-generation css
   selector implementation (which is currently internal and used only
   for selector functions, but should replace the old css selector

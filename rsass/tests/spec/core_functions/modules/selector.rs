@@ -162,7 +162,6 @@ fn replace() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn simple_selectors() {
     assert_eq!(
         runner().ok("@use \"sass:selector\";\

@@ -1,5 +1,6 @@
 use super::{unnamed, CheckedArg, FunctionMap};
-use crate::css::CssSelectorSet;
+use crate::css::{CssSelectorSet, LogicalSelector, Value};
+use crate::value::ListSeparator;
 use crate::Scope;
 
 pub fn create_module() -> Scope {
@@ -38,7 +39,15 @@ pub fn create_module() -> Scope {
         let replacement: CssSelectorSet = s.get(name!(replacement))?;
         Ok(selector.replace(&original, &replacement)?.into())
     });
-    // TODO: simple_selectors
+    def!(f, simple_selectors(selector), |s| {
+        let selector: LogicalSelector = s.get(name!(selector))?;
+        let result = selector
+            .simple_selectors()?
+            .into_iter()
+            .map(Value::from)
+            .collect();
+        Ok(Value::List(result, Some(ListSeparator::Comma), false))
+    });
     def!(f, unify(selector1, selector2), |s| {
         let a: CssSelectorSet = s.get(name!(selector1))?;
         let b: CssSelectorSet = s.get(name!(selector2))?;
@@ -58,7 +67,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(selector_parse), name!(parse)),
         (name!(selector_replace), name!(replace)),
         (name!(selector_unify), name!(unify)),
-        //(name!(simple_selectors), name!(simple_selectors)),
+        (name!(simple_selectors), name!(simple_selectors)),
     ] {
         global.insert(gname.clone(), m.get_lfunction(lname));
     }
