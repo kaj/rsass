@@ -37,18 +37,15 @@ impl Pseudo {
         }
         // Note: A better implementetation of is/matches/any would be
         // different from has, host, and host-context.
-        if name_in(
-            &self.name,
-            &[
-                "is",
-                "matches",
-                "any",
-                "where",
-                "has",
-                "host",
-                "host-context",
-            ],
-        ) {
+        if self.name_in(&[
+            "is",
+            "matches",
+            "any",
+            "where",
+            "has",
+            "host",
+            "host-context",
+        ]) {
             if self.arg == b.arg {
                 true
             } else if let (Some(a), Some(b)) = (&self.arg, &b.arg) {
@@ -56,7 +53,7 @@ impl Pseudo {
             } else {
                 false
             }
-        } else if name_in(&self.name, &["not"]) {
+        } else if self.name_in(&["not"]) {
             if let (Some(a), Some(b)) = (&self.arg, &b.arg) {
                 b.is_superselector(a) // NOTE: Reversed!
             } else {
@@ -74,10 +71,10 @@ impl Pseudo {
         self.name == "hover"
     }
     pub(super) fn is_host(&self) -> bool {
-        name_in(&self.name, &["host", "host-context"])
+        self.name_in(&["host", "host-context"])
     }
     pub(super) fn is_rootish(&self) -> bool {
-        name_in(&self.name, &["host", "host-context", "root", "scope"])
+        self.name_in(&["host", "host-context", "root", "scope"])
     }
 
     pub(super) fn has_backref(&self) -> bool {
@@ -92,19 +89,16 @@ impl Pseudo {
         original: &SelectorSet,
         replacement: &SelectorSet,
     ) -> Self {
-        if name_in(
-            &self.name,
-            &[
-                "is",
-                "matches",
-                "not",
-                "any",
-                "where",
-                "has",
-                "host",
-                "host-context",
-            ],
-        ) {
+        if self.name_in(&[
+            "is",
+            "matches",
+            "not",
+            "any",
+            "where",
+            "has",
+            "host",
+            "host-context",
+        ]) {
             self.arg =
                 self.arg.map(|s| s.replace(original, replacement).unwrap());
         }
@@ -119,9 +113,23 @@ impl Pseudo {
         buf.push_str(&self.name);
         if let Some(arg) = &self.arg {
             buf.push('(');
-            arg.write_to_buf(buf);
+            if self.name_in(&[
+                "nth-child",
+                "nth-last-child",
+                "nth-last-of-type",
+                "nth-of-type",
+            ]) {
+                let mut t = String::new();
+                arg.write_to_buf(&mut t);
+                buf.push_str(&t.replacen(" + ", "+", 1));
+            } else {
+                arg.write_to_buf(buf);
+            }
             buf.push(')');
         }
+    }
+    fn name_in(&self, names: &[&str]) -> bool {
+        name_in(&self.name, names)
     }
 }
 

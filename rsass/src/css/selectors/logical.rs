@@ -108,11 +108,11 @@ impl TryFrom<SelectorSet> for Selectors {
 
 impl From<SelectorSet> for Value {
     fn from(value: SelectorSet) -> Self {
-        let mut v = value.s.into_iter().map(Value::from).collect::<Vec<_>>();
-        match v.len() {
-            0 => Value::Null,
-            1 => v.pop().unwrap(),
-            _ => Value::List(v, Some(ListSeparator::Comma), false),
+        let v = value.s.into_iter().map(Value::from).collect::<Vec<_>>();
+        if v.is_empty() {
+            Value::Null
+        } else {
+            Value::List(v, Some(ListSeparator::Comma), false)
         }
     }
 }

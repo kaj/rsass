@@ -1,5 +1,5 @@
 use super::{unnamed, CheckedArg, FunctionMap};
-use crate::css::{CssSelectorSet, Selectors, Value};
+use crate::css::CssSelectorSet;
 use crate::Scope;
 
 pub fn create_module() -> Scope {
@@ -30,7 +30,7 @@ pub fn create_module() -> Scope {
         Ok(v.fold(first, |b, e| b.nest(e)).into())
     });
     def!(f, parse(selector), |s| {
-        Ok(s.get_map(name!(selector), parse_selectors_x)?.into())
+        Ok(s.get::<CssSelectorSet>(name!(selector))?.into())
     });
     def!(f, replace(selector, original, replacement), |s| {
         let selector: CssSelectorSet = s.get(name!(selector))?;
@@ -62,10 +62,4 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     ] {
         global.insert(gname.clone(), m.get_lfunction(lname));
     }
-}
-
-fn parse_selectors_x(v: Value) -> Result<Selectors, String> {
-    Selectors::try_from(v)
-        .and_then(|s| s.css_ok())
-        .map_err(|e| e.to_string())
 }
