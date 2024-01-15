@@ -1,4 +1,4 @@
-use super::{logical::SelectorSet, CssSelectorSet};
+use super::{selectorset::SelectorSet, CssSelectorSet};
 use crate::css::{CssString, Selectors};
 
 /// A pseudo-class or a css2 pseudo-element (:foo)

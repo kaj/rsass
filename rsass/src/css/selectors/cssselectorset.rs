@@ -1,12 +1,12 @@
-use super::logical::SelectorSet;
+use super::selectorset::SelectorSet;
 use super::BadSelector;
 use crate::{css::Value, parser::input_span, sass::CallError, Invalid};
 
-/// A CssSelectorset is like a [Selectorset] but valid in css.
+/// A `CssSelectorset` is like a [`Selectorset`] but valid in css.
 ///
-/// The practical difference is that a CssSelectorset is guaranteed
+/// The practical difference is that a `CssSelectorset` is guaranteed
 /// not to contain backrefs (`&`), which may be present in a
-/// Selectorset.
+/// `Selectorset`.
 pub struct CssSelectorSet {
     pub(super) s: SelectorSet,
 }

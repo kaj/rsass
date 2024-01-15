@@ -14,9 +14,11 @@ use crate::value::ListSeparator;
 use std::fmt;
 use std::io::Write;
 
+mod attribute;
 mod cssselectorset;
 mod logical;
 mod pseudo;
+mod selectorset;
 pub(crate) use cssselectorset::CssSelectorSet;
 pub(crate) use logical::Selector as LogicalSelector;
 

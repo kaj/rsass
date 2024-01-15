@@ -4,9 +4,11 @@
 //! In the future, I might use this as the primary (only) css selector
 //! implementation.  But as that is a major breaking change, I keep
 //! these types internal for now.
+use super::attribute::Attribute;
 use super::pseudo::Pseudo;
-use super::{BadSelector, CssSelectorSet, SelectorPart, Selectors};
-use crate::css::{CssString, Value};
+use super::selectorset::SelectorSet;
+use super::{BadSelector, CssSelectorSet, SelectorPart};
+use crate::css::Value;
 use crate::input::{SourceFile, SourceName, SourcePos};
 use crate::parser::css::selector;
 use crate::parser::input_span;
@@ -16,106 +18,6 @@ use crate::{Invalid, ParseError};
 use lazy_static::lazy_static;
 use std::iter::once;
 use std::mem::swap;
-
-/// A set of selectors.
-/// This is the normal top-level selector, which can be a single
-/// [`Selector`] or a comma-separated list (set) of such selectors.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct SelectorSet {
-    pub(super) s: Vec<Selector>,
-}
-
-impl SelectorSet {
-    pub(super) fn is_superselector(&self, other: &Self) -> bool {
-        other
-            .s
-            .iter()
-            .all(|sub| self.s.iter().any(|sup| sup.is_superselector(sub)))
-    }
-
-    pub fn replace(
-        self,
-        original: &SelectorSet,
-        replacement: &SelectorSet,
-    ) -> Result<Self, Invalid> {
-        for original in &original.s {
-            if original.rel_of.is_some() {
-                let s = original.clone().into_string_vec().join(" ");
-                return Err(Invalid::AtError(format!(
-                    "Can\'t extend complex selector {s}."
-                )));
-            }
-        }
-        let result = self
-            .s
-            .into_iter()
-            .flat_map(|s| s.replace(original, replacement))
-            .collect();
-        Ok(Self { s: result })
-    }
-    pub(super) fn write_to_buf(&self, buf: &mut String) {
-        fn write_one(s: &Selector, buf: &mut String) {
-            buf.push_str(&s.clone().into_string_vec().join(" "));
-        }
-        if let Some((first, rest)) = self.s.split_first() {
-            write_one(first, buf);
-            for one in rest {
-                buf.push_str(", "); // TODO: Only ',' is compressed!
-                write_one(one, buf);
-            }
-        }
-    }
-    pub(super) fn has_backref(&self) -> bool {
-        self.s.iter().any(Selector::has_backref)
-    }
-    pub(super) fn resolve_ref(self, ctx: &CssSelectorSet) -> Self {
-        SelectorSet {
-            s: self
-                .s
-                .into_iter()
-                .flat_map(|o| o.resolve_ref(ctx))
-                .collect::<Vec<_>>(),
-        }
-    }
-}
-
-impl TryFrom<Value> for SelectorSet {
-    type Error = BadSelector;
-
-    fn try_from(value: Value) -> Result<Self, Self::Error> {
-        Self::try_from(&Selectors::try_from(value)?)
-    }
-}
-impl TryFrom<&Selectors> for SelectorSet {
-    type Error = BadSelector;
-
-    fn try_from(value: &Selectors) -> Result<Self, Self::Error> {
-        value
-            .s
-            .iter()
-            .map(Selector::try_from)
-            .collect::<Result<Vec<_>, _>>()
-            .map(|s| SelectorSet { s })
-    }
-}
-impl TryFrom<SelectorSet> for Selectors {
-    type Error = BadSelector;
-
-    fn try_from(value: SelectorSet) -> Result<Self, Self::Error> {
-        Value::from(value).try_into()
-    }
-}
-
-impl From<SelectorSet> for Value {
-    fn from(value: SelectorSet) -> Self {
-        let v = value.s.into_iter().map(Value::from).collect::<Vec<_>>();
-        if v.is_empty() {
-            Value::Null
-        } else {
-            Value::List(v, Some(ListSeparator::Comma), false)
-        }
-    }
-}
 
 type RelBox = Box<(RelKind, Selector)>;
 
@@ -246,7 +148,7 @@ impl Selector {
         self
     }
     /// Return true iff this selector is a superselector of `sub`.
-    fn is_superselector(&self, sub: &Self) -> bool {
+    pub(super) fn is_superselector(&self, sub: &Self) -> bool {
         self.is_local_superselector(sub)
             && self.rel_of.as_deref().map_or(true, |(kind, s)| {
                 match kind {
@@ -328,7 +230,7 @@ impl Selector {
             )
     }
 
-    fn replace(
+    pub(super) fn replace(
         mut self,
         original: &SelectorSet,
         replacement: &SelectorSet,
@@ -466,6 +368,11 @@ impl Selector {
                 })
                 .collect()
         })
+    }
+
+    /// Return true if this is a complex selector (has any relation).
+    pub(super) fn is_complex(&self) -> bool {
+        self.rel_of.is_some()
     }
 
     fn is_local_empty(&self) -> bool {
@@ -742,18 +649,20 @@ where
     v.append(other);
 }
 
+use super::Selector as OldSelector;
+
 impl TryFrom<Value> for Selector {
     type Error = BadSelector;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
-        Self::try_from(&super::Selector::try_from(value)?)
+        Self::try_from(&OldSelector::try_from(value)?)
     }
 }
 
-impl TryFrom<&super::Selector> for Selector {
+impl TryFrom<&OldSelector> for Selector {
     type Error = BadSelector;
 
-    fn try_from(value: &super::Selector) -> Result<Self, Self::Error> {
+    fn try_from(value: &OldSelector) -> Result<Self, Self::Error> {
         Selector::try_from(&value.0[..])
     }
 }
@@ -783,12 +692,9 @@ impl TryFrom<&[SelectorPart]> for Selector {
                     val,
                     modifier,
                 } => {
-                    result.attr.push(Attribute {
-                        name: name.clone(),
-                        op: op.clone(),
-                        val: val.clone(),
-                        modifier: *modifier,
-                    });
+                    result
+                        .attr
+                        .push(Attribute::new(name, op, val, *modifier));
                 }
                 SelectorPart::Pseudo { name, arg } => {
                     result.pseudo.push(Pseudo::class(name, arg));
@@ -884,14 +790,12 @@ impl ElemType {
         let (o_ns, o_name) = other.split_ns();
         let ns = match (e_ns, o_ns) {
             (None, None) => None,
-            (Some("*"), ns) => ns,
-            (ns, Some("*")) => ns,
+            (Some("*"), ns) | (ns, Some("*")) => ns,
             (Some(e), Some(o)) if e == o => Some(e),
             _ => return None,
         };
         let name = match (e_name, o_name) {
-            ("*", name) => name,
-            (name, "*") => name,
+            ("*", name) | (name, "*") => name,
             (e, o) if e == o => e,
             _ => return None,
         };
@@ -934,39 +838,5 @@ impl RelKind {
             RelKind::Sibling => Some("~"),
             RelKind::AdjacentSibling => Some("+"),
         }
-    }
-}
-
-/// A logical attribute selector.
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct Attribute {
-    /// The attribute name
-    // TODO: Why not a raw String?
-    name: CssString,
-    /// An operator
-    op: String,
-    /// A value to match.
-    val: CssString,
-    /// Optional modifier.
-    modifier: Option<char>,
-}
-
-impl Attribute {
-    fn is_superselector(&self, b: &Self) -> bool {
-        self.name == b.name
-            && self.op == b.op
-            && self.val == b.val
-            && self.modifier == b.modifier
-    }
-
-    fn write_to_buf(&self, buf: &mut String) {
-        buf.push('[');
-        use std::fmt::Write;
-        write!(buf, "{}{}{}", self.name, self.op, self.val).unwrap();
-        if let Some(m) = self.modifier {
-            buf.push(' ');
-            buf.push(m);
-        }
-        buf.push(']');
     }
 }
