@@ -55,7 +55,6 @@ mod parse {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn extra() {
         assert_eq!(
             runner().err("a {b: selector-parse(\"c {\")}\n"),

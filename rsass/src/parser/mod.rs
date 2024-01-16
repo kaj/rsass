@@ -527,7 +527,7 @@ fn body_block2(input: Span) -> PResult<Vec<Item>> {
     Ok((input, v))
 }
 
-fn input_to_str(s: Span) -> Result<&str, Utf8Error> {
+pub(crate) fn input_to_str(s: Span) -> Result<&str, Utf8Error> {
     from_utf8(s.fragment())
 }
 

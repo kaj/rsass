@@ -31,7 +31,9 @@ pub fn create_module() -> Scope {
         Ok(v.fold(first, |b, e| b.nest(e)).into())
     });
     def!(f, parse(selector), |s| {
-        Ok(s.get::<CssSelectorSet>(name!(selector))?.into())
+        CssSelectorSet::parse_value(s.get(name!(selector))?)
+            .named(name!(selector))
+            .map(Into::into)
     });
     def!(f, replace(selector, original, replacement), |s| {
         let selector: CssSelectorSet = s.get(name!(selector))?;

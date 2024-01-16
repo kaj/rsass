@@ -7,17 +7,14 @@
 use super::attribute::Attribute;
 use super::pseudo::Pseudo;
 use super::selectorset::SelectorSet;
-use super::{BadSelector, CssSelectorSet, SelectorPart};
+use super::{BadSelector, BadSelector0, CssSelectorSet};
 use crate::css::Value;
-use crate::input::{SourceFile, SourceName, SourcePos};
-use crate::parser::css::selector;
 use crate::parser::input_span;
 use crate::sass::CallError;
 use crate::value::ListSeparator;
 use crate::{Invalid, ParseError};
 use lazy_static::lazy_static;
 use std::iter::once;
-use std::mem::swap;
 
 type RelBox = Box<(RelKind, Selector)>;
 
@@ -63,7 +60,7 @@ impl Selector {
             let s = s + &other;
             let span = input_span(s);
             let mut result =
-                Self::try_from(&ParseError::check(selector(span.borrow()))?)?;
+                ParseError::check(parser::compound_selector(span.borrow()))?;
             result.rel_of = rel;
             Ok(result)
         }
@@ -396,6 +393,18 @@ impl Selector {
                 .map_or(false, |(_, s)| s.has_backref())
     }
 
+    fn add_root_ancestor(&mut self, ancestor: Self) {
+        if let Some(rel) = self.rel_of.as_mut() {
+            if rel.1.is_local_empty() && !rel.1.is_complex() {
+                rel.1 = ancestor;
+            } else {
+                rel.1.add_root_ancestor(ancestor);
+            }
+        } else {
+            self.rel_of = Some(Box::new((RelKind::Ancestor, ancestor)));
+        }
+    }
+
     fn with_rel_of(mut self, rel: RelKind, other: Selector) -> Vec<Selector> {
         if self.rel_of.is_some() {
             self.unify(Selector {
@@ -493,6 +502,40 @@ impl Selector {
 
     fn pseudo_element(&self) -> Option<&Pseudo> {
         self.pseudo.iter().find(|p| p.is_element())
+    }
+
+    /// Internal (the api is [`TryFrom`]).
+    pub(super) fn _try_from_value(v: &Value) -> Result<Self, BadSelector0> {
+        match v {
+            Value::List(list, None | Some(ListSeparator::Space), _) => {
+                list.iter()
+                    .try_fold(None, |a, v| {
+                        let mut s = match v {
+                            Value::Literal(s) => {
+                                ParseError::check(parser::selector(
+                                    input_span(s.value()).borrow(),
+                                ))?
+                            }
+                            _ => return Err(BadSelector0::Value),
+                        };
+                        // TODO: Handle operator at end of a!
+                        if let Some(a) = a {
+                            s.add_root_ancestor(a);
+                        }
+                        Ok(Some(s))
+                    })
+                    .map(Option::unwrap_or_default)
+            }
+            Value::Literal(s) => {
+                if s.value().is_empty() {
+                    Ok(Selector::default())
+                } else {
+                    let span = input_span(s.value());
+                    Ok(ParseError::check(parser::selector(span.borrow()))?)
+                }
+            }
+            _ => Err(BadSelector0::Value),
+        }
     }
 }
 
@@ -652,99 +695,11 @@ where
     v.append(other);
 }
 
-use super::Selector as OldSelector;
-
 impl TryFrom<Value> for Selector {
     type Error = BadSelector;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
-        Self::try_from(&OldSelector::try_from(value)?)
-    }
-}
-
-impl TryFrom<&OldSelector> for Selector {
-    type Error = BadSelector;
-
-    fn try_from(value: &OldSelector) -> Result<Self, Self::Error> {
-        Selector::try_from(&value.0[..])
-    }
-}
-
-impl TryFrom<&[SelectorPart]> for Selector {
-    type Error = BadSelector;
-
-    fn try_from(value: &[SelectorPart]) -> Result<Self, Self::Error> {
-        let mut result = Self::default();
-        for part in value {
-            match part {
-                SelectorPart::Simple(part) => {
-                    if let Some(cls) = part.strip_prefix('.') {
-                        result.classes.push(cls.into());
-                    } else if let Some(id) = part.strip_prefix('#') {
-                        result.id = Some(id.into());
-                    } else if let Some(ph) = part.strip_prefix('%') {
-                        result.placeholders.push(ph.into());
-                    } else {
-                        // FIXME: Check that it was none before!
-                        result.element = Some(ElemType::new(part));
-                    }
-                }
-                SelectorPart::Attribute {
-                    name,
-                    op,
-                    val,
-                    modifier,
-                } => {
-                    result
-                        .attr
-                        .push(Attribute::new(name, op, val, *modifier));
-                }
-                SelectorPart::Pseudo { name, arg } => {
-                    result.pseudo.push(Pseudo::class(name, arg));
-                }
-                SelectorPart::PseudoElement { name, arg } => {
-                    assert!(result.pseudo_element().is_none()); // FIXME: Error or ignore?
-                    result.pseudo.push(Pseudo::element(name, arg));
-                }
-                SelectorPart::Descendant => {
-                    let mut t = Self::default();
-                    swap(&mut result, &mut t);
-                    result.rel_of = Some(Box::new((RelKind::Ancestor, t)));
-                }
-                SelectorPart::RelOp(op) => {
-                    let kind = match op {
-                        b'+' => RelKind::AdjacentSibling,
-                        b'~' => RelKind::Sibling,
-                        b'>' => RelKind::Parent,
-                        op => {
-                            eprintln!(
-                                "WARNING: Unsupported css relation {op:?}. \
-                                 Treating it as '>'"
-                            );
-                            RelKind::Parent
-                        }
-                    };
-                    let mut t = Self::default();
-                    swap(&mut result, &mut t);
-                    result.rel_of = Some(Box::new((kind, t)));
-                }
-                SelectorPart::BackRef => {
-                    if !result.is_local_empty() {
-                        let msg = "\"&\" may only used at the beginning of a compound selector.";
-                        let s = format!("{}&", result.last_compound_str());
-                        let l = s.len();
-                        let f =
-                            SourceFile::css_bytes(s, SourceName::root("-"));
-                        let pos = SourcePos::new_range(f, l - 1..l);
-                        return Err(BadSelector::Parse(ParseError::new(
-                            msg, pos,
-                        )));
-                    }
-                    result.backref = Some(());
-                }
-            }
-        }
-        Ok(result)
+        Self::_try_from_value(&value).map_err(move |e| e.ctx(value))
     }
 }
 
@@ -774,9 +729,6 @@ impl Default for ElemType {
 }
 
 impl ElemType {
-    fn new(s: &str) -> Self {
-        ElemType { s: s.to_owned() }
-    }
     fn is_any(&self) -> bool {
         self.s == "*"
     }
@@ -841,5 +793,116 @@ impl RelKind {
             RelKind::Sibling => Some("~"),
             RelKind::AdjacentSibling => Some("+"),
         }
+    }
+}
+
+pub(crate) mod parser {
+    use super::super::attribute::parser::attribute;
+    use super::super::pseudo::parser::pseudo;
+    use super::{ElemType, RelKind, Selector};
+    use crate::parser::css::css_string_nohash as css_string;
+    use crate::parser::util::{opt_spacelike, spacelike};
+    use crate::parser::{PResult, Span};
+    use nom::branch::alt;
+    use nom::bytes::complete::tag;
+    use nom::combinator::{map, opt, value};
+    use nom::multi::fold_many0;
+    use nom::sequence::{delimited, pair, preceded};
+
+    pub fn selector(input: Span) -> PResult<Selector> {
+        let (input, prerel) = opt(rel_kind)(input)?;
+        let (input, first) = if let Some(prerel) = prerel {
+            let (input, first) = opt(compound_selector)(input)?;
+            let mut first = first.unwrap_or_default();
+            first.rel_of = Some(Box::new((prerel, Selector::default())));
+            (input, first)
+        } else {
+            compound_selector(input)?
+        };
+        fold_many0(
+            pair(rel_kind, compound_selector),
+            move || first.clone(),
+            |rel, (kind, mut e)| {
+                e.rel_of = Some(Box::new((kind, rel)));
+                e
+            },
+        )(input)
+    }
+
+    fn rel_kind(input: Span) -> PResult<RelKind> {
+        alt((
+            delimited(
+                opt_spacelike,
+                alt((
+                    value(RelKind::AdjacentSibling, tag("+")),
+                    value(RelKind::Sibling, tag("~")),
+                    value(RelKind::Parent, tag(">")),
+                )),
+                opt_spacelike,
+            ),
+            value(RelKind::Ancestor, spacelike),
+        ))(input)
+    }
+
+    pub fn compound_selector(input: Span) -> PResult<Selector> {
+        let mut result = Selector::default();
+        let (rest, backref) = opt(value((), tag("&")))(input)?;
+        result.backref = backref;
+        let (mut rest, elem) = opt(name_opt_ns)(rest)?;
+        result.element = elem.map(|s| ElemType { s });
+
+        loop {
+            rest = match rest.first() {
+                Some(b'#') => {
+                    let (r, id) = preceded(tag("#"), css_string)(rest)?;
+                    result.id = Some(id);
+                    r
+                }
+                Some(b'%') => {
+                    let (r, p) = preceded(tag("%"), css_string)(rest)?;
+                    result.placeholders.push(p);
+                    r
+                }
+                Some(b'.') => {
+                    let (r, c) = preceded(tag("."), css_string)(rest)?;
+                    result.classes.push(c);
+                    r
+                }
+                Some(b':') => {
+                    let (r, p) = pseudo(rest)?;
+                    result.pseudo.push(p);
+                    r
+                }
+                Some(b'[') => {
+                    let (r, c) = attribute(rest)?;
+                    result.attr.push(c);
+                    r
+                }
+                _ => break,
+            };
+        }
+        Ok((rest, result))
+    }
+
+    pub fn name_opt_ns(input: Span) -> PResult<String> {
+        fn name_part(input: Span) -> PResult<String> {
+            alt((value(String::from("*"), tag("*")), css_string))(input)
+        }
+        alt((
+            map(preceded(tag("|"), name_part), |mut s| {
+                s.insert(0, '|');
+                s
+            }),
+            map(
+                pair(name_part, opt(preceded(tag("|"), name_part))),
+                |(a, b)| {
+                    if let Some(b) = b {
+                        format!("{a}|{b}")
+                    } else {
+                        a
+                    }
+                },
+            ),
+        ))(input)
     }
 }

@@ -1,6 +1,7 @@
-use super::Selectors as OldSelectorSet;
-use super::{logical::Selector, BadSelector, CssSelectorSet};
+use super::{logical::Selector, BadSelector, BadSelector0, CssSelectorSet};
+use crate::parser::input_span;
 use crate::value::ListSeparator;
+use crate::ParseError;
 use crate::{css::Value, Invalid};
 
 /// A set of selectors.
@@ -65,37 +66,6 @@ impl SelectorSet {
     }
 }
 
-impl TryFrom<Value> for SelectorSet {
-    type Error = BadSelector;
-
-    fn try_from(value: Value) -> Result<Self, Self::Error> {
-        // This uses the old selector implementation as intermediary.
-        // TODO: Implement direct parsing of the new selectors.
-        Self::try_from(&OldSelectorSet::try_from(value)?)
-    }
-}
-
-impl TryFrom<&OldSelectorSet> for SelectorSet {
-    type Error = BadSelector;
-
-    fn try_from(value: &OldSelectorSet) -> Result<Self, Self::Error> {
-        value
-            .s
-            .iter()
-            .map(Selector::try_from)
-            .collect::<Result<Vec<_>, _>>()
-            .map(|s| SelectorSet { s })
-    }
-}
-/// FIXME: Is this still needed?  Remove?
-impl TryFrom<SelectorSet> for OldSelectorSet {
-    type Error = BadSelector;
-
-    fn try_from(value: SelectorSet) -> Result<Self, Self::Error> {
-        Value::from(value).try_into()
-    }
-}
-
 impl From<SelectorSet> for Value {
     fn from(value: SelectorSet) -> Self {
         let v = value.s.into_iter().map(Value::from).collect::<Vec<_>>();
@@ -104,5 +74,56 @@ impl From<SelectorSet> for Value {
         } else {
             Value::List(v, Some(ListSeparator::Comma), false)
         }
+    }
+}
+
+impl TryFrom<Value> for SelectorSet {
+    type Error = BadSelector;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        value_to_selectors(&value).map_err(move |e| e.ctx(value))
+    }
+}
+
+fn value_to_selectors(v: &Value) -> Result<SelectorSet, BadSelector0> {
+    match v {
+        Value::List(vv, Some(ListSeparator::Comma), _) => {
+            let s = vv
+                .iter()
+                .map(Selector::_try_from_value)
+                .collect::<Result<_, _>>()?;
+            Ok(SelectorSet { s })
+        }
+        v @ Value::List(..) => Ok(SelectorSet {
+            s: vec![Selector::_try_from_value(v)?],
+        }),
+        Value::Literal(s) => {
+            if s.value().is_empty() {
+                Ok(SelectorSet { s: vec![] })
+            } else {
+                let span = input_span(s.value());
+                Ok(ParseError::check(parser::selector_set(span.borrow()))?)
+            }
+        }
+        _ => Err(BadSelector0::Value),
+    }
+}
+
+pub(crate) mod parser {
+    use super::SelectorSet;
+    use crate::parser::{util::opt_spacelike, PResult, Span};
+    use nom::bytes::complete::tag;
+    use nom::combinator::map;
+    use nom::multi::separated_list1;
+    use nom::sequence::delimited;
+
+    pub fn selector_set(input: Span) -> PResult<SelectorSet> {
+        map(
+            separated_list1(
+                delimited(opt_spacelike, tag(","), opt_spacelike),
+                super::super::logical::parser::selector,
+            ),
+            |s| SelectorSet { s },
+        )(input)
     }
 }

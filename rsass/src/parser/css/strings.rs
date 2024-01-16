@@ -38,6 +38,21 @@ pub fn css_string(input: Span) -> PResult<String> {
     )(input)
 }
 
+pub fn css_string_nohash(input: Span) -> PResult<String> {
+    let (input, first) =
+        alt((selector_plain_part, normalized_first_escaped_char))(input)?;
+    fold_many0(
+        // Note: This could probably be a whole lot more efficient,
+        // but try to get stuff correct before caring too much about that.
+        alt((selector_plain_part, normalized_escaped_char)),
+        move || first.clone(),
+        |mut acc: String, item: String| {
+            acc.push_str(&item);
+            acc
+        },
+    )(input)
+}
+
 pub fn css_string_dq(input: Span) -> PResult<CssString> {
     let (input, parts) = delimited(
         tag("\""),

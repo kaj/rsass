@@ -1,5 +1,4 @@
 use super::{selectorset::SelectorSet, CssSelectorSet};
-use crate::css::{CssString, Selectors};
 
 /// A pseudo-class or a css2 pseudo-element (:foo)
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -13,24 +12,6 @@ pub(crate) struct Pseudo {
 }
 
 impl Pseudo {
-    /// Named constructor for pseudo classes.
-    pub(crate) fn class(name: &CssString, arg: &Option<Selectors>) -> Self {
-        Pseudo {
-            name: name.value().into(),
-            arg: arg.as_ref().and_then(|s| SelectorSet::try_from(s).ok()),
-            element: false,
-        }
-    }
-
-    /// Named constructor for psedo elements.
-    pub(crate) fn element(name: &CssString, arg: &Option<Selectors>) -> Self {
-        Pseudo {
-            name: name.value().into(),
-            arg: arg.as_ref().and_then(|s| SelectorSet::try_from(s).ok()),
-            element: true,
-        }
-    }
-
     pub(crate) fn is_superselector(&self, b: &Self) -> bool {
         if self.is_element() != b.is_element() || self.name != b.name {
             return false;
@@ -157,5 +138,26 @@ fn name_in(name: &str, known: &[&str]) -> bool {
         })
     } else {
         known.iter().any(|known| name == *known)
+    }
+}
+
+pub(crate) mod parser {
+    use super::super::selectorset::parser::selector_set;
+    use super::Pseudo;
+    use crate::parser::{css::css_string, PResult, Span};
+    use nom::branch::alt;
+    use nom::bytes::complete::tag;
+    use nom::combinator::{map, opt, value};
+    use nom::sequence::{delimited, tuple};
+
+    pub fn pseudo(input: Span) -> PResult<Pseudo> {
+        map(
+            tuple((
+                alt((value(true, tag("::")), value(false, tag(":")))),
+                css_string,
+                opt(delimited(tag("("), selector_set, tag(")"))),
+            )),
+            |(element, name, arg)| Pseudo { name, arg, element },
+        )(input)
     }
 }
