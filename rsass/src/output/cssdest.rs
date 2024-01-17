@@ -51,9 +51,7 @@ impl<'a> Drop for RuleDest<'a> {
     fn drop(&mut self) {
         fn end(dest: &mut RuleDest) -> Result<()> {
             dest.parent.push_item(dest.rule.clone().into())?;
-            let mut t = Vec::new();
-            std::mem::swap(&mut dest.trail, &mut t);
-            for item in t {
+            for item in std::mem::take(&mut dest.trail) {
                 dest.parent.push_item(item)?;
             }
             dest.parent.separate();
@@ -204,14 +202,11 @@ impl<'a> AtRuleDest<'a> {
 
 impl<'a> Drop for AtRuleDest<'a> {
     fn drop(&mut self) {
-        let mut body = Vec::new();
-        std::mem::swap(&mut self.body, &mut body);
-        let mut name = String::new();
-        std::mem::swap(&mut self.name, &mut name);
-        let mut args = Value::Null;
-        std::mem::swap(&mut self.args, &mut args);
-        if let Some(rule) = &self.rule {
-            body.insert(0, rule.clone().into());
+        let mut body = std::mem::take(&mut self.body);
+        let name = std::mem::take(&mut self.name);
+        let args = std::mem::replace(&mut self.args, Value::Null);
+        if let Some(rule) = self.rule.take() {
+            body.insert(0, rule.into());
         }
         let result = AtRule::new(name, args, Some(body));
         if let Err(err) = self.parent.push_item(result.into()) {
@@ -322,13 +317,12 @@ impl<'a> AtMediaDest<'a> {
 
 impl<'a> Drop for AtMediaDest<'a> {
     fn drop(&mut self) {
-        let mut body = Vec::new();
-        std::mem::swap(&mut self.body, &mut body);
-        let mut args = MediaArgs::Name(String::new());
-        std::mem::swap(&mut self.args, &mut args);
-        if let Some(rule) = &self.rule {
+        let mut body = std::mem::take(&mut self.body);
+        let args =
+            std::mem::replace(&mut self.args, MediaArgs::Name(String::new()));
+        if let Some(rule) = self.rule.take() {
             if !rule.body.is_empty() {
-                body.insert(0, rule.clone().into());
+                body.insert(0, rule.into());
             }
         }
         let result = MediaRule::new(args, body);

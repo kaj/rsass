@@ -4,7 +4,6 @@ use crate::sass::Value;
 use crate::value::Quotes;
 use crate::ScopeRef;
 use std::fmt::{self, Write};
-use std::mem::swap;
 
 /// A string that may contain interpolations.
 ///
@@ -37,9 +36,7 @@ impl SassString {
                 StringPart::Raw(s) => buf.push_str(&s),
                 interpolation => {
                     if !buf.is_empty() {
-                        let mut buf2 = String::new();
-                        swap(&mut buf, &mut buf2);
-                        p2.push(StringPart::Raw(buf2));
+                        p2.push(StringPart::Raw(std::mem::take(&mut buf)));
                     }
                     p2.push(interpolation);
                 }

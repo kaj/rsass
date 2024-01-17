@@ -16,6 +16,7 @@ project adheres to
   selector implementation (which is currently internal and used only
   for selector functions, but should replace the old css selector
   implementation in release 0.29).
+* Some other minor code cleanup.
 
 
 ## Release 0.28.8

@@ -65,9 +65,8 @@ impl CallArgs {
 
     pub(crate) fn take_positional(&mut self, n: usize) -> Vec<Value> {
         let n = std::cmp::min(n, self.positional.len());
-        let mut t = self.positional.split_off(n);
-        std::mem::swap(&mut self.positional, &mut t);
-        t
+        let t = self.positional.split_off(n);
+        std::mem::replace(&mut self.positional, t)
     }
     pub(crate) fn only_named(&mut self, name: &Name) -> Option<Value> {
         if self.positional.is_empty() && self.named.len() == 1 {
