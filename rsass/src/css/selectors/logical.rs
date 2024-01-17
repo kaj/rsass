@@ -139,7 +139,10 @@ impl Selector {
         mut self,
         ctx: &CssSelectorSet,
     ) -> Self {
-        // FIXME: Handle rel_of!
+        if let Some(rel) = self.rel_of.take() {
+            self.rel_of =
+                Some(Box::new((rel.0, rel.1.resolve_ref_in_pseudo(ctx))));
+        }
         self.pseudo = self
             .pseudo
             .into_iter()
