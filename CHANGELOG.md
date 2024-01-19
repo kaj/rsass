@@ -17,6 +17,7 @@ project adheres to
   for selector functions, but should replace the old css selector
   implementation in release 0.29).
 * Some other minor code cleanup.
+* Updated sass-spec test suite to 2024-01-18.
 
 
 ## Release 0.28.8
