@@ -223,7 +223,6 @@ mod simple {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn arg() {
                 assert_eq!(
                     runner().ok("a {b: selector-parse(\":c(@#$)\")}\n"),
@@ -316,7 +315,6 @@ mod simple {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn arg() {
                 assert_eq!(
                     runner().ok("a {b: selector-parse(\"::c(@#$)\")}\n"),

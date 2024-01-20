@@ -44,7 +44,7 @@ impl CssSelectorSet {
         fn join3(value: &Value) -> Result<String, BadSelector0> {
             match value {
                 Value::Literal(s) => Ok(s.value().to_string()),
-                _ => return Err(BadSelector0::Value),
+                _ => Err(BadSelector0::Value),
             }
         }
         let selector = join(&value).map_err(|e| e.ctx(value))?;

@@ -6,7 +6,7 @@ pub(crate) struct Pseudo {
     /// The name of the pseudo-class
     name: String,
     /// Arguments to the pseudo-class
-    arg: Option<SelectorSet>,
+    arg: Arg,
     /// True if this is a `::psedu-element`, false for a `:pseudo-class`.
     element: bool,
 }
@@ -18,30 +18,12 @@ impl Pseudo {
         }
         // Note: A better implementetation of is/matches/any would be
         // different from has, host, and host-context.
-        if self.name_in(&[
-            "is",
-            "matches",
-            "any",
-            "where",
-            "has",
-            "host",
-            "host-context",
-        ]) {
-            if self.arg == b.arg {
-                true
-            } else if let (Some(a), Some(b)) = (&self.arg, &b.arg) {
-                a.is_superselector(b)
-            } else {
-                false
-            }
-        } else if self.name_in(&["not"]) {
-            if let (Some(a), Some(b)) = (&self.arg, &b.arg) {
-                b.is_superselector(a) // NOTE: Reversed!
-            } else {
-                false
-            }
+        if self.name_in(&["not"]) {
+            b.arg.is_superselector(&self.arg) // NOTE: Reversed!
+        } else if self.name_in(&["current"]) {
+            self.arg == b.arg
         } else {
-            self.name == b.name && self.arg == b.arg
+            self.arg.is_superselector(&b.arg)
         }
     }
 
@@ -59,10 +41,17 @@ impl Pseudo {
     }
 
     pub(super) fn has_backref(&self) -> bool {
-        self.arg.as_ref().map_or(false, SelectorSet::has_backref)
+        if let Arg::Selector(s) = &self.arg {
+            s.has_backref()
+        } else {
+            false
+        }
     }
     pub(super) fn resolve_ref(mut self, ctx: &CssSelectorSet) -> Self {
-        self.arg = self.arg.map(|arg| arg.resolve_ref(ctx));
+        self.arg = match self.arg {
+            Arg::Selector(s) => Arg::Selector(s.resolve_ref(ctx)),
+            x => x,
+        };
         self
     }
     pub(super) fn replace(
@@ -80,8 +69,12 @@ impl Pseudo {
             "host",
             "host-context",
         ]) {
-            self.arg =
-                self.arg.map(|s| s.replace(original, replacement).unwrap());
+            self.arg = match self.arg {
+                Arg::Selector(s) => {
+                    Arg::Selector(s.replace(original, replacement).unwrap())
+                }
+                x => x,
+            };
         }
         self
     }
@@ -92,21 +85,19 @@ impl Pseudo {
             buf.push(':');
         }
         buf.push_str(&self.name);
-        if let Some(arg) = &self.arg {
-            buf.push('(');
-            if self.name_in(&[
-                "nth-child",
-                "nth-last-child",
-                "nth-last-of-type",
-                "nth-of-type",
-            ]) {
-                let mut t = String::new();
-                arg.write_to_buf(&mut t);
-                buf.push_str(&t.replacen(" + ", "+", 1));
-            } else {
-                arg.write_to_buf(buf);
-            }
-            buf.push(')');
+        // Note: This is an ugly workaround for lack of proper support
+        // for "nth" type of pseudoclass arguments.
+        if self.name_in(&[
+            "nth-child",
+            "nth-last-child",
+            "nth-last-of-type",
+            "nth-of-type",
+        ]) {
+            let mut t = String::new();
+            self.arg.write_to_buf(&mut t);
+            buf.push_str(&t.replacen(" + ", "+", 1));
+        } else {
+            self.arg.write_to_buf(buf);
         }
     }
     fn name_in(&self, names: &[&str]) -> bool {
@@ -141,13 +132,47 @@ fn name_in(name: &str, known: &[&str]) -> bool {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum Arg {
+    Selector(SelectorSet),
+    Other(String),
+    None,
+}
+
+impl Arg {
+    fn is_superselector(&self, b: &Self) -> bool {
+        match (self, b) {
+            (Self::Selector(a), Self::Selector(b)) => a.is_superselector(b),
+            (Self::Other(a), Self::Other(b)) => a == b,
+            (Self::None, Self::None) => true,
+            _ => false,
+        }
+    }
+    pub(super) fn write_to_buf(&self, buf: &mut String) {
+        match self {
+            Arg::Selector(s) => {
+                buf.push('(');
+                s.write_to_buf(buf);
+                buf.push(')');
+            }
+            Arg::Other(a) => {
+                buf.push('(');
+                buf.push_str(a);
+                buf.push(')');
+            }
+            Arg::None => (),
+        }
+    }
+}
+
 pub(crate) mod parser {
     use super::super::selectorset::parser::selector_set;
-    use super::Pseudo;
+    use super::{Arg, Pseudo};
+    use crate::parser::css::strings::custom_value_inner;
     use crate::parser::{css::css_string, PResult, Span};
     use nom::branch::alt;
     use nom::bytes::complete::tag;
-    use nom::combinator::{map, opt, value};
+    use nom::combinator::{map, value};
     use nom::sequence::{delimited, tuple};
 
     pub fn pseudo(input: Span) -> PResult<Pseudo> {
@@ -155,7 +180,20 @@ pub(crate) mod parser {
             tuple((
                 alt((value(true, tag("::")), value(false, tag(":")))),
                 css_string,
-                opt(delimited(tag("("), selector_set, tag(")"))),
+                // Note: The accepted type of selector should probably
+                // depend on the name, so that known pseudo attributes
+                // requires the correct kind of arguments.
+                alt((
+                    map(
+                        delimited(tag("("), selector_set, tag(")")),
+                        Arg::Selector,
+                    ),
+                    map(
+                        delimited(tag("("), custom_value_inner, tag(")")),
+                        Arg::Other,
+                    ),
+                    map(tag(""), |_| Arg::None),
+                )),
             )),
             |(element, name, arg)| Pseudo { name, arg, element },
         )(input)

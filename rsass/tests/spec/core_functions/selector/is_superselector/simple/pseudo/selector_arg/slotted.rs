@@ -32,7 +32,6 @@ mod prefix {
     );
     }
     #[test]
-    #[ignore] // wrong result
     fn superset() {
         assert_eq!(
         runner().ok(
@@ -56,7 +55,6 @@ fn subset() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn superset() {
     assert_eq!(
         runner().ok(

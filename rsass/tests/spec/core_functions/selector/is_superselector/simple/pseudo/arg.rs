@@ -10,7 +10,6 @@ mod class {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn equal() {
         assert_eq!(
             runner()
@@ -25,7 +24,6 @@ mod class {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn argument() {
             assert_eq!(
                 runner().ok(
@@ -37,7 +35,6 @@ mod class {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn has_argument() {
             assert_eq!(
                 runner().ok("a {b: is-superselector(\":c(@#$)\", \":c\")}\n"),
@@ -47,7 +44,6 @@ mod class {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn name() {
             assert_eq!(
                 runner().ok(
@@ -65,7 +61,6 @@ mod element {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn equal() {
         assert_eq!(
             runner()
@@ -80,7 +75,6 @@ mod element {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn argument() {
             assert_eq!(
                 runner().ok(
@@ -92,7 +86,6 @@ mod element {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn has_argument() {
             assert_eq!(
                 runner()
@@ -103,7 +96,6 @@ mod element {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn name() {
             assert_eq!(
                 runner().ok(

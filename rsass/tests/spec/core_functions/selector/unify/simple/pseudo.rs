@@ -14,7 +14,6 @@ mod arg {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn different() {
             assert_eq!(
                 runner()
@@ -25,7 +24,6 @@ mod arg {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn same() {
             assert_eq!(
                 runner()
@@ -41,7 +39,6 @@ mod arg {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn different() {
             assert_eq!(
         runner().ok(
@@ -53,7 +50,6 @@ mod arg {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn same() {
             assert_eq!(
                 runner().ok(

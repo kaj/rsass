@@ -1,7 +1,7 @@
 pub(crate) mod media;
 mod rule;
 mod selectors;
-mod strings;
+pub(crate) mod strings;
 mod values;
 
 pub(crate) use self::selectors::{selector, selector_parts, selectors};

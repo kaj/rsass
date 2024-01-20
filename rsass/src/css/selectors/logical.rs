@@ -377,6 +377,7 @@ impl Selector {
 
     fn is_local_empty(&self) -> bool {
         self.element.is_none()
+            && self.backref.is_none()
             && self.placeholders.is_empty()
             && self.classes.is_empty()
             && self.id.is_none()
@@ -805,7 +806,7 @@ pub(crate) mod parser {
     use crate::parser::{PResult, Span};
     use nom::branch::alt;
     use nom::bytes::complete::tag;
-    use nom::combinator::{map, opt, value};
+    use nom::combinator::{map, opt, value, verify};
     use nom::multi::fold_many0;
     use nom::sequence::{delimited, pair, preceded};
 
@@ -820,9 +821,10 @@ pub(crate) mod parser {
             compound_selector(input)?
         };
         fold_many0(
-            pair(rel_kind, compound_selector),
+            pair(rel_kind, opt(compound_selector)),
             move || first.clone(),
-            |rel, (kind, mut e)| {
+            |rel, (kind, e)| {
+                let mut e = e.unwrap_or_default();
                 e.rel_of = Some(Box::new((kind, rel)));
                 e
             },
@@ -881,6 +883,7 @@ pub(crate) mod parser {
                 _ => break,
             };
         }
+        verify(tag(""), |_| !result.is_local_empty())(rest)?;
         Ok((rest, result))
     }
 
