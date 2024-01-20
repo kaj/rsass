@@ -2,7 +2,7 @@ use crate::css::CssString;
 
 /// A logical attribute selector.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) struct Attribute {
+pub(crate) struct Attribute {
     /// The attribute name
     name: String,
     /// An operator
@@ -44,7 +44,7 @@ pub(crate) mod parser {
     use nom::combinator::{map, map_res, opt};
     use nom::sequence::{delimited, terminated, tuple};
 
-    pub fn attribute(input: Span) -> PResult<Attribute> {
+    pub(crate) fn attribute(input: Span) -> PResult<Attribute> {
         delimited(
             terminated(tag("["), opt_spacelike),
             alt((

@@ -175,7 +175,7 @@ pub(crate) mod parser {
     use nom::combinator::{map, value};
     use nom::sequence::{delimited, tuple};
 
-    pub fn pseudo(input: Span) -> PResult<Pseudo> {
+    pub(crate) fn pseudo(input: Span) -> PResult<Pseudo> {
         map(
             tuple((
                 alt((value(true, tag("::")), value(false, tag(":")))),

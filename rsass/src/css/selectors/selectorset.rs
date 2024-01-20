@@ -20,7 +20,7 @@ impl SelectorSet {
             .all(|sub| self.s.iter().any(|sup| sup.is_superselector(sub)))
     }
 
-    pub fn replace(
+    pub(crate) fn replace(
         self,
         original: &SelectorSet,
         replacement: &SelectorSet,
@@ -117,7 +117,7 @@ pub(crate) mod parser {
     use nom::multi::separated_list1;
     use nom::sequence::delimited;
 
-    pub fn selector_set(input: Span) -> PResult<SelectorSet> {
+    pub(crate) fn selector_set(input: Span) -> PResult<SelectorSet> {
         map(
             separated_list1(
                 delimited(opt_spacelike, tag(","), opt_spacelike),

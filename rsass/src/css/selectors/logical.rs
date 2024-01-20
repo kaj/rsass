@@ -810,7 +810,7 @@ pub(crate) mod parser {
     use nom::multi::fold_many0;
     use nom::sequence::{delimited, pair, preceded};
 
-    pub fn selector(input: Span) -> PResult<Selector> {
+    pub(crate) fn selector(input: Span) -> PResult<Selector> {
         let (input, prerel) = opt(rel_kind)(input)?;
         let (input, first) = if let Some(prerel) = prerel {
             let (input, first) = opt(compound_selector)(input)?;
@@ -846,7 +846,7 @@ pub(crate) mod parser {
         ))(input)
     }
 
-    pub fn compound_selector(input: Span) -> PResult<Selector> {
+    pub(crate) fn compound_selector(input: Span) -> PResult<Selector> {
         let mut result = Selector::default();
         let (rest, backref) = opt(value((), tag("&")))(input)?;
         result.backref = backref;
@@ -887,7 +887,7 @@ pub(crate) mod parser {
         Ok((rest, result))
     }
 
-    pub fn name_opt_ns(input: Span) -> PResult<String> {
+    pub(crate) fn name_opt_ns(input: Span) -> PResult<String> {
         fn name_part(input: Span) -> PResult<String> {
             alt((value(String::from("*"), tag("*")), css_string))(input)
         }
