@@ -168,8 +168,10 @@ impl Arg {
 pub(crate) mod parser {
     use super::super::selectorset::parser::selector_set;
     use super::{Arg, Pseudo};
-    use crate::parser::css::strings::custom_value_inner;
-    use crate::parser::{css::css_string, PResult, Span};
+    use crate::parser::css::strings::{
+        css_string_nohash, custom_value_inner,
+    };
+    use crate::parser::{PResult, Span};
     use nom::branch::alt;
     use nom::bytes::complete::tag;
     use nom::combinator::{map, value};
@@ -179,7 +181,7 @@ pub(crate) mod parser {
         map(
             tuple((
                 alt((value(true, tag("::")), value(false, tag(":")))),
-                css_string,
+                css_string_nohash,
                 // Note: The accepted type of selector should probably
                 // depend on the name, so that known pseudo attributes
                 // requires the correct kind of arguments.

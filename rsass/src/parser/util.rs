@@ -8,6 +8,15 @@ use nom::multi::{fold_many0, fold_many1, many0};
 use nom::sequence::{preceded, terminated};
 use std::str::from_utf8;
 
+pub(crate) fn term_opt_space<'a, F, T>(
+    f: F,
+) -> impl FnMut(Span<'a>) -> PResult<'a, T>
+where
+    F: FnMut(Span<'a>) -> PResult<'a, T>,
+{
+    terminated(f, opt_spacelike)
+}
+
 pub fn semi_or_end(input: Span) -> PResult<()> {
     terminated(
         opt_spacelike,

@@ -801,7 +801,7 @@ pub(crate) mod parser {
     use super::super::attribute::parser::attribute;
     use super::super::pseudo::parser::pseudo;
     use super::{ElemType, RelKind, Selector};
-    use crate::parser::css::css_string_nohash as css_string;
+    use crate::parser::css::strings::css_string_nohash as css_string;
     use crate::parser::util::{opt_spacelike, spacelike};
     use crate::parser::{PResult, Span};
     use nom::branch::alt;

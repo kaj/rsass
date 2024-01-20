@@ -36,61 +36,59 @@ impl Attribute {
 pub(crate) mod parser {
     use super::super::logical::parser::name_opt_ns;
     use super::Attribute;
-    use crate::parser::css::css_string_any;
-    use crate::parser::{input_to_str, util::opt_spacelike, PResult, Span};
+    use crate::parser::css::strings::css_string_any;
+    use crate::parser::util::term_opt_space;
+    use crate::parser::{input_to_str, PResult, Span};
     use nom::branch::alt;
     use nom::bytes::complete::tag;
     use nom::character::complete::one_of;
     use nom::combinator::{map, map_res, opt};
-    use nom::sequence::{delimited, terminated, tuple};
+    use nom::sequence::{delimited, pair, tuple};
 
     pub(crate) fn attribute(input: Span) -> PResult<Attribute> {
-        delimited(
-            terminated(tag("["), opt_spacelike),
-            alt((
-                map(
-                    tuple((
-                        terminated(name_opt_ns, opt_spacelike),
-                        terminated(
-                            map_res(
-                                alt((
-                                    tag("*="),
-                                    tag("|="),
-                                    tag("="),
-                                    tag("$="),
-                                    tag("~="),
-                                    tag("^="),
-                                )),
-                                input_to_str,
-                            ),
-                            opt_spacelike,
-                        ),
-                        terminated(css_string_any, opt_spacelike),
-                        opt(terminated(
-                            one_of(
-                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ\
-                                 abcdefghijklmnopqrstuvwxyz",
-                            ),
-                            opt_spacelike,
+        map(
+            delimited(
+                term_opt_space(tag("[")),
+                pair(
+                    term_opt_space(name_opt_ns),
+                    opt(tuple((
+                        term_opt_space(map_res(
+                            alt((
+                                tag("*="),
+                                tag("|="),
+                                tag("="),
+                                tag("$="),
+                                tag("~="),
+                                tag("^="),
+                            )),
+                            input_to_str,
                         )),
-                    )),
-                    |(name, op, val, modifier)| Attribute {
+                        term_opt_space(css_string_any),
+                        opt(term_opt_space(one_of(
+                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                             abcdefghijklmnopqrstuvwxyz",
+                        ))),
+                    ))),
+                ),
+                tag("]"),
+            ),
+            |(name, ovm)| {
+                if let Some((op, val, modifier)) = ovm {
+                    Attribute {
                         name,
                         op: op.to_owned(),
                         val,
                         modifier,
-                    },
-                ),
-                map(terminated(name_opt_ns, opt_spacelike), |name| {
+                    }
+                } else {
                     Attribute {
                         name,
                         op: String::new(),
                         val: "".into(),
                         modifier: None,
                     }
-                }),
-            )),
-            tag("]"),
+                }
+            },
         )(input)
     }
 }

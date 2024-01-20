@@ -12,6 +12,9 @@ project adheres to
 * Improved support for the `selector.nest` function (PR #189).
 * Moved `selector.append` to new selector implementation (PR #190).
 * Implemented the `selector.simple-selectors` function (PR #191).
+* Parse next-generation css selectors directly (rather than parsing as
+  the old type and converting to the new).  Fixes the `selector.parse`
+  function and improves support for other selector functions (PR #192).
 * Some internal cleanup and improvements in the next-generation css
   selector implementation (which is currently internal and used only
   for selector functions, but should replace the old css selector
