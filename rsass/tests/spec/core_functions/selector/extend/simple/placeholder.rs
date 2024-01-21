@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn equal() {
     assert_eq!(
         runner().ok("a {b: selector-extend(\"%c\", \"%c\", \"e\")}\n"),
@@ -16,7 +15,6 @@ fn equal() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn unequal() {
     assert_eq!(
         runner().ok("a {b: selector-extend(\"%c\", \"%d\", \"e\")}\n"),

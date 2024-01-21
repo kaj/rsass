@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn and_universal() {
     assert_eq!(
         runner().ok("a {b: selector-extend(\"c\", \"*\", \"d\")}\n"),
@@ -16,7 +15,6 @@ fn and_universal() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn equal() {
     assert_eq!(
         runner().ok("a {b: selector-extend(\"c\", \"c\", \"e\")}\n"),
@@ -34,7 +32,6 @@ mod namespace {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn and_empty() {
             assert_eq!(
                 runner()
@@ -45,7 +42,6 @@ mod namespace {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn and_explicit() {
             assert_eq!(
                 runner()
@@ -56,7 +52,6 @@ mod namespace {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn and_implicit() {
             assert_eq!(
                 runner().ok("a {b: selector-extend(\"|c\", \"c\", \"d\")}\n"),
@@ -66,7 +61,6 @@ mod namespace {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn and_universal() {
             assert_eq!(
                 runner()
@@ -82,7 +76,6 @@ mod namespace {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn and_empty() {
             assert_eq!(
                 runner()
@@ -97,7 +90,6 @@ mod namespace {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn equal() {
                 assert_eq!(
                     runner().ok(
@@ -109,7 +101,6 @@ mod namespace {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn unequal() {
                 assert_eq!(
                     runner().ok(
@@ -122,7 +113,6 @@ mod namespace {
             }
         }
         #[test]
-        #[ignore] // wrong result
         fn and_implicit() {
             assert_eq!(
                 runner()
@@ -133,7 +123,6 @@ mod namespace {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn and_universal() {
             assert_eq!(
                 runner()
@@ -149,7 +138,6 @@ mod namespace {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn and_empty() {
             assert_eq!(
                 runner()
@@ -160,7 +148,6 @@ mod namespace {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn and_explicit() {
             assert_eq!(
                 runner()
@@ -171,7 +158,6 @@ mod namespace {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn and_implicit() {
             assert_eq!(
                 runner()
@@ -182,7 +168,6 @@ mod namespace {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn and_universal() {
             assert_eq!(
                 runner()
@@ -195,7 +180,6 @@ mod namespace {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn unequal() {
     assert_eq!(
         runner().ok("a {b: selector-extend(\"c\", \"d\", \"e\")}\n"),

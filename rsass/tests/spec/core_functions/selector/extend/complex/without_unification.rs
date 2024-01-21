@@ -21,7 +21,6 @@ mod leading_combinator {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn extender() {
         assert_eq!(
             runner().ok("a {b: selector-extend(\".c\", \".c\", \"+ .d\")}\n"),
@@ -31,7 +30,6 @@ mod leading_combinator {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn selector() {
         assert_eq!(
             runner().ok("a {b: selector-extend(\"> .c\", \".c\", \".d\")}\n"),
@@ -91,7 +89,6 @@ mod multiple_combinators {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn selector() {
             assert_eq!(
                 runner().ok(
@@ -108,7 +105,6 @@ mod multiple_combinators {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn extender() {
             assert_eq!(
                 runner().ok(
@@ -120,7 +116,6 @@ mod multiple_combinators {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn selector() {
             assert_eq!(
                 runner().ok(
@@ -225,7 +220,6 @@ mod trailing_combinator {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn both() {
         assert_eq!(
             runner()

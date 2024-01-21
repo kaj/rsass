@@ -14,7 +14,6 @@ mod conflict {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn alone() {
             assert_eq!(
                 runner()
@@ -25,7 +24,6 @@ mod conflict {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn with_class() {
             assert_eq!(
                 runner()
@@ -37,7 +35,6 @@ mod conflict {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn id() {
         assert_eq!(
             runner().ok("a {b: selector-extend(\"#c.d\", \".d\", \"#e\")}\n"),
@@ -47,7 +44,6 @@ mod conflict {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn next_sibling() {
         assert_eq!(
             runner().ok(
@@ -59,7 +55,6 @@ mod conflict {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn parent() {
         assert_eq!(
             runner().ok(
@@ -126,7 +121,6 @@ mod conflict {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn empty_and_default() {
             assert_eq!(
                 runner()
@@ -137,7 +131,6 @@ mod conflict {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn empty_and_namespace() {
             assert_eq!(
                 runner().ok(
@@ -149,7 +142,6 @@ mod conflict {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn namespace_and_default() {
             assert_eq!(
                 runner()
@@ -160,7 +152,6 @@ mod conflict {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn namespace_and_empty() {
             assert_eq!(
                 runner().ok(
@@ -172,7 +163,6 @@ mod conflict {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn namespace_and_namespace() {
             assert_eq!(
                 runner().ok(
@@ -186,7 +176,6 @@ mod conflict {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn missing() {
     assert_eq!(
         runner().ok("a {b: selector-extend(\"c\", \"d\", \"e\")}\n"),
@@ -204,7 +193,6 @@ mod unification {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn ancestor() {
             assert_eq!(
                 runner()
@@ -215,7 +203,6 @@ mod unification {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn next_sibling() {
             assert_eq!(
                 runner()
@@ -226,7 +213,6 @@ mod unification {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn parent() {
             assert_eq!(
                 runner()
@@ -237,7 +223,6 @@ mod unification {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn sibling() {
             assert_eq!(
                 runner()
@@ -248,7 +233,6 @@ mod unification {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn simple() {
             assert_eq!(
                 runner()
@@ -260,7 +244,6 @@ mod unification {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn identical_to_extendee() {
         assert_eq!(
             runner().ok("a {b: selector-extend(\"c.d\", \".d\", \".d\")}\n"),
@@ -270,7 +253,6 @@ mod unification {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn identical_to_selector() {
         assert_eq!(
             runner().ok("a {b: selector-extend(\"c.d\", \".d\", \"c.d\")}\n"),

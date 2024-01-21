@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn and_class() {
     assert_eq!(
         runner().ok("a {b: selector-extend(\"*\", \".c\", \"d\")}\n"),
@@ -16,7 +15,6 @@ fn and_class() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn and_type() {
     assert_eq!(
         runner().ok("a {b: selector-extend(\"*\", \"c\", \"d\")}\n"),
@@ -26,7 +24,6 @@ fn and_type() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn equal() {
     assert_eq!(
         runner().ok("a {b: selector-extend(\"*\", \"*\", \"c\")}\n"),
@@ -44,7 +41,6 @@ mod namespace {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn and_class() {
             assert_eq!(
                 runner()
@@ -59,7 +55,6 @@ mod namespace {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn empty() {
                 assert_eq!(
                     runner().ok(
@@ -71,7 +66,6 @@ mod namespace {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn explicit() {
                 assert_eq!(
                     runner().ok(
@@ -83,7 +77,6 @@ mod namespace {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn implicit() {
                 assert_eq!(
                     runner()
@@ -99,7 +92,6 @@ mod namespace {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn empty() {
                 assert_eq!(
                     runner().ok(
@@ -111,7 +103,6 @@ mod namespace {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn explicit() {
                 assert_eq!(
                     runner().ok(
@@ -123,7 +114,6 @@ mod namespace {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn implicit() {
                 assert_eq!(
                     runner()
@@ -134,7 +124,6 @@ mod namespace {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn universal() {
                 assert_eq!(
                     runner().ok(
@@ -152,7 +141,6 @@ mod namespace {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn and_class() {
             assert_eq!(
                 runner()
@@ -167,7 +155,6 @@ mod namespace {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn empty() {
                 assert_eq!(
                     runner().ok(
@@ -183,7 +170,6 @@ mod namespace {
                 use super::runner;
 
                 #[test]
-                #[ignore] // wrong result
                 fn equal() {
                     assert_eq!(
         runner().ok(
@@ -195,7 +181,6 @@ mod namespace {
     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn unequal() {
                     assert_eq!(
         runner().ok(
@@ -208,7 +193,6 @@ mod namespace {
                 }
             }
             #[test]
-            #[ignore] // wrong result
             fn implicit() {
                 assert_eq!(
                     runner().ok(
@@ -225,7 +209,6 @@ mod namespace {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn empty() {
                 assert_eq!(
                     runner().ok(
@@ -241,7 +224,6 @@ mod namespace {
                 use super::runner;
 
                 #[test]
-                #[ignore] // wrong result
                 fn equal() {
                     assert_eq!(
         runner().ok(
@@ -253,7 +235,6 @@ mod namespace {
     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn unequal() {
                     assert_eq!(
         runner().ok(
@@ -266,7 +247,6 @@ mod namespace {
                 }
             }
             #[test]
-            #[ignore] // wrong result
             fn implicit() {
                 assert_eq!(
                     runner().ok(
@@ -278,7 +258,6 @@ mod namespace {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn universal() {
                 assert_eq!(
                     runner().ok(
@@ -296,7 +275,6 @@ mod namespace {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn and_class() {
             assert_eq!(
                 runner()
@@ -311,7 +289,6 @@ mod namespace {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn empty() {
                 assert_eq!(
                     runner().ok(
@@ -323,7 +300,6 @@ mod namespace {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn explicit() {
                 assert_eq!(
                     runner().ok(
@@ -335,7 +311,6 @@ mod namespace {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn implicit() {
                 assert_eq!(
                     runner().ok(
@@ -352,7 +327,6 @@ mod namespace {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn empty() {
                 assert_eq!(
                     runner().ok(
@@ -364,7 +338,6 @@ mod namespace {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn explicit() {
                 assert_eq!(
                     runner().ok(
@@ -376,7 +349,6 @@ mod namespace {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn implicit() {
                 assert_eq!(
                     runner().ok(
@@ -388,7 +360,6 @@ mod namespace {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn universal() {
                 assert_eq!(
                     runner().ok(

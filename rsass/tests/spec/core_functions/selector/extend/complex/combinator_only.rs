@@ -16,7 +16,6 @@ fn extender() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn selector() {
     assert_eq!(
         runner().ok("a {b: selector-extend(\"+\", \".c\", \".d\")}\n"),

@@ -13,6 +13,20 @@ pub(crate) struct SelectorSet {
 }
 
 impl SelectorSet {
+    pub(crate) fn extend(
+        self,
+        extendee: &Self,
+        extender: &Self,
+    ) -> Result<Self, Invalid> {
+        extendee.check_extend_complex()?;
+        let result = self
+            .s
+            .into_iter()
+            .flat_map(|s| s.extend(extendee, extender))
+            .collect();
+        Ok(Self { s: result })
+    }
+
     pub(super) fn is_superselector(&self, other: &Self) -> bool {
         other
             .s
@@ -22,17 +36,10 @@ impl SelectorSet {
 
     pub(crate) fn replace(
         self,
-        original: &SelectorSet,
-        replacement: &SelectorSet,
+        original: &Self,
+        replacement: &Self,
     ) -> Result<Self, Invalid> {
-        for original in &original.s {
-            if original.is_complex() {
-                let s = original.clone().into_string_vec().join(" ");
-                return Err(Invalid::AtError(format!(
-                    "Can\'t extend complex selector {s}."
-                )));
-            }
-        }
+        original.check_extend_complex()?;
         let result = self
             .s
             .into_iter()
@@ -40,6 +47,19 @@ impl SelectorSet {
             .collect();
         Ok(Self { s: result })
     }
+
+    fn check_extend_complex(&self) -> Result<(), Invalid> {
+        for extendee in &self.s {
+            if extendee.is_complex() {
+                let s = extendee.clone().into_string_vec().join(" ");
+                return Err(Invalid::AtError(format!(
+                    "Can\'t extend complex selector {s}."
+                )));
+            }
+        }
+        Ok(())
+    }
+
     pub(super) fn write_to_buf(&self, buf: &mut String) {
         fn write_one(s: &Selector, buf: &mut String) {
             buf.push_str(&s.clone().into_string_vec().join(" "));
@@ -56,7 +76,7 @@ impl SelectorSet {
         self.s.iter().any(Selector::has_backref)
     }
     pub(super) fn resolve_ref(self, ctx: &CssSelectorSet) -> Self {
-        SelectorSet {
+        Self {
             s: self
                 .s
                 .into_iter()

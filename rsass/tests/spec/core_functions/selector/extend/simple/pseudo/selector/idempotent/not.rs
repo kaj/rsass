@@ -136,7 +136,6 @@ mod matches {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn not_in_extender() {
     assert_eq!(
         runner().ok(

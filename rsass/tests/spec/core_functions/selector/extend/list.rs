@@ -28,7 +28,6 @@ fn different_matches() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn one_matches() {
     assert_eq!(
         runner().ok("a {b: selector-extend(\".c\", \".c, .d\", \".e\")}\n"),
