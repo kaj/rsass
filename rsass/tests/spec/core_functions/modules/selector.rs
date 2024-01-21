@@ -111,7 +111,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn extend() {
     assert_eq!(
         runner().ok("@use \"sass:selector\";\

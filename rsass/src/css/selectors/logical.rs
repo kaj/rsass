@@ -66,6 +66,58 @@ impl Selector {
         }
     }
 
+    pub(super) fn extend(
+        self,
+        extendee: &SelectorSet,
+        extender: &SelectorSet,
+    ) -> Vec<Self> {
+        let mut result = vec![self];
+        for original in &extendee.s {
+            result = result
+                .into_iter()
+                .flat_map(|mut s| {
+                    if original.is_superselector(&s) {
+                        let base = s.clone();
+                        if original.element == s.element
+                            && !s
+                                .element
+                                .as_ref()
+                                .map_or(true, |e| e.s == "*")
+                        {
+                            s.element = None;
+                        }
+                        s.placeholders.retain(|p| {
+                            !original.placeholders.iter().any(|o| o == p)
+                        });
+                        if original.id == s.id {
+                            s.id = None;
+                        }
+                        s.attr.retain(|a| {
+                            !original.attr.iter().any(|o| a == o)
+                        });
+                        s.classes.retain(|c| {
+                            !original.classes.iter().any(|o| c == o)
+                        });
+                        s.pseudo.retain(|p| {
+                            !original.pseudo.iter().any(|o| p == o)
+                        });
+                        let mut result = extender
+                            .s
+                            .iter()
+                            .flat_map(|r| s.unify_extend(r))
+                            .collect::<Vec<_>>();
+                        result.retain(|r| !base.is_superselector(r));
+                        result.insert(0, base);
+                        result
+                    } else {
+                        vec![s]
+                    }
+                })
+                .collect();
+        }
+        result
+    }
+
     pub(super) fn nest(&self, other: &Self) -> Self {
         let mut result = other.clone();
         if let Some(rel) = result.rel_of.take() {
@@ -269,6 +321,10 @@ impl Selector {
 
     pub(super) fn unify(self, other: Selector) -> Vec<Selector> {
         self._unify(other).unwrap_or_default()
+    }
+
+    pub fn unify_extend(&self, other: &Selector) -> Vec<Selector> {
+        self.clone()._unify(other.clone()).unwrap_or_default()
     }
 
     fn _unify(mut self, mut other: Selector) -> Option<Vec<Selector>> {

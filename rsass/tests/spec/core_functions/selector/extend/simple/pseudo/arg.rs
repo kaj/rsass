@@ -10,7 +10,6 @@ mod class {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn equal() {
         assert_eq!(
             runner().ok(
@@ -26,7 +25,6 @@ mod class {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn argument() {
             assert_eq!(
         runner().ok(
@@ -38,7 +36,6 @@ mod class {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn has_argument() {
             assert_eq!(
                 runner().ok(
@@ -50,7 +47,6 @@ mod class {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn name() {
             assert_eq!(
         runner().ok(
@@ -68,7 +64,6 @@ mod element {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn equal() {
         assert_eq!(
             runner().ok(
@@ -84,7 +79,6 @@ mod element {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn argument() {
             assert_eq!(
         runner().ok(
@@ -96,7 +90,6 @@ mod element {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn has_argument() {
             assert_eq!(
                 runner().ok(
@@ -108,7 +101,6 @@ mod element {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn name() {
             assert_eq!(
         runner().ok(

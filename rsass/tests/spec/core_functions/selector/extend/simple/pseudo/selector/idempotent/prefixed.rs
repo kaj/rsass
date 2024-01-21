@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn different_prefix_in_extender() {
     assert_eq!(
         runner().ok(

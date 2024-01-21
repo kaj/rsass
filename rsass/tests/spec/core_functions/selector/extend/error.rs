@@ -14,7 +14,6 @@ mod extendee {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn list() {
             assert_eq!(
                 runner().err("a {b: selector-extend(\"c\", d e, \"f\")}\n"),
@@ -27,7 +26,6 @@ mod extendee {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn string() {
             assert_eq!(
                 runner()
@@ -42,7 +40,6 @@ mod extendee {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn invalid() {
         assert_eq!(
             runner().err("a {b: selector-extend(\"c\", \"[d\", \"e\")}\n"),
@@ -60,7 +57,6 @@ mod extendee {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn parent() {
         assert_eq!(
             runner().err("a {b: selector-extend(\"c\", \"&\", \"d\")}\n"),
@@ -78,7 +74,6 @@ mod extendee {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn test_type() {
         assert_eq!(
         runner().err(
@@ -99,7 +94,6 @@ mod extender {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn invalid() {
         assert_eq!(
             runner().err("a {b: selector-extend(\"c\", \"d\", \"[e\")}\n"),
@@ -117,7 +111,6 @@ mod extender {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn parent() {
         assert_eq!(
             runner().err("a {b: selector-extend(\"c\", \"d\", \"&\")}\n"),
@@ -135,7 +128,6 @@ mod extender {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn test_type() {
         assert_eq!(
         runner().err(
@@ -156,7 +148,6 @@ mod selector {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn invalid() {
         assert_eq!(
             runner().err("a {b: selector-extend(\"[c\", \"d\", \"e\")}\n"),
@@ -174,7 +165,6 @@ mod selector {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn parent() {
         assert_eq!(
             runner().err("a {b: selector-extend(\"&\", \"c\", \"d\")}\n"),
@@ -192,7 +182,6 @@ mod selector {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn test_type() {
         assert_eq!(
         runner().err(
@@ -209,7 +198,6 @@ mod selector {
     }
 }
 #[test]
-#[ignore] // missing error
 fn too_few_args() {
     assert_eq!(
         runner().err("a {b: selector-extend(\"c\", \"d\")}\n"),
@@ -226,7 +214,6 @@ fn too_few_args() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn too_many_args() {
     assert_eq!(
         runner().err("a {b: selector-extend(\"c\", \"d\", \"e\", \"f\")}\n"),

@@ -82,6 +82,16 @@ impl CssSelectorSet {
         })
     }
 
+    pub(crate) fn extend(
+        self,
+        extendee: &Self,
+        extender: &Self,
+    ) -> Result<Self, Invalid> {
+        self.s
+            .extend(&extendee.s, &extender.s)
+            .map(|s| CssSelectorSet { s })
+    }
+
     pub(crate) fn nest(&self, other: SelectorSet) -> Self {
         let mut parts = other
             .s

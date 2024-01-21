@@ -10,7 +10,6 @@ mod class {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn and_element() {
         assert_eq!(
             runner().ok("a {b: selector-extend(\":c\", \"::c\", \"e\")}\n"),
@@ -20,7 +19,6 @@ mod class {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn equal() {
         assert_eq!(
             runner().ok("a {b: selector-extend(\":c\", \":c\", \"e\")}\n"),
@@ -30,7 +28,6 @@ mod class {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn unequal() {
         assert_eq!(
             runner().ok("a {b: selector-extend(\":c\", \":d\", \"e\")}\n"),
@@ -45,7 +42,6 @@ mod element {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn and_class() {
         assert_eq!(
             runner().ok("a {b: selector-extend(\"::c\", \":c\", \"e\")}\n"),
@@ -55,7 +51,6 @@ mod element {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn equal() {
         assert_eq!(
             runner().ok("a {b: selector-extend(\"::c\", \"::c\", \"e\")}\n"),
@@ -65,7 +60,6 @@ mod element {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn unequal() {
         assert_eq!(
             runner().ok("a {b: selector-extend(\"::c\", \"::d\", \"e\")}\n"),

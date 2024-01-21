@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn equal() {
     assert_eq!(
         runner().ok("a {b: selector-extend(\"[c=d]\", \"[c=d]\", \"e\")}\n"),
@@ -20,7 +19,6 @@ mod unequal {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn name() {
         assert_eq!(
             runner()
@@ -31,7 +29,6 @@ mod unequal {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn operator() {
         assert_eq!(
             runner()
@@ -42,7 +39,6 @@ mod unequal {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn value() {
         assert_eq!(
             runner()

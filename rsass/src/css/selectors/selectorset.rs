@@ -13,6 +13,27 @@ pub(crate) struct SelectorSet {
 }
 
 impl SelectorSet {
+    pub(crate) fn extend(
+        self,
+        extendee: &SelectorSet,
+        extender: &SelectorSet,
+    ) -> Result<Self, Invalid> {
+        for extendee in &extendee.s {
+            if extendee.is_complex() {
+                let s = extendee.clone().into_string_vec().join(" ");
+                return Err(Invalid::AtError(format!(
+                    "Can\'t extend complex selector {s}."
+                )));
+            }
+        }
+        let result = self
+            .s
+            .into_iter()
+            .flat_map(|s| s.extend(extendee, extender))
+            .collect();
+        Ok(Self { s: result })
+    }
+
     pub(super) fn is_superselector(&self, other: &Self) -> bool {
         other
             .s

@@ -10,7 +10,6 @@ mod prefixed {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn equal() {
         assert_eq!(
             runner().ok("a {\
@@ -29,7 +28,6 @@ mod prefixed {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn argument() {
             assert_eq!(
                 runner().ok("a {\
@@ -44,7 +42,6 @@ mod prefixed {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn has_argument() {
             assert_eq!(
         runner().ok(
@@ -56,7 +53,6 @@ mod prefixed {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn name() {
             assert_eq!(
                 runner().ok("a {\
@@ -71,7 +67,6 @@ mod prefixed {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn prefix() {
             assert_eq!(
                 runner().ok("a {\
@@ -96,7 +91,6 @@ mod unprefixed {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn equal() {
             assert_eq!(
         runner().ok(
@@ -112,7 +106,6 @@ mod unprefixed {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn argument() {
                 assert_eq!(
         runner().ok(
@@ -124,7 +117,6 @@ mod unprefixed {
     );
             }
             #[test]
-            #[ignore] // wrong result
             fn has_argument() {
                 assert_eq!(
         runner().ok(
@@ -136,7 +128,6 @@ mod unprefixed {
     );
             }
             #[test]
-            #[ignore] // wrong result
             fn name() {
                 assert_eq!(
         runner().ok(
@@ -158,7 +149,6 @@ mod unprefixed {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn equal() {
                 assert_eq!(
         runner().ok(
@@ -174,7 +164,6 @@ mod unprefixed {
                 use super::runner;
 
                 #[test]
-                #[ignore] // wrong result
                 fn argument() {
                     assert_eq!(
         runner().ok(
@@ -186,7 +175,6 @@ mod unprefixed {
     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn has_argument() {
                     assert_eq!(
         runner().ok(
@@ -198,7 +186,6 @@ mod unprefixed {
     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn name() {
                     assert_eq!(
         runner().ok(
@@ -221,7 +208,6 @@ mod unprefixed {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn equal() {
                 assert_eq!(
         runner().ok(
@@ -237,7 +223,6 @@ mod unprefixed {
                 use super::runner;
 
                 #[test]
-                #[ignore] // wrong result
                 fn argument() {
                     assert_eq!(
         runner().ok(
@@ -249,7 +234,6 @@ mod unprefixed {
     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn has_argument() {
                     assert_eq!(
         runner().ok(
@@ -261,7 +245,6 @@ mod unprefixed {
     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn name() {
                     assert_eq!(
         runner().ok(
@@ -284,7 +267,6 @@ mod unprefixed {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn equal() {
                 assert_eq!(
         runner().ok(
@@ -300,7 +282,6 @@ mod unprefixed {
                 use super::runner;
 
                 #[test]
-                #[ignore] // wrong result
                 fn argument() {
                     assert_eq!(
         runner().ok(
@@ -312,7 +293,6 @@ mod unprefixed {
     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn has_argument() {
                     assert_eq!(
         runner().ok(
@@ -324,7 +304,6 @@ mod unprefixed {
     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn name() {
                     assert_eq!(
         runner().ok(

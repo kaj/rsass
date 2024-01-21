@@ -14,7 +14,6 @@ mod input {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn compound() {
             assert_eq!(
                 runner()
@@ -66,7 +65,6 @@ mod input {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn extender() {
             assert_eq!(
                 runner()
@@ -90,7 +88,6 @@ mod input {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn output() {
     assert_eq!(
         runner().ok("$result: selector-extend(\"c d, e f\", \"g\", \"g\");\
