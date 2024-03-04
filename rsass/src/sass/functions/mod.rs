@@ -77,7 +77,6 @@ impl cmp::PartialEq for Builtin {
         // Each builtin function is only created once, so this
         // should be ok.
         self.args == other.args && self.pos == other.pos && {
-            #[allow(clippy::vtable_address_comparisons)]
             Arc::ptr_eq(&self.body, &other.body)
         }
     }
@@ -438,6 +437,15 @@ mod check {
             .value
             .into_integer()
             .map_err(|v| is_not(&v, "an int"))
+    }
+
+    pub fn positive_int(v: Value) -> Result<i64, String> {
+        let v = int(v)?;
+        if v > 0 {
+            Ok(v)
+        } else {
+            Err(format!("Must be greater than 0, was {v}."))
+        }
     }
 
     pub fn unitless(v: Value) -> Result<Number, String> {

@@ -1,5 +1,4 @@
 use super::Error;
-use std::convert::TryInto;
 use yaml_rust::YamlLoader;
 
 #[derive(Default)]

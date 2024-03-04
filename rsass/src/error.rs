@@ -3,7 +3,6 @@ use crate::input::{LoadError, SourcePos};
 use crate::parser::ParseError;
 use crate::value::RangeError;
 use crate::ScopeError;
-use std::convert::From;
 use std::{fmt, io};
 
 /// Many functions in rsass that returns a Result uses this Error type.
