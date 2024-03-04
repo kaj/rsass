@@ -192,14 +192,7 @@ pub fn create_module() -> Scope {
         Ok(Numeric::new(val * 100, Unit::Percent).into())
     });
     def!(f, random(limit = b"null"), |s| {
-        match s.get_opt_map(name!(limit), |v| {
-            let v = check::int(v)?;
-            if v > 0 {
-                Ok(v)
-            } else {
-                Err(format!("Must be greater than 0, was {v}."))
-            }
-        })? {
+        match s.get_opt_map(name!(limit), check::positive_int)? {
             None => {
                 let rez = 1_000_000;
                 Ok(Value::scalar(Rational::new(intrand(rez), rez)))

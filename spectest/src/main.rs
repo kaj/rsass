@@ -539,7 +539,6 @@ fn content(path: &Path) -> Result<String, Error> {
 
 #[derive(Debug)]
 pub struct Error(String);
-use std::convert::From;
 
 impl From<io::Error> for Error {
     fn from(e: io::Error) -> Self {
