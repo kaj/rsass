@@ -50,7 +50,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: atan2(0)}\n"),
@@ -63,7 +62,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: atan2(0, 0, 0)}\n"),

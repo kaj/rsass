@@ -1,15 +1,15 @@
-use super::super::{check, CallError, FunctionMap, ResolvedArgs};
-use super::{diff_units_msg, number};
+use super::super::color::eval_inner;
+use super::super::{CallError, CheckedArg, FunctionMap, ResolvedArgs};
+use super::css::{check_excess_args, required_arg};
+use super::{css_fn_arg, diff_units_msg, NumOrSpecial};
 use crate::css::{is_not, CallArgs, Value};
-use crate::sass::functions::color::eval_inner;
-use crate::sass::functions::CheckedArg;
 use crate::value::Numeric;
-use crate::{sass::functions::css_fn_arg, Scope};
+use crate::Scope;
 
 pub fn in_module(module: &mut Scope) {
     def!(module, abs(number), sass_abs);
     def_va!(module, hypot(number), |s| {
-        hypot(&s.get_map(name!(number), check::va_list)?)
+        hypot(&s.get_va(name!(number))?)
     });
 }
 
@@ -20,28 +20,18 @@ pub fn global(global: &mut FunctionMap) {
             let fa = FormalArgs::new(vec![one_arg!(number)]);
             return sass_abs(&eval_inner(&name!(abs), &fa, s, args)?);
         }
-        if args.positional.len() > 1 {
-            return Err(CallError::msg(format!(
-                "Only 1 argument allowed, but {} were passed.",
-                args.positional.len(),
-            )));
+        let mut args = args.positional.into_iter();
+        let arg = required_arg(args.next())?;
+        check_excess_args(1, args.count())?;
+        match NumOrSpecial::try_from(arg).named(name!(number))? {
+            NumOrSpecial::Num(v) => {
+                Ok(Numeric::new(v.value.abs(), v.unit).into())
+            }
+            NumOrSpecial::Special(arg) => Ok(Value::call("abs", [arg])),
         }
-        let arg = args
-            .positional
-            .into_iter()
-            .next()
-            .ok_or_else(|| CallError::msg("Missing argument."))?;
-        Numeric::try_from(arg)
-            .map(|v| number(v.value.abs(), v.unit))
-            .or_else(|e| match css_fn_arg(e.value().clone()) {
-                Ok(v) => {
-                    Ok(Value::Call("abs".into(), CallArgs::from_single(v)))
-                }
-                Err(_) => Err(e.to_string()).named(name!(number)),
-            })
     });
     def_va!(global, hypot(number), |s| {
-        let args = s.get_map(name!(number), check::va_list)?;
+        let args = s.get_va(name!(number))?;
         match hypot(&args) {
             Ok(value) => Ok(value),
             Err(_) => {
@@ -51,8 +41,8 @@ pub fn global(global: &mut FunctionMap) {
                     let args = args
                         .into_iter()
                         .map(css_fn_arg)
-                        .collect::<Result<_, _>>()?;
-                    Ok(Value::Call("hypot".into(), CallArgs::from_list(args)))
+                        .collect::<Result<Vec<_>, _>>()?;
+                    Ok(Value::call("hypot", args))
                 }
             }
         }
@@ -61,13 +51,13 @@ pub fn global(global: &mut FunctionMap) {
 
 fn sass_abs(s: &ResolvedArgs) -> Result<Value, CallError> {
     let v: Numeric = s.get(name!(number))?;
-    Ok(number(v.value.abs(), v.unit))
+    Ok(Numeric::new(v.value.abs(), v.unit).into())
 }
 
 fn hypot(args: &[Value]) -> Result<Value, CallError> {
     match args {
         [Value::Numeric(v, _)] => {
-            Ok(number(v.value.clone().abs(), v.unit.clone()))
+            Ok(Numeric::new(v.value.clone().abs(), v.unit.clone()).into())
         }
         [v] => Err(is_not(v, "a number")).named(name!(number)),
         v => {
@@ -88,7 +78,7 @@ fn hypot(args: &[Value]) -> Result<Value, CallError> {
                         .named(format!("numbers[{}]", i + 2).into())?;
                     sum += f64::from(scaled).powi(2);
                 }
-                Ok(number(sum.sqrt(), unit))
+                Ok(Numeric::new(sum.sqrt(), unit).into())
             } else {
                 Err(CallError::msg("At least one argument must be passed."))
             }

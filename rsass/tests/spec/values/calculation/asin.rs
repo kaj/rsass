@@ -50,7 +50,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: asin()}\n"),
@@ -63,7 +62,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: asin(0, 0)}\n"),
@@ -93,7 +91,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn complex() {
             assert_eq!(
                 runner().err("a {b: asin(-7px / 4em)}\n"),
@@ -106,7 +103,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn known() {
             assert_eq!(
                 runner().err("a {b: asin(1px)}\n"),
@@ -119,7 +115,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn unknown() {
             assert_eq!(
                 runner().err("a {b: asin(1%)}\n"),

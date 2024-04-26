@@ -88,7 +88,7 @@ pub fn create_module() -> Scope {
         Ok(sep.into())
     });
     def_va!(f, slash(elements), |s| {
-        let list = s.get_map(name!(elements), check::va_list)?;
+        let list = s.get_va(name!(elements))?;
         if list.len() < 2 {
             return Err(CallError::msg(
                 "At least two elements are required.",
@@ -140,7 +140,7 @@ pub fn create_module() -> Scope {
     });
     def_va!(f, zip(lists), |s| {
         let lists = s
-            .get_map(name!(lists), check::va_list)?
+            .get_va(name!(lists))?
             .into_iter()
             .map(Value::iter_items)
             .collect::<Vec<_>>();

@@ -37,6 +37,11 @@ impl Numeric {
             unit: UnitSet::scalar(),
         }
     }
+    /// Create a new numeric that is a percentage from a number where
+    /// 1 maps to 100%.
+    pub(crate) fn percentage(value: impl Into<Number>) -> Numeric {
+        Numeric::new(value.into() * 100, Unit::Percent)
+    }
 
     /// Convert this numeric value to a given unit, if possible.
     ///

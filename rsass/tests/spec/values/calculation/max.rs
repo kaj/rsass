@@ -81,7 +81,7 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn potentially_incompatible_before_unitless() {
         assert_eq!(
             runner().err("a {b: max(1c, 2d, 3)}\n"),
@@ -383,7 +383,6 @@ mod simplified {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn unitless_between_potentially_incompatible() {
         assert_eq!(
             runner().ok("a {b: max(1d, 2, 3e)}\n"),

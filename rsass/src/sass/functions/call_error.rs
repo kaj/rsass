@@ -28,11 +28,11 @@ impl CallError {
     }
 
     /// The values were expected to be compatible, but wasn't.
-    pub fn incompatible_values(a: &Value, b: &Value) -> Self {
+    pub fn incompatible_values<T: Into<Value>>(a: T, b: T) -> Self {
         Self::msg(format!(
             "{} and {} are incompatible.",
-            a.format(Format::introspect()),
-            b.format(Format::introspect()),
+            a.into().format(Format::introspect()),
+            b.into().format(Format::introspect()),
         ))
     }
 
@@ -46,7 +46,11 @@ impl CallError {
                 Error::BadCall(format!("{err:?}"), call_pos.clone(), None)
             }
             CallError::BadArgument(name, problem) => Error::BadCall(
-                format!("${name}: {problem}"),
+                if name.as_ref().is_empty() {
+                    problem
+                } else {
+                    format!("${name}: {problem}")
+                },
                 call_pos.clone(),
                 None,
             ),

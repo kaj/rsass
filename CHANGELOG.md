@@ -19,6 +19,9 @@ project adheres to
   selector implementation (which is currently internal and used only
   for selector functions, but should replace the old css selector
   implementation in release 0.29).
+* Improvements in css-compatible functions that is evaluated if
+  possible, but kept as css if the arguments _may_ make sense in a
+  browser (PR #193).
 * Some other minor code cleanup.
 * MSRV is now 1.74 for rsass-cli (and still 1.61 for the lib and macros).
 * Updated sass-spec test suite to 2024-04-23.

@@ -32,7 +32,6 @@ fn double_operator() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn empty() {
     assert_eq!(
         runner().err("a {b: calc()}\n"),
@@ -106,7 +105,6 @@ fn leading_operator() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn multiple_args() {
     assert_eq!(
         runner().err("a {b: calc(1px, 2px)}\n"),

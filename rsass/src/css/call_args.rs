@@ -47,6 +47,14 @@ impl CallArgs {
         }
     }
 
+    pub(crate) fn from_iter<T, I>(positional: I) -> Self
+    where
+        T: Into<Value>,
+        I: IntoIterator<Item = T>,
+    {
+        Self::from_list(positional.into_iter().map(Into::into).collect())
+    }
+
     pub(crate) fn add_from_value_map(
         &mut self,
         map: OrderMap<Value, Value>,

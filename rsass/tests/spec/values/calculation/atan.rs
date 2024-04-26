@@ -32,7 +32,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: atan()}\n"),
@@ -45,7 +44,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: atan(0, 0)}\n"),
@@ -75,7 +73,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn complex() {
             assert_eq!(
                 runner().err("a {b: atan(-7px / 4em)}\n"),
@@ -88,7 +85,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn known() {
             assert_eq!(
                 runner().err("a {b: atan(1px)}\n"),
@@ -101,7 +97,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn unknown() {
             assert_eq!(
                 runner().err("a {b: atan(1%)}\n"),

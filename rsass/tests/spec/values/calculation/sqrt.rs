@@ -49,7 +49,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn too_few_args() {
             assert_eq!(
                 runner().err("a {b: sqrt()}\n"),
@@ -63,7 +62,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: sqrt(3, 4)}\n"),
@@ -93,7 +91,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn real() {
             assert_eq!(
                 runner().err("a {b: sqrt(16px)}\n"),
@@ -106,7 +103,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn unknown() {
             assert_eq!(
                 runner().err("a {b: sqrt(1%)}\n"),

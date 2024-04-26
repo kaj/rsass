@@ -1,6 +1,6 @@
 use super::{
     check_alpha_pm, check_alpha_range, check_channel_pm, check_channel_range,
-    check_expl_pct, check_hue, expected_to, make_call, CallError, CheckedArg,
+    check_expl_pct, check_hue, expected_to, CallError, CheckedArg,
     FunctionMap, Name,
 };
 use crate::css::{CallArgs, Value};
@@ -136,12 +136,12 @@ pub fn register(f: &mut Scope) {
 
     def!(f, opacity(color), |s| match s.get(name!(color))? {
         Value::Color(ref col, _) => Ok(Value::scalar(col.get_alpha())),
-        v => Ok(make_call("opacity", vec![v])),
+        v => Ok(Value::call("opacity", [v])),
     });
     def!(f, alpha(color), |s| {
         let v = s.get(name!(color))?;
         if ok_as_filterarg(&v) {
-            Ok(make_call("alpha", vec![v]))
+            Ok(Value::call("alpha", [v]))
         } else {
             let color = Color::try_from(v).named(name!(color))?;
             Ok(Value::scalar(color.get_alpha()))
