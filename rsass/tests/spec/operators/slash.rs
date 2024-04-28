@@ -106,3 +106,21 @@ mod separator {
         }
     }
 }
+mod without_intermediate {
+    #[allow(unused)]
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("without_intermediate")
+    }
+
+    #[test]
+    #[ignore] // wrong result
+    fn whitespace() {
+        let runner = runner().with_cwd("whitespace");
+        assert_eq!(
+            runner.ok("a {b: 1/ / /bar}\n"),
+            "a {\
+         \n  b: 1///bar;\
+         \n}\n"
+        );
+    }
+}

@@ -21,7 +21,7 @@ project adheres to
   implementation in release 0.29).
 * Some other minor code cleanup.
 * MSRV is now 1.74 for rsass-cli (and still 1.61 for the lib and macros).
-* Updated sass-spec test suite to 2024-02-06.
+* Updated sass-spec test suite to 2024-04-23.
 
 
 ## Release 0.28.8

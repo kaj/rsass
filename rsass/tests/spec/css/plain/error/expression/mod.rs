@@ -21,6 +21,4 @@ mod parent_selector;
 
 mod parentheses;
 
-mod silent_comment;
-
 mod variable;

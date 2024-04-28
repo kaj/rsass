@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("div {\
@@ -23,9 +22,6 @@ fn test() {
              \n@-webkit-keyframes {\
              \n  from {\
              \n    left: 0px;\
-             \n    10% {\
-             \n      whatever: hoo;\
-             \n    }\
              \n  }\
              \n  to {\
              \n    left: 200px;\
@@ -60,9 +56,6 @@ fn test() {
          \n@-webkit-keyframes {\
          \n  from {\
          \n    left: 0px;\
-         \n    10% {\
-         \n      whatever: hoo;\
-         \n    }\
          \n  }\
          \n  to {\
          \n    left: 200px;\

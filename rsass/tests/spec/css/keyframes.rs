@@ -64,6 +64,67 @@ mod bubble {
         );
     }
 }
+mod error {
+    #[allow(unused)]
+    use super::runner;
+
+    mod in_keyframe_block {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // missing error
+        fn known_at_rule() {
+            assert_eq!(
+                runner().err(
+                    "@keyframes a {\
+             \n  to {@media screen {b: c}}\
+             \n}\n"
+                ),
+                "Error: At-rules may not be used within keyframe blocks.\
+         \n  ,\
+         \n2 |   to {@media screen {b: c}}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn style_rule() {
+            assert_eq!(
+                runner().err(
+                    "@keyframes a {\
+             \n  to {to {c: d}}\
+             \n}\n"
+                ),
+                "Error: Style rules may not be used within keyframe blocks.\
+         \n  ,\
+         \n2 |   to {to {c: d}}\
+         \n  |       ^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn unknown_at_rule() {
+            assert_eq!(
+                runner().err(
+                    "@keyframes a {\
+             \n  to {@b}\
+             \n}\n"
+                ),
+                "Error: At-rules may not be used within keyframe blocks.\
+         \n  ,\
+         \n2 |   to {@b}\
+         \n  |       ^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+            );
+        }
+    }
+}
 mod name {
     #[allow(unused)]
     use super::runner;
