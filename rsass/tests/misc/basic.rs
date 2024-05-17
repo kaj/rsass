@@ -430,24 +430,6 @@ fn rel() {
     );
 }
 
-#[test]
-fn minmax_length_units() {
-    init_logger();
-    assert_eq!(
-        rsass(
-            b"sel {\
-         \n  a: max(-.8em, -.2vw);\
-         \n  a: min(-.8em, -.2vw);\
-         \n}\n"
-        )
-        .unwrap(),
-        "sel {\
-         \n  a: max(-0.8em, -0.2vw);\
-         \n  a: min(-0.8em, -0.2vw);\
-         \n}\n"
-    );
-}
-
 /// If one argument to min or max is an unquoted string
 /// (e.g. interpolation) that looks like a css number, that should be
 /// ok for the css min or max function.

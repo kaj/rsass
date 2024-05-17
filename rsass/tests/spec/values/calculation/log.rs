@@ -126,7 +126,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: log()}\n"),
@@ -139,7 +138,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: log(0, 0, 0)}\n"),
@@ -156,7 +154,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn complex_and_unknown() {
             assert_eq!(
                 runner().err("a {b: log(1px*2px, 10%)}\n"),
@@ -169,7 +166,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn known() {
             assert_eq!(
                 runner().err("a {b: log(3px)}\n"),
@@ -182,7 +178,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn known_incompatible() {
             assert_eq!(
                 runner().err("a {b: log(1deg, 1px)}\n"),
@@ -195,7 +190,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn unitless_and_real() {
             assert_eq!(
                 runner().err("a {b: log(1, 1px)}\n"),
@@ -208,7 +202,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn unknown() {
             assert_eq!(
                 runner().err("a {b: log(1%)}\n"),

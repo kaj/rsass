@@ -57,6 +57,13 @@ impl Value {
         Value::Numeric(Numeric::scalar(v), true)
     }
 
+    pub(crate) fn call<T: Into<Value>, I>(name: &str, args: I) -> Value
+    where
+        I: IntoIterator<Item = T>,
+    {
+        Value::Call(name.into(), CallArgs::from_iter(args))
+    }
+
     /// Check that the value is valid in css.
     pub fn valid_css(self) -> Result<Self, InvalidCss> {
         match self {

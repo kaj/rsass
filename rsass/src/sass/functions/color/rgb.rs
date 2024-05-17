@@ -1,8 +1,8 @@
 use super::channels::Channels;
 use super::{
     check_alpha, check_channel, check_pct_range, eval_inner, is_not,
-    is_special, make_call, relative_color, CallError, CheckedArg,
-    FunctionMap, ResolvedArgs,
+    is_special, relative_color, CallError, CheckedArg, FunctionMap,
+    NumOrSpecial, ResolvedArgs,
 };
 use crate::css::{CallArgs, Value};
 use crate::sass::{ArgsError, FormalArgs, Name};
@@ -66,7 +66,7 @@ pub fn register(f: &mut Scope) {
                 if w == one() {
                     match col {
                         v @ Value::Numeric(..) => {
-                            Ok(make_call("invert", vec![v]))
+                            Ok(Value::call("invert", [v]))
                         }
                         v => Err(is_not(&v, "a color")).named(name!(color)),
                     }
@@ -99,15 +99,10 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
             col => {
                 let w = s.get_map(name!(weight), check_pct_range)?;
                 if w == one() {
-                    match col {
-                        v @ Value::Numeric(..) => {
-                            Ok(make_call("invert", vec![v]))
-                        }
-                        v if is_special(&v) => {
-                            Ok(make_call("invert", vec![v]))
-                        }
-                        v => Err(is_not(&v, "a color")).named(name!(color)),
-                    }
+                    NumOrSpecial::try_from(col)
+                        .map_err(|e| is_not(e.value(), "a color"))
+                        .named(name!(color))
+                        .map(|v| Value::call("invert", [v]))
                 } else {
                     Err(CallError::msg("Only one argument may be passed to the plain-CSS invert() function."))
                 }
@@ -161,7 +156,7 @@ fn do_rgba(fn_name: &Name, s: &ResolvedArgs) -> Result<Value, CallError> {
                     rgba_from_values(fn_name, h, s, l, a)
                 }
                 Channels::Special(channels) => {
-                    Ok(make_call(fn_name.as_ref(), vec![channels]))
+                    Ok(Value::call(fn_name.as_ref(), [channels]))
                 }
             }),
         Err(err @ CallError::Args(ArgsError::Missing(_), _)) => Err(err),
@@ -172,9 +167,9 @@ fn do_rgba(fn_name: &Name, s: &ResolvedArgs) -> Result<Value, CallError> {
                 if is_special(&c) || is_special(&a) {
                     if let Ok(c) = Color::try_from(c.clone()) {
                         let c = c.to_rgba();
-                        Ok(make_call(
+                        Ok(Value::call(
                             fn_name.as_ref(),
-                            vec![
+                            [
                                 Value::scalar(c.red()),
                                 Value::scalar(c.green()),
                                 Value::scalar(c.blue()),
@@ -182,7 +177,7 @@ fn do_rgba(fn_name: &Name, s: &ResolvedArgs) -> Result<Value, CallError> {
                             ],
                         ))
                     } else {
-                        Ok(make_call(fn_name.as_ref(), vec![c, a]))
+                        Ok(Value::call(fn_name.as_ref(), [c, a]))
                     }
                 } else {
                     let mut c = Color::try_from(c).named(name!(color))?;
@@ -216,7 +211,10 @@ fn rgba_from_values(
     a: Value,
 ) -> Result<Value, CallError> {
     if is_special(&r) || is_special(&g) || is_special(&b) || is_special(&a) {
-        Ok(make_call(fn_name.as_ref(), vec![r, g, b, a]))
+        Ok(Value::call(
+            fn_name.as_ref(),
+            [r, g, b, a].into_iter().filter(|v| v != &Value::Null),
+        ))
     } else {
         Ok(Rgba::new(
             check_channel(r).named(name!(red))?,

@@ -90,7 +90,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: pow(3)}\n"),
@@ -103,7 +102,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: pow(3, 2, 1)}\n"),
@@ -120,7 +118,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn compatible() {
             assert_eq!(
                 runner().err("a {b: pow(10px, 10px)}\n"),
@@ -133,7 +130,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn real_and_unitless() {
             assert_eq!(
                 runner().err("a {b: pow(10px, 10)}\n"),
@@ -146,7 +142,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn unknown_and_unitless() {
             assert_eq!(
                 runner().err("a {b: pow(10%, 10)}\n"),

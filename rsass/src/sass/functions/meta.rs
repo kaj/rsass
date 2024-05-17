@@ -1,4 +1,4 @@
-use super::{is_not, looks_like_call, CallError, FunctionMap, ResolvedArgs};
+use super::{is_not, CallError, FunctionMap, ResolvedArgs};
 use crate::css::{is_calc_name, CallArgs, CssString, Value};
 use crate::sass::{Call, Function, MixinDecl, Name};
 use crate::value::Quotes;
@@ -23,22 +23,12 @@ pub fn create_module() -> Scope {
                     Ok(Value::Call(name, args))
                 }
             }
-            Value::Literal(s) if looks_like_call(&s) => {
-                let s = s.value();
-                let i = s.find('(').unwrap();
-                Ok(s[i + 1..s.len() - 1].into())
-            }
             v => Err(is_not(&v, "a calculation")),
         })
     });
     def!(f, calc_name(calc), |s| {
         let name = s.get_map(name!(calc), |v| match v {
             Value::Call(name, _) => Ok(name),
-            Value::Literal(s) if looks_like_call(&s) => {
-                let s = s.value();
-                let i = s.find('(').unwrap();
-                Ok(s[..i].to_string())
-            }
             v => Err(is_not(&v, "a calculation")),
         })?;
         Ok(CssString::new(name, Quotes::Double).into())

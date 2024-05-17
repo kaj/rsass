@@ -50,7 +50,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: sign()}\n"),
@@ -63,7 +62,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: sign(0, 0)}\n"),

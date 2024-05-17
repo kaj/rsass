@@ -1,8 +1,8 @@
 use super::channels::Channels;
 use super::{
-    check_alpha, check_amount, check_hue, check_pct, eval_inner, is_not,
-    is_special, make_call, relative_color, CallError, CheckedArg,
-    FunctionMap, ResolvedArgs,
+    check_alpha, check_amount, check_hue, eval_inner, is_not, is_special,
+    relative_color, CallError, CheckedArg, FunctionMap, NumOrSpecial,
+    ResolvedArgs,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
@@ -34,7 +34,7 @@ pub fn register(f: &mut Scope) {
             Ok(Hsla::new(col.hue(), zero(), col.lum(), col.alpha(), false)
                 .into())
         }
-        v @ Value::Numeric(..) => Ok(make_call("grayscale", vec![v])),
+        v @ Value::Numeric(..) => Ok(Value::call("grayscale", [v])),
         v => Err(is_not(&v, "a color")).named(name!(color)),
     });
 }
@@ -77,9 +77,10 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
             Ok(Hsla::new(col.hue(), zero(), col.lum(), col.alpha(), false)
                 .into())
         }
-        v @ Value::Numeric(..) => Ok(make_call("grayscale", vec![v])),
-        v if is_special(&v) => Ok(make_call("grayscale", vec![v])),
-        v => Err(is_not(&v, "a color")).named(name!(color)),
+        v => NumOrSpecial::try_from(v)
+            .map_err(|e| is_not(e.value(), "a color"))
+            .named(name!(color))
+            .map(|v| Value::call("grayscale", [v])),
     });
     def_va!(f, saturate(kwargs), |s| {
         let a1 = FormalArgs::new(vec![one_arg!(color), one_arg!(amount)]);
@@ -95,15 +96,9 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
                     .into())
             }
             Err(CallError::Args(ArgsError::Missing(_), _)) => {
-                let s = eval_inner(&name!(saturate), &a2, s, args)?;
-                let sat = s.get_map(name!(amount), |v| {
-                    if is_special(&v) {
-                        Ok(v)
-                    } else {
-                        check_pct(v.clone()).map(|_| v) // validate only
-                    }
-                })?;
-                Ok(make_call("saturate", vec![sat]))
+                eval_inner(&name!(saturate), &a2, s, args)?
+                    .get::<NumOrSpecial>(name!(amount))
+                    .map(|sat| Value::call("saturate", [sat]))
             }
             Err(ae) => Err(ae),
         }
@@ -152,7 +147,7 @@ fn do_hsla(fn_name: &Name, s: &ResolvedArgs) -> Result<Value, CallError> {
                     hsla_from_values(fn_name, h, s, l, a)
                 }
                 Channels::Special(channels) => {
-                    Ok(make_call(fn_name.as_ref(), vec![channels]))
+                    Ok(Value::call(fn_name.as_ref(), [channels]))
                 }
             }),
         Err(err @ CallError::Args(ArgsError::Missing(_), _)) => Err(err),
@@ -179,7 +174,10 @@ fn hsla_from_values(
     a: Value,
 ) -> Result<Value, CallError> {
     if is_special(&h) || is_special(&s) || is_special(&l) || is_special(&a) {
-        Ok(make_call(fn_name.as_ref(), vec![h, s, l, a]))
+        Ok(Value::call(
+            fn_name.as_ref(),
+            [h, s, l, a].into_iter().filter(|v| v != &Value::Null),
+        ))
     } else if l == Value::Null {
         Err(CallError::msg("Missing argument $lightness."))
     } else {
@@ -195,7 +193,7 @@ fn hsla_from_values(
 }
 
 pub fn percentage(v: Rational) -> Value {
-    Numeric::new(v * 100, Unit::Percent).into()
+    Numeric::percentage(v).into()
 }
 
 /// Gets a percentage as a fraction 0 .. 1.

@@ -6,7 +6,6 @@ use crate::css::{self, CssString, ValueToMapError};
 use crate::input::{Context, Loader, Parsed, SourceKind, SourcePos};
 use crate::ordermap::OrderMap;
 use crate::ScopeRef;
-use std::convert::TryInto;
 
 /// A declared mixin
 #[derive(Clone)]

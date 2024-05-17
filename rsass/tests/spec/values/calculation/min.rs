@@ -383,7 +383,6 @@ mod simplified {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn unitless_between_potentially_incompatible() {
         assert_eq!(
             runner().ok("a {b: min(3d, 2, 1e)}\n"),

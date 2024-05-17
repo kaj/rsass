@@ -1,4 +1,3 @@
-use std::iter::FromIterator;
 use std::slice::Iter;
 use std::vec::IntoIter;
 

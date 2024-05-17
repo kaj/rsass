@@ -50,7 +50,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: exp()}\n"),
@@ -63,7 +62,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: exp(0, 0)}\n"),
@@ -93,7 +91,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn known() {
             assert_eq!(
                 runner().err("a {b: exp(1px)}\n"),
@@ -111,7 +108,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn unknown() {
             assert_eq!(
                 runner().err("a {b: exp(1%)}\n"),

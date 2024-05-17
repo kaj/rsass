@@ -45,7 +45,6 @@ mod one_argument {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err("a {b: round(\"0\")}\n"),

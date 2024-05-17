@@ -1,15 +1,15 @@
-use super::{
-    diff_units_msg2, known_dim, number, CallArgs, CallError, ResolvedArgs,
-};
+use super::super::CheckedArg as _;
+use super::css::required_arg;
+use super::{known_dim, CallArgs, CallError, NumOrSpecial, ResolvedArgs};
 use crate::css::{CssString, Value};
 use crate::output::Format;
 use crate::sass::functions::color::eval_inner;
-use crate::sass::FormalArgs;
+use crate::sass::{ArgsError, FormalArgs};
 use crate::value::{Number, Numeric, Quotes};
 
 pub fn sass_round(s: &ResolvedArgs) -> Result<Value, CallError> {
     let val: Numeric = s.get(name!(number))?;
-    Ok(number(val.value.round(), val.unit))
+    Ok(Numeric::new(val.value.round(), val.unit).into())
 }
 
 pub fn css_round(s: &ResolvedArgs) -> Result<Value, CallError> {
@@ -19,69 +19,76 @@ pub fn css_round(s: &ResolvedArgs) -> Result<Value, CallError> {
         return sass_round(&eval_inner(&name!(round), &fa, s, args)?);
     }
     if args.positional.len() > 3 {
-        return Err(CallError::msg(format!(
-            "Only 3 arguments allowed, but {} were passed.",
+        return Err(CallError::msg(ArgsError::TooMany(
+            3,
             args.positional.len(),
         )));
     }
     let mut args = args.positional.into_iter();
-    let (strategy, number, step) =
-        match (args.next(), args.next(), args.next()) {
-            (Some(v0), Some(v1), v2) => {
-                match (Strategy::try_from(&v0), v1, v2) {
-                    (Ok(_), num, None) if num.type_name() == "number" => {
-                        return Err(CallError::msg(
-                            "If strategy is not null, step is required.",
-                        ))
-                    }
-                    (Ok(s), num, None) => (Some(s), num, None),
-                    (Ok(s), num, Some(step)) => (Some(s), num, Some(step)),
-                    (Err(()), num, Some(step)) => {
-                        return if v0.type_name() == "variable" {
-                            fallback(Some(v0), num, Some(step))
-                        } else {
-                            Err(CallError::msg(format!(
-                        "{} must be either nearest, up, down or to-zero.",
-                        v0.format(Format::introspect()),
-                    )))
-                        };
-                    }
-                    (Err(()), step, None) => (None, v0, Some(step)),
-                }
+    let (strategy, number, step) = match (
+        Strategy::try_from(required_arg(args.next())?),
+        args.next(),
+        args.next(),
+    ) {
+        (Ok(_), Some(num), None) if num.type_name() == "number" => {
+            return Err(CallError::msg(
+                "If strategy is not null, step is required.",
+            ))
+        }
+        (Ok(s), Some(num), None) => (Some(s), num, None),
+        (Ok(s), Some(num), Some(step)) => (Some(s), num, Some(step)),
+        (Ok(_), None, _) => return Err(CallError::msg("xyzzy")),
+        (Err(v0), Some(num), Some(step)) => {
+            return if v0.type_name() == "variable" {
+                Ok(Value::call("round", [v0, num, step]))
+            } else {
+                Err(CallError::msg(format!(
+                    "{} must be either nearest, up, down or to-zero.",
+                    v0.format(Format::introspect()),
+                )))
+            };
+        }
+        (Err(v0), Some(step), None) => (None, v0, Some(step)),
+        (Err(arg @ Value::BinOp(_)), None, _) => {
+            return Err(CallError::msg(format!(
+                "Single argument {} expected to be simplifiable.",
+                arg.format(Format::introspect()),
+            )));
+        }
+        (Err(v), None, _) => (None, v, None),
+    };
+    let number = NumOrSpecial::try_from(number).named(name!(number))?;
+    let step = step
+        .map(NumOrSpecial::in_calc)
+        .transpose()
+        .map_err(CallError::msg)?;
+    match (number, step) {
+        (NumOrSpecial::Num(num), Some(NumOrSpecial::Num(step))) => {
+            if let Some(step) = step.as_unitset(&num.unit) {
+                Ok(real_round(strategy.unwrap_or_default(), num, Some(step)))
+            } else if known_dim(&num)
+                .and_then(|dim1| known_dim(&step).map(|dim2| dim1 == dim2))
+                .unwrap_or(true)
+            {
+                Ok(fallback(strategy, num.into(), Some(step.into())))
+            } else {
+                Err(CallError::incompatible_values(num, step))
             }
-            (Some(v), None, _) => (None, v, None),
-            (None, ..) => {
-                return Err(CallError::msg("Missing argument."));
-            }
-        };
-    real_round(strategy.unwrap_or_default(), &number, step.as_ref())
-        .unwrap_or_else(|| fallback(strategy.map(Value::from), number, step))
+        }
+        (NumOrSpecial::Num(num), None) => {
+            Ok(real_round(strategy.unwrap_or_default(), num, None))
+        }
+        (number, step) => Ok(fallback(strategy, number, step)),
+    }
 }
 
 fn real_round(
     strategy: Strategy,
-    num: &Value,
-    step: Option<&Value>,
-) -> Option<Result<Value, CallError>> {
-    let val = Numeric::try_from(num.clone()).ok()?;
-    let step = match step.cloned().map(Numeric::try_from) {
-        Some(Ok(v)) => {
-            if let Some(step) = v.as_unitset(&val.unit) {
-                Some(step)
-            } else if known_dim(&val)
-                .and_then(|dim1| known_dim(&v).map(|dim2| dim1 == dim2))
-                .unwrap_or(true)
-            {
-                return None;
-            } else {
-                return Some(Err(CallError::msg(diff_units_msg2(&val, &v))));
-            }
-        }
-        Some(Err(_)) => return None,
-        None => None,
-    };
+    val: Numeric,
+    step: Option<Number>,
+) -> Value {
     let (val, unit) = (val.value, val.unit);
-    Some(Ok(number(
+    Value::from(Numeric::new(
         if let Some(step) = step {
             if step.is_finite() {
                 if (strategy == Strategy::ToZero) && step.is_negative() {
@@ -104,30 +111,22 @@ fn real_round(
             strategy.apply(val)
         },
         unit,
-    )))
+    ))
 }
 
 fn fallback(
-    strategy: Option<Value>,
-    number: Value,
-    step: Option<Value>,
-) -> Result<Value, CallError> {
-    let mut args = Vec::new();
-    let is_single = strategy.is_none() && step.is_none();
-    if let Some(v) = strategy {
-        args.push(v);
+    strategy: Option<Strategy>,
+    number: NumOrSpecial,
+    step: Option<NumOrSpecial>,
+) -> Value {
+    match (strategy.map(Value::from), number, step) {
+        (Some(a1), a2, Some(a3)) => {
+            Value::call("round", [a1, a2.into(), a3.into()])
+        }
+        (Some(a1), a2, None) => Value::call("round", [a1, a2.into()]),
+        (None, a1, Some(a2)) => Value::call("round", [a1, a2]),
+        (None, a1, None) => Value::call("round", [a1]),
     }
-    if is_single && matches!(&number, Value::BinOp(_)) {
-        return Err(CallError::msg(format!(
-            "Single argument {} expected to be simplifiable.",
-            number.format(Format::introspect()),
-        )));
-    }
-    args.push(super::css_fn_arg(number)?);
-    if let Some(step) = step {
-        args.push(super::css_fn_arg(step)?);
-    }
-    Ok(Value::Call("round".into(), CallArgs::from_list(args)))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -155,31 +154,30 @@ impl Default for Strategy {
     }
 }
 
-impl TryFrom<&CssString> for Strategy {
-    type Error = ();
+impl TryFrom<CssString> for Strategy {
+    type Error = CssString;
 
-    fn try_from(value: &CssString) -> Result<Self, Self::Error> {
+    fn try_from(value: CssString) -> Result<Self, Self::Error> {
         if value.quotes() != Quotes::None {
-            return Err(());
+            return Err(value);
         }
         match value.value() {
             "nearest" => Ok(Self::Nearest),
             "up" => Ok(Self::Up),
             "to-zero" | "to_zero" => Ok(Self::ToZero),
             "down" => Ok(Self::Down),
-            _ => Err(()),
+            _ => Err(value),
         }
     }
 }
 
-impl TryFrom<&Value> for Strategy {
-    type Error = ();
+impl TryFrom<Value> for Strategy {
+    type Error = Value;
 
-    fn try_from(value: &Value) -> Result<Self, Self::Error> {
-        if let Value::Literal(s) = value {
-            s.try_into()
-        } else {
-            Err(())
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::Literal(s) => s.try_into().map_err(Value::Literal),
+            other => Err(other),
         }
     }
 }

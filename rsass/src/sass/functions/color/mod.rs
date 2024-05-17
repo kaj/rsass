@@ -1,5 +1,5 @@
 use super::{
-    expected_to, is_not, is_special, CallError, CheckedArg, FunctionMap,
+    expected_to, is_not, CallError, CheckedArg, FunctionMap, NumOrSpecial,
     ResolvedArgs,
 };
 use crate::css::{CallArgs, CssString, Value};
@@ -114,7 +114,7 @@ fn check_hue(v: Value) -> Result<Rational, String> {
 fn check_pct(v: Value) -> Result<Number, String> {
     let val = Numeric::try_from(v)?;
     match val.as_unit_def(Unit::Percent) {
-        Some(v) => Ok(v),
+        Some(v) => Ok(v / 100),
         None => {
             dep_warn!(
                 "Passing a number without unit % ({}) is deprecated.\
@@ -123,7 +123,7 @@ fn check_pct(v: Value) -> Result<Number, String> {
                 val.format(Format::introspect()),
                 val.unit
             );
-            Ok(val.value)
+            Ok(val.value / 100)
         }
     }
 }
@@ -142,22 +142,22 @@ fn check_expl_pct(v: Value) -> Result<Rational, String> {
 
 fn check_pct_range(v: Value) -> Result<Rational, String> {
     let val = check_pct(v)?;
-    if val < zero() || val > 100.into() {
+    if val < zero() || val > one() {
         Err(expected_to(
-            Numeric::new(val, Unit::Percent),
+            Numeric::percentage(val),
             "be within 0% and 100%",
         ))
     } else {
-        Ok(val.as_ratio()? / 100)
+        Ok(val.as_ratio()?)
     }
 }
 
 fn check_amount(v: Value) -> Result<Rational, String> {
     let val = check_pct(v)?;
-    if val < zero() || val > 100.into() {
-        Err(expected_to(Value::scalar(val), "be within 0 and 100"))
+    if val < zero() || val > one() {
+        Err(expected_to(Value::scalar(val * 100), "be within 0 and 100"))
     } else {
-        Ok(val.as_ratio()? / 100)
+        Ok(val.as_ratio()?)
     }
 }
 
@@ -189,15 +189,6 @@ fn num2chan(v: &Numeric) -> Result<Rational, String> {
     } else {
         Ok(r)
     }
-}
-
-fn make_call(name: &str, args: Vec<Value>) -> Value {
-    Value::Call(
-        name.into(),
-        CallArgs::from_list(
-            args.into_iter().filter(|v| v != &Value::Null).collect(),
-        ),
-    )
 }
 
 pub(crate) fn eval_inner(
@@ -242,4 +233,11 @@ fn relative_color(args: &CallArgs) -> bool {
         }
     }
     args.get_single().map(inner).unwrap_or(false)
+}
+
+fn is_special(v: &Value) -> bool {
+    matches!(
+        NumOrSpecial::try_from(v.clone()),
+        Ok(NumOrSpecial::Special(_))
+    )
 }
