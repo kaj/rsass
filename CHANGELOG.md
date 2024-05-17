@@ -24,7 +24,7 @@ project adheres to
   browser (PR #193).
 * Some other minor code cleanup.
 * MSRV is now 1.74 for rsass-cli (and still 1.61 for the lib and macros).
-* Updated sass-spec test suite to 2024-04-23.
+* Updated sass-spec test suite to 2024-05-16.
 
 
 ## Release 0.28.8

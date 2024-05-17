@@ -74,23 +74,6 @@ mod error {
 
         #[test]
         #[ignore] // missing error
-        fn known_at_rule() {
-            assert_eq!(
-                runner().err(
-                    "@keyframes a {\
-             \n  to {@media screen {b: c}}\
-             \n}\n"
-                ),
-                "Error: At-rules may not be used within keyframe blocks.\
-         \n  ,\
-         \n2 |   to {@media screen {b: c}}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^\
-         \n  \'\
-         \n  input.scss 2:7  root stylesheet",
-            );
-        }
-        #[test]
-        #[ignore] // missing error
         fn style_rule() {
             assert_eq!(
                 runner().err(
@@ -106,23 +89,40 @@ mod error {
          \n  input.scss 2:7  root stylesheet",
             );
         }
-        #[test]
-        #[ignore] // missing error
-        fn unknown_at_rule() {
-            assert_eq!(
-                runner().err(
-                    "@keyframes a {\
+    }
+}
+mod in_keyframe_block {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // wrong result
+    fn known_at_rule() {
+        assert_eq!(
+            runner().ok("@keyframes a {\
+             \n  to {@media screen {b: c}}\
+             \n}\n"),
+            "@keyframes a {\
+         \n  to {\
+         \n    @media screen {\
+         \n      b: c;\
+         \n    }\
+         \n  }\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn unknown_at_rule() {
+        assert_eq!(
+            runner().ok("@keyframes a {\
              \n  to {@b}\
-             \n}\n"
-                ),
-                "Error: At-rules may not be used within keyframe blocks.\
-         \n  ,\
-         \n2 |   to {@b}\
-         \n  |       ^^\
-         \n  \'\
-         \n  input.scss 2:7  root stylesheet",
-            );
-        }
+             \n}\n"),
+            "@keyframes a {\
+         \n  to {\
+         \n    @b;\
+         \n  }\
+         \n}\n"
+        );
     }
 }
 mod name {

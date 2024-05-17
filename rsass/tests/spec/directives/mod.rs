@@ -19,6 +19,8 @@ mod test_if;
 
 mod import;
 
+mod mixin;
+
 mod test_use;
 
 mod warn;
