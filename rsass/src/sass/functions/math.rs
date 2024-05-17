@@ -6,9 +6,7 @@ use super::{
 use crate::css::{BinOp, CallArgs, CssString, InvalidCss, Value};
 use crate::output::Format;
 use crate::sass::Name;
-use crate::value::{
-    CssDimensionSet, Numeric, Operator, Quotes, Rational, Unit,
-};
+use crate::value::{CssDimensionSet, Numeric, Operator, Quotes, Unit};
 use std::cmp::Ordering;
 use std::f64::consts::{E, PI};
 
@@ -150,11 +148,8 @@ pub fn create_module() -> Scope {
     });
     def!(f, random(limit = b"null"), |s| {
         match s.get_opt_map(name!(limit), check::positive_int)? {
-            None => {
-                let rez = 1_000_000;
-                Ok(Value::scalar(Rational::new(intrand(rez), rez)))
-            }
-            Some(bound) => Ok(Value::scalar(intrand(bound) + 1)),
+            None => Ok(Value::scalar(fastrand::f64())),
+            Some(bound) => Ok(Value::scalar(fastrand::i64(0..bound) + 1)),
         }
     });
 
@@ -353,10 +348,6 @@ fn known_dim(v: &Numeric) -> Option<CssDimensionSet> {
     } else {
         None
     }
-}
-
-fn intrand(lim: i64) -> i64 {
-    fastrand::i64(0..lim)
 }
 
 fn diff_units_msg(

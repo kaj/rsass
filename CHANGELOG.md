@@ -22,6 +22,7 @@ project adheres to
 * Improvements in css-compatible functions that is evaluated if
   possible, but kept as css if the arguments _may_ make sense in a
   browser (PR #193).
+* Improved no-args `math.random`, it now returns a f64 number.
 * Some other minor code cleanup.
 * MSRV is now 1.74 for rsass-cli (and still 1.61 for the lib and macros).
 * Updated sass-spec test suite to 2024-05-16.
