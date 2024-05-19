@@ -269,7 +269,7 @@ where
 
 fn check_pct_pm(v: Value) -> Result<Rational, String> {
     let val = Numeric::try_from(v)?;
-    if val.value.clone().abs() > 100.into() {
+    if val.value.abs() > 100.into() {
         Err(expected_to(val, "be within -100% and 100%"))
     } else {
         Ok(val.as_ratio()? / 100)
@@ -280,7 +280,7 @@ fn check_pct_expl_pm(v: Value) -> Result<Rational, String> {
     if !val.unit.is_percent() {
         return Err(expected_to(val, "have unit \"%\""));
     }
-    if val.value.clone().abs() > 100.into() {
+    if val.value.abs() > 100.into() {
         Err(expected_to(val, "be within -100% and 100%"))
     } else {
         Ok(val.as_ratio()? / 100)

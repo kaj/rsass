@@ -105,7 +105,7 @@ impl Selectors {
     pub(crate) fn with_backref(self, context: Selector) -> SelectorCtx {
         SelectorCtx::from(self).inside(&SelectorCtx {
             s: Self::root(),
-            backref: context.clone(),
+            backref: context,
         })
     }
     /// Return true if any of these selectors ends with a combinator
