@@ -61,12 +61,12 @@ impl CssSelectorSet {
         }
     }
 
-    pub fn is_superselector(&self, sub: &CssSelectorSet) -> bool {
+    pub fn is_superselector(&self, sub: &Self) -> bool {
         self.s.is_superselector(&sub.s)
     }
 
     pub(crate) fn append(self, ext: Self) -> Result<Self, CallError> {
-        Ok(CssSelectorSet {
+        Ok(Self {
             s: SelectorSet {
                 s: self
                     .s
@@ -80,6 +80,14 @@ impl CssSelectorSet {
                     .collect::<Result<_, _>>()?,
             },
         })
+    }
+
+    pub(crate) fn extend(
+        self,
+        extendee: &Self,
+        extender: &Self,
+    ) -> Result<Self, Invalid> {
+        self.s.extend(&extendee.s, &extender.s).map(|s| Self { s })
     }
 
     pub(crate) fn nest(&self, other: SelectorSet) -> Self {
@@ -108,7 +116,7 @@ impl CssSelectorSet {
             }
         }
 
-        CssSelectorSet {
+        Self {
             s: SelectorSet { s: result },
         }
     }
@@ -120,11 +128,11 @@ impl CssSelectorSet {
     ) -> Result<Self, Invalid> {
         self.s
             .replace(&original.s, &replacement.s)
-            .map(|s| CssSelectorSet { s })
+            .map(|s| Self { s })
     }
 
     pub(crate) fn unify(self, other: Self) -> Self {
-        CssSelectorSet {
+        Self {
             s: SelectorSet {
                 s: self
                     .s
@@ -153,7 +161,7 @@ impl TryFrom<SelectorSet> for CssSelectorSet {
                 return Err(BadSelector::Backref(input_span(sel)));
             }
         }
-        Ok(CssSelectorSet { s: value })
+        Ok(Self { s: value })
     }
 }
 

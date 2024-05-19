@@ -20,7 +20,12 @@ pub fn create_module() -> Scope {
                 .named(name!(selectors))
         }
     });
-    // TODO: extend
+    def!(f, extend(selector, extendee, extender), |s| {
+        let selector: CssSelectorSet = s.get(name!(selector))?;
+        let extendee: CssSelectorSet = s.get(name!(extendee))?;
+        let extender: CssSelectorSet = s.get(name!(extender))?;
+        Ok(selector.extend(&extendee, &extender)?.into())
+    });
     def_va!(f, nest(selectors), |s| {
         let mut v = unnamed(s.get_va(name!(selectors)))?.into_iter();
         let first = v
@@ -61,10 +66,9 @@ pub fn create_module() -> Scope {
 
 pub fn expose(m: &Scope, global: &mut FunctionMap) {
     for (gname, lname) in &[
-        // - - - Mixins - - -
         (name!(is_superselector), name!(is_superselector)),
         (name!(selector_append), name!(append)),
-        //(name!(selector_extend), name!(extend)),
+        (name!(selector_extend), name!(extend)),
         (name!(selector_nest), name!(nest)),
         (name!(selector_parse), name!(parse)),
         (name!(selector_replace), name!(replace)),

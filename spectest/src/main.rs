@@ -23,7 +23,6 @@ fn main() -> Result<(), Error> {
         &base,
         "spec",
         &[
-            "core_functions/selector/extend", // not supported
             "directives/extend", // `@extend` is not supported at all
             "libsass-todo-issues/issue_221260.hrx", // stack overflow
             "libsass-todo-issues/issue_221262.hrx", // stack overflow

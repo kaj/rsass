@@ -7,7 +7,7 @@ fn runner() -> crate::TestRunner {
 
 mod append;
 
-// Ignoring "extend", not expected to work yet.
+mod extend;
 
 mod is_superselector;
 
