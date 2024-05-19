@@ -184,7 +184,7 @@ impl TryFrom<Value> for Strategy {
 
 impl From<Strategy> for Value {
     fn from(value: Strategy) -> Self {
-        Value::from(match value {
+        Self::from(match value {
             Strategy::Nearest => "nearest",
             Strategy::Up => "up",
             Strategy::ToZero => "to-zero",

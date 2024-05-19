@@ -14,7 +14,7 @@ impl ValueRange {
         from: Value,
         to: Value,
         inclusive: bool,
-    ) -> Result<ValueRange, RangeError> {
+    ) -> Result<Self, RangeError> {
         let from =
             from.numeric_value().map_err(RangeError::FromNotNumeric)?;
         let to = to.numeric_value().map_err(RangeError::ToNotNumeric)?;
@@ -32,7 +32,7 @@ impl ValueRange {
             Number::from(-1)
         };
         let to = if inclusive { to + step.clone() } else { to };
-        Ok(ValueRange {
+        Ok(Self {
             from: from.value,
             to,
             step,
@@ -67,21 +67,21 @@ pub enum RangeError {
 impl fmt::Display for RangeError {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            RangeError::FromNotNumeric(v) => {
+            Self::FromNotNumeric(v) => {
                 write!(
                     out,
                     "Bad Range: from needs to be numeric, got {}",
                     v.format(Default::default()),
                 )
             }
-            RangeError::ToNotNumeric(v) => {
+            Self::ToNotNumeric(v) => {
                 write!(
                     out,
                     "Bad Range: to needs to be numeric, got {}",
                     v.format(Default::default())
                 )
             }
-            RangeError::IncompatibleUnits(a, b) => {
+            Self::IncompatibleUnits(a, b) => {
                 write!(out, "for loop needs compatible units, got {a}..{b}")
             }
         }

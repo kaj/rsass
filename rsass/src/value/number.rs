@@ -33,32 +33,32 @@ enum NumValue {
 }
 
 impl From<Rational> for NumValue {
-    fn from(value: Rational) -> NumValue {
-        NumValue::Rational(value)
+    fn from(value: Rational) -> Self {
+        Self::Rational(value)
     }
 }
 impl From<i64> for NumValue {
-    fn from(value: i64) -> NumValue {
-        NumValue::Rational(Rational::from_integer(value))
+    fn from(value: i64) -> Self {
+        Self::Rational(Rational::from_integer(value))
     }
 }
 impl From<Ratio<BigInt>> for NumValue {
-    fn from(value: Ratio<BigInt>) -> NumValue {
-        NumValue::BigRational(Box::new(value))
+    fn from(value: Ratio<BigInt>) -> Self {
+        Self::BigRational(Box::new(value))
     }
 }
 impl From<f64> for NumValue {
-    fn from(value: f64) -> NumValue {
-        NumValue::Float(value)
+    fn from(value: f64) -> Self {
+        Self::Float(value)
     }
 }
 
 impl NumValue {
     pub fn is_negative(&self) -> bool {
         match self {
-            NumValue::Rational(s) => s.is_negative(),
-            NumValue::BigRational(s) => s.is_negative(),
-            NumValue::Float(s) => s.is_sign_negative(),
+            Self::Rational(s) => s.is_negative(),
+            Self::BigRational(s) => s.is_negative(),
+            Self::Float(s) => s.is_sign_negative(),
         }
     }
 }
@@ -82,33 +82,29 @@ impl Neg for &Number {
 
 impl Eq for NumValue {}
 impl PartialEq for NumValue {
-    fn eq(&self, rhs: &NumValue) -> bool {
+    fn eq(&self, rhs: &Self) -> bool {
         self.partial_cmp(rhs) == Some(Ordering::Equal)
     }
 }
 impl PartialOrd for NumValue {
-    fn partial_cmp(&self, rhs: &NumValue) -> Option<Ordering> {
+    fn partial_cmp(&self, rhs: &Self) -> Option<Ordering> {
         match (self, rhs) {
-            (NumValue::Rational(s), NumValue::Rational(r)) => {
-                s.partial_cmp(r)
-            }
-            (NumValue::Rational(s), NumValue::BigRational(r)) => {
+            (Self::Rational(s), Self::Rational(r)) => s.partial_cmp(r),
+            (Self::Rational(s), Self::BigRational(r)) => {
                 biggen(s).partial_cmp(r)
             }
-            (NumValue::BigRational(s), NumValue::Rational(r)) => {
+            (Self::BigRational(s), Self::Rational(r)) => {
                 s.as_ref().partial_cmp(&biggen(r))
             }
-            (NumValue::BigRational(s), NumValue::BigRational(r)) => {
-                s.partial_cmp(r)
-            }
-            (NumValue::Float(s), r) => s.partial_cmp(&r.into()),
-            (s, NumValue::Float(r)) => f64::from(s).partial_cmp(r),
+            (Self::BigRational(s), Self::BigRational(r)) => s.partial_cmp(r),
+            (Self::Float(s), r) => s.partial_cmp(&r.into()),
+            (s, Self::Float(r)) => f64::from(s).partial_cmp(r),
         }
     }
 }
 
 impl Mul for NumValue {
-    type Output = NumValue;
+    type Output = Self;
     fn mul(self, rhs: Self) -> Self {
         &self * &rhs
     }
@@ -176,17 +172,15 @@ impl Mul<i64> for NumValue {
     type Output = Self;
     fn mul(self, rhs: i64) -> Self {
         match self {
-            s @ NumValue::Rational(_) => s * NumValue::from(rhs),
-            NumValue::BigRational(s) => {
-                (s.as_ref() * BigInt::from(rhs)).into()
-            }
-            NumValue::Float(s) => (s * (rhs as f64)).into(),
+            s @ Self::Rational(_) => s * Self::from(rhs),
+            Self::BigRational(s) => (s.as_ref() * BigInt::from(rhs)).into(),
+            Self::Float(s) => (s * (rhs as f64)).into(),
         }
     }
 }
 
 impl Mul for Number {
-    type Output = Number;
+    type Output = Self;
     fn mul(mut self, rhs: Self) -> Self {
         self.value = self.value * rhs.value;
         self
@@ -202,8 +196,8 @@ impl Mul for &Number {
 }
 
 impl Rem for NumValue {
-    type Output = NumValue;
-    fn rem(self, rhs: Self) -> NumValue {
+    type Output = Self;
+    fn rem(self, rhs: Self) -> Self {
         &self % &rhs
     }
 }
@@ -272,11 +266,9 @@ impl Div<i64> for NumValue {
     type Output = Self;
     fn div(self, rhs: i64) -> Self {
         match self {
-            NumValue::Rational(s) => (s / rhs).into(),
-            NumValue::BigRational(s) => {
-                (s.as_ref() / BigInt::from(rhs)).into()
-            }
-            NumValue::Float(s) => (s / (rhs as f64)).into(),
+            Self::Rational(s) => (s / rhs).into(),
+            Self::BigRational(s) => (s.as_ref() / BigInt::from(rhs)).into(),
+            Self::Float(s) => (s / (rhs as f64)).into(),
         }
     }
 }
@@ -285,21 +277,21 @@ impl Add for NumValue {
     type Output = Self;
     fn add(self, rhs: Self) -> Self {
         match (self, rhs) {
-            (NumValue::Rational(s), NumValue::Rational(r)) => s
+            (Self::Rational(s), Self::Rational(r)) => s
                 .checked_add(&r)
                 .map(Into::into)
                 .unwrap_or_else(|| (biggen(&s) + biggen(&r)).into()),
-            (NumValue::Rational(s), NumValue::BigRational(r)) => {
+            (Self::Rational(s), Self::BigRational(r)) => {
                 (biggen(&s) + r.as_ref()).into()
             }
-            (NumValue::BigRational(s), NumValue::Rational(r)) => {
+            (Self::BigRational(s), Self::Rational(r)) => {
                 (s.as_ref() + biggen(&r)).into()
             }
-            (NumValue::BigRational(s), NumValue::BigRational(r)) => {
+            (Self::BigRational(s), Self::BigRational(r)) => {
                 (s.as_ref() + r.as_ref()).into()
             }
-            (NumValue::Float(s), r) => (s + f64::from(r)).into(),
-            (s, NumValue::Float(r)) => (f64::from(s) + r).into(),
+            (Self::Float(s), r) => (s + f64::from(r)).into(),
+            (s, Self::Float(r)) => (f64::from(s) + r).into(),
         }
     }
 }
@@ -337,65 +329,65 @@ fn biggen(val: &Rational) -> Ratio<BigInt> {
 }
 
 impl One for NumValue {
-    fn one() -> NumValue {
-        NumValue::Rational(One::one())
+    fn one() -> Self {
+        Self::Rational(One::one())
     }
 }
 impl One for Number {
-    fn one() -> Number {
-        Number {
+    fn one() -> Self {
+        Self {
             value: NumValue::one(),
         }
     }
 }
 
 impl Zero for NumValue {
-    fn zero() -> NumValue {
-        NumValue::Rational(Zero::zero())
+    fn zero() -> Self {
+        Self::Rational(Zero::zero())
     }
     fn is_zero(&self) -> bool {
         match self {
-            NumValue::Rational(r) => r.is_zero(),
-            NumValue::BigRational(r) => r.is_zero(),
-            NumValue::Float(r) => r.is_zero(),
+            Self::Rational(r) => r.is_zero(),
+            Self::BigRational(r) => r.is_zero(),
+            Self::Float(r) => r.is_zero(),
         }
     }
 }
 
 impl NumValue {
-    pub fn ceil(&self) -> NumValue {
+    pub fn ceil(&self) -> Self {
         match self {
-            NumValue::Rational(r) => r.ceil().into(),
-            NumValue::BigRational(r) => r.ceil().into(),
-            NumValue::Float(r) => r.ceil().into(),
+            Self::Rational(r) => r.ceil().into(),
+            Self::BigRational(r) => r.ceil().into(),
+            Self::Float(r) => r.ceil().into(),
         }
     }
-    pub fn floor(&self) -> NumValue {
+    pub fn floor(&self) -> Self {
         match self {
-            NumValue::Rational(r) => r.floor().into(),
-            NumValue::BigRational(r) => r.floor().into(),
-            NumValue::Float(r) => r.floor().into(),
+            Self::Rational(r) => r.floor().into(),
+            Self::BigRational(r) => r.floor().into(),
+            Self::Float(r) => r.floor().into(),
         }
     }
-    pub fn trunc(&self) -> NumValue {
+    pub fn trunc(&self) -> Self {
         match self {
-            NumValue::Rational(r) => r.trunc().into(),
-            NumValue::BigRational(r) => r.trunc().into(),
-            NumValue::Float(r) => r.trunc().into(),
+            Self::Rational(r) => r.trunc().into(),
+            Self::BigRational(r) => r.trunc().into(),
+            Self::Float(r) => r.trunc().into(),
         }
     }
-    pub fn round(&self) -> NumValue {
+    pub fn round(&self) -> Self {
         match self {
-            NumValue::Rational(r) => r.round().into(),
-            NumValue::BigRational(r) => r.round().into(),
-            NumValue::Float(r) => r.round().into(),
+            Self::Rational(r) => r.round().into(),
+            Self::BigRational(r) => r.round().into(),
+            Self::Float(r) => r.round().into(),
         }
     }
-    pub fn signum(&self) -> NumValue {
+    pub fn signum(&self) -> Self {
         match self {
-            NumValue::Rational(r) => r.signum().into(),
-            NumValue::BigRational(r) => r.signum().into(),
-            NumValue::Float(r) => {
+            Self::Rational(r) => r.signum().into(),
+            Self::BigRational(r) => r.signum().into(),
+            Self::Float(r) => {
                 // The sass spec says sign(-0) is -0
                 // ... which may be a bug, but here's to compatibility:
                 if r.is_zero() {
@@ -408,8 +400,8 @@ impl NumValue {
     }
     pub fn as_ratio(&self) -> Result<Rational, BadNumber> {
         match self {
-            NumValue::Rational(r) => Ok(*r),
-            NumValue::BigRational(r) => {
+            Self::Rational(r) => Ok(*r),
+            Self::BigRational(r) => {
                 let mut numer = r.numer().clone();
                 let mut denom = r.denom().clone();
                 loop {
@@ -425,7 +417,7 @@ impl NumValue {
                     }
                 }
             }
-            NumValue::Float(r) => {
+            Self::Float(r) => {
                 Ratio::approximate_float(*r).ok_or(BadNumber::BadFloat(*r))
             }
         }
@@ -448,31 +440,31 @@ impl Number {
 
     /// Get a copy of this number, rounded away from zero.
     pub fn ceil(&self) -> Self {
-        Number {
+        Self {
             value: self.value.ceil(),
         }
     }
     /// Get a copy of this number, rounded down.
     pub fn floor(&self) -> Self {
-        Number {
+        Self {
             value: self.value.floor(),
         }
     }
     /// Get a copy of this number, rounded towards zero.
     pub fn trunc(&self) -> Self {
-        Number {
+        Self {
             value: self.value.trunc(),
         }
     }
     /// Get a copy of this number, rounded to nearest integer.
     pub fn round(&self) -> Self {
-        Number {
+        Self {
             value: self.value.round(),
         }
     }
     /// Get the sign of this number.
     pub fn signum(&self) -> Self {
-        Number {
+        Self {
             value: self.value.signum(),
         }
     }
@@ -556,19 +548,19 @@ impl Number {
 }
 
 impl From<i64> for Number {
-    fn from(value: i64) -> Number {
-        Number {
+    fn from(value: i64) -> Self {
+        Self {
             value: value.into(),
         }
     }
 }
 impl From<i32> for Number {
-    fn from(value: i32) -> Number {
-        Number::from(i64::from(value))
+    fn from(value: i32) -> Self {
+        Self::from(i64::from(value))
     }
 }
 impl From<usize> for Number {
-    fn from(value: usize) -> Number {
+    fn from(value: usize) -> Self {
         match i64::try_from(value) {
             Ok(v) => v.into(),
             Err(_) => Ratio::from_integer(BigInt::from(value)).into(),
@@ -576,30 +568,30 @@ impl From<usize> for Number {
     }
 }
 impl From<Rational> for Number {
-    fn from(value: Rational) -> Number {
-        Number {
+    fn from(value: Rational) -> Self {
+        Self {
             value: value.into(),
         }
     }
 }
 impl From<f64> for Number {
-    fn from(value: f64) -> Number {
-        Number {
+    fn from(value: f64) -> Self {
+        Self {
             value: value.into(),
         }
     }
 }
 impl From<Ratio<BigInt>> for Number {
-    fn from(value: Ratio<BigInt>) -> Number {
-        Number {
+    fn from(value: Ratio<BigInt>) -> Self {
+        Self {
             value: value.into(),
         }
     }
 }
 impl Add for Number {
-    type Output = Number;
+    type Output = Self;
     fn add(self, rhs: Self) -> Self::Output {
-        Number {
+        Self {
             value: self.value + rhs.value,
         }
     }
@@ -607,7 +599,7 @@ impl Add for Number {
 impl Mul<Rational> for Number {
     type Output = Self;
     fn mul(self, rhs: Rational) -> Self {
-        Number {
+        Self {
             value: &self.value * &rhs,
         }
     }
@@ -615,7 +607,7 @@ impl Mul<Rational> for Number {
 impl Mul<i64> for Number {
     type Output = Self;
     fn mul(self, rhs: i64) -> Self {
-        Number {
+        Self {
             value: self.value * rhs,
         }
     }
@@ -623,7 +615,7 @@ impl Mul<i64> for Number {
 impl Div for Number {
     type Output = Self;
     fn div(self, rhs: Self) -> Self {
-        Number {
+        Self {
             value: self.value / rhs.value,
         }
     }
@@ -631,27 +623,27 @@ impl Div for Number {
 impl Div<i64> for Number {
     type Output = Self;
     fn div(self, rhs: i64) -> Self {
-        Number {
+        Self {
             value: self.value / rhs,
         }
     }
 }
 
 impl From<Number> for f64 {
-    fn from(val: Number) -> f64 {
-        f64::from(val.value)
+    fn from(val: Number) -> Self {
+        Self::from(val.value)
     }
 }
 impl From<NumValue> for f64 {
-    fn from(val: NumValue) -> f64 {
-        f64::from(&val)
+    fn from(val: NumValue) -> Self {
+        Self::from(&val)
     }
 }
 impl From<&NumValue> for f64 {
-    fn from(val: &NumValue) -> f64 {
+    fn from(val: &NumValue) -> Self {
         match val {
-            NumValue::Rational(s) => s.to_f64().unwrap_or(f64::NAN),
-            NumValue::BigRational(s) => s.to_f64().unwrap_or(f64::NAN),
+            NumValue::Rational(s) => s.to_f64().unwrap_or(Self::NAN),
+            NumValue::BigRational(s) => s.to_f64().unwrap_or(Self::NAN),
             NumValue::Float(s) => *s,
         }
     }
@@ -703,7 +695,7 @@ impl Sub for &Number {
 
 impl Zero for Number {
     fn zero() -> Self {
-        Number::from(0)
+        Self::from(0)
     }
     fn is_zero(&self) -> bool {
         self.value.is_zero()
@@ -899,7 +891,7 @@ pub enum BadNumber {
 }
 
 impl From<BadNumber> for String {
-    fn from(n: BadNumber) -> String {
+    fn from(n: BadNumber) -> Self {
         n.to_string()
     }
 }
@@ -907,8 +899,8 @@ impl From<BadNumber> for String {
 impl fmt::Display for BadNumber {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            BadNumber::TooLarge => out.write_str("Number too large"),
-            BadNumber::BadFloat(f) => write!(out, "Bad float: {f}"),
+            Self::TooLarge => out.write_str("Number too large"),
+            Self::BadFloat(f) => write!(out, "Bad float: {f}"),
         }
     }
 }

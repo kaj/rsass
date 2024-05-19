@@ -24,7 +24,7 @@ impl CallError {
     /// This is like using an `@error` statement inside a
     /// sass-implemented function.
     pub fn msg<S: ToString>(msg: S) -> Self {
-        CallError::Invalid(Invalid::AtError(msg.to_string()))
+        Self::Invalid(Invalid::AtError(msg.to_string()))
     }
 
     /// The values were expected to be compatible, but wasn't.
@@ -39,13 +39,13 @@ impl CallError {
     /// Map this error to a [`crate::Error`].
     pub fn called_from(self, call_pos: &SourcePos, name: &str) -> Error {
         match self {
-            CallError::Invalid(Invalid::AtError(msg)) => {
+            Self::Invalid(Invalid::AtError(msg)) => {
                 Error::BadCall(msg, call_pos.clone().opt_in_calc(), None)
             }
-            CallError::Invalid(err) => {
+            Self::Invalid(err) => {
                 Error::BadCall(format!("{err:?}"), call_pos.clone(), None)
             }
-            CallError::BadArgument(name, problem) => Error::BadCall(
+            Self::BadArgument(name, problem) => Error::BadCall(
                 if name.as_ref().is_empty() {
                     problem
                 } else {
@@ -54,8 +54,8 @@ impl CallError {
                 call_pos.clone(),
                 None,
             ),
-            CallError::Args(ArgsError::Eval(err), _decl) => *err,
-            CallError::Args(err, decl) => Error::BadCall(
+            Self::Args(ArgsError::Eval(err), _decl) => *err,
+            Self::Args(err, decl) => Error::BadCall(
                 err.to_string(),
                 if decl.is_builtin() {
                     call_pos.clone()
@@ -64,7 +64,7 @@ impl CallError {
                 },
                 Some(decl),
             ),
-            CallError::Wrap(err) => *err,
+            Self::Wrap(err) => *err,
         }
     }
 }
@@ -72,22 +72,22 @@ impl std::error::Error for CallError {}
 
 impl From<ScopeError> for CallError {
     fn from(err: ScopeError) -> Self {
-        CallError::Invalid(Invalid::InScope(err))
+        Self::Invalid(Invalid::InScope(err))
     }
 }
 impl From<Invalid> for CallError {
     fn from(err: Invalid) -> Self {
-        CallError::Invalid(err)
+        Self::Invalid(err)
     }
 }
 impl From<BadSelector> for CallError {
-    fn from(e: BadSelector) -> CallError {
-        CallError::msg(e)
+    fn from(e: BadSelector) -> Self {
+        Self::msg(e)
     }
 }
 impl From<Error> for CallError {
-    fn from(e: Error) -> CallError {
-        CallError::Wrap(Box::new(e))
+    fn from(e: Error) -> Self {
+        Self::Wrap(Box::new(e))
     }
 }
 impl fmt::Display for CallError {

@@ -15,7 +15,7 @@ pub struct MediaRule {
 
 impl MediaRule {
     pub(crate) fn new(args: MediaArgs, body: Vec<AtRuleBodyItem>) -> Self {
-        MediaRule { args, body }
+        Self { args, body }
     }
     pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
         if !self.body.is_empty() {
@@ -60,16 +60,16 @@ pub enum MediaArgs {
 impl MediaArgs {
     pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
         match self {
-            MediaArgs::Name(name) => write!(buf, "{name}")?,
-            MediaArgs::UnaryOp(op, a) => {
+            Self::Name(name) => write!(buf, "{name}")?,
+            Self::UnaryOp(op, a) => {
                 buf.add_str(op);
                 buf.add_str(" ");
                 a.write(buf)?;
             }
-            MediaArgs::Condition(c, v) => {
+            Self::Condition(c, v) => {
                 write!(buf, "({c}: {})", v.format(buf.format()))?;
             }
-            MediaArgs::Comma(args) => {
+            Self::Comma(args) => {
                 if let Some((first, rest)) = args.split_first() {
                     first.write(buf)?;
                     for arg in rest {
@@ -78,7 +78,7 @@ impl MediaArgs {
                     }
                 }
             }
-            MediaArgs::And(args) => {
+            Self::And(args) => {
                 if let Some((first, rest)) = args.split_first() {
                     first.write(buf)?;
                     for arg in rest {
@@ -87,7 +87,7 @@ impl MediaArgs {
                     }
                 }
             }
-            MediaArgs::Or(args) => {
+            Self::Or(args) => {
                 if let Some((first, rest)) = args.split_first() {
                     first.write(buf)?;
                     for arg in rest {
@@ -96,17 +96,17 @@ impl MediaArgs {
                     }
                 }
             }
-            MediaArgs::Paren(a) => {
+            Self::Paren(a) => {
                 buf.add_str("(");
                 a.write(buf)?;
                 buf.add_str(")");
             }
-            MediaArgs::Bracket(a) => {
+            Self::Bracket(a) => {
                 buf.add_str("[");
                 a.write(buf)?;
                 buf.add_str("]");
             }
-            MediaArgs::Range(v) => {
+            Self::Range(v) => {
                 buf.add_str("(");
                 if let Some(((_op, first), rest)) = v.split_first() {
                     buf.add_str(

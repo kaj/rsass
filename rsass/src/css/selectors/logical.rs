@@ -605,7 +605,7 @@ pub(super) enum AppendError {
 impl AppendError {
     pub(super) fn context(self, e: &Selector, b: &Selector) -> CallError {
         match self {
-            AppendError::Parent => {
+            Self::Parent => {
                 CallError::msg(
                     format!(
                         "Selector {:?} can't be used as a parent in a compound selector.",
@@ -613,12 +613,12 @@ impl AppendError {
                     )
                 )
             },
-            AppendError::Sub => {
+            Self::Sub => {
                 CallError::msg(
                     format!("Can't append {} to {}.", show(e), show(b))
                 )
             },
-            AppendError::Selector(b) => b.into(),
+            Self::Selector(b) => b.into(),
         }
     }
 }
@@ -629,13 +629,13 @@ fn show(s: &Selector) -> String {
 
 impl From<ParseError> for AppendError {
     fn from(value: ParseError) -> Self {
-        AppendError::Selector(value.into())
+        Self::Selector(value.into())
     }
 }
 
 impl From<BadSelector> for AppendError {
     fn from(value: BadSelector) -> Self {
-        AppendError::Selector(value)
+        Self::Selector(value)
     }
 }
 
@@ -762,11 +762,11 @@ impl TryFrom<Value> for Selector {
 
 impl From<Selector> for Value {
     fn from(value: Selector) -> Self {
-        Value::List(
+        Self::List(
             value
                 .into_string_vec()
                 .into_iter()
-                .map(Value::from)
+                .map(Self::from)
                 .collect(),
             Some(ListSeparator::Space),
             false,
@@ -781,7 +781,7 @@ struct ElemType {
 
 impl Default for ElemType {
     fn default() -> Self {
-        ElemType { s: "*".into() }
+        Self { s: "*".into() }
     }
 }
 
@@ -845,10 +845,10 @@ enum RelKind {
 impl RelKind {
     fn symbol(self) -> Option<&'static str> {
         match self {
-            RelKind::Ancestor => None,
-            RelKind::Parent => Some(">"),
-            RelKind::Sibling => Some("~"),
-            RelKind::AdjacentSibling => Some("+"),
+            Self::Ancestor => None,
+            Self::Parent => Some(">"),
+            Self::Sibling => Some("~"),
+            Self::AdjacentSibling => Some("+"),
         }
     }
 }

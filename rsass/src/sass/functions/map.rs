@@ -200,7 +200,7 @@ impl TryFrom<Value> for ValueMap {
         match v {
             Value::Map(m) => Ok(m),
             // An empty map and an empty list looks the same
-            Value::List(ref l, ..) if l.is_empty() => Ok(ValueMap::new()),
+            Value::List(ref l, ..) if l.is_empty() => Ok(Self::new()),
             v => Err(is_not(&v, "a map")),
         }
     }

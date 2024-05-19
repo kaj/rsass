@@ -86,8 +86,8 @@ impl cmp::Eq for Builtin {}
 impl fmt::Debug for FuncImpl {
     fn fmt(&self, out: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match *self {
-            FuncImpl::Builtin(_) => write!(out, "(builtin function)"),
-            FuncImpl::UserDefined(_) => {
+            Self::Builtin(_) => write!(out, "(builtin function)"),
+            Self::UserDefined(_) => {
                 write!(out, "(user-defined function)")
             }
         }
@@ -116,7 +116,7 @@ impl Functions for Scope {
 
 impl Function {
     /// Get a built-in function by name.
-    pub fn get_builtin(name: &Name) -> Option<&'static Function> {
+    pub fn get_builtin(name: &Name) -> Option<&'static Self> {
         FUNCTIONS.get(name).or_else(|| {
             // Builtin function names are caseless.
             let name = name.as_ref().to_lowercase();
@@ -135,7 +135,7 @@ impl Function {
         body: Arc<BuiltinFn>,
     ) -> Self {
         let pos = SourcePos::mock_function(name, &args, module);
-        Function {
+        Self {
             body: FuncImpl::Builtin(Builtin { args, pos, body }),
         }
     }
@@ -162,7 +162,7 @@ impl Function {
 
 impl From<Closure> for Function {
     fn from(c: Closure) -> Self {
-        Function {
+        Self {
             body: FuncImpl::UserDefined(c),
         }
     }

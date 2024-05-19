@@ -282,10 +282,10 @@ impl From<ExtremeError> for CallError {
     fn from(value: ExtremeError) -> Self {
         match value {
             ExtremeError::OneRequired => {
-                CallError::msg("At least one argument must be passed.")
+                Self::msg("At least one argument must be passed.")
             }
             ExtremeError::Incompatible(a, b) => {
-                CallError::msg(InvalidCss::Incompat(a, b))
+                Self::msg(InvalidCss::Incompat(a, b))
             }
         }
     }

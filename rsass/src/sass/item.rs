@@ -108,7 +108,7 @@ pub enum Item {
 
 impl From<VariableDeclaration> for Item {
     fn from(value: VariableDeclaration) -> Self {
-        Item::VariableDeclaration(value)
+        Self::VariableDeclaration(value)
     }
 }
 
@@ -133,17 +133,17 @@ impl Expose {
     /// Check if `name` should be exposed as a function/mixin.
     pub fn allow_fun(&self, name: &Name) -> bool {
         match self {
-            Expose::All => true,
-            Expose::Show(show, _) => show.contains(name),
-            Expose::Hide(hide, _) => !hide.contains(name),
+            Self::All => true,
+            Self::Show(show, _) => show.contains(name),
+            Self::Hide(hide, _) => !hide.contains(name),
         }
     }
     /// Check if `name` should be exposed as a variable.
     pub fn allow_var(&self, name: &Name) -> bool {
         match self {
-            Expose::All => true,
-            Expose::Show(_, show) => show.contains(name),
-            Expose::Hide(_, hide) => !hide.contains(name),
+            Self::All => true,
+            Self::Show(_, show) => show.contains(name),
+            Self::Hide(_, hide) => !hide.contains(name),
         }
     }
 }

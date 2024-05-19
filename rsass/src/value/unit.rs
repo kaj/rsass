@@ -118,33 +118,33 @@ impl Unit {
     /// Get the dimension of this unit.
     pub fn dimension(&self) -> Dimension {
         match *self {
-            Unit::Cm
-            | Unit::Mm
-            | Unit::Q
-            | Unit::In
-            | Unit::Pc
-            | Unit::Pt
-            | Unit::Px => Dimension::LengthAbs,
+            Self::Cm
+            | Self::Mm
+            | Self::Q
+            | Self::In
+            | Self::Pc
+            | Self::Pt
+            | Self::Px => Dimension::LengthAbs,
 
-            Unit::Vw => Dimension::LengthVw,
-            Unit::Vh => Dimension::LengthVh,
-            Unit::Vmin | Unit::Vmax => Dimension::LengthVx,
-            Unit::Ch | Unit::Em | Unit::Ex => Dimension::LenghtEm,
-            Unit::Rem => Dimension::LengthRem,
+            Self::Vw => Dimension::LengthVw,
+            Self::Vh => Dimension::LengthVh,
+            Self::Vmin | Self::Vmax => Dimension::LengthVx,
+            Self::Ch | Self::Em | Self::Ex => Dimension::LenghtEm,
+            Self::Rem => Dimension::LengthRem,
 
-            Unit::Deg | Unit::Grad | Unit::Rad | Unit::Turn => {
+            Self::Deg | Self::Grad | Self::Rad | Self::Turn => {
                 Dimension::Angle
             }
 
-            Unit::S | Unit::Ms => Dimension::Time,
+            Self::S | Self::Ms => Dimension::Time,
 
-            Unit::Hz | Unit::Khz => Dimension::Frequency,
+            Self::Hz | Self::Khz => Dimension::Frequency,
 
-            Unit::Dpi | Unit::Dpcm | Unit::Dppx => Dimension::Resolution,
+            Self::Dpi | Self::Dpcm | Self::Dppx => Dimension::Resolution,
 
-            Unit::Percent | Unit::Fr | Unit::None => Dimension::None,
+            Self::Percent | Self::Fr | Self::None => Dimension::None,
 
-            Unit::Unknown(ref name) => Dimension::Unknown(name.clone()),
+            Self::Unknown(ref name) => Dimension::Unknown(name.clone()),
         }
     }
 
@@ -167,38 +167,38 @@ impl Unit {
     pub(crate) fn scale_factor(&self) -> Number {
         #[allow(clippy::match_same_arms)]
         match *self {
-            Unit::Em | Unit::Rem => Number::rational(10, 2),
-            Unit::Ex => Number::rational(10, 3),
-            Unit::Ch => Number::rational(10, 4),
-            Unit::Vw | Unit::Vh | Unit::Vmin | Unit::Vmax => one(),
-            Unit::Cm => Number::rational(10, 1),
-            Unit::Mm => one(),
-            Unit::Q => Number::rational(1, 4),
-            Unit::In => Number::rational(254, 10),
-            Unit::Pt => Number::rational(254, 720),
-            Unit::Pc => Number::rational(254, 60),
-            Unit::Px => Number::rational(254, 960),
+            Self::Em | Self::Rem => Number::rational(10, 2),
+            Self::Ex => Number::rational(10, 3),
+            Self::Ch => Number::rational(10, 4),
+            Self::Vw | Self::Vh | Self::Vmin | Self::Vmax => one(),
+            Self::Cm => Number::rational(10, 1),
+            Self::Mm => one(),
+            Self::Q => Number::rational(1, 4),
+            Self::In => Number::rational(254, 10),
+            Self::Pt => Number::rational(254, 720),
+            Self::Pc => Number::rational(254, 60),
+            Self::Px => Number::rational(254, 960),
 
-            Unit::Deg => Number::rational(1, 360),
-            Unit::Grad => Number::rational(1, 400),
-            Unit::Rad => (FRAC_1_PI / 2.0).into(), // 1/(2 pi)
-            Unit::Turn => one(),
+            Self::Deg => Number::rational(1, 360),
+            Self::Grad => Number::rational(1, 400),
+            Self::Rad => (FRAC_1_PI / 2.0).into(), // 1/(2 pi)
+            Self::Turn => one(),
 
-            Unit::S => one(),
-            Unit::Ms => Number::rational(1, 1000),
+            Self::S => one(),
+            Self::Ms => Number::rational(1, 1000),
 
-            Unit::Hz => one(),
-            Unit::Khz => Number::rational(1000, 1),
+            Self::Hz => one(),
+            Self::Khz => Number::rational(1000, 1),
 
-            Unit::Dpi => Number::rational(1, 96),
-            Unit::Dpcm => Number::rational(254, 9600),
-            Unit::Dppx => one(),
+            Self::Dpi => Number::rational(1, 96),
+            Self::Dpcm => Number::rational(254, 9600),
+            Self::Dppx => one(),
 
-            Unit::Percent => Number::rational(1, 100),
-            Unit::Fr => one(),
-            Unit::None => one(),
+            Self::Percent => Number::rational(1, 100),
+            Self::Fr => one(),
+            Self::None => one(),
 
-            Unit::Unknown(_) => one(),
+            Self::Unknown(_) => one(),
         }
     }
 }
@@ -207,42 +207,42 @@ impl fmt::Display for Unit {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             // Distance units, <length> type
-            Unit::Em => write!(out, "em"),
-            Unit::Ex => write!(out, "ex"),
-            Unit::Ch => write!(out, "ch"),
-            Unit::Rem => write!(out, "rem"),
-            Unit::Vw => write!(out, "vw"),
-            Unit::Vh => write!(out, "vh"),
-            Unit::Vmin => write!(out, "vmin"),
-            Unit::Vmax => write!(out, "vmax"),
-            Unit::Cm => write!(out, "cm"),
-            Unit::Mm => write!(out, "mm"),
-            Unit::Q => write!(out, "Q"),
-            Unit::In => write!(out, "in"),
-            Unit::Pt => write!(out, "pt"),
-            Unit::Pc => write!(out, "pc"),
-            Unit::Px => write!(out, "px"),
+            Self::Em => write!(out, "em"),
+            Self::Ex => write!(out, "ex"),
+            Self::Ch => write!(out, "ch"),
+            Self::Rem => write!(out, "rem"),
+            Self::Vw => write!(out, "vw"),
+            Self::Vh => write!(out, "vh"),
+            Self::Vmin => write!(out, "vmin"),
+            Self::Vmax => write!(out, "vmax"),
+            Self::Cm => write!(out, "cm"),
+            Self::Mm => write!(out, "mm"),
+            Self::Q => write!(out, "Q"),
+            Self::In => write!(out, "in"),
+            Self::Pt => write!(out, "pt"),
+            Self::Pc => write!(out, "pc"),
+            Self::Px => write!(out, "px"),
             // <angle> type
-            Unit::Deg => write!(out, "deg"),
-            Unit::Grad => write!(out, "grad"),
-            Unit::Rad => write!(out, "rad"),
-            Unit::Turn => write!(out, "turn"),
+            Self::Deg => write!(out, "deg"),
+            Self::Grad => write!(out, "grad"),
+            Self::Rad => write!(out, "rad"),
+            Self::Turn => write!(out, "turn"),
             // <time> type
-            Unit::S => write!(out, "s"),
-            Unit::Ms => write!(out, "ms"),
+            Self::S => write!(out, "s"),
+            Self::Ms => write!(out, "ms"),
             // <frequency> type
-            Unit::Hz => write!(out, "Hz"),
-            Unit::Khz => write!(out, "kHz"),
+            Self::Hz => write!(out, "Hz"),
+            Self::Khz => write!(out, "kHz"),
             // <resolution>
-            Unit::Dpi => write!(out, "dpi"),
-            Unit::Dpcm => write!(out, "dpcm"),
-            Unit::Dppx => write!(out, "dppx"),
+            Self::Dpi => write!(out, "dpi"),
+            Self::Dpcm => write!(out, "dpcm"),
+            Self::Dppx => write!(out, "dppx"),
             // Special units
-            Unit::Percent => write!(out, "%"),
-            Unit::Fr => write!(out, "fr"),
-            Unit::None => Ok(()),
+            Self::Percent => write!(out, "%"),
+            Self::Fr => write!(out, "fr"),
+            Self::None => Ok(()),
 
-            Unit::Unknown(ref name) => out.write_str(name),
+            Self::Unknown(ref name) => out.write_str(name),
         }
     }
 }
@@ -282,13 +282,13 @@ impl From<Dimension> for CssDimension {
             | Dimension::LengthVh
             | Dimension::LengthVx
             | Dimension::LengthRem
-            | Dimension::LenghtEm => CssDimension::Length,
-            Dimension::Angle => CssDimension::Angle,
-            Dimension::Time => CssDimension::Time,
-            Dimension::Frequency => CssDimension::Frequency,
-            Dimension::Resolution => CssDimension::Resolution,
-            Dimension::None => CssDimension::None,
-            Dimension::Unknown(s) => CssDimension::Unknown(s),
+            | Dimension::LenghtEm => Self::Length,
+            Dimension::Angle => Self::Angle,
+            Dimension::Time => Self::Time,
+            Dimension::Frequency => Self::Frequency,
+            Dimension::Resolution => Self::Resolution,
+            Dimension::None => Self::None,
+            Dimension::Unknown(s) => Self::Unknown(s),
         }
     }
 }

@@ -14,7 +14,7 @@ pub struct SourceName {
 impl SourceName {
     /// Create a new top-level `SourceName`.
     pub fn root<T: ToString>(name: T) -> Self {
-        SourceName {
+        Self {
             name: name.to_string(),
             imported: SourceKind::Root,
         }
@@ -22,7 +22,7 @@ impl SourceName {
 
     /// Create a name for a mixin called from a specific pos.
     pub fn called<T: ToString>(name: T, from: SourcePos) -> Self {
-        SourceName {
+        Self {
             name: from.file_url().into(),
             imported: SourceKind::Call(name.to_string(), from),
         }
@@ -58,7 +58,7 @@ pub enum SourceKind {
 impl SourceKind {
     /// A `load-css` call is attempted at the given pos.
     pub fn load_css(pos: &SourcePos) -> Self {
-        SourceKind::Call("load-css".into(), pos.clone())
+        Self::Call("load-css".into(), pos.clone())
     }
     pub(crate) fn url(self, url: &str) -> SourceName {
         SourceName {
@@ -68,27 +68,27 @@ impl SourceKind {
     }
     pub(crate) fn next(&self) -> Option<&SourcePos> {
         match self {
-            SourceKind::Root => None,
-            SourceKind::Import(pos) => Some(pos),
-            SourceKind::Use(pos) => Some(pos),
-            SourceKind::Forward(pos) => Some(pos),
-            SourceKind::Call(_, pos) => Some(pos),
+            Self::Root => None,
+            Self::Import(pos) => Some(pos),
+            Self::Use(pos) => Some(pos),
+            Self::Forward(pos) => Some(pos),
+            Self::Call(_, pos) => Some(pos),
         }
     }
 
     pub(crate) fn is_import(&self) -> bool {
-        matches!(self, SourceKind::Import(_))
+        matches!(self, Self::Import(_))
     }
 }
 
 impl fmt::Display for SourceKind {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            SourceKind::Root => out.write_str("root stylesheet"),
-            SourceKind::Import(_) => out.write_str("@import"),
-            SourceKind::Use(_) => out.write_str("@use"),
-            SourceKind::Forward(_) => out.write_str("@forward"),
-            SourceKind::Call(name, _) => write!(out, "{name}()"),
+            Self::Root => out.write_str("root stylesheet"),
+            Self::Import(_) => out.write_str("@import"),
+            Self::Use(_) => out.write_str("@use"),
+            Self::Forward(_) => out.write_str("@forward"),
+            Self::Call(name, _) => write!(out, "{name}()"),
         }
     }
 }

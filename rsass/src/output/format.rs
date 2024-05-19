@@ -41,8 +41,8 @@ impl Format {
 }
 
 impl Default for Format {
-    fn default() -> Format {
-        Format {
+    fn default() -> Self {
+        Self {
             style: Style::Expanded,
             precision: 10,
         }

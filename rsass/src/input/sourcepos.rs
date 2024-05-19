@@ -19,7 +19,7 @@ pub struct SourcePos {
 
 impl SourcePos {
     pub(crate) fn new_range(source: SourceFile, range: Range<usize>) -> Self {
-        SourcePos {
+        Self {
             start: range.start,
             end: range.end,
             source,
@@ -92,9 +92,9 @@ impl SourcePos {
 
     fn show_in_file(
         out: &mut fmt::Formatter,
-        first: &SourcePos,
+        first: &Self,
         first_name: &str,
-        second: &SourcePos,
+        second: &Self,
         second_name: &str,
     ) -> fmt::Result {
         let ellipsis = first.line_no() + 1 < second.line_no();
@@ -239,7 +239,7 @@ impl SourcePos {
     }
 
     pub(crate) fn in_call(&self, name: &str) -> Self {
-        SourcePos {
+        Self {
             start: self.start,
             end: self.end,
             source: SourceFile::scss_bytes(
@@ -259,14 +259,14 @@ impl SourcePos {
         args: &FormalArgs,
         module: &str,
     ) -> Self {
-        SourcePos::mock_impl("@function", name, args, module)
+        Self::mock_impl("@function", name, args, module)
     }
     pub(crate) fn mock_mixin(
         name: &Name,
         args: &FormalArgs,
         module: &str,
     ) -> Self {
-        SourcePos::mock_impl("@mixin", name, args, module)
+        Self::mock_impl("@mixin", name, args, module)
     }
     fn mock_impl(
         kind: &str,
@@ -275,7 +275,7 @@ impl SourcePos {
         module: &str,
     ) -> Self {
         let line = format!("{kind} {name}{args} {{");
-        SourcePos {
+        Self {
             start: kind.as_bytes().len() + 1,
             end: line.len() - 2,
             source: SourceFile::scss_bytes(line, SourceName::root(module)),
@@ -290,7 +290,7 @@ impl SourcePos {
 
 impl From<SourceFile> for SourcePos {
     fn from(source: SourceFile) -> Self {
-        SourcePos {
+        Self {
             start: 0,
             end: source.data().len(),
             source,

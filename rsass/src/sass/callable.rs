@@ -14,11 +14,11 @@ pub struct Callable {
 impl Callable {
     /// Create a new callable.
     pub fn new(args: FormalArgs, body: Vec<Item>, decl: SourcePos) -> Self {
-        Callable { args, body, decl }
+        Self { args, body, decl }
     }
     /// Create a new callable without arguments.
     pub fn no_args(body: Vec<Item>, decl: SourcePos) -> Self {
-        Callable {
+        Self {
             args: FormalArgs::none(),
             body,
             decl,

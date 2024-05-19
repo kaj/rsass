@@ -17,18 +17,18 @@ impl FormalArgs {
     /// Create a new `FormalArgs`.
     ///
     /// The given arg-pairs each have a name and an optional default value.
-    pub fn new(args: Vec<(Name, Option<Value>)>) -> FormalArgs {
-        FormalArgs(args, None)
+    pub fn new(args: Vec<(Name, Option<Value>)>) -> Self {
+        Self(args, None)
     }
     /// Create a new set of varargs arguments
-    pub fn new_va(args: Vec<(Name, Option<Value>)>) -> FormalArgs {
+    pub fn new_va(args: Vec<(Name, Option<Value>)>) -> Self {
         let mut args = args;
         let va = args.pop().map(|(name, _)| name);
-        FormalArgs(args, va)
+        Self(args, va)
     }
     /// Create an empty set of arguments.
-    pub fn none() -> FormalArgs {
-        FormalArgs(vec![], None)
+    pub fn none() -> Self {
+        Self(vec![], None)
     }
 
     /// Return true if this formalarg is varargs.
@@ -138,7 +138,7 @@ impl ArgsError {
     /// This argument error happend for args declared at the given pos.
     pub fn declared_at(self, pos: &SourcePos) -> CallError {
         match self {
-            ArgsError::Eval(e) => CallError::Wrap(e),
+            Self::Eval(e) => CallError::Wrap(e),
             ae => CallError::Args(ae, pos.clone()),
         }
     }
@@ -147,7 +147,7 @@ impl ArgsError {
 impl fmt::Display for ArgsError {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ArgsError::TooManyPos(n, m) => write!(
+            Self::TooManyPos(n, m) => write!(
                 out,
                 "Only {} positional argument{} allowed, but {} {} passed.",
                 n,
@@ -155,7 +155,7 @@ impl fmt::Display for ArgsError {
                 m,
                 if *m != 1 { "were" } else { "was" },
             ),
-            ArgsError::TooMany(n, m) => write!(
+            Self::TooMany(n, m) => write!(
                 out,
                 "Only {} argument{} allowed, but {} {} passed.",
                 n,
@@ -163,24 +163,24 @@ impl fmt::Display for ArgsError {
                 m,
                 if *m != 1 { "were" } else { "was" },
             ),
-            ArgsError::Missing(name) => {
+            Self::Missing(name) => {
                 write!(out, "Missing argument ${name}.")
             }
-            ArgsError::Unexpected(name) => {
+            Self::Unexpected(name) => {
                 write!(out, "No argument named ${name}.")
             }
-            ArgsError::Eval(e) => e.fmt(out),
+            Self::Eval(e) => e.fmt(out),
         }
     }
 }
 
 impl From<Error> for ArgsError {
-    fn from(e: Error) -> ArgsError {
-        ArgsError::Eval(Box::new(e))
+    fn from(e: Error) -> Self {
+        Self::Eval(Box::new(e))
     }
 }
 impl From<ScopeError> for ArgsError {
-    fn from(e: ScopeError) -> ArgsError {
+    fn from(e: ScopeError) -> Self {
         Error::from(e).into()
     }
 }

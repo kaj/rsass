@@ -31,9 +31,9 @@ impl Color {
     /// Otherwise, do the conversion and return an owned value.
     pub fn to_rgba(&self) -> Cow<Rgba> {
         match self {
-            Color::Rgba(rgba) => Cow::Borrowed(rgba),
-            Color::Hsla(hsla) => Cow::Owned(Rgba::from(hsla)),
-            Color::Hwba(hwba) => Cow::Owned(Rgba::from(hwba)),
+            Self::Rgba(rgba) => Cow::Borrowed(rgba),
+            Self::Hsla(hsla) => Cow::Owned(Rgba::from(hsla)),
+            Self::Hwba(hwba) => Cow::Owned(Rgba::from(hwba)),
         }
     }
     /// Get this color as a hsla value.
@@ -42,9 +42,9 @@ impl Color {
     /// Otherwise, do the conversion and return an owned value.
     pub fn to_hsla(&self) -> Cow<Hsla> {
         match self {
-            Color::Rgba(rgba) => Cow::Owned(Hsla::from(rgba)),
-            Color::Hsla(ref hsla) => Cow::Borrowed(hsla),
-            Color::Hwba(hwba) => Cow::Owned(Hsla::from(hwba)),
+            Self::Rgba(rgba) => Cow::Owned(Hsla::from(rgba)),
+            Self::Hsla(ref hsla) => Cow::Borrowed(hsla),
+            Self::Hwba(hwba) => Cow::Owned(Hsla::from(hwba)),
         }
     }
     /// Get this color as a hwba value.
@@ -53,9 +53,9 @@ impl Color {
     /// Otherwise, do the conversion and return an owned value.
     pub fn to_hwba(&self) -> Cow<Hwba> {
         match self {
-            Color::Rgba(rgba) => Cow::Owned(Hwba::from(rgba)),
-            Color::Hsla(hsla) => Cow::Owned(Hwba::from(hsla)),
-            Color::Hwba(hwba) => Cow::Borrowed(hwba),
+            Self::Rgba(rgba) => Cow::Owned(Hwba::from(rgba)),
+            Self::Hsla(hsla) => Cow::Owned(Hwba::from(hsla)),
+            Self::Hwba(hwba) => Cow::Borrowed(hwba),
         }
     }
 
@@ -64,9 +64,9 @@ impl Color {
     /// The alpha channel is a rational value between 0 and 1.
     pub fn get_alpha(&self) -> Rational {
         match self {
-            Color::Rgba(rgba) => rgba.alpha(),
-            Color::Hsla(hsla) => hsla.alpha(),
-            Color::Hwba(hwba) => hwba.alpha(),
+            Self::Rgba(rgba) => rgba.alpha(),
+            Self::Hsla(hsla) => hsla.alpha(),
+            Self::Hwba(hwba) => hwba.alpha(),
         }
     }
     /// Set the alpha channel of this color.
@@ -75,15 +75,15 @@ impl Color {
     pub fn set_alpha(&mut self, alpha: Rational) {
         let alpha = alpha.clamp(zero(), one());
         match self {
-            Color::Rgba(ref mut rgba) => rgba.set_alpha(alpha),
-            Color::Hsla(ref mut hsla) => hsla.set_alpha(alpha),
-            Color::Hwba(ref mut hwba) => hwba.set_alpha(alpha),
+            Self::Rgba(ref mut rgba) => rgba.set_alpha(alpha),
+            Self::Hsla(ref mut hsla) => hsla.set_alpha(alpha),
+            Self::Hwba(ref mut hwba) => hwba.set_alpha(alpha),
         }
     }
     /// Rotate the hue of this color by a specific number of degrees.
     pub fn rotate_hue(&self, val: Rational) -> Self {
         match self {
-            Color::Rgba(rgba) => {
+            Self::Rgba(rgba) => {
                 let hsla = Hsla::from(rgba);
                 Hsla::new(
                     hsla.hue() + val,
@@ -94,7 +94,7 @@ impl Color {
                 )
                 .into()
             }
-            Color::Hsla(hsla) => Hsla::new(
+            Self::Hsla(hsla) => Hsla::new(
                 hsla.hue() + val,
                 hsla.sat(),
                 hsla.lum(),
@@ -102,7 +102,7 @@ impl Color {
                 hsla.hsla_format,
             )
             .into(),
-            Color::Hwba(hwba) => Hwba::new(
+            Self::Hwba(hwba) => Hwba::new(
                 hwba.hue() + val,
                 hwba.whiteness(),
                 hwba.blackness(),
@@ -113,8 +113,8 @@ impl Color {
     }
     pub(crate) fn reset_source(&mut self) {
         match self {
-            Color::Rgba(rgba) => rgba.reset_source(),
-            Color::Hsla(hsla) => hsla.reset_source(),
+            Self::Rgba(rgba) => rgba.reset_source(),
+            Self::Hsla(hsla) => hsla.reset_source(),
             _ => (),
         }
     }
@@ -128,18 +128,18 @@ impl Color {
 }
 
 impl From<Rgba> for Color {
-    fn from(rgba: Rgba) -> Color {
-        Color::Rgba(rgba)
+    fn from(rgba: Rgba) -> Self {
+        Self::Rgba(rgba)
     }
 }
 impl From<Hsla> for Color {
-    fn from(hsla: Hsla) -> Color {
-        Color::Hsla(hsla)
+    fn from(hsla: Hsla) -> Self {
+        Self::Hsla(hsla)
     }
 }
 impl From<Hwba> for Color {
-    fn from(hwba: Hwba) -> Color {
-        Color::Hwba(hwba)
+    fn from(hwba: Hwba) -> Self {
+        Self::Hwba(hwba)
     }
 }
 

@@ -43,7 +43,7 @@ impl Rgba {
     ) -> Self {
         let ff = Rational::new(255, 1);
         let one = Rational::one();
-        Rgba {
+        Self {
             red: cap(r, &ff),
             green: cap(g, &ff),
             blue: cap(b, &ff),
@@ -53,7 +53,7 @@ impl Rgba {
     }
     /// Create a color from rgb byte values.
     pub fn from_rgb(r: u8, g: u8, b: u8) -> Self {
-        Rgba {
+        Self {
             red: Rational::from_integer(r.into()),
             green: Rational::from_integer(g.into()),
             blue: Rational::from_integer(b.into()),
@@ -63,7 +63,7 @@ impl Rgba {
     }
     /// Create a color from rgba byte values.
     pub fn from_rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
-        Rgba {
+        Self {
             red: Rational::from_integer(r.into()),
             green: Rational::from_integer(g.into()),
             blue: Rational::from_integer(b.into()),
@@ -165,7 +165,7 @@ impl Rgba {
 }
 
 impl PartialEq for Rgba {
-    fn eq(&self, other: &Rgba) -> bool {
+    fn eq(&self, other: &Self) -> bool {
         // ignores source!
         self.red == other.red
             && self.green == other.green
@@ -175,7 +175,7 @@ impl PartialEq for Rgba {
 }
 impl Eq for Rgba {}
 impl Ord for Rgba {
-    fn cmp(&self, other: &Rgba) -> Ordering {
+    fn cmp(&self, other: &Self) -> Ordering {
         // ignores source!
         self.red
             .cmp(&other.red)
@@ -185,7 +185,7 @@ impl Ord for Rgba {
     }
 }
 impl PartialOrd for Rgba {
-    fn partial_cmp(&self, other: &Rgba) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
@@ -233,7 +233,7 @@ impl Lookup {
             n2v.insert(n, v);
             v2n.entry(v).or_insert(n);
         }
-        Lookup { n2v, v2n }
+        Self { n2v, v2n }
     }
 }
 

@@ -27,7 +27,7 @@ impl ParseError {
         if rest.fragment().is_empty() {
             Ok(value)
         } else {
-            Err(ParseError::new("Expected end of file.", rest.to_owned()))
+            Err(Self::new("Expected end of file.", rest.to_owned()))
         }
     }
 
@@ -40,13 +40,13 @@ impl ParseError {
         } else {
             msg.into()
         };
-        ParseError { msg, pos }
+        Self { msg, pos }
     }
 }
 
 impl From<nom::error::Error<Span<'_>>> for ParseError {
     fn from(err: nom::error::Error<Span>) -> Self {
-        ParseError::new(
+        Self::new(
             format!("Parse error: {:?}", err.code),
             err.input.up_to(&err.input).to_owned(),
         )

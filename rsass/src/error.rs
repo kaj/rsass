@@ -53,10 +53,10 @@ impl fmt::Display for Error {
 impl fmt::Debug for Error {
     fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
-            Error::S(ref s) => write!(out, "{s}"),
-            Error::Input(ref load) => load.fmt(out),
-            Error::ParseError(ref err) => fmt::Display::fmt(err, out),
-            Error::ImportLoop(ref module, ref pos, ref oldpos) => {
+            Self::S(ref s) => write!(out, "{s}"),
+            Self::Input(ref load) => load.fmt(out),
+            Self::ParseError(ref err) => fmt::Display::fmt(err, out),
+            Self::ImportLoop(ref module, ref pos, ref oldpos) => {
                 if *module {
                     writeln!(
                         out,
@@ -77,7 +77,7 @@ impl fmt::Debug for Error {
                     pos.show(out)
                 }
             }
-            Error::BadCall(ref msg, ref callpos, ref declpos) => {
+            Self::BadCall(ref msg, ref callpos, ref declpos) => {
                 writeln!(out, "{msg}")?;
                 if let Some(declpos) = declpos {
                     SourcePos::show_two(
@@ -91,41 +91,41 @@ impl fmt::Debug for Error {
                     callpos.show(out)
                 }
             }
-            Error::Invalid(ref what, ref pos) => {
+            Self::Invalid(ref what, ref pos) => {
                 writeln!(out, "{what}")?;
                 pos.show(out)
             }
-            Error::BadRange(ref err) => err.fmt(out),
-            Error::IoError(ref err) => err.fmt(out),
+            Self::BadRange(ref err) => err.fmt(out),
+            Self::IoError(ref err) => err.fmt(out),
         }
     }
 }
 
 impl From<io::Error> for Error {
     fn from(e: io::Error) -> Self {
-        Error::IoError(e)
+        Self::IoError(e)
     }
 }
 impl From<fmt::Error> for Error {
     fn from(e: fmt::Error) -> Self {
-        Error::IoError(io::Error::new(io::ErrorKind::Other, e))
+        Self::IoError(io::Error::new(io::ErrorKind::Other, e))
     }
 }
 
 impl From<ParseError> for Error {
     fn from(e: ParseError) -> Self {
-        Error::ParseError(e)
+        Self::ParseError(e)
     }
 }
 impl From<RangeError> for Error {
     fn from(e: RangeError) -> Self {
-        Error::BadRange(e)
+        Self::BadRange(e)
     }
 }
 
 impl From<LoadError> for Error {
     fn from(err: LoadError) -> Self {
-        Error::Input(err)
+        Self::Input(err)
     }
 }
 
@@ -179,43 +179,43 @@ impl std::error::Error for Invalid {}
 impl fmt::Display for Invalid {
     fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Invalid::FunctionName => "Invalid function name.".fmt(out),
-            Invalid::AtRule => "This at-rule is not allowed here.".fmt(out),
-            Invalid::MixinInMixin => {
+            Self::FunctionName => "Invalid function name.".fmt(out),
+            Self::AtRule => "This at-rule is not allowed here.".fmt(out),
+            Self::MixinInMixin => {
                 "Mixins may not contain mixin declarations.".fmt(out)
             }
-            Invalid::MixinInControl => {
+            Self::MixinInControl => {
                 "Mixins may not be declared in control directives.".fmt(out)
             }
-            Invalid::FunctionInMixin => {
+            Self::FunctionInMixin => {
                 "Mixins may not contain function declarations.".fmt(out)
             }
-            Invalid::FunctionInControl => {
+            Self::FunctionInControl => {
                 "Functions may not be declared in control directives."
                     .fmt(out)
             }
-            Invalid::DuplicateArgument => "Duplicate argument.".fmt(out),
-            Invalid::PositionalArgAfterNamed => {
+            Self::DuplicateArgument => "Duplicate argument.".fmt(out),
+            Self::PositionalArgAfterNamed => {
                 "Positional arguments must come before keyword arguments."
                     .fmt(out)
             }
-            Invalid::DeclarationOutsideRule => {
+            Self::DeclarationOutsideRule => {
                 "Declarations may only be used within style rules.".fmt(out)
             }
-            Invalid::InNsRule => {
+            Self::InNsRule => {
                 "Only properties are valid inside namespace rules.".fmt(out)
             }
-            Invalid::GlobalCustomProperty => {
+            Self::GlobalCustomProperty => {
                 "Global custom property not allowed.".fmt(out)
             }
-            Invalid::GlobalNsProperty => {
+            Self::GlobalNsProperty => {
                 "Global namespaced property not allowed.".fmt(out)
             }
-            Invalid::ConfigBuiltin => {
+            Self::ConfigBuiltin => {
                 "Built-in modules can\'t be configured.".fmt(out)
             }
-            Invalid::InScope(err) => err.fmt(out),
-            Invalid::AtError(msg) => msg.fmt(out),
+            Self::InScope(err) => err.fmt(out),
+            Self::AtError(msg) => msg.fmt(out),
         }
     }
 }

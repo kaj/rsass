@@ -24,8 +24,8 @@ impl NumOrSpecial {
         F: Fn(Numeric) -> Result<T, E>,
     {
         match self {
-            NumOrSpecial::Num(n) => Ok(NumOrSpecial::Num(f(n)?)),
-            NumOrSpecial::Special(s) => Ok(NumOrSpecial::Special(s)),
+            Self::Num(n) => Ok(NumOrSpecial::Num(f(n)?)),
+            Self::Special(s) => Ok(NumOrSpecial::Special(s)),
         }
     }
 }
@@ -35,13 +35,11 @@ impl TryFrom<Value> for NumOrSpecial {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
-            v @ (Value::Call(..) | Value::BinOp(..)) => {
-                Ok(NumOrSpecial::Special(v))
-            }
+            v @ (Value::Call(..) | Value::BinOp(..)) => Ok(Self::Special(v)),
             Value::Literal(s) if like_call_or_num(&s) => {
-                Ok(NumOrSpecial::Special(Value::Literal(s)))
+                Ok(Self::Special(Value::Literal(s)))
             }
-            v => Ok(NumOrSpecial::Num(v.try_into()?)),
+            v => Ok(Self::Num(v.try_into()?)),
         }
     }
 }
@@ -55,7 +53,7 @@ fn like_call_or_num(s: &CssString) -> bool {
 
 impl From<Numeric> for NumOrSpecial {
     fn from(value: Numeric) -> Self {
-        NumOrSpecial::Num(value)
+        Self::Num(value)
     }
 }
 

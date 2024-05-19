@@ -19,7 +19,7 @@ pub struct CssData {
 
 impl CssData {
     pub fn new() -> Self {
-        CssData {
+        Self {
             imports: Default::default(),
             body: Default::default(),
             modules: Default::default(),

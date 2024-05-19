@@ -24,24 +24,24 @@ impl CallArgs {
         match v {
             Value::ArgList(args) => Ok(args),
             Value::List(v, Some(ListSeparator::Comma), false) => {
-                Ok(CallArgs::from_list(v))
+                Ok(Self::from_list(v))
             }
             Value::Map(args) => {
-                let mut result = CallArgs::default();
+                let mut result = Self::default();
                 result.add_from_value_map(args)?;
                 Ok(result)
             }
-            Value::Null => Ok(CallArgs::default()),
-            v => Ok(CallArgs::from_single(v)),
+            Value::Null => Ok(Self::default()),
+            v => Ok(Self::from_single(v)),
         }
     }
     /// Create args that is one single positional argument.
     pub(crate) fn from_single(arg: Value) -> Self {
-        CallArgs::from_list(vec![arg])
+        Self::from_list(vec![arg])
     }
 
     pub(crate) fn from_list(positional: Vec<Value>) -> Self {
-        CallArgs {
+        Self {
             positional,
             ..Default::default()
         }
@@ -113,8 +113,8 @@ impl CallArgs {
 }
 
 impl From<CallArgs> for Value {
-    fn from(args: CallArgs) -> Value {
-        Value::ArgList(args)
+    fn from(args: CallArgs) -> Self {
+        Self::ArgList(args)
     }
 }
 

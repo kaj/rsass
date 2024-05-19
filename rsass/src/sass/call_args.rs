@@ -37,7 +37,7 @@ impl CallArgs {
                 return Err(Invalid::PositionalArgAfterNamed);
             }
         }
-        Ok(CallArgs {
+        Ok(Self {
             positional,
             named,
             trailing_comma,
@@ -46,7 +46,7 @@ impl CallArgs {
 
     /// Create a new `CallArgs` from one single unnamed argument.
     pub fn new_single(value: Value) -> Self {
-        CallArgs {
+        Self {
             positional: vec![value],
             named: Default::default(),
             trailing_comma: false,

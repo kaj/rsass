@@ -16,19 +16,19 @@ impl ListSeparator {
     /// Get the actutual separator string.
     pub fn sep(&self, compressed: bool) -> &'static str {
         match self {
-            ListSeparator::Comma if compressed => ",",
-            ListSeparator::Comma => ", ",
-            ListSeparator::Slash if compressed => "/",
-            ListSeparator::SlashNoSpace => "/",
-            ListSeparator::Slash => " / ",
-            ListSeparator::Space => " ",
+            Self::Comma if compressed => ",",
+            Self::Comma => ", ",
+            Self::Slash if compressed => "/",
+            Self::SlashNoSpace => "/",
+            Self::Slash => " / ",
+            Self::Space => " ",
         }
     }
 }
 
 impl Default for ListSeparator {
     fn default() -> Self {
-        ListSeparator::Space
+        Self::Space
     }
 }
 

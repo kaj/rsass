@@ -21,8 +21,8 @@ impl Hsla {
         lum: Rational,
         alpha: Rational,
         hsla_format: bool,
-    ) -> Hsla {
-        Hsla {
+    ) -> Self {
+        Self {
             hue: deg_mod(hue),
             sat: sat.clamp(zero(), one()),
             lum: lum.clamp(zero(), one()),

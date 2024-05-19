@@ -15,7 +15,7 @@ impl TryFrom<Value> for Channels {
     type Error = ChaError;
     fn try_from(channels: Value) -> Result<Self, ChaError> {
         if is_special(&channels) {
-            Ok(Channels::Special(channels))
+            Ok(Self::Special(channels))
         } else if let Value::List(vec, sep, bracketed) = channels.clone() {
             use crate::value::Operator::Div;
             use Value::{BinOp, Numeric};
@@ -35,15 +35,15 @@ impl TryFrom<Value> for Channels {
                             return Err(ChaError::BadSep);
                         }
                         Ok(inner_channels(inner)?.map_or_else(
-                            || Channels::Special(channels),
+                            || Self::Special(channels),
                             |[c1, c2, c3]| {
-                                Channels::Data([c1, c2, c3, a.clone()])
+                                Self::Data([c1, c2, c3, a.clone()])
                             },
                         ))
                     }
                     [h, _a] => {
                         if is_special(h) {
-                            Ok(Channels::Special(channels))
+                            Ok(Self::Special(channels))
                         } else {
                             Err(ChaError::Missing1)
                         }
@@ -56,21 +56,21 @@ impl TryFrom<Value> for Channels {
                         if let (b @ Numeric(..), a @ Numeric(..)) =
                             (op.a(), op.b())
                         {
-                            Channels::Data([
+                            Self::Data([
                                 r.clone(),
                                 g.clone(),
                                 b.clone(),
                                 a.clone(),
                             ])
                         } else {
-                            Channels::Special(channels)
+                            Self::Special(channels)
                         },
                     ),
                     other => Ok(inner_channels(other)?
                         .map(|[c1, c2, c3]| {
-                            Channels::Data([c1, c2, c3, Value::Null])
+                            Self::Data([c1, c2, c3, Value::Null])
                         })
-                        .unwrap_or_else(|| Channels::Special(channels))),
+                        .unwrap_or_else(|| Self::Special(channels))),
                 }
             }
         } else {

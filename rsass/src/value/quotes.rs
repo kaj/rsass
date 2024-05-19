@@ -14,16 +14,16 @@ pub enum Quotes {
 impl Quotes {
     /// Return true is this is no quotes.
     pub fn is_none(&self) -> bool {
-        *self == Quotes::None
+        *self == Self::None
     }
 }
 
 impl fmt::Display for Quotes {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Quotes::Double => out.write_char('"'),
-            Quotes::Single => out.write_char('\''),
-            Quotes::None => Ok(()),
+            Self::Double => out.write_char('"'),
+            Self::Single => out.write_char('\''),
+            Self::None => Ok(()),
         }
     }
 }

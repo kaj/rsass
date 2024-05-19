@@ -31,26 +31,22 @@ impl ScopeRef {
         Self::dynamic(Scope::new_global(format))
     }
     /// Create a new subscope of a given parent.
-    pub fn sub(parent: ScopeRef) -> Self {
+    pub fn sub(parent: Self) -> Self {
         Self::dynamic(Scope::sub(parent))
     }
     /// Create a new subscope of a given parent with selectors.
-    pub fn sub_selectors(parent: ScopeRef, selectors: SelectorCtx) -> Self {
+    pub fn sub_selectors(parent: Self, selectors: SelectorCtx) -> Self {
         Self::dynamic(Scope::sub_selectors(parent, selectors))
     }
     fn dynamic(scope: Scope) -> Self {
-        ScopeRef::Dynamic(Arc::new(scope))
+        Self::Dynamic(Arc::new(scope))
     }
 
     /// Check if `a` and `b` references the same scope.
     pub fn is_same(a: &Self, b: &Self) -> bool {
         match (a, b) {
-            (ScopeRef::Builtin(a), ScopeRef::Builtin(b)) => {
-                std::ptr::eq(a, b)
-            }
-            (ScopeRef::Dynamic(ref a), ScopeRef::Dynamic(ref b)) => {
-                Arc::ptr_eq(a, b)
-            }
+            (Self::Builtin(a), Self::Builtin(b)) => std::ptr::eq(a, b),
+            (Self::Dynamic(ref a), Self::Dynamic(ref b)) => Arc::ptr_eq(a, b),
             _ => false,
         }
     }
@@ -108,7 +104,7 @@ impl ScopeRef {
                     Some(v.do_evaluate(self.clone(), true)?)
                 }
                 Item::While(ref cond, ref body) => {
-                    let scope = ScopeRef::sub(self.clone());
+                    let scope = Self::sub(self.clone());
                     while cond.evaluate(scope.clone())?.is_true() {
                         if let Some(r) = scope.clone().eval_body(body)? {
                             return Ok(Some(r));
@@ -150,7 +146,7 @@ impl ScopeRef {
 
     fn with_forwarded(self) -> Self {
         if let Some(forwarded) = self.opt_forward() {
-            let merged = ScopeRef::new_global(self.get_format());
+            let merged = Self::new_global(self.get_format());
             merged.expose_star(&forwarded);
             merged.expose_star(&self);
             merged
@@ -163,7 +159,7 @@ impl ScopeRef {
         if filter == &Expose::All {
             self
         } else {
-            let result = ScopeRef::new_global(self.get_format());
+            let result = Self::new_global(self.get_format());
             for (name, function) in &*self.functions.lock().unwrap() {
                 if filter.allow_fun(name) {
                     result.define_function(name.clone(), function.clone());
@@ -188,8 +184,8 @@ impl Deref for ScopeRef {
     type Target = Scope;
     fn deref(&self) -> &Scope {
         match self {
-            ScopeRef::Builtin(m) => m,
-            ScopeRef::Dynamic(m) => m,
+            Self::Builtin(m) => m,
+            Self::Dynamic(m) => m,
         }
     }
 }
@@ -222,7 +218,7 @@ impl Scope {
     /// There will be multiple global scopes existing during the
     /// evaluation of a single sass file.
     pub fn new_global(format: Format) -> Self {
-        Scope {
+        Self {
             parent: None,
             modules: Mutex::new(BTreeMap::new()),
             variables: Mutex::new(BTreeMap::new()),
@@ -236,7 +232,7 @@ impl Scope {
     }
     /// Create a scope for a built-in module.
     pub fn builtin_module(name: &'static str) -> Self {
-        let s = Scope::new_global(Default::default());
+        let s = Self::new_global(Default::default());
         s.define(Name::from_static("@scope_name@"), name.into())
             .unwrap();
         s
@@ -250,7 +246,7 @@ impl Scope {
     /// Create a new subscope of a given parent.
     pub fn sub(parent: ScopeRef) -> Self {
         let format = parent.get_format();
-        Scope {
+        Self {
             parent: Some(parent),
             modules: Mutex::new(BTreeMap::new()),
             variables: Mutex::new(BTreeMap::new()),
@@ -265,7 +261,7 @@ impl Scope {
     /// Create a new subscope of a given parent with selectors.
     pub fn sub_selectors(parent: ScopeRef, selectors: SelectorCtx) -> Self {
         let format = parent.get_format();
-        Scope {
+        Self {
             parent: Some(parent),
             modules: Mutex::new(BTreeMap::new()),
             variables: Mutex::new(BTreeMap::new()),
@@ -558,7 +554,7 @@ impl Scope {
         Ok(())
     }
 
-    pub(crate) fn expose_star(&self, other: &Scope) {
+    pub(crate) fn expose_star(&self, other: &Self) {
         for (name, function) in &*other.functions.lock().unwrap() {
             self.define_function(name.clone(), function.clone());
         }
@@ -927,19 +923,19 @@ use std::fmt::{self, Display};
 impl Display for ScopeError {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ScopeError::NoModule(name) => {
+            Self::NoModule(name) => {
                 write!(out, "There is no module with the namespace {name:?}.",)
             }
-            ScopeError::UndefinedVariable => "Undefined variable.".fmt(out),
-            ScopeError::UndefinedFunction => "Undefined function.".fmt(out),
-            ScopeError::ModifiedBuiltin => {
+            Self::UndefinedVariable => "Undefined variable.".fmt(out),
+            Self::UndefinedFunction => "Undefined function.".fmt(out),
+            Self::ModifiedBuiltin => {
                 "Cannot modify built-in variable.".fmt(out)
             }
         }
     }
 }
 impl From<ScopeError> for Error {
-    fn from(err: ScopeError) -> Error {
-        Error::S(err.to_string())
+    fn from(err: ScopeError) -> Self {
+        Self::S(err.to_string())
     }
 }

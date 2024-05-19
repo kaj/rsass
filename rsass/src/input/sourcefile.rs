@@ -70,7 +70,7 @@ impl SourceFile {
     }
 
     fn new(data: Vec<u8>, source: SourceName, format: SourceFormat) -> Self {
-        SourceFile {
+        Self {
             data: Arc::new(Impl {
                 data,
                 source,
@@ -137,11 +137,11 @@ enum SourceFormat {
 
 impl TryFrom<&str> for SourceFormat {
     type Error = LoadError;
-    fn try_from(name: &str) -> Result<SourceFormat, LoadError> {
+    fn try_from(name: &str) -> Result<Self, LoadError> {
         if name.ends_with(".scss") {
-            Ok(SourceFormat::Scss)
+            Ok(Self::Scss)
         } else if name.ends_with(".css") {
-            Ok(SourceFormat::Css)
+            Ok(Self::Css)
         } else {
             Err(LoadError::UnknownFormat(name.into()))
         }

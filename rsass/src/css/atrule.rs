@@ -23,7 +23,7 @@ impl AtRule {
         args: Value,
         body: Option<Vec<AtRuleBodyItem>>,
     ) -> Self {
-        AtRule { name, args, body }
+        Self { name, args, body }
     }
     pub(crate) fn no_body(&self) -> bool {
         self.body.is_none()
@@ -76,55 +76,55 @@ pub enum AtRuleBodyItem {
 impl AtRuleBodyItem {
     pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
         match self {
-            AtRuleBodyItem::Import(import) => import.write(buf)?,
-            AtRuleBodyItem::Comment(comment) => comment.write(buf),
-            AtRuleBodyItem::Rule(rule) => rule.write(buf)?,
-            AtRuleBodyItem::Property(property) => property.write(buf),
-            AtRuleBodyItem::CustomProperty(cp) => cp.write(buf),
-            AtRuleBodyItem::MediaRule(rule) => rule.write(buf)?,
-            AtRuleBodyItem::AtRule(rule) => rule.write(buf)?,
+            Self::Import(import) => import.write(buf)?,
+            Self::Comment(comment) => comment.write(buf),
+            Self::Rule(rule) => rule.write(buf)?,
+            Self::Property(property) => property.write(buf),
+            Self::CustomProperty(cp) => cp.write(buf),
+            Self::MediaRule(rule) => rule.write(buf)?,
+            Self::AtRule(rule) => rule.write(buf)?,
         }
         Ok(())
     }
 }
 impl From<Rule> for AtRuleBodyItem {
     fn from(rule: Rule) -> Self {
-        AtRuleBodyItem::Rule(rule)
+        Self::Rule(rule)
     }
 }
 impl From<Comment> for AtRuleBodyItem {
     fn from(rule: Comment) -> Self {
-        AtRuleBodyItem::Comment(rule)
+        Self::Comment(rule)
     }
 }
 impl From<Import> for AtRuleBodyItem {
     fn from(rule: Import) -> Self {
-        AtRuleBodyItem::Import(rule)
+        Self::Import(rule)
     }
 }
 impl From<Property> for AtRuleBodyItem {
     fn from(rule: Property) -> Self {
-        AtRuleBodyItem::Property(rule)
+        Self::Property(rule)
     }
 }
 impl From<AtRule> for AtRuleBodyItem {
     fn from(rule: AtRule) -> Self {
-        AtRuleBodyItem::AtRule(rule)
+        Self::AtRule(rule)
     }
 }
 impl From<MediaRule> for AtRuleBodyItem {
     fn from(rule: MediaRule) -> Self {
-        AtRuleBodyItem::MediaRule(rule)
+        Self::MediaRule(rule)
     }
 }
 impl From<BodyItem> for AtRuleBodyItem {
     fn from(value: BodyItem) -> Self {
         match value {
-            BodyItem::Import(i) => AtRuleBodyItem::Import(i),
-            BodyItem::Property(p) => AtRuleBodyItem::Property(p),
-            BodyItem::CustomProperty(p) => AtRuleBodyItem::CustomProperty(p),
-            BodyItem::Comment(c) => AtRuleBodyItem::Comment(c),
-            BodyItem::ARule(r) => AtRuleBodyItem::AtRule(r),
+            BodyItem::Import(i) => Self::Import(i),
+            BodyItem::Property(p) => Self::Property(p),
+            BodyItem::CustomProperty(p) => Self::CustomProperty(p),
+            BodyItem::Comment(c) => Self::Comment(c),
+            BodyItem::ARule(r) => Self::AtRule(r),
         }
     }
 }

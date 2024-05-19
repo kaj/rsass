@@ -22,40 +22,40 @@ pub enum Item {
 impl Item {
     pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
         match self {
-            Item::Comment(comment) => comment.write(buf),
-            Item::Import(import) => import.write(buf)?,
-            Item::Rule(rule) => rule.write(buf)?,
-            Item::MediaRule(rule) => rule.write(buf)?,
-            Item::AtRule(atrule) => atrule.write(buf)?,
-            Item::Separator => buf.opt_nl(),
+            Self::Comment(comment) => comment.write(buf),
+            Self::Import(import) => import.write(buf)?,
+            Self::Rule(rule) => rule.write(buf)?,
+            Self::MediaRule(rule) => rule.write(buf)?,
+            Self::AtRule(atrule) => atrule.write(buf)?,
+            Self::Separator => buf.opt_nl(),
         }
         Ok(())
     }
 }
 
 impl From<Comment> for Item {
-    fn from(comment: Comment) -> Item {
-        Item::Comment(comment)
+    fn from(comment: Comment) -> Self {
+        Self::Comment(comment)
     }
 }
 impl From<Import> for Item {
-    fn from(import: Import) -> Item {
-        Item::Import(import)
+    fn from(import: Import) -> Self {
+        Self::Import(import)
     }
 }
 impl From<Rule> for Item {
-    fn from(rule: Rule) -> Item {
-        Item::Rule(rule)
+    fn from(rule: Rule) -> Self {
+        Self::Rule(rule)
     }
 }
 impl From<AtRule> for Item {
     fn from(value: AtRule) -> Self {
-        Item::AtRule(value)
+        Self::AtRule(value)
     }
 }
 impl From<MediaRule> for Item {
     fn from(value: MediaRule) -> Self {
-        Item::MediaRule(value)
+        Self::MediaRule(value)
     }
 }
 
@@ -69,7 +69,7 @@ pub struct Import {
 impl Import {
     /// Create a new `@import`.
     pub fn new(name: CssString, args: Value) -> Self {
-        Import { name, args }
+        Self { name, args }
     }
 
     /// Write this comment to a css output buffer.

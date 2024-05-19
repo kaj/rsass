@@ -22,7 +22,7 @@ pub struct IsNot {
 }
 impl IsNot {
     pub fn new(got: Value, expected: &'static str) -> Self {
-        IsNot { got, expected }
+        Self { got, expected }
     }
     pub fn value(&self) -> &Value {
         &self.got

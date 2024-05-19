@@ -20,20 +20,20 @@ impl Name {
     /// Key must not contain `-`.
     ///
     /// This function panics in debug mode if the key contains `-`.
-    pub fn from_static(key: &'static str) -> Name {
+    pub fn from_static(key: &'static str) -> Self {
         debug_assert!(!key.contains('-'));
-        Name { key: key.into() }
+        Self { key: key.into() }
     }
 
     /// Check if a name is "module.local".
     ///
     /// If so, return the module name and the local name as separate names.
-    pub fn split_module(&self) -> Option<(String, Name)> {
+    pub fn split_module(&self) -> Option<(String, Self)> {
         let mut parts = self.key.splitn(2, '.');
         if let (Some(module), Some(local)) = (parts.next(), parts.next()) {
             Some((
                 module.to_string(),
-                Name {
+                Self {
                     key: local.to_string().into(),
                 },
             ))
@@ -56,26 +56,26 @@ impl AsRef<str> for Name {
 }
 
 impl From<String> for Name {
-    fn from(key: String) -> Name {
+    fn from(key: String) -> Self {
         if key.contains('-') {
-            Name {
+            Self {
                 key: key.replace('-', "_").into(),
             }
         } else {
-            Name { key: key.into() }
+            Self { key: key.into() }
         }
     }
 }
 
 impl From<&str> for Name {
-    fn from(key: &str) -> Name {
-        Name {
+    fn from(key: &str) -> Self {
+        Self {
             key: key.replace('-', "_").into(),
         }
     }
 }
 impl From<&String> for Name {
-    fn from(key: &String) -> Name {
+    fn from(key: &String) -> Self {
         let key: &str = key.as_ref();
         key.into()
     }

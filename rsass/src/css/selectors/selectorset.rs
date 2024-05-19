@@ -88,11 +88,11 @@ impl SelectorSet {
 
 impl From<SelectorSet> for Value {
     fn from(value: SelectorSet) -> Self {
-        let v = value.s.into_iter().map(Value::from).collect::<Vec<_>>();
+        let v = value.s.into_iter().map(Self::from).collect::<Vec<_>>();
         if v.is_empty() {
-            Value::Null
+            Self::Null
         } else {
-            Value::List(v, Some(ListSeparator::Comma), false)
+            Self::List(v, Some(ListSeparator::Comma), false)
         }
     }
 }

@@ -12,7 +12,7 @@ pub struct ResolvedArgs {
 
 impl ResolvedArgs {
     pub(crate) fn new(scope: ScopeRef, caller: ScopeRef) -> Self {
-        ResolvedArgs { scope, caller }
+        Self { scope, caller }
     }
 
     /// Get a named argument.

@@ -73,7 +73,7 @@ impl FsContext {
     /// Create a new `Context`, loading files based on the current
     /// working directory.
     pub fn for_cwd() -> Self {
-        Context::for_loader(FsLoader::for_cwd())
+        Self::for_loader(FsLoader::for_cwd())
     }
 
     /// Create a new `Context` and load a file.
@@ -81,7 +81,7 @@ impl FsContext {
     /// The directory part of `path` is used as a base directory for the loader.
     pub fn for_path(path: &Path) -> Result<(Self, SourceFile), LoadError> {
         let (file_context, file) = FsLoader::for_path(path)?;
-        Ok((Context::for_loader(file_context), file))
+        Ok((Self::for_loader(file_context), file))
     }
 
     /// Add a path to search for files.
@@ -108,7 +108,7 @@ impl CargoContext {
     /// This assumes the program is called by `cargo` as a build script, so
     /// the `CARGO_MANIFEST_DIR` environment variable is set.
     pub fn for_crate() -> Result<Self, LoadError> {
-        Ok(Context::for_loader(CargoLoader::for_crate()?))
+        Ok(Self::for_loader(CargoLoader::for_crate()?))
     }
 
     /// Create a new `Context` and load a file.
@@ -118,7 +118,7 @@ impl CargoContext {
     /// containing the manifest of your package.
     pub fn for_path(path: &Path) -> Result<(Self, SourceFile), LoadError> {
         let (file_context, file) = CargoLoader::for_path(path)?;
-        Ok((Context::for_loader(file_context), file))
+        Ok((Self::for_loader(file_context), file))
     }
 
     /// Add a path to search for files.
@@ -133,7 +133,7 @@ impl CargoContext {
 impl<AnyLoader: Loader> Context<AnyLoader> {
     /// Create a new `Context` for a given file [`Loader`].
     pub fn for_loader(loader: AnyLoader) -> Self {
-        Context {
+        Self {
             loader,
             scope: None,
             loading: Default::default(),

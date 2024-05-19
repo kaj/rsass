@@ -20,7 +20,7 @@ pub struct Selectors {
 impl Selectors {
     /// Create a root (empty) selector.
     pub fn root() -> Self {
-        Selectors::new(vec![Selector::root()])
+        Self::new(vec![Selector::root()])
     }
     /// Return true if this is a root (empty) selector.
     pub fn is_root(&self) -> bool {
@@ -28,7 +28,7 @@ impl Selectors {
     }
     /// Create a new Selectors from a vec of selectors.
     pub fn new(s: Vec<Selector>) -> Self {
-        Selectors { s }
+        Self { s }
     }
 
     /// Evaluate any interpolation in these Selectors.
@@ -61,11 +61,11 @@ pub struct Selector(Vec<SelectorPart>);
 impl Selector {
     /// Get the root (empty) selector.
     pub fn root() -> Self {
-        Selector(vec![])
+        Self(vec![])
     }
     /// Create a new selector from parts.
     pub fn new(s: Vec<SelectorPart>) -> Self {
-        Selector(s)
+        Self(s)
     }
     fn eval(&self, scope: ScopeRef) -> Result<css::Selector, Error> {
         self.0
@@ -122,7 +122,7 @@ pub enum SelectorPart {
 impl SelectorPart {
     fn eval(&self, scope: ScopeRef) -> Result<css::SelectorPart, Error> {
         match *self {
-            SelectorPart::Attribute {
+            Self::Attribute {
                 ref name,
                 ref op,
                 ref val,
@@ -133,10 +133,10 @@ impl SelectorPart {
                 val: val.evaluate(scope)?.opt_unquote(),
                 modifier: *modifier,
             }),
-            SelectorPart::Simple(ref v) => {
+            Self::Simple(ref v) => {
                 Ok(css::SelectorPart::Simple(v.evaluate(scope)?.to_string()))
             }
-            SelectorPart::Pseudo { ref name, ref arg } => {
+            Self::Pseudo { ref name, ref arg } => {
                 let arg = match &arg {
                     Some(ref a) => Some(a.eval(scope.clone())?),
                     None => None,
@@ -146,7 +146,7 @@ impl SelectorPart {
                     arg,
                 })
             }
-            SelectorPart::PseudoElement { ref name, ref arg } => {
+            Self::PseudoElement { ref name, ref arg } => {
                 let arg = match &arg {
                     Some(ref a) => Some(a.eval(scope.clone())?),
                     None => None,
@@ -156,9 +156,9 @@ impl SelectorPart {
                     arg,
                 })
             }
-            SelectorPart::Descendant => Ok(css::SelectorPart::Descendant),
-            SelectorPart::RelOp(op) => Ok(css::SelectorPart::RelOp(op)),
-            SelectorPart::BackRef => Ok(css::SelectorPart::BackRef),
+            Self::Descendant => Ok(css::SelectorPart::Descendant),
+            Self::RelOp(op) => Ok(css::SelectorPart::RelOp(op)),
+            Self::BackRef => Ok(css::SelectorPart::BackRef),
         }
     }
 }

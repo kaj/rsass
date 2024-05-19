@@ -20,7 +20,7 @@ pub enum MixinDecl {
 
 impl From<Closure> for MixinDecl {
     fn from(decl: Closure) -> Self {
-        MixinDecl::Sass(decl)
+        Self::Sass(decl)
     }
 }
 
@@ -33,7 +33,7 @@ impl MixinDecl {
         file_context: &mut Context<impl Loader>,
     ) -> Result<Mixin, CallError> {
         match self {
-            MixinDecl::Sass(decl) => {
+            Self::Sass(decl) => {
                 let sel = scope.get_selectors().clone();
                 Ok(Mixin {
                     scope: decl.eval_args(
@@ -43,8 +43,8 @@ impl MixinDecl {
                     body: Parsed::Scss(decl.body.body),
                 })
             }
-            MixinDecl::NoBody => Ok(Mixin::empty(scope)),
-            MixinDecl::LoadCss => {
+            Self::NoBody => Ok(Mixin::empty(scope)),
+            Self::LoadCss => {
                 let fargs = FormalArgs::new(vec![
                     (name!(url), None),
                     (name!(with), Some(Value::Null)),
@@ -94,7 +94,7 @@ impl MixinDecl {
         }
     }
     pub(crate) fn is_no_body(&self) -> bool {
-        matches!(self, MixinDecl::NoBody)
+        matches!(self, Self::NoBody)
     }
 }
 
@@ -109,7 +109,7 @@ pub struct Mixin {
 
 impl Mixin {
     fn empty(scope: ScopeRef) -> Self {
-        Mixin {
+        Self {
             scope,
             body: Parsed::Css(vec![]),
         }

@@ -16,7 +16,7 @@ pub struct UnitSet {
 impl UnitSet {
     /// An empty `UnitSet` for a scalar value.
     pub fn scalar() -> Self {
-        UnitSet { units: vec![] }
+        Self { units: vec![] }
     }
 
     /// Check if this `UnitSet` is empty.
@@ -84,7 +84,7 @@ impl UnitSet {
     /// Get a scaling factor to convert this unit to another unit.
     ///
     /// Returns None if the units are of different dimension.
-    pub fn scale_to(&self, other: &UnitSet) -> Option<Number> {
+    pub fn scale_to(&self, other: &Self) -> Option<Number> {
         if let [(u, 1)] = other.units.as_slice() {
             self.scale_to_unit(u)
         } else if other.is_none() {
@@ -179,7 +179,7 @@ impl Mul for &UnitSet {
 
 impl From<Unit> for UnitSet {
     fn from(unit: Unit) -> Self {
-        UnitSet {
+        Self {
             units: if unit == Unit::None {
                 vec![]
             } else {

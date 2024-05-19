@@ -26,7 +26,7 @@ impl Hwba {
         w: Rational,
         b: Rational,
         alpha: Rational,
-    ) -> Hwba {
+    ) -> Self {
         let mut w = w.clamp(zero(), one());
         let mut b = b.clamp(zero(), one());
         let wbsum = w + b;
@@ -34,7 +34,7 @@ impl Hwba {
             w /= wbsum;
             b /= wbsum;
         }
-        Hwba {
+        Self {
             hue,
             w,
             b,

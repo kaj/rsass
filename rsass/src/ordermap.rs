@@ -6,10 +6,10 @@ pub struct OrderMap<K, V>(Vec<(K, V)>);
 
 impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
     pub fn new() -> Self {
-        OrderMap(Vec::new())
+        Self(Vec::new())
     }
     pub fn singleton(key: K, value: V) -> Self {
-        OrderMap(vec![(key, value)])
+        Self(vec![(key, value)])
     }
 
     pub fn insert(&mut self, key: K, value: V) -> Option<V> {
@@ -73,7 +73,7 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
 
 impl<K, V> Default for OrderMap<K, V> {
     fn default() -> Self {
-        OrderMap(Default::default())
+        Self(Default::default())
     }
 }
 
@@ -90,6 +90,6 @@ impl<K, V> FromIterator<(K, V)> for OrderMap<K, V> {
     where
         T: IntoIterator<Item = (K, V)>,
     {
-        OrderMap(Vec::from_iter(i))
+        Self(Vec::from_iter(i))
     }
 }

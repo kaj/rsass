@@ -25,22 +25,22 @@ impl Numeric {
     /// The value can be given as anything that can be converted into
     /// a [`Number`], e.g. an [`isize`], a [`Rational`], or a [`f64`].
     pub fn new<V: Into<Number>, U: Into<UnitSet>>(value: V, unit: U) -> Self {
-        Numeric {
+        Self {
             value: value.into(),
             unit: unit.into(),
         }
     }
     /// Create a new numeric value with no unit.
-    pub fn scalar(value: impl Into<Number>) -> Numeric {
-        Numeric {
+    pub fn scalar(value: impl Into<Number>) -> Self {
+        Self {
             value: value.into(),
             unit: UnitSet::scalar(),
         }
     }
     /// Create a new numeric that is a percentage from a number where
     /// 1 maps to 100%.
-    pub(crate) fn percentage(value: impl Into<Number>) -> Numeric {
-        Numeric::new(value.into() * 100, Unit::Percent)
+    pub(crate) fn percentage(value: impl Into<Number>) -> Self {
+        Self::new(value.into() * 100, Unit::Percent)
     }
 
     /// Convert this numeric value to a given unit, if possible.
@@ -97,7 +97,7 @@ impl Numeric {
     }
 
     /// Get a reference to this `Value` bound to an output format.
-    pub fn format(&self, format: Format) -> Formatted<Numeric> {
+    pub fn format(&self, format: Format) -> Formatted<Self> {
         Formatted {
             value: self,
             format,
@@ -106,13 +106,13 @@ impl Numeric {
 }
 
 impl PartialEq for Numeric {
-    fn eq(&self, other: &Numeric) -> bool {
+    fn eq(&self, other: &Self) -> bool {
         self.partial_cmp(other) == Some(std::cmp::Ordering::Equal)
     }
 }
 
 impl PartialOrd for Numeric {
-    fn partial_cmp(&self, other: &Numeric) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         if self.unit == other.unit {
             self.value.partial_cmp(&other.value)
         } else if self.is_no_unit() || other.is_no_unit() {

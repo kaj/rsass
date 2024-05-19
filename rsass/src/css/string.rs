@@ -11,7 +11,7 @@ pub struct CssString {
 impl CssString {
     /// Create a new `CssString`.
     pub fn new(value: String, quotes: Quotes) -> Self {
-        CssString { value, quotes }
+        Self { value, quotes }
     }
     /// Unquote this string.
     pub fn unquote(self) -> String {
@@ -70,7 +70,7 @@ impl CssString {
     /// If the value is name-like, make it unquoted.
     pub fn opt_unquote(self) -> Self {
         let t = is_namelike(&self.value);
-        CssString {
+        Self {
             value: self.value,
             quotes: if t { Quotes::None } else { self.quotes },
         }
@@ -83,12 +83,12 @@ impl CssString {
             self.value
         };
         if value.contains('"') && !value.contains('\'') {
-            CssString {
+            Self {
                 value,
                 quotes: Quotes::Single,
             }
         } else {
-            CssString {
+            Self {
                 value,
                 quotes: Quotes::Double,
             }
@@ -110,7 +110,7 @@ impl CssString {
             }
             q => q,
         };
-        CssString { value, quotes }
+        Self { value, quotes }
     }
     /// Return true if this is an empty unquoted string.
     pub fn is_null(&self) -> bool {
@@ -160,8 +160,8 @@ impl CssString {
 }
 
 impl<S: Into<String>> From<S> for CssString {
-    fn from(value: S) -> CssString {
-        CssString {
+    fn from(value: S) -> Self {
+        Self {
             value: value.into(),
             quotes: Quotes::None,
         }

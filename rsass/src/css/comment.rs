@@ -6,8 +6,8 @@ use std::cmp::Ordering;
 pub struct Comment(String);
 
 impl<T: Into<String>> From<T> for Comment {
-    fn from(t: T) -> Comment {
-        Comment(t.into())
+    fn from(t: T) -> Self {
+        Self(t.into())
     }
 }
 

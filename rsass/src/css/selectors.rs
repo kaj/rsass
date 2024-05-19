@@ -31,7 +31,7 @@ pub struct Selectors {
 impl Selectors {
     /// Create a root (empty) selector.
     pub fn root() -> Self {
-        Selectors {
+        Self {
             s: vec![Selector::root()],
         }
     }
@@ -42,9 +42,9 @@ impl Selectors {
     /// Create a new `Selectors` from a vec of selectors.
     pub fn new(s: Vec<Selector>) -> Self {
         if s.is_empty() {
-            Selectors::root()
+            Self::root()
         } else {
-            Selectors { s }
+            Self { s }
         }
     }
 
@@ -86,7 +86,7 @@ impl Selectors {
         if s.is_empty() {
             None
         } else {
-            Some(Selectors { s })
+            Some(Self { s })
         }
     }
 
@@ -104,7 +104,7 @@ impl Selectors {
     /// Used to create `@at-root` contexts, to have `&` work in them.
     pub(crate) fn with_backref(self, context: Selector) -> SelectorCtx {
         SelectorCtx::from(self).inside(&SelectorCtx {
-            s: Selectors::root(),
+            s: Self::root(),
             backref: context.clone(),
         })
     }
@@ -120,9 +120,9 @@ impl From<Selectors> for Value {
     /// The result will be a comma-separated [list](Value::List) of
     /// space-separated lists of strings, or [null](Value::Null) if
     /// this is a root (empty) selector.
-    fn from(sel: Selectors) -> Value {
+    fn from(sel: Selectors) -> Self {
         if sel.is_root() {
-            return Value::Null;
+            return Self::Null;
         }
         let content = sel
             .s
@@ -156,10 +156,10 @@ impl From<Selectors> for Value {
                 if let Some(last) = last {
                     v.push(last.into());
                 }
-                Value::List(v, Some(ListSeparator::Space), false)
+                Self::List(v, Some(ListSeparator::Space), false)
             })
             .collect::<Vec<_>>();
-        Value::List(content, Some(ListSeparator::Comma), false)
+        Self::List(content, Some(ListSeparator::Comma), false)
     }
 }
 
@@ -177,7 +177,7 @@ impl SelectorCtx {
         Selectors::root().into()
     }
     pub(crate) fn root_with_backref(context: Selector) -> Self {
-        SelectorCtx {
+        Self {
             s: Selectors::root(),
             backref: context,
         }
@@ -204,7 +204,7 @@ impl SelectorCtx {
                 result.push(p.join(s, &parent.backref));
             }
         }
-        SelectorCtx {
+        Self {
             s: Selectors::new(result),
             backref: parent.backref.clone(),
         }
@@ -213,7 +213,7 @@ impl SelectorCtx {
 
 impl From<Selectors> for SelectorCtx {
     fn from(value: Selectors) -> Self {
-        SelectorCtx {
+        Self {
             s: value,
             backref: Selector::root(),
         }
@@ -323,17 +323,17 @@ pub struct Selector(pub(crate) Vec<SelectorPart>);
 impl Selector {
     /// Get the root (empty) selector.
     pub fn root() -> Self {
-        Selector(vec![])
+        Self(vec![])
     }
 
-    fn join(&self, other: &Selector, alt_context: &Selector) -> Selector {
+    fn join(&self, other: &Self, alt_context: &Self) -> Self {
         if other.has_backref() {
             let mut result = Vec::new();
             let context = if self.0.is_empty() { alt_context } else { self };
             for p in &other.0 {
                 result.extend(p.clone_in(context));
             }
-            Selector(result)
+            Self(result)
         } else {
             let mut result = self.0.clone();
             if !result.is_empty()
@@ -342,7 +342,7 @@ impl Selector {
                 result.push(SelectorPart::Descendant);
             }
             result.extend(other.0.iter().cloned());
-            Selector(result)
+            Self(result)
         }
     }
 
@@ -384,7 +384,7 @@ impl Selector {
             has_sel = !part.is_operator();
             v2.push(part);
         }
-        let result = Selector(v2);
+        let result = Self(v2);
         if result.has_trailing_combinator() || result.has_double_combinator()
         {
             None
@@ -490,16 +490,16 @@ pub enum SelectorPart {
 impl SelectorPart {
     pub(crate) fn is_operator(&self) -> bool {
         match *self {
-            SelectorPart::Descendant | SelectorPart::RelOp(_) => true,
-            SelectorPart::Simple(_)
-            | SelectorPart::Attribute { .. }
-            | SelectorPart::PseudoElement { .. }
-            | SelectorPart::Pseudo { .. }
-            | SelectorPart::BackRef => false,
+            Self::Descendant | Self::RelOp(_) => true,
+            Self::Simple(_)
+            | Self::Attribute { .. }
+            | Self::PseudoElement { .. }
+            | Self::Pseudo { .. }
+            | Self::BackRef => false,
         }
     }
     pub(crate) fn is_wildcard(&self) -> bool {
-        if let SelectorPart::Simple(s) = self {
+        if let Self::Simple(s) = self {
             s == "*"
         } else {
             false
@@ -507,13 +507,13 @@ impl SelectorPart {
     }
     fn has_backref(&self) -> bool {
         match *self {
-            SelectorPart::Descendant
-            | SelectorPart::RelOp(_)
-            | SelectorPart::Simple(_)
-            | SelectorPart::Attribute { .. } => false,
-            SelectorPart::BackRef => true,
-            SelectorPart::PseudoElement { ref arg, .. }
-            | SelectorPart::Pseudo { ref arg, .. } => arg
+            Self::Descendant
+            | Self::RelOp(_)
+            | Self::Simple(_)
+            | Self::Attribute { .. } => false,
+            Self::BackRef => true,
+            Self::PseudoElement { ref arg, .. }
+            | Self::Pseudo { ref arg, .. } => arg
                 .as_ref()
                 .map_or(false, |a| a.s.iter().any(Selector::has_backref)),
         }
@@ -525,26 +525,26 @@ impl SelectorPart {
     /// converted to a version without the placeholder parts.
     fn no_placeholder(&self) -> Option<Self> {
         match self {
-            SelectorPart::Simple(s) => {
+            Self::Simple(s) => {
                 if !s.starts_with('%') {
-                    Some(SelectorPart::Simple(s.clone()))
+                    Some(Self::Simple(s.clone()))
                 } else {
                     None
                 }
             }
-            SelectorPart::Pseudo { name, arg } => match name.value() {
+            Self::Pseudo { name, arg } => match name.value() {
                 "is" => arg
                     .as_ref()
                     .and_then(Selectors::no_placeholder)
                     .and_then(Selectors::no_leading_combinator)
-                    .map(|arg| SelectorPart::Pseudo {
+                    .map(|arg| Self::Pseudo {
                         name: name.clone(),
                         arg: Some(arg),
                     }),
                 "matches" | "any" | "where" | "has" => arg
                     .as_ref()
                     .and_then(Selectors::no_placeholder)
-                    .map(|arg| SelectorPart::Pseudo {
+                    .map(|arg| Self::Pseudo {
                         name: name.clone(),
                         arg: Some(arg),
                     }),
@@ -552,15 +552,15 @@ impl SelectorPart {
                     if let Some(arg) =
                         arg.as_ref().and_then(Selectors::no_placeholder)
                     {
-                        Some(SelectorPart::Pseudo {
+                        Some(Self::Pseudo {
                             name: name.clone(),
                             arg: Some(arg),
                         })
                     } else {
-                        Some(SelectorPart::Simple("*".into()))
+                        Some(Self::Simple("*".into()))
                     }
                 }
-                _ => Some(SelectorPart::Pseudo {
+                _ => Some(Self::Pseudo {
                     name: name.clone(),
                     arg: arg.clone(),
                 }),
@@ -568,15 +568,15 @@ impl SelectorPart {
             x => Some(x.clone()),
         }
     }
-    fn clone_in(&self, context: &Selector) -> Vec<SelectorPart> {
+    fn clone_in(&self, context: &Selector) -> Vec<Self> {
         match self {
-            s @ (SelectorPart::Descendant
-            | SelectorPart::RelOp(_)
-            | SelectorPart::Simple(_)
-            | SelectorPart::Attribute { .. }) => vec![s.clone()],
-            SelectorPart::BackRef => context.0.clone(),
-            SelectorPart::PseudoElement { name, arg } => {
-                vec![SelectorPart::PseudoElement {
+            s @ (Self::Descendant
+            | Self::RelOp(_)
+            | Self::Simple(_)
+            | Self::Attribute { .. }) => vec![s.clone()],
+            Self::BackRef => context.0.clone(),
+            Self::PseudoElement { name, arg } => {
+                vec![Self::PseudoElement {
                     name: name.clone(),
                     arg: arg.as_ref().map(|a| {
                         a.inside(&SelectorCtx::root_with_backref(
@@ -585,8 +585,8 @@ impl SelectorPart {
                     }),
                 }]
             }
-            SelectorPart::Pseudo { name, arg } => {
-                vec![SelectorPart::Pseudo {
+            Self::Pseudo { name, arg } => {
+                vec![Self::Pseudo {
                     name: name.clone(),
                     arg: arg.as_ref().map(|a| {
                         a.inside(&SelectorCtx::root_with_backref(
@@ -651,16 +651,16 @@ impl fmt::Display for Selector {
 impl fmt::Display for SelectorPart {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            SelectorPart::Simple(ref s) => write!(out, "{s}"),
-            SelectorPart::Descendant => write!(out, " "),
-            SelectorPart::RelOp(ref c) => {
+            Self::Simple(ref s) => write!(out, "{s}"),
+            Self::Descendant => write!(out, " "),
+            Self::RelOp(ref c) => {
                 if out.alternate() && *c != b'~' {
                     write!(out, "{}", *c as char)
                 } else {
                     write!(out, " {} ", *c as char)
                 }
             }
-            SelectorPart::Attribute {
+            Self::Attribute {
                 ref name,
                 ref op,
                 ref val,
@@ -670,7 +670,7 @@ impl fmt::Display for SelectorPart {
                 "[{name}{op}{val}{}]",
                 modifier.map(|m| format!(" {m}")).unwrap_or_default()
             ),
-            SelectorPart::PseudoElement { ref name, ref arg } => {
+            Self::PseudoElement { ref name, ref arg } => {
                 write!(out, "::{name}")?;
                 if let Some(ref arg) = *arg {
                     if out.alternate() {
@@ -681,7 +681,7 @@ impl fmt::Display for SelectorPart {
                 }
                 Ok(())
             }
-            SelectorPart::Pseudo { ref name, ref arg } => {
+            Self::Pseudo { ref name, ref arg } => {
                 let name = name.to_string();
                 if let Some(ref arg) = *arg {
                     // It seems some pseudo-classes should always have
@@ -700,7 +700,7 @@ impl fmt::Display for SelectorPart {
                     write!(out, ":{name}")
                 }
             }
-            SelectorPart::BackRef => write!(out, "&"),
+            Self::BackRef => write!(out, "&"),
         }
     }
 }
@@ -751,7 +751,7 @@ impl BadSelector0 {
 }
 impl From<ParseError> for BadSelector0 {
     fn from(e: ParseError) -> Self {
-        BadSelector0::Parse(e)
+        Self::Parse(e)
     }
 }
 
@@ -771,17 +771,17 @@ pub enum BadSelector {
 impl fmt::Display for BadSelector {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            BadSelector::Value(v) => out.write_str(&is_not(
+            Self::Value(v) => out.write_str(&is_not(
                 v,
                 "a valid selector: it must be a string,\
                  \na list of strings, or a list of lists of strings",
             )),
-            BadSelector::Parse(e) => e.fmt(out),
-            BadSelector::Backref(pos) => {
+            Self::Parse(e) => e.fmt(out),
+            Self::Backref(pos) => {
                 writeln!(out, "Parent selectors aren\'t allowed here.")?;
                 pos.show(out)
             }
-            BadSelector::Append(e, b) => {
+            Self::Append(e, b) => {
                 write!(out, "Can't append {e} to {b}.")
             }
         }
@@ -789,6 +789,6 @@ impl fmt::Display for BadSelector {
 }
 impl From<ParseError> for BadSelector {
     fn from(e: ParseError) -> Self {
-        BadSelector::Parse(e)
+        Self::Parse(e)
     }
 }

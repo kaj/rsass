@@ -14,8 +14,8 @@ pub struct Rule {
 
 impl Rule {
     /// Create a new Rule.
-    pub fn new(selectors: Selectors) -> Rule {
-        Rule {
+    pub fn new(selectors: Selectors) -> Self {
+        Self {
             selectors,
             body: Vec::new(),
         }
@@ -65,34 +65,34 @@ impl BodyItem {
     /// Write this item to a css output buffer.
     pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
         match self {
-            BodyItem::Comment(c) => c.write(buf),
-            BodyItem::Import(import) => import.write(buf)?,
-            BodyItem::Property(property) => property.write(buf),
-            BodyItem::CustomProperty(property) => property.write(buf),
-            BodyItem::ARule(rule) => rule.write(buf)?,
+            Self::Comment(c) => c.write(buf),
+            Self::Import(import) => import.write(buf)?,
+            Self::Property(property) => property.write(buf),
+            Self::CustomProperty(property) => property.write(buf),
+            Self::ARule(rule) => rule.write(buf)?,
         }
         Ok(())
     }
 }
 
 impl From<Comment> for BodyItem {
-    fn from(comment: Comment) -> BodyItem {
-        BodyItem::Comment(comment)
+    fn from(comment: Comment) -> Self {
+        Self::Comment(comment)
     }
 }
 impl From<Import> for BodyItem {
-    fn from(import: Import) -> BodyItem {
-        BodyItem::Import(import)
+    fn from(import: Import) -> Self {
+        Self::Import(import)
     }
 }
 impl From<Property> for BodyItem {
-    fn from(property: Property) -> BodyItem {
-        BodyItem::Property(property)
+    fn from(property: Property) -> Self {
+        Self::Property(property)
     }
 }
 impl From<CustomProperty> for BodyItem {
-    fn from(property: CustomProperty) -> BodyItem {
-        BodyItem::CustomProperty(property)
+    fn from(property: CustomProperty) -> Self {
+        Self::CustomProperty(property)
     }
 }
 
@@ -101,7 +101,7 @@ impl TryFrom<AtRule> for BodyItem {
 
     fn try_from(value: AtRule) -> Result<Self, Self::Error> {
         if value.no_body() {
-            Ok(BodyItem::ARule(value))
+            Ok(Self::ARule(value))
         } else {
             Err(value)
         }
@@ -118,7 +118,7 @@ pub struct Property {
 impl Property {
     /// Create a new Property.
     pub fn new(name: String, value: Value) -> Self {
-        Property { name, value }
+        Self { name, value }
     }
     pub(crate) fn write(&self, buf: &mut CssBuf) {
         buf.do_indent_no_nl();
@@ -139,7 +139,7 @@ pub struct CustomProperty {
 impl CustomProperty {
     /// Construct a new custom property.
     pub fn new(name: String, value: CssString) -> Self {
-        CustomProperty { name, value }
+        Self { name, value }
     }
     pub(crate) fn write(&self, buf: &mut CssBuf) {
         buf.do_indent_no_nl();

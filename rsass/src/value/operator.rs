@@ -62,16 +62,16 @@ impl Operator {
             }
         }
         Ok(match *self {
-            Operator::And => Some(if a.is_true() { b } else { a }),
-            Operator::Or => Some(if a.is_true() { a } else { b }),
-            Operator::Equal => Some(Value::from(a == b)),
-            Operator::EqualSingle => cmp(a, b, &|a, b| a == b),
-            Operator::NotEqual => Some(Value::from(a != b)),
-            Operator::Greater => cmp(a, b, &|a, b| a > b),
-            Operator::GreaterE => cmp(a, b, &|a, b| a >= b),
-            Operator::Lesser => cmp(a, b, &|a, b| a < b),
-            Operator::LesserE => cmp(a, b, &|a, b| a <= b),
-            Operator::Plus => match (a, b) {
+            Self::And => Some(if a.is_true() { b } else { a }),
+            Self::Or => Some(if a.is_true() { a } else { b }),
+            Self::Equal => Some(Value::from(a == b)),
+            Self::EqualSingle => cmp(a, b, &|a, b| a == b),
+            Self::NotEqual => Some(Value::from(a != b)),
+            Self::Greater => cmp(a, b, &|a, b| a > b),
+            Self::GreaterE => cmp(a, b, &|a, b| a >= b),
+            Self::Lesser => cmp(a, b, &|a, b| a < b),
+            Self::LesserE => cmp(a, b, &|a, b| a <= b),
+            Self::Plus => match (a, b) {
                 (Value::Numeric(a, _), Value::Numeric(b, _)) => {
                     if a.unit == b.unit || b.is_no_unit() {
                         Some(Numeric::new(a.value + b.value, a.unit).into())
@@ -115,7 +115,7 @@ impl Operator {
                     }
                 }
             },
-            Operator::Minus => match (a, b) {
+            Self::Minus => match (a, b) {
                 (Value::Numeric(a, _), Value::Numeric(b, _)) => {
                     if a.unit == b.unit || b.is_no_unit() {
                         Some(Numeric::new(&a.value - &b.value, a.unit).into())
@@ -131,7 +131,7 @@ impl Operator {
                 // more general.
                 (a @ Value::UnicodeRange(..), b @ Value::Literal(..)) => {
                     Some(Value::List(
-                        vec![a, Value::UnaryOp(Operator::Minus, Box::new(b))],
+                        vec![a, Value::UnaryOp(Self::Minus, Box::new(b))],
                         Some(ListSeparator::Space),
                         false,
                     ))
@@ -149,14 +149,14 @@ impl Operator {
                     }
                 }
             },
-            Operator::Multiply => match (a, b) {
+            Self::Multiply => match (a, b) {
                 (Value::Numeric(ref a, _), Value::Numeric(ref b, _)) => {
                     Some((a * b).into())
                 }
                 (a, b) if valid_operand(&a) && valid_operand(&b) => None,
                 _ => return Err(BadOp::UndefinedOperation),
             },
-            Operator::Div => match (a, b) {
+            Self::Div => match (a, b) {
                 (Value::Color(..), Value::Numeric(..)) => {
                     return Err(BadOp::UndefinedOperation)
                 }
@@ -170,7 +170,7 @@ impl Operator {
                 }
                 _ => None,
             },
-            Operator::Modulo => match (a, b) {
+            Self::Modulo => match (a, b) {
                 (Value::Numeric(a, _), Value::Numeric(b, _)) => {
                     if a.unit == b.unit || b.is_no_unit() {
                         Some(Numeric::new(&a.value % &b.value, a.unit).into())
@@ -181,19 +181,19 @@ impl Operator {
                 (a, b) if valid_operand(&a) && valid_operand(&b) => None,
                 _ => return Err(BadOp::UndefinedOperation),
             },
-            Operator::Not => return Err(BadOp::UndefinedOperation),
+            Self::Not => return Err(BadOp::UndefinedOperation),
         })
     }
     pub(crate) fn is_cmp(self) -> bool {
         matches!(
             self,
-            Operator::Equal
-                | Operator::EqualSingle
-                | Operator::NotEqual
-                | Operator::Greater
-                | Operator::GreaterE
-                | Operator::Lesser
-                | Operator::LesserE
+            Self::Equal
+                | Self::EqualSingle
+                | Self::NotEqual
+                | Self::Greater
+                | Self::GreaterE
+                | Self::Lesser
+                | Self::LesserE
         )
     }
 }
@@ -222,21 +222,21 @@ fn add_as_join(v: &Value) -> bool {
 impl fmt::Display for Operator {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         out.write_str(match *self {
-            Operator::And => "and",
-            Operator::Or => "or",
-            Operator::Equal => "==",
-            Operator::EqualSingle => "=",
-            Operator::NotEqual => "!=",
-            Operator::Greater => ">",
-            Operator::GreaterE => ">=",
-            Operator::Lesser => "<",
-            Operator::LesserE => "<=",
-            Operator::Plus => "+",
-            Operator::Minus => "-",
-            Operator::Multiply => "*",
-            Operator::Modulo => "%",
-            Operator::Div => "/",
-            Operator::Not => "not",
+            Self::And => "and",
+            Self::Or => "or",
+            Self::Equal => "==",
+            Self::EqualSingle => "=",
+            Self::NotEqual => "!=",
+            Self::Greater => ">",
+            Self::GreaterE => ">=",
+            Self::Lesser => "<",
+            Self::LesserE => "<=",
+            Self::Plus => "+",
+            Self::Minus => "-",
+            Self::Multiply => "*",
+            Self::Modulo => "%",
+            Self::Div => "/",
+            Self::Not => "not",
         })
     }
 }
@@ -251,6 +251,6 @@ pub enum BadOp {
 
 impl From<InvalidCss> for BadOp {
     fn from(value: InvalidCss) -> Self {
-        BadOp::Invalid(value)
+        Self::Invalid(value)
     }
 }

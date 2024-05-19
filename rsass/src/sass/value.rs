@@ -54,12 +54,12 @@ pub enum Value {
 impl Value {
     /// Create a new scalar value.
     pub fn scalar(v: impl Into<Number>) -> Self {
-        Value::Numeric(Numeric::scalar(v))
+        Self::Numeric(Numeric::scalar(v))
     }
 
     /// All values other than `False` and `Null` should be considered true.
     pub fn is_true(&self) -> bool {
-        !matches!(self, Value::False | Value::Null)
+        !matches!(self, Self::False | Self::Null)
     }
 
     /// Return true if this value is null.
@@ -68,10 +68,8 @@ impl Value {
     /// non-null values is also considered null.
     pub fn is_null(&self) -> bool {
         match *self {
-            Value::Null => true,
-            Value::List(ref list, _, false) => {
-                list.iter().all(Value::is_null)
-            }
+            Self::Null => true,
+            Self::List(ref list, _, false) => list.iter().all(Self::is_null),
             _ => false,
         }
     }
@@ -88,9 +86,9 @@ impl Value {
         arithmetic: bool,
     ) -> Result<css::Value, Error> {
         Ok(match self {
-            Value::Bang(s) => css::Value::Bang(s.clone()),
-            Value::Literal(s) => s.evaluate(scope)?.into(),
-            Value::Paren(v, expl) => {
+            Self::Bang(s) => css::Value::Bang(s.clone()),
+            Self::Literal(s) => s.evaluate(scope)?.into(),
+            Self::Paren(v, expl) => {
                 let v = v.do_evaluate(scope, !expl)?;
                 if *expl
                     || v == css::Value::Null
@@ -102,21 +100,21 @@ impl Value {
                     v
                 }
             }
-            Value::Color(rgba, name) => {
+            Self::Color(rgba, name) => {
                 css::Value::Color(rgba.clone().into(), name.clone())
             }
-            Value::Variable(name, pos) => scope
+            Self::Variable(name, pos) => scope
                 .get(name)
                 .map_err(|e| e.at(pos.clone()))?
                 .into_calculated(),
-            Value::List(v, s, b) => css::Value::List(
+            Self::List(v, s, b) => css::Value::List(
                 v.iter()
                     .map(|v| v.do_evaluate(scope.clone(), false))
                     .collect::<Result<_, _>>()?,
                 *s,
                 *b,
             ),
-            Value::Call(name, args, pos) => {
+            Self::Call(name, args, pos) => {
                 if name.single_raw() == Some("if") {
                     // Magic: `if` is the only function that evaluates its
                     // arguments lazily.  So it is implemented inline here.
@@ -149,10 +147,10 @@ impl Value {
                     css::Value::Call(name, call.args)
                 }
             }
-            Value::Numeric(num) => {
+            Self::Numeric(num) => {
                 css::Value::Numeric(num.clone(), arithmetic)
             }
-            Value::Map(m) => {
+            Self::Map(m) => {
                 let mut items = css::ValueMap::new();
                 for (k, v) in m.iter() {
                     let k = k.do_evaluate(scope.clone(), arithmetic)?;
@@ -163,11 +161,11 @@ impl Value {
                 }
                 css::Value::Map(items)
             }
-            Value::Null => css::Value::Null,
-            Value::True => css::Value::True,
-            Value::False => css::Value::False,
-            Value::BinOp(binop) => binop.eval(&scope, arithmetic)?,
-            Value::UnaryOp(op, v) => {
+            Self::Null => css::Value::Null,
+            Self::True => css::Value::True,
+            Self::False => css::Value::False,
+            Self::BinOp(binop) => binop.eval(&scope, arithmetic)?,
+            Self::UnaryOp(op, v) => {
                 let value = v.do_evaluate(scope, true)?;
                 match (op, value) {
                     (Operator::Not, css::Value::Numeric(v, _)) => {
@@ -187,8 +185,8 @@ impl Value {
                     (op, v) => css::Value::UnaryOp(*op, Box::new(v)),
                 }
             }
-            Value::HereSelector => scope.get_selectors().real().into(),
-            Value::UnicodeRange(s) => css::Value::UnicodeRange(s.clone()),
+            Self::HereSelector => scope.get_selectors().real().into(),
+            Self::UnicodeRange(s) => css::Value::UnicodeRange(s.clone()),
         })
     }
 
@@ -198,20 +196,20 @@ impl Value {
     pub fn inspect(&self, out: &mut fmt::Formatter) -> fmt::Result {
         use fmt::Display;
         match *self {
-            Value::Bang(ref s) => write!(out, "!{s}"),
-            Value::Literal(ref s) => {
+            Self::Bang(ref s) => write!(out, "!{s}"),
+            Self::Literal(ref s) => {
                 if let Some(s) = s.single_raw() {
                     out.write_str(s)
                 } else {
                     write!(out, "{s:?}")
                 }
             }
-            Value::Paren(ref v, _expl) => {
+            Self::Paren(ref v, _expl) => {
                 out.write_str("(")?;
                 v.inspect(out)?;
                 out.write_str(")")
             }
-            Value::Color(ref rgba, ref name) => {
+            Self::Color(ref rgba, ref name) => {
                 if let Some(name) = name {
                     out.write_str(name)
                 } else {
@@ -220,10 +218,10 @@ impl Value {
                         .fmt(out)
                 }
             }
-            Value::Variable(ref name, ref _pos) => {
+            Self::Variable(ref name, ref _pos) => {
                 write!(out, "${name}")
             }
-            Value::List(ref v, s, b) => {
+            Self::List(ref v, s, b) => {
                 if b {
                     out.write_str("(")?;
                 }
@@ -240,13 +238,13 @@ impl Value {
                 }
                 Ok(())
             }
-            Value::Call(ref name, ref args, ref _pos) => {
+            Self::Call(ref name, ref args, ref _pos) => {
                 write!(out, "{name}({args:?})")
             }
-            Value::Numeric(ref num) => {
+            Self::Numeric(ref num) => {
                 num.format(Format::introspect()).fmt(out)
             }
-            Value::Map(ref m) => {
+            Self::Map(ref m) => {
                 out.write_str("(")?;
                 if let Some(((k, v), rest)) = m.split_first() {
                     k.inspect(out)?;
@@ -261,23 +259,23 @@ impl Value {
                 }
                 out.write_str(")")
             }
-            Value::Null => out.write_str("null"),
-            Value::True => out.write_str("true"),
-            Value::False => out.write_str("false"),
-            Value::BinOp(ref binop) => Inspect(binop).fmt(out),
-            Value::UnaryOp(ref op, ref v) => {
+            Self::Null => out.write_str("null"),
+            Self::True => out.write_str("true"),
+            Self::False => out.write_str("false"),
+            Self::BinOp(ref binop) => Inspect(binop).fmt(out),
+            Self::UnaryOp(ref op, ref v) => {
                 op.fmt(out)?;
                 v.inspect(out)
             }
-            Value::HereSelector => out.write_str("&"),
-            Value::UnicodeRange(ref s) => s.fmt(out),
+            Self::HereSelector => out.write_str("&"),
+            Self::UnicodeRange(ref s) => s.fmt(out),
         }
     }
 }
 
 impl From<Numeric> for Value {
     fn from(num: Numeric) -> Self {
-        Value::Numeric(num)
+        Self::Numeric(num)
     }
 }
 
@@ -301,7 +299,7 @@ impl BinOp {
         b: Value,
         pos: SourcePos,
     ) -> Self {
-        BinOp {
+        Self {
             a,
             s1,
             op,
@@ -398,7 +396,7 @@ impl BinOp {
 
 impl From<BinOp> for Value {
     fn from(value: BinOp) -> Self {
-        Value::BinOp(Box::new(value))
+        Self::BinOp(Box::new(value))
     }
 }
 

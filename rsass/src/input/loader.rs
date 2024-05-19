@@ -64,13 +64,13 @@ impl fmt::Display for LoadError {
 impl fmt::Debug for LoadError {
     fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            LoadError::Input(path, err) => {
+            Self::Input(path, err) => {
                 write!(out, "Reading {path:?} failed: {err}")
             }
-            LoadError::UnknownFormat(name) => {
+            Self::UnknownFormat(name) => {
                 write!(out, "{name:?} is not a css or sass file.")
             }
-            LoadError::NotCalledFromCargo => {
+            Self::NotCalledFromCargo => {
                 write!(out, "Expected a cargo environment, but none found.")
             }
         }

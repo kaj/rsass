@@ -8,8 +8,8 @@ pub struct CssBuf {
 }
 
 impl CssBuf {
-    pub fn new(format: Format) -> CssBuf {
-        CssBuf {
+    pub fn new(format: Format) -> Self {
+        Self {
             buf: Vec::new(),
             format,
             indent: 0,

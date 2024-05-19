@@ -21,7 +21,7 @@ impl BinOp {
         s2: bool,
         b: Value,
     ) -> Self {
-        BinOp { a, s1, op, s2, b }
+        Self { a, s1, op, s2, b }
     }
 
     pub(crate) fn op(&self) -> Operator {
@@ -89,7 +89,7 @@ impl BinOp {
     }
 
     /// Format this operation.
-    pub fn format(&self, format: Format) -> Formatted<BinOp> {
+    pub fn format(&self, format: Format) -> Formatted<Self> {
         Formatted {
             value: self,
             format,
@@ -103,14 +103,14 @@ impl BinOp {
 }
 
 impl PartialEq for BinOp {
-    fn eq(&self, other: &BinOp) -> bool {
+    fn eq(&self, other: &Self) -> bool {
         self.op == other.op && self.a == other.a && self.b == other.b
     }
 }
 
 impl From<BinOp> for Value {
     fn from(value: BinOp) -> Self {
-        Value::BinOp(Box::new(value))
+        Self::BinOp(Box::new(value))
     }
 }
 

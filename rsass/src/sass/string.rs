@@ -45,7 +45,7 @@ impl SassString {
         if !buf.is_empty() {
             p2.push(StringPart::Raw(buf));
         }
-        SassString { parts: p2, quotes }
+        Self { parts: p2, quotes }
     }
 
     /// Evaluate this `SassString` to a `CssString`.
@@ -165,7 +165,7 @@ impl fmt::Display for SassString {
 
 impl From<CssString> for SassString {
     fn from(s: CssString) -> Self {
-        SassString {
+        Self {
             parts: vec![StringPart::Raw(s.value().into())],
             quotes: s.quotes(),
         }
@@ -174,13 +174,13 @@ impl From<CssString> for SassString {
 
 impl From<&str> for StringPart {
     fn from(s: &str) -> Self {
-        StringPart::Raw(s.to_string())
+        Self::Raw(s.to_string())
     }
 }
 
 impl From<&str> for SassString {
     fn from(s: &str) -> Self {
-        SassString {
+        Self {
             parts: vec![StringPart::from(s)],
             quotes: Quotes::None,
         }
@@ -188,7 +188,7 @@ impl From<&str> for SassString {
 }
 impl From<String> for SassString {
     fn from(value: String) -> Self {
-        SassString {
+        Self {
             parts: vec![StringPart::Raw(value)],
             quotes: Quotes::None,
         }

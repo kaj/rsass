@@ -150,17 +150,17 @@ impl Arg {
     }
     pub(super) fn write_to_buf(&self, buf: &mut String) {
         match self {
-            Arg::Selector(s) => {
+            Self::Selector(s) => {
                 buf.push('(');
                 s.write_to_buf(buf);
                 buf.push(')');
             }
-            Arg::Other(a) => {
+            Self::Other(a) => {
                 buf.push('(');
                 buf.push_str(a);
                 buf.push(')');
             }
-            Arg::None => (),
+            Self::None => (),
         }
     }
 }
