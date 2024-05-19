@@ -7,7 +7,10 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.28.10
+
+Released 2024-05-19.
+Progress: 5803 of 7673 tests passed.
 
 * Improved support for the `selector.nest` function (PR #189).
 * Moved `selector.append` to new selector implementation (PR #190).
