@@ -1,5 +1,5 @@
 use super::{unnamed, CheckedArg, FunctionMap};
-use crate::css::{CssSelectorSet, LogicalSelector, Value};
+use crate::css::{CssSelectorSet, Selector, Value};
 use crate::value::ListSeparator;
 use crate::Scope;
 
@@ -47,7 +47,7 @@ pub fn create_module() -> Scope {
         Ok(selector.replace(&original, &replacement)?.into())
     });
     def!(f, simple_selectors(selector), |s| {
-        let selector: LogicalSelector = s.get(name!(selector))?;
+        let selector: Selector = s.get(name!(selector))?;
         let result = selector
             .simple_selectors()?
             .into_iter()

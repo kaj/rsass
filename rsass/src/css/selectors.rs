@@ -20,7 +20,7 @@ mod logical;
 mod pseudo;
 mod selectorset;
 pub(crate) use cssselectorset::CssSelectorSet;
-pub(crate) use logical::Selector as LogicalSelector;
+pub(crate) use logical::Selector;
 
 /// A full set of selectors.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
