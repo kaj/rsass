@@ -24,23 +24,23 @@ pub(crate) use logical::Selector as LogicalSelector;
 
 /// A full set of selectors.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct Selectors {
-    s: Vec<Selector>,
+pub struct OldSelectors {
+    s: Vec<OldSelector>,
 }
 
-impl Selectors {
+impl OldSelectors {
     /// Create a root (empty) selector.
     pub fn root() -> Self {
         Self {
-            s: vec![Selector::root()],
+            s: vec![OldSelector::root()],
         }
     }
     /// Return true if this is a root (empty) selector.
     pub fn is_root(&self) -> bool {
-        self.s == [Selector::root()]
+        self.s == [OldSelector::root()]
     }
     /// Create a new `Selectors` from a vec of selectors.
-    pub fn new(s: Vec<Selector>) -> Self {
+    pub fn new(s: Vec<OldSelector>) -> Self {
         if s.is_empty() {
             Self::root()
         } else {
@@ -62,18 +62,18 @@ impl Selectors {
     }
 
     /// Get the first of these selectors (or the root selector if empty).
-    pub(crate) fn one(&self) -> Selector {
-        self.s.first().cloned().unwrap_or_else(Selector::root)
+    pub(crate) fn one(&self) -> OldSelector {
+        self.s.first().cloned().unwrap_or_else(OldSelector::root)
     }
 
     /// Create the full selector for when self is used inside a parent selector.
-    pub(crate) fn inside(&self, parent: &SelectorCtx) -> Self {
-        SelectorCtx::from(self.clone()).inside(parent).real()
+    pub(crate) fn inside(&self, parent: &OldSelectorCtx) -> Self {
+        OldSelectorCtx::from(self.clone()).inside(parent).real()
     }
 
     /// True if any of the selectors contains a backref (`&`).
     pub(crate) fn has_backref(&self) -> bool {
-        self.s.iter().any(Selector::has_backref)
+        self.s.iter().any(OldSelector::has_backref)
     }
 
     /// Get a vec of the non-placeholder selectors in self.
@@ -81,7 +81,7 @@ impl Selectors {
         let s = self
             .s
             .iter()
-            .filter_map(Selector::no_placeholder)
+            .filter_map(OldSelector::no_placeholder)
             .collect::<Vec<_>>();
         if s.is_empty() {
             None
@@ -102,42 +102,42 @@ impl Selectors {
     /// Get these selectors with a specific backref selector.
     ///
     /// Used to create `@at-root` contexts, to have `&` work in them.
-    pub(crate) fn with_backref(self, context: Selector) -> SelectorCtx {
-        SelectorCtx::from(self).inside(&SelectorCtx {
+    pub(crate) fn with_backref(self, context: OldSelector) -> OldSelectorCtx {
+        OldSelectorCtx::from(self).inside(&OldSelectorCtx {
             s: Self::root(),
             backref: context,
         })
     }
     /// Return true if any of these selectors ends with a combinator
     pub fn has_trailing_combinator(&self) -> bool {
-        self.s.iter().any(Selector::has_trailing_combinator)
+        self.s.iter().any(OldSelector::has_trailing_combinator)
     }
 }
 
-impl From<Selectors> for Value {
+impl From<OldSelectors> for Value {
     /// Create a css `Value` representing a set of selectors.
     ///
     /// The result will be a comma-separated [list](Value::List) of
     /// space-separated lists of strings, or [null](Value::Null) if
     /// this is a root (empty) selector.
-    fn from(sel: Selectors) -> Self {
+    fn from(sel: OldSelectors) -> Self {
         if sel.is_root() {
             return Self::Null;
         }
         let content = sel
             .s
             .iter()
-            .map(|s: &Selector| {
+            .map(|s: &OldSelector| {
                 let (mut v, last) = s.0.iter().fold(
                     (vec![], Option::<String>::None),
                     |(mut v, mut last), part| {
                         match part {
-                            SelectorPart::Descendant => {
+                            OldSelectorPart::Descendant => {
                                 if let Some(last) = last.take() {
                                     v.push(last.into());
                                 }
                             }
-                            SelectorPart::RelOp(op) => {
+                            OldSelectorPart::RelOp(op) => {
                                 if let Some(last) = last.take() {
                                     v.push(last.into());
                                 }
@@ -165,34 +165,34 @@ impl From<Selectors> for Value {
 
 /// A full set of selectors with a separate backref.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct SelectorCtx {
+pub struct OldSelectorCtx {
     /// The actual selectors.
-    s: Selectors,
-    backref: Selector,
+    s: OldSelectors,
+    backref: OldSelector,
 }
 
-impl SelectorCtx {
+impl OldSelectorCtx {
     /// Create a root (empty) selector.
     pub fn root() -> Self {
-        Selectors::root().into()
+        OldSelectors::root().into()
     }
-    pub(crate) fn root_with_backref(context: Selector) -> Self {
+    pub(crate) fn root_with_backref(context: OldSelector) -> Self {
         Self {
-            s: Selectors::root(),
+            s: OldSelectors::root(),
             backref: context,
         }
     }
     /// Return true if this is a root (empty) selector.
     pub fn is_root(&self) -> bool {
-        self.s.is_root() && self.backref == Selector::root()
+        self.s.is_root() && self.backref == OldSelector::root()
     }
 
-    pub(crate) fn real(&self) -> Selectors {
+    pub(crate) fn real(&self) -> OldSelectors {
         self.s.clone()
     }
 
     /// Remove the first of these selectors (or the root selector if empty).
-    pub(crate) fn one(&self) -> Selector {
+    pub(crate) fn one(&self) -> OldSelector {
         self.s.one()
     }
 
@@ -205,34 +205,34 @@ impl SelectorCtx {
             }
         }
         Self {
-            s: Selectors::new(result),
+            s: OldSelectors::new(result),
             backref: parent.backref.clone(),
         }
     }
 }
 
-impl From<Selectors> for SelectorCtx {
-    fn from(value: Selectors) -> Self {
+impl From<OldSelectors> for OldSelectorCtx {
+    fn from(value: OldSelectors) -> Self {
         Self {
             s: value,
-            backref: Selector::root(),
+            backref: OldSelector::root(),
         }
     }
 }
 
-impl TryFrom<Value> for SelectorCtx {
+impl TryFrom<Value> for OldSelectorCtx {
     type Error = BadSelector;
     fn try_from(v: Value) -> Result<Self, Self::Error> {
-        Selectors::try_from(v).map(Into::into)
+        OldSelectors::try_from(v).map(Into::into)
     }
 }
-impl TryFrom<Value> for Selectors {
+impl TryFrom<Value> for OldSelectors {
     type Error = BadSelector;
     fn try_from(v: Value) -> Result<Self, Self::Error> {
         value_to_selectors(&v).map_err(move |e| e.ctx(v))
     }
 }
-fn value_to_selectors(v: &Value) -> Result<Selectors, BadSelector0> {
+fn value_to_selectors(v: &Value) -> Result<OldSelectors, BadSelector0> {
     match v {
         Value::List(vv, s, _) => match s {
             Some(ListSeparator::Comma) => {
@@ -240,7 +240,7 @@ fn value_to_selectors(v: &Value) -> Result<Selectors, BadSelector0> {
                     .iter()
                     .map(value_to_selector)
                     .collect::<Result<_, _>>()?;
-                Ok(Selectors::new(vv))
+                Ok(OldSelectors::new(vv))
             }
             Some(ListSeparator::Space) => {
                 let (mut outer, last) = vv.iter().try_fold(
@@ -262,14 +262,14 @@ fn value_to_selectors(v: &Value) -> Result<Selectors, BadSelector0> {
                         Result::<_, BadSelector0>::Ok((outer, a))
                     },
                 )?;
-                outer.push(Selector(last));
-                Ok(Selectors::new(outer))
+                outer.push(OldSelector(last));
+                Ok(OldSelectors::new(outer))
             }
             _ => Err(BadSelector0::Value),
         },
         Value::Literal(s) => {
             if s.value().is_empty() {
-                Ok(Selectors::root())
+                Ok(OldSelectors::root())
             } else {
                 let span = input_span(s.value());
                 Ok(ParseError::check(selectors(span.borrow()))?)
@@ -279,11 +279,11 @@ fn value_to_selectors(v: &Value) -> Result<Selectors, BadSelector0> {
     }
 }
 
-fn check_selector_str(v: &Value) -> Result<Selector, BadSelector0> {
+fn check_selector_str(v: &Value) -> Result<OldSelector, BadSelector0> {
     match v {
         Value::Literal(s) => {
             if s.value().is_empty() {
-                Ok(Selector::root())
+                Ok(OldSelector::root())
             } else {
                 let span = input_span(s.value());
                 Ok(ParseError::check(selector(span.borrow()))?)
@@ -292,11 +292,11 @@ fn check_selector_str(v: &Value) -> Result<Selector, BadSelector0> {
         _ => Err(BadSelector0::Value),
     }
 }
-fn parse_selectors_str(v: &Value) -> Result<Selectors, BadSelector0> {
+fn parse_selectors_str(v: &Value) -> Result<OldSelectors, BadSelector0> {
     match v {
         Value::Literal(s) => {
             if s.value().is_empty() {
-                Ok(Selectors::root())
+                Ok(OldSelectors::root())
             } else {
                 let span = input_span(s.value());
                 Ok(ParseError::check(selectors(span.borrow()))?)
@@ -306,9 +306,9 @@ fn parse_selectors_str(v: &Value) -> Result<Selectors, BadSelector0> {
     }
 }
 
-fn push_descendant(to: &mut Vec<SelectorPart>, from: &mut Selector) {
+fn push_descendant(to: &mut Vec<OldSelectorPart>, from: &mut OldSelector) {
     if !to.is_empty() {
-        to.push(SelectorPart::Descendant);
+        to.push(OldSelectorPart::Descendant);
     }
     to.append(&mut from.0);
 }
@@ -318,9 +318,9 @@ fn push_descendant(to: &mut Vec<SelectorPart>, from: &mut Selector) {
 /// A selector does not contain `,`.  If it does, it is a `Selectors`,
 /// where each of the parts separated by the comma is a `Selector`.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct Selector(pub(crate) Vec<SelectorPart>);
+pub struct OldSelector(pub(crate) Vec<OldSelectorPart>);
 
-impl Selector {
+impl OldSelector {
     /// Get the root (empty) selector.
     pub fn root() -> Self {
         Self(vec![])
@@ -337,9 +337,9 @@ impl Selector {
         } else {
             let mut result = self.0.clone();
             if !result.is_empty()
-                && !other.0.first().map_or(false, SelectorPart::is_operator)
+                && !other.0.first().map_or(false, OldSelectorPart::is_operator)
             {
-                result.push(SelectorPart::Descendant);
+                result.push(OldSelectorPart::Descendant);
             }
             result.extend(other.0.iter().cloned());
             Self(result)
@@ -360,7 +360,7 @@ impl Selector {
     }
 
     fn has_backref(&self) -> bool {
-        self.0.iter().any(SelectorPart::has_backref)
+        self.0.iter().any(OldSelectorPart::has_backref)
     }
 
     /// Return this selector without placeholders.
@@ -373,7 +373,7 @@ impl Selector {
         let v = self
             .0
             .iter()
-            .map(SelectorPart::no_placeholder)
+            .map(OldSelectorPart::no_placeholder)
             .collect::<Option<Vec<_>>>()?;
         let mut v2 = Vec::with_capacity(v.len());
         let mut has_sel = false;
@@ -393,20 +393,20 @@ impl Selector {
         }
     }
     fn has_leading_combinator(&self) -> bool {
-        matches!(self.0.first(), Some(SelectorPart::RelOp(_)))
+        matches!(self.0.first(), Some(OldSelectorPart::RelOp(_)))
     }
     /// Return true if this selector ends with a combinator
     pub fn has_trailing_combinator(&self) -> bool {
-        matches!(self.0.last(), Some(SelectorPart::RelOp(_)))
+        matches!(self.0.last(), Some(OldSelectorPart::RelOp(_)))
     }
     fn has_double_combinator(&self) -> bool {
         self.0.windows(2).any(|w| {
-            matches!(w, [SelectorPart::RelOp(_), SelectorPart::RelOp(_)])
+            matches!(w, [OldSelectorPart::RelOp(_), OldSelectorPart::RelOp(_)])
         })
     }
 }
 
-impl TryFrom<Value> for Selector {
+impl TryFrom<Value> for OldSelector {
     type Error = BadSelector;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
@@ -414,14 +414,14 @@ impl TryFrom<Value> for Selector {
     }
 }
 // Internal, the api is try_into.
-fn value_to_selector(v: &Value) -> Result<Selector, BadSelector0> {
+fn value_to_selector(v: &Value) -> Result<OldSelector, BadSelector0> {
     match v {
         Value::List(list, None | Some(ListSeparator::Space), _) => {
             list_to_selector(list)
         }
         Value::Literal(s) => {
             if s.value().is_empty() {
-                Ok(Selector::root())
+                Ok(OldSelector::root())
             } else {
                 let span = input_span(s.value());
                 Ok(ParseError::check(selector(span.borrow()))?)
@@ -431,24 +431,24 @@ fn value_to_selector(v: &Value) -> Result<Selector, BadSelector0> {
     }
 }
 
-fn list_to_selector(list: &[Value]) -> Result<Selector, BadSelector0> {
+fn list_to_selector(list: &[Value]) -> Result<OldSelector, BadSelector0> {
     list.iter()
         .try_fold(vec![], |mut a, v| {
             let parts = value_to_selector_parts(v)?;
-            if !parts.first().map_or(true, SelectorPart::is_operator)
-                && !a.last().map_or(true, SelectorPart::is_operator)
+            if !parts.first().map_or(true, OldSelectorPart::is_operator)
+                && !a.last().map_or(true, OldSelectorPart::is_operator)
             {
-                a.push(SelectorPart::Descendant);
+                a.push(OldSelectorPart::Descendant);
             }
             a.extend(parts);
             Ok(a)
         })
-        .map(Selector)
+        .map(OldSelector)
 }
 
 /// A selector consist of a sequence of these parts.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub enum SelectorPart {
+pub enum OldSelectorPart {
     /// A simple selector, eg a class, id or element name.
     Simple(String),
     /// The empty relational operator.
@@ -474,20 +474,20 @@ pub enum SelectorPart {
         /// The name of the pseudo-element
         name: CssString,
         /// Arguments to the pseudo-element
-        arg: Option<Selectors>,
+        arg: Option<OldSelectors>,
     },
     /// A pseudo-class or a css2 pseudo-element (:foo)
     Pseudo {
         /// The name of the pseudo-class
         name: CssString,
         /// Arguments to the pseudo-class
-        arg: Option<Selectors>,
+        arg: Option<OldSelectors>,
     },
     /// A sass backref (`&`), to be replaced with outer selector.
     BackRef,
 }
 
-impl SelectorPart {
+impl OldSelectorPart {
     pub(crate) fn is_operator(&self) -> bool {
         match *self {
             Self::Descendant | Self::RelOp(_) => true,
@@ -515,7 +515,7 @@ impl SelectorPart {
             Self::PseudoElement { ref arg, .. }
             | Self::Pseudo { ref arg, .. } => arg
                 .as_ref()
-                .map_or(false, |a| a.s.iter().any(Selector::has_backref)),
+                .map_or(false, |a| a.s.iter().any(OldSelector::has_backref)),
         }
     }
     /// Return this selectorpart without placeholders.
@@ -535,22 +535,22 @@ impl SelectorPart {
             Self::Pseudo { name, arg } => match name.value() {
                 "is" => arg
                     .as_ref()
-                    .and_then(Selectors::no_placeholder)
-                    .and_then(Selectors::no_leading_combinator)
+                    .and_then(OldSelectors::no_placeholder)
+                    .and_then(OldSelectors::no_leading_combinator)
                     .map(|arg| Self::Pseudo {
                         name: name.clone(),
                         arg: Some(arg),
                     }),
                 "matches" | "any" | "where" | "has" => arg
                     .as_ref()
-                    .and_then(Selectors::no_placeholder)
+                    .and_then(OldSelectors::no_placeholder)
                     .map(|arg| Self::Pseudo {
                         name: name.clone(),
                         arg: Some(arg),
                     }),
                 "not" => {
                     if let Some(arg) =
-                        arg.as_ref().and_then(Selectors::no_placeholder)
+                        arg.as_ref().and_then(OldSelectors::no_placeholder)
                     {
                         Some(Self::Pseudo {
                             name: name.clone(),
@@ -568,7 +568,7 @@ impl SelectorPart {
             x => Some(x.clone()),
         }
     }
-    fn clone_in(&self, context: &Selector) -> Vec<Self> {
+    fn clone_in(&self, context: &OldSelector) -> Vec<Self> {
         match self {
             s @ (Self::Descendant
             | Self::RelOp(_)
@@ -579,7 +579,7 @@ impl SelectorPart {
                 vec![Self::PseudoElement {
                     name: name.clone(),
                     arg: arg.as_ref().map(|a| {
-                        a.inside(&SelectorCtx::root_with_backref(
+                        a.inside(&OldSelectorCtx::root_with_backref(
                             context.clone(),
                         ))
                     }),
@@ -589,7 +589,7 @@ impl SelectorPart {
                 vec![Self::Pseudo {
                     name: name.clone(),
                     arg: arg.as_ref().map(|a| {
-                        a.inside(&SelectorCtx::root_with_backref(
+                        a.inside(&OldSelectorCtx::root_with_backref(
                             context.clone(),
                         ))
                     }),
@@ -601,7 +601,7 @@ impl SelectorPart {
 
 fn value_to_selector_parts(
     v: &Value,
-) -> Result<Vec<SelectorPart>, BadSelector0> {
+) -> Result<Vec<OldSelectorPart>, BadSelector0> {
     match v {
         Value::Literal(s) => Ok(ParseError::check(selector_parts(
             input_span(s.value()).borrow(),
@@ -611,7 +611,7 @@ fn value_to_selector_parts(
 }
 
 // TODO:  This shoule probably be on Formatted<Selectors> instead.
-impl fmt::Display for Selectors {
+impl fmt::Display for OldSelectors {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         if let Some((first, rest)) = self.s.split_first() {
             first.fmt(out)?;
@@ -625,7 +625,7 @@ impl fmt::Display for Selectors {
     }
 }
 
-impl fmt::Display for Selector {
+impl fmt::Display for OldSelector {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         // Note: There should be smarter whitespace-handling here, avoiding
         // the need to clean up afterwards.
@@ -648,7 +648,7 @@ impl fmt::Display for Selector {
     }
 }
 
-impl fmt::Display for SelectorPart {
+impl fmt::Display for OldSelectorPart {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Self::Simple(ref s) => write!(out, "{s}"),
@@ -711,27 +711,27 @@ mod test {
 
     #[test]
     fn root_join() {
-        let s = Selector(vec![SelectorPart::Simple("foo".into())]);
-        assert_eq!(Selector::root().join(&s, &Selector::root()), s)
+        let s = OldSelector(vec![OldSelectorPart::Simple("foo".into())]);
+        assert_eq!(OldSelector::root().join(&s, &OldSelector::root()), s)
     }
 
     #[test]
     fn simple_join() {
-        let s = Selector(vec![SelectorPart::Simple("foo".into())]).join(
-            &Selector(vec![SelectorPart::Simple(".bar".into())]),
-            &Selector::root(),
+        let s = OldSelector(vec![OldSelectorPart::Simple("foo".into())]).join(
+            &OldSelector(vec![OldSelectorPart::Simple(".bar".into())]),
+            &OldSelector::root(),
         );
         assert_eq!(format!("{}", s), "foo .bar")
     }
 
     #[test]
     fn backref_join() {
-        let s = Selector(vec![SelectorPart::Simple("foo".into())]).join(
-            &Selector(vec![
-                SelectorPart::BackRef,
-                SelectorPart::Simple(".bar".into()),
+        let s = OldSelector(vec![OldSelectorPart::Simple("foo".into())]).join(
+            &OldSelector(vec![
+                OldSelectorPart::BackRef,
+                OldSelectorPart::Simple(".bar".into()),
             ]),
-            &Selector::root(),
+            &OldSelector::root(),
         );
         assert_eq!(format!("{}", s), "foo.bar")
     }
@@ -765,7 +765,7 @@ pub enum BadSelector {
     /// A backref (`&`) were present but not allowed there.
     Backref(SourcePos),
     /// Cant append extenstion to base.
-    Append(Selector, Selector),
+    Append(OldSelector, OldSelector),
 }
 
 impl fmt::Display for BadSelector {

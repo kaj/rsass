@@ -1,7 +1,7 @@
 use super::CssData;
 use crate::css::{
     AtRule, AtRuleBodyItem, Comment, CssString, CustomProperty, Import, Item,
-    MediaArgs, MediaRule, Property, Rule, Selectors, Value,
+    MediaArgs, MediaRule, Property, Rule, OldSelectors, Value,
 };
 use crate::Invalid;
 
@@ -10,7 +10,7 @@ type Result<T = ()> = std::result::Result<T, Invalid>;
 pub trait CssDestination {
     fn head(&mut self) -> &mut CssData;
 
-    fn start_rule(&mut self, selectors: Selectors) -> Result<RuleDest>;
+    fn start_rule(&mut self, selectors: OldSelectors) -> Result<RuleDest>;
     fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest;
     fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest;
     fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest>;
@@ -38,7 +38,7 @@ pub struct RuleDest<'a> {
 impl<'a> RuleDest<'a> {
     pub fn new(
         parent: &'a mut dyn CssDestination,
-        selectors: Selectors,
+        selectors: OldSelectors,
     ) -> Self {
         RuleDest {
             parent,
@@ -67,7 +67,7 @@ impl<'a> CssDestination for RuleDest<'a> {
     fn head(&mut self) -> &mut CssData {
         self.parent.head()
     }
-    fn start_rule(&mut self, selectors: Selectors) -> Result<RuleDest> {
+    fn start_rule(&mut self, selectors: OldSelectors) -> Result<RuleDest> {
         Ok(RuleDest::new(self, selectors))
     }
     fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
@@ -140,7 +140,7 @@ impl<'a> CssDestination for NsRuleDest<'a> {
     fn head(&mut self) -> &mut CssData {
         self.parent.head()
     }
-    fn start_rule(&mut self, _selectors: Selectors) -> Result<RuleDest> {
+    fn start_rule(&mut self, _selectors: OldSelectors) -> Result<RuleDest> {
         Err(Invalid::InNsRule)
     }
     fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
@@ -219,7 +219,7 @@ impl<'a> CssDestination for AtRuleDest<'a> {
     fn head(&mut self) -> &mut CssData {
         self.parent.head()
     }
-    fn start_rule(&mut self, selectors: Selectors) -> Result<RuleDest> {
+    fn start_rule(&mut self, selectors: OldSelectors) -> Result<RuleDest> {
         Ok(RuleDest::new(self, selectors))
     }
     fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
@@ -338,7 +338,7 @@ impl<'a> CssDestination for AtMediaDest<'a> {
         self.parent.head()
     }
 
-    fn start_rule(&mut self, selectors: Selectors) -> Result<RuleDest> {
+    fn start_rule(&mut self, selectors: OldSelectors) -> Result<RuleDest> {
         Ok(RuleDest::new(self, selectors))
     }
     fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {

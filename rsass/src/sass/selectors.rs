@@ -32,8 +32,8 @@ impl Selectors {
     }
 
     /// Evaluate any interpolation in these Selectors.
-    pub fn eval(&self, scope: ScopeRef) -> Result<css::Selectors, Error> {
-        let s = css::Selectors::new(
+    pub fn eval(&self, scope: ScopeRef) -> Result<css::OldSelectors, Error> {
+        let s = css::OldSelectors::new(
             self.s
                 .iter()
                 .map(|s| s.eval(scope.clone()))
@@ -67,12 +67,12 @@ impl Selector {
     pub fn new(s: Vec<SelectorPart>) -> Self {
         Self(s)
     }
-    fn eval(&self, scope: ScopeRef) -> Result<css::Selector, Error> {
+    fn eval(&self, scope: ScopeRef) -> Result<css::OldSelector, Error> {
         self.0
             .iter()
             .map(|sp| sp.eval(scope.clone()))
             .collect::<Result<_, _>>()
-            .map(css::Selector)
+            .map(css::OldSelector)
     }
 }
 
@@ -120,28 +120,28 @@ pub enum SelectorPart {
 }
 
 impl SelectorPart {
-    fn eval(&self, scope: ScopeRef) -> Result<css::SelectorPart, Error> {
+    fn eval(&self, scope: ScopeRef) -> Result<css::OldSelectorPart, Error> {
         match *self {
             Self::Attribute {
                 ref name,
                 ref op,
                 ref val,
                 ref modifier,
-            } => Ok(css::SelectorPart::Attribute {
+            } => Ok(css::OldSelectorPart::Attribute {
                 name: name.evaluate(scope.clone())?,
                 op: op.clone(),
                 val: val.evaluate(scope)?.opt_unquote(),
                 modifier: *modifier,
             }),
             Self::Simple(ref v) => {
-                Ok(css::SelectorPart::Simple(v.evaluate(scope)?.to_string()))
+                Ok(css::OldSelectorPart::Simple(v.evaluate(scope)?.to_string()))
             }
             Self::Pseudo { ref name, ref arg } => {
                 let arg = match &arg {
                     Some(ref a) => Some(a.eval(scope.clone())?),
                     None => None,
                 };
-                Ok(css::SelectorPart::Pseudo {
+                Ok(css::OldSelectorPart::Pseudo {
                     name: name.evaluate(scope)?,
                     arg,
                 })
@@ -151,14 +151,14 @@ impl SelectorPart {
                     Some(ref a) => Some(a.eval(scope.clone())?),
                     None => None,
                 };
-                Ok(css::SelectorPart::PseudoElement {
+                Ok(css::OldSelectorPart::PseudoElement {
                     name: name.evaluate(scope)?,
                     arg,
                 })
             }
-            Self::Descendant => Ok(css::SelectorPart::Descendant),
-            Self::RelOp(op) => Ok(css::SelectorPart::RelOp(op)),
-            Self::BackRef => Ok(css::SelectorPart::BackRef),
+            Self::Descendant => Ok(css::OldSelectorPart::Descendant),
+            Self::RelOp(op) => Ok(css::OldSelectorPart::RelOp(op)),
+            Self::BackRef => Ok(css::OldSelectorPart::BackRef),
         }
     }
 }

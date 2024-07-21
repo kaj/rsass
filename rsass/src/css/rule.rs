@@ -1,4 +1,4 @@
-use super::{AtRule, Comment, CssString, Import, Selectors, Value};
+use super::{AtRule, Comment, CssString, Import, OldSelectors, Value};
 use crate::output::CssBuf;
 use std::io::{self, Write};
 
@@ -8,13 +8,13 @@ use std::io::{self, Write};
 /// properties with [`Value`]s).
 #[derive(Clone, Debug)]
 pub struct Rule {
-    pub(crate) selectors: Selectors,
+    pub(crate) selectors: OldSelectors,
     pub(crate) body: Vec<BodyItem>,
 }
 
 impl Rule {
     /// Create a new Rule.
-    pub fn new(selectors: Selectors) -> Self {
+    pub fn new(selectors: OldSelectors) -> Self {
         Self {
             selectors,
             body: Vec::new(),

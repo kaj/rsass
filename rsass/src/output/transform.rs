@@ -3,7 +3,7 @@
 
 use super::cssdest::CssDestination;
 use super::CssData;
-use crate::css::{self, AtRule, Import, SelectorCtx};
+use crate::css::{self, AtRule, Import, OldSelectorCtx};
 use crate::error::ResultPos;
 use crate::input::{Context, Loader, Parsed, SourceKind};
 use crate::sass::{get_global_module, Expose, Item, UseAs};
@@ -232,7 +232,7 @@ fn handle_item(
             if let Some(ref body) = *body {
                 let mut atrule = dest.start_atrule(name.clone(), args);
                 let local = if name == "keyframes" {
-                    ScopeRef::sub_selectors(scope, SelectorCtx::root())
+                    ScopeRef::sub_selectors(scope, OldSelectorCtx::root())
                 } else {
                     ScopeRef::sub(scope)
                 };
@@ -358,7 +358,7 @@ fn handle_item(
 
         Item::Rule(ref selectors, ref body) => {
             check_body(body, BodyContext::Rule)?;
-            let selectors = SelectorCtx::from(selectors.eval(scope.clone())?)
+            let selectors = OldSelectorCtx::from(selectors.eval(scope.clone())?)
                 .inside(scope.get_selectors());
             let mut dest = dest.start_rule(selectors.real()).no_pos()?;
             let scope = ScopeRef::sub_selectors(scope, selectors);

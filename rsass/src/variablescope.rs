@@ -1,5 +1,5 @@
 //! A scope is something that contains variable values.
-use crate::css::{CssString, SelectorCtx, Value};
+use crate::css::{CssString, OldSelectorCtx, Value};
 use crate::input::SourcePos;
 use crate::output::Format;
 use crate::sass::{Expose, Function, Item, MixinDecl, Name, UseAs};
@@ -35,7 +35,7 @@ impl ScopeRef {
         Self::dynamic(Scope::sub(parent))
     }
     /// Create a new subscope of a given parent with selectors.
-    pub fn sub_selectors(parent: Self, selectors: SelectorCtx) -> Self {
+    pub fn sub_selectors(parent: Self, selectors: OldSelectorCtx) -> Self {
         Self::dynamic(Scope::sub_selectors(parent, selectors))
     }
     fn dynamic(scope: Scope) -> Self {
@@ -204,7 +204,7 @@ pub struct Scope {
     variables: Mutex<BTreeMap<Name, Value>>,
     mixins: Mutex<BTreeMap<Name, MixinDecl>>,
     functions: Mutex<BTreeMap<Name, Function>>,
-    selectors: Option<SelectorCtx>,
+    selectors: Option<OldSelectorCtx>,
     forward: Mutex<Option<ScopeRef>>,
     format: Format,
     /// The thing to use for `@content` in a mixin.
@@ -259,7 +259,7 @@ impl Scope {
         }
     }
     /// Create a new subscope of a given parent with selectors.
-    pub fn sub_selectors(parent: ScopeRef, selectors: SelectorCtx) -> Self {
+    pub fn sub_selectors(parent: ScopeRef, selectors: OldSelectorCtx) -> Self {
         let format = parent.get_format();
         Self {
             parent: Some(parent),
@@ -500,9 +500,9 @@ impl Scope {
     }
 
     /// Get the selectors active for this scope.
-    pub fn get_selectors(&self) -> &SelectorCtx {
+    pub fn get_selectors(&self) -> &OldSelectorCtx {
         lazy_static! {
-            static ref ROOT: SelectorCtx = SelectorCtx::root();
+            static ref ROOT: OldSelectorCtx = OldSelectorCtx::root();
         }
         self.selectors.as_ref().unwrap_or_else(|| {
             self.parent.as_ref().map_or(&ROOT, |p| p.get_selectors())

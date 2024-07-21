@@ -1,7 +1,7 @@
 use super::super::util::{ignore_comments, opt_spacelike, spacelike2};
 use super::super::{input_to_string, PResult, Span};
 use super::strings::{css_string, css_string_any};
-use crate::css::{Selector, SelectorPart, Selectors};
+use crate::css::{OldSelector, OldSelectorPart, OldSelectors};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::one_of;
@@ -9,49 +9,49 @@ use nom::combinator::{into, map, map_res, opt, value};
 use nom::multi::{many1, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 
-pub fn selectors(input: Span) -> PResult<Selectors> {
+pub fn selectors(input: Span) -> PResult<OldSelectors> {
     map(
         separated_list1(terminated(tag(","), ignore_comments), selector),
-        Selectors::new,
+        OldSelectors::new,
     )(input)
 }
 
-pub fn selector(input: Span) -> PResult<Selector> {
+pub fn selector(input: Span) -> PResult<OldSelector> {
     let (input, mut s) = selector_parts(input)?;
-    if s.last() == Some(&SelectorPart::Descendant) {
+    if s.last() == Some(&OldSelectorPart::Descendant) {
         s.pop();
     }
-    Ok((input, Selector(s)))
+    Ok((input, OldSelector(s)))
 }
 
-pub(crate) fn selector_parts(input: Span) -> PResult<Vec<SelectorPart>> {
+pub(crate) fn selector_parts(input: Span) -> PResult<Vec<OldSelectorPart>> {
     many1(selector_part)(input)
 }
 
-fn selector_part(input: Span) -> PResult<SelectorPart> {
+fn selector_part(input: Span) -> PResult<OldSelectorPart> {
     let (input, mark) =
         alt((tag("&"), tag("::"), tag(":"), tag("."), tag("["), tag("")))(
             input,
         )?;
     match mark.fragment() {
-        b"&" => value(SelectorPart::BackRef, tag(""))(input),
+        b"&" => value(OldSelectorPart::BackRef, tag(""))(input),
         b"::" => map(
             pair(
                 into(css_string),
                 opt(delimited(tag("("), selectors, tag(")"))),
             ),
-            |(name, arg)| SelectorPart::PseudoElement { name, arg },
+            |(name, arg)| OldSelectorPart::PseudoElement { name, arg },
         )(input),
         b":" => map(
             pair(
                 into(css_string),
                 opt(delimited(tag("("), selectors, tag(")"))),
             ),
-            |(name, arg)| SelectorPart::Pseudo { name, arg },
+            |(name, arg)| OldSelectorPart::Pseudo { name, arg },
         )(input),
         b"." => map(simple_part, |mut s| {
             s.insert(0, '.');
-            SelectorPart::Simple(s)
+            OldSelectorPart::Simple(s)
         })(input),
         b"[" => delimited(
             opt_spacelike,
@@ -82,7 +82,7 @@ fn selector_part(input: Span) -> PResult<SelectorPart> {
                             opt_spacelike,
                         )),
                     )),
-                    |(name, op, val, modifier)| SelectorPart::Attribute {
+                    |(name, op, val, modifier)| OldSelectorPart::Attribute {
                         name: name.into(),
                         op,
                         val,
@@ -90,7 +90,7 @@ fn selector_part(input: Span) -> PResult<SelectorPart> {
                     },
                 ),
                 map(terminated(name_opt_ns, opt_spacelike), |name| {
-                    SelectorPart::Attribute {
+                    OldSelectorPart::Attribute {
                         name: name.into(),
                         op: "".to_string(),
                         val: "".into(),
@@ -101,18 +101,18 @@ fn selector_part(input: Span) -> PResult<SelectorPart> {
             tag("]"),
         )(input),
         b"" => alt((
-            map(simple_part, SelectorPart::Simple),
+            map(simple_part, OldSelectorPart::Simple),
             delimited(
                 opt_spacelike,
                 alt((
-                    value(SelectorPart::RelOp(b'>'), tag(">")),
-                    value(SelectorPart::RelOp(b'+'), tag("+")),
-                    value(SelectorPart::RelOp(b'~'), tag("~")),
-                    value(SelectorPart::RelOp(b'\\'), tag("\\")),
+                    value(OldSelectorPart::RelOp(b'>'), tag(">")),
+                    value(OldSelectorPart::RelOp(b'+'), tag("+")),
+                    value(OldSelectorPart::RelOp(b'~'), tag("~")),
+                    value(OldSelectorPart::RelOp(b'\\'), tag("\\")),
                 )),
                 opt_spacelike,
             ),
-            value(SelectorPart::Descendant, spacelike2),
+            value(OldSelectorPart::Descendant, spacelike2),
         ))(input),
         _ => unreachable!(),
     }
