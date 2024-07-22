@@ -337,7 +337,10 @@ impl OldSelector {
         } else {
             let mut result = self.0.clone();
             if !result.is_empty()
-                && !other.0.first().map_or(false, OldSelectorPart::is_operator)
+                && !other
+                    .0
+                    .first()
+                    .map_or(false, OldSelectorPart::is_operator)
             {
                 result.push(OldSelectorPart::Descendant);
             }
@@ -401,7 +404,10 @@ impl OldSelector {
     }
     fn has_double_combinator(&self) -> bool {
         self.0.windows(2).any(|w| {
-            matches!(w, [OldSelectorPart::RelOp(_), OldSelectorPart::RelOp(_)])
+            matches!(
+                w,
+                [OldSelectorPart::RelOp(_), OldSelectorPart::RelOp(_)]
+            )
         })
     }
 }
@@ -717,22 +723,24 @@ mod test {
 
     #[test]
     fn simple_join() {
-        let s = OldSelector(vec![OldSelectorPart::Simple("foo".into())]).join(
-            &OldSelector(vec![OldSelectorPart::Simple(".bar".into())]),
-            &OldSelector::root(),
-        );
+        let s = OldSelector(vec![OldSelectorPart::Simple("foo".into())])
+            .join(
+                &OldSelector(vec![OldSelectorPart::Simple(".bar".into())]),
+                &OldSelector::root(),
+            );
         assert_eq!(format!("{}", s), "foo .bar")
     }
 
     #[test]
     fn backref_join() {
-        let s = OldSelector(vec![OldSelectorPart::Simple("foo".into())]).join(
-            &OldSelector(vec![
-                OldSelectorPart::BackRef,
-                OldSelectorPart::Simple(".bar".into()),
-            ]),
-            &OldSelector::root(),
-        );
+        let s = OldSelector(vec![OldSelectorPart::Simple("foo".into())])
+            .join(
+                &OldSelector(vec![
+                    OldSelectorPart::BackRef,
+                    OldSelectorPart::Simple(".bar".into()),
+                ]),
+                &OldSelector::root(),
+            );
         assert_eq!(format!("{}", s), "foo.bar")
     }
 }

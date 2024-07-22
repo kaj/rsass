@@ -358,8 +358,9 @@ fn handle_item(
 
         Item::Rule(ref selectors, ref body) => {
             check_body(body, BodyContext::Rule)?;
-            let selectors = OldSelectorCtx::from(selectors.eval(scope.clone())?)
-                .inside(scope.get_selectors());
+            let selectors =
+                OldSelectorCtx::from(selectors.eval(scope.clone())?)
+                    .inside(scope.get_selectors());
             let mut dest = dest.start_rule(selectors.real()).no_pos()?;
             let scope = ScopeRef::sub_selectors(scope, selectors);
             handle_body(body, &mut dest, scope, file_context)?;

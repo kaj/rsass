@@ -259,7 +259,10 @@ impl Scope {
         }
     }
     /// Create a new subscope of a given parent with selectors.
-    pub fn sub_selectors(parent: ScopeRef, selectors: OldSelectorCtx) -> Self {
+    pub fn sub_selectors(
+        parent: ScopeRef,
+        selectors: OldSelectorCtx,
+    ) -> Self {
         let format = parent.get_format();
         Self {
             parent: Some(parent),

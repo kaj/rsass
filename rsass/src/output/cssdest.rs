@@ -1,7 +1,7 @@
 use super::CssData;
 use crate::css::{
     AtRule, AtRuleBodyItem, Comment, CssString, CustomProperty, Import, Item,
-    MediaArgs, MediaRule, Property, Rule, OldSelectors, Value,
+    MediaArgs, MediaRule, OldSelectors, Property, Rule, Value,
 };
 use crate::Invalid;
 

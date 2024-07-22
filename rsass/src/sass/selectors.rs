@@ -133,9 +133,9 @@ impl SelectorPart {
                 val: val.evaluate(scope)?.opt_unquote(),
                 modifier: *modifier,
             }),
-            Self::Simple(ref v) => {
-                Ok(css::OldSelectorPart::Simple(v.evaluate(scope)?.to_string()))
-            }
+            Self::Simple(ref v) => Ok(css::OldSelectorPart::Simple(
+                v.evaluate(scope)?.to_string(),
+            )),
             Self::Pseudo { ref name, ref arg } => {
                 let arg = match &arg {
                     Some(ref a) => Some(a.eval(scope.clone())?),
