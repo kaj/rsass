@@ -11,6 +11,7 @@ use crate::input::SourcePos;
 use crate::parser::css::{selector, selector_parts, selectors};
 use crate::parser::{input_span, ParseError};
 use crate::value::ListSeparator;
+use nom::combinator::all_consuming;
 use std::fmt;
 use std::io::Write;
 
@@ -19,8 +20,14 @@ mod cssselectorset;
 mod logical;
 mod pseudo;
 mod selectorset;
+
 pub(crate) use cssselectorset::CssSelectorSet;
-pub(crate) use logical::Selector;
+pub use logical::Selector;
+pub use selectorset::SelectorSet;
+
+pub(crate) mod parser {
+    pub(crate) use super::selectorset::parser::selector_set;
+}
 
 /// A full set of selectors.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
@@ -187,6 +194,21 @@ impl OldSelectorCtx {
         self.s.is_root() && self.backref == OldSelector::root()
     }
 
+    // I think any backrefs is guaranteed to be already resolved in self.s!
+    pub(crate) fn real_new(&self) -> CssSelectorSet {
+        if self.s.is_root() {
+            return CssSelectorSet {
+                s: SelectorSet {
+                    s: vec![Selector::default()],
+                },
+            };
+        }
+        let span = input_span(self.s.to_string());
+        let (_, value) = all_consuming(parser::selector_set)(span.borrow())
+            .unwrap_or_else(|e| panic!("Bad selector {span:?}: {e}"));
+        let msg = format!("Bad real selectors {value:?}");
+        value.try_into().expect(&msg)
+    }
     pub(crate) fn real(&self) -> OldSelectors {
         self.s.clone()
     }

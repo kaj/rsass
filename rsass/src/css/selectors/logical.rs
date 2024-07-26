@@ -9,11 +9,14 @@ use super::pseudo::Pseudo;
 use super::selectorset::SelectorSet;
 use super::{BadSelector, BadSelector0, CssSelectorSet};
 use crate::css::Value;
+use crate::output::CssBuf;
 use crate::parser::input_span;
 use crate::sass::CallError;
 use crate::value::ListSeparator;
 use crate::{Invalid, ParseError};
+use core::fmt;
 use lazy_static::lazy_static;
+use std::io;
 use std::iter::once;
 
 type RelBox = Box<(RelKind, Selector)>;
@@ -21,8 +24,8 @@ type RelBox = Box<(RelKind, Selector)>;
 /// A selector more aimed at making it easy to implement selector functions.
 ///
 /// A logical selector is fully resolved (cannot contain an `&` backref).
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
-pub(crate) struct Selector {
+#[derive(Default, Clone, PartialEq, Eq)]
+pub struct Selector {
     backref: Option<()>,
     element: Option<ElemType>,
     placeholders: Vec<String>,
@@ -34,6 +37,31 @@ pub(crate) struct Selector {
 }
 
 impl Selector {
+    pub fn no_placeholder(&self) -> Option<Self> {
+        if !self.placeholders.is_empty() {
+            return None;
+        }
+        let rel_of = if let Some((kind, rel)) = self.rel_of.as_deref() {
+            if let Some(rel) = rel.no_placeholder() {
+                Some(Box::new((*kind, rel)))
+            } else {
+                return None;
+            }
+        } else {
+            None
+        };
+        let pseudo = self
+            .pseudo
+            .iter()
+            .filter_map(Pseudo::no_placeholder)
+            .collect();
+        Some(Self {
+            rel_of,
+            pseudo,
+            ..self.clone()
+        })
+    }
+
     pub(super) fn append(&self, other: &Self) -> Result<Self, AppendError> {
         if self.is_local_empty() {
             return Err(AppendError::Parent);
@@ -502,6 +530,24 @@ impl Selector {
         Ok(result)
     }
 
+    pub fn write_to(&self, buf: &mut CssBuf) -> io::Result<()> {
+        if let Some((kind, sel)) = self.rel_of.as_deref() {
+            sel.write_to(buf)?;
+            if let Some(symbol) = kind.symbol() {
+                if !sel.is_local_empty() {
+                    buf.add_one(" ", "");
+                }
+                buf.add_str(symbol);
+                buf.add_one(" ", "");
+            } else {
+                buf.add_str(" ");
+            }
+        }
+        // TODO: This could be much more efficient!  :-)
+        buf.add_str(&self.clone().last_compound_str());
+        Ok(())
+    }
+
     pub(super) fn into_string_vec(mut self) -> Vec<String> {
         let mut vec =
             if let Some((kind, sel)) = self.rel_of.take().map(|b| *b) {
@@ -568,6 +614,8 @@ impl Selector {
                 list.iter()
                     .try_fold(None, |a, v| {
                         let mut s = match v {
+                            // TODO: This is probably broken when
+                            // a vailue is like ["a", ">", "b"]
                             Value::Literal(s) => {
                                 ParseError::check(parser::selector(
                                     input_span(s.value()).borrow(),
@@ -774,6 +822,37 @@ impl From<Selector> for Value {
     }
 }
 
+impl fmt::Debug for Selector {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut s = f.debug_struct("Selector");
+        if let Some((kind, rel)) = self.rel_of.as_deref() {
+            s.field(&format!("{kind:?}"), &rel);
+        }
+        if self.backref.is_some() {
+            s.field("backref", &"&");
+        }
+        if let Some(elem) = &self.element {
+            s.field("element", elem);
+        }
+        if !self.placeholders.is_empty() {
+            s.field("placeholders", &self.placeholders);
+        }
+        if let Some(id) = &self.id {
+            s.field("id", &id);
+        }
+        if !self.classes.is_empty() {
+            s.field("classes", &self.classes);
+        }
+        if !self.attr.is_empty() {
+            s.field("attr", &self.attr);
+        }
+        if !self.pseudo.is_empty() {
+            s.field("pseudo", &self.pseudo);
+        }
+        s.finish()
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct ElemType {
     s: String,
@@ -854,6 +933,8 @@ impl RelKind {
 }
 
 pub(crate) mod parser {
+    use std::str::from_utf8;
+
     use super::super::attribute::parser::attribute;
     use super::super::pseudo::parser::pseudo;
     use super::{ElemType, RelKind, Selector};
@@ -861,13 +942,14 @@ pub(crate) mod parser {
     use crate::parser::util::{opt_spacelike, spacelike};
     use crate::parser::{PResult, Span};
     use nom::branch::alt;
-    use nom::bytes::complete::tag;
-    use nom::combinator::{map, opt, value, verify};
+    use nom::bytes::complete::{is_a, tag};
+    use nom::combinator::{map, opt, recognize, value, verify};
     use nom::multi::fold_many0;
-    use nom::sequence::{delimited, pair, preceded};
+    use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 
     pub(crate) fn selector(input: Span) -> PResult<Selector> {
-        let (input, prerel) = opt(rel_kind)(input)?;
+        let (input, prerel) =
+            preceded(opt_spacelike, opt(explicit_rel_kind))(input)?;
         let (input, first) = if let Some(prerel) = prerel {
             let (input, first) = opt(compound_selector)(input)?;
             let mut first = first.unwrap_or_default();
@@ -876,34 +958,53 @@ pub(crate) mod parser {
         } else {
             compound_selector(input)?
         };
-        fold_many0(
-            pair(rel_kind, opt(compound_selector)),
-            move || first.clone(),
-            |rel, (kind, e)| {
-                let mut e = e.unwrap_or_default();
-                e.rel_of = Some(Box::new((kind, rel)));
-                e
-            },
+        terminated(
+            fold_many0(
+                verify(pair(rel_kind, opt(compound_selector)), |(k, s)| {
+                    k.symbol().is_some() || s.is_some()
+                }),
+                move || first.clone(),
+                |rel, (kind, e)| {
+                    let mut e = e.unwrap_or_default();
+                    e.rel_of = Some(Box::new((kind, rel)));
+                    e
+                },
+            ),
+            opt_spacelike,
+        )(input)
+    }
+
+    fn explicit_rel_kind(input: Span) -> PResult<RelKind> {
+        delimited(
+            opt_spacelike,
+            alt((
+                value(RelKind::AdjacentSibling, tag("+")),
+                value(RelKind::Sibling, tag("~")),
+                value(RelKind::Parent, tag(">")),
+            )),
+            opt_spacelike,
         )(input)
     }
 
     fn rel_kind(input: Span) -> PResult<RelKind> {
-        alt((
-            delimited(
-                opt_spacelike,
-                alt((
-                    value(RelKind::AdjacentSibling, tag("+")),
-                    value(RelKind::Sibling, tag("~")),
-                    value(RelKind::Parent, tag(">")),
-                )),
-                opt_spacelike,
-            ),
-            value(RelKind::Ancestor, spacelike),
-        ))(input)
+        alt((explicit_rel_kind, value(RelKind::Ancestor, spacelike)))(input)
     }
 
     pub(crate) fn compound_selector(input: Span) -> PResult<Selector> {
         let mut result = Selector::default();
+        if let PResult::Ok((rest, stop)) = recognize(tuple((
+            is_a("0123456789."),
+            opt(tuple((is_a("eE"), opt(tag("-")), is_a("0123456789")))),
+            tag("%"),
+        )))(input)
+        {
+            // TODO: Remove this.
+            // It is a temporary workaround for keyframe support.
+            result.element = Some(ElemType {
+                s: dbg!(from_utf8(stop.fragment()).unwrap()).to_string(),
+            });
+            return Ok((rest, result));
+        }
         let (rest, backref) = opt(value((), tag("&")))(input)?;
         result.backref = backref;
         let (mut rest, elem) = opt(name_opt_ns)(rest)?;

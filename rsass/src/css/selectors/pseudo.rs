@@ -12,6 +12,25 @@ pub(crate) struct Pseudo {
 }
 
 impl Pseudo {
+    // TODO: IS None match-all (ignore this) or match none (ignore container)?
+    pub(crate) fn no_placeholder(&self) -> Option<Self> {
+        let arg = match &self.arg {
+            Arg::Selector(s) => {
+                if let Some(s) = s.no_placeholder() {
+                    Arg::Selector(s)
+                } else {
+                    return None; // TODO! Positive or negative None?
+                }
+            }
+            arg => arg.clone(),
+        };
+        Some(Self {
+            arg,
+            name: self.name.clone(),
+            element: self.element,
+        })
+    }
+
     pub(crate) fn is_superselector(&self, b: &Self) -> bool {
         if self.is_element() != b.is_element() || self.name != b.name {
             return false;

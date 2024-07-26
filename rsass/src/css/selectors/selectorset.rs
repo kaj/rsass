@@ -1,18 +1,33 @@
 use super::{logical::Selector, BadSelector, BadSelector0, CssSelectorSet};
+use crate::output::CssBuf;
 use crate::parser::input_span;
 use crate::value::ListSeparator;
 use crate::ParseError;
 use crate::{css::Value, Invalid};
+use std::io;
 
 /// A set of selectors.
 /// This is the normal top-level selector, which can be a single
 /// [`Selector`] or a comma-separated list (set) of such selectors.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct SelectorSet {
+pub struct SelectorSet {
     pub(super) s: Vec<Selector>,
 }
 
 impl SelectorSet {
+    pub fn no_placeholder(&self) -> Option<Self> {
+        let s = self
+            .s
+            .iter()
+            .filter_map(Selector::no_placeholder)
+            .collect::<Vec<_>>();
+        if s.is_empty() {
+            None
+        } else {
+            Some(Self { s })
+        }
+    }
+
     pub(crate) fn extend(
         self,
         extendee: &Self,
@@ -60,8 +75,20 @@ impl SelectorSet {
         Ok(())
     }
 
+    pub fn write_to(&self, buf: &mut CssBuf) -> io::Result<()> {
+        if let Some((first, rest)) = self.s.split_first() {
+            first.write_to(buf)?;
+            for one in rest {
+                buf.add_one(", ", ",");
+                one.write_to(buf)?;
+            }
+        }
+        Ok(())
+    }
+    // TODO: Get rid of this, use the above!
     pub(super) fn write_to_buf(&self, buf: &mut String) {
         fn write_one(s: &Selector, buf: &mut String) {
+            // Note: this should be made much more efficient!
             buf.push_str(&s.clone().into_string_vec().join(" "));
         }
         if let Some((first, rest)) = self.s.split_first() {

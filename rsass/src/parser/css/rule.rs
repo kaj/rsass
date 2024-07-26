@@ -1,7 +1,8 @@
 use super::super::util::opt_spacelike;
 use super::super::{PResult, Span};
 use super::strings::custom_value;
-use super::{comment, import2, selectors, strings, values};
+use super::{comment, import2, strings, values};
+use crate::css::parser::selector_set;
 use crate::css::{BodyItem, CustomProperty, Property, Rule};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
@@ -13,7 +14,7 @@ use nom::sequence::{delimited, pair, preceded, terminated};
 pub fn rule(input: Span) -> PResult<Rule> {
     map(
         pair(
-            terminated(selectors, terminated(tag("{"), opt_spacelike)),
+            terminated(selector_set, terminated(tag("{"), opt_spacelike)),
             many_till(terminated(body_item, opt_spacelike), tag("}")),
         ),
         |(selectors, (body, _))| Rule { selectors, body },

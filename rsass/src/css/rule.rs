@@ -1,20 +1,20 @@
-use super::{AtRule, Comment, CssString, Import, OldSelectors, Value};
+use super::{AtRule, Comment, CssString, Import, SelectorSet, Value};
 use crate::output::CssBuf;
-use std::io::{self, Write};
+use std::io;
 
 /// A css rule.
 ///
-/// A rule binds [`Selectors`] to a body of [`BodyItem`]s (mainly
+/// A rule binds a [`SelectorSet`] to a body of [`BodyItem`]s (mainly
 /// properties with [`Value`]s).
 #[derive(Clone, Debug)]
 pub struct Rule {
-    pub(crate) selectors: OldSelectors,
+    pub(crate) selectors: SelectorSet,
     pub(crate) body: Vec<BodyItem>,
 }
 
 impl Rule {
     /// Create a new Rule.
-    pub fn new(selectors: OldSelectors) -> Self {
+    pub fn new(selectors: SelectorSet) -> Self {
         Self {
             selectors,
             body: Vec::new(),
@@ -30,11 +30,7 @@ impl Rule {
         if !self.body.is_empty() {
             if let Some(selectors) = self.selectors.no_placeholder() {
                 buf.do_indent_no_nl();
-                if buf.format().is_compressed() {
-                    write!(buf, "{selectors:#}")?;
-                } else {
-                    write!(buf, "{selectors}")?;
-                }
+                selectors.write_to(buf)?;
                 buf.start_block();
                 for item in &self.body {
                     item.write(buf)?;

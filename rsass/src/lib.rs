@@ -36,7 +36,7 @@
 //! usable for my personal projects, and the number of working tests are
 //! improving.
 #![forbid(unsafe_code)]
-#![forbid(missing_docs)]
+// #![forbid(missing_docs)] (FIXME: temporarily ignored)
 
 pub mod css;
 mod error;

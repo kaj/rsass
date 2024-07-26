@@ -2,16 +2,19 @@ use super::selectorset::SelectorSet;
 use super::{BadSelector, BadSelector0};
 use crate::css::Value;
 use crate::error::Invalid;
+use crate::output::CssBuf;
 use crate::parser::{input_span, ParseError};
 use crate::sass::CallError;
 use crate::value::ListSeparator;
 use nom::Finish;
+use std::io;
 
 /// A `CssSelectorset` is like a [`Selectorset`] but valid in css.
 ///
 /// The practical difference is that a `CssSelectorset` is guaranteed
 /// not to contain backrefs (`&`), which may be present in a
 /// `Selectorset`.
+#[derive(Clone, Debug)]
 pub struct CssSelectorSet {
     pub(super) s: SelectorSet,
 }
@@ -50,10 +53,9 @@ impl CssSelectorSet {
         let selector = join(&value).map_err(|e| e.ctx(value))?;
         let span = input_span(selector);
 
-        let (rest, value) =
-            super::selectorset::parser::selector_set(span.borrow())
-                .finish()
-                .map_err(ParseError::from)?;
+        let (rest, value) = super::parser::selector_set(span.borrow())
+            .finish()
+            .map_err(ParseError::from)?;
         if rest.fragment().is_empty() {
             value.try_into()
         } else {
@@ -61,6 +63,9 @@ impl CssSelectorSet {
         }
     }
 
+    pub fn no_placeholder(&self) -> Option<Self> {
+        self.s.no_placeholder().map(|s| Self { s })
+    }
     pub fn is_superselector(&self, sub: &Self) -> bool {
         self.s.is_superselector(&sub.s)
     }
@@ -148,6 +153,16 @@ impl CssSelectorSet {
                     .collect(),
             },
         }
+    }
+
+    pub fn write_to(&self, buf: &mut CssBuf) -> io::Result<()> {
+        self.s.write_to(buf)
+    }
+}
+
+impl From<CssSelectorSet> for SelectorSet {
+    fn from(value: CssSelectorSet) -> Self {
+        value.s
     }
 }
 

@@ -3,7 +3,7 @@ use super::cssdest::{
 };
 use super::{CssBuf, Format};
 use crate::css::{
-    Comment, CssString, Import, Item, MediaArgs, OldSelectors, Value,
+    Comment, CssSelectorSet, CssString, Import, Item, MediaArgs, Value,
 };
 use crate::{Error, Invalid, ScopeRef};
 use std::collections::BTreeMap;
@@ -86,7 +86,7 @@ impl CssDestination for CssData {
         self
     }
 
-    fn start_rule(&mut self, selectors: OldSelectors) -> Result<RuleDest> {
+    fn start_rule(&mut self, selectors: CssSelectorSet) -> Result<RuleDest> {
         Ok(RuleDest::new(self, selectors))
     }
     fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {

@@ -152,7 +152,7 @@ fn handle_item(
                                 let selectors = scope.get_selectors();
                                 if !selectors.is_root() {
                                     let mut rule = thead
-                                        .start_rule(selectors.real())
+                                        .start_rule(selectors.real_new())
                                         .at(pos)?;
                                     handle_body(
                                         &items,
@@ -207,7 +207,8 @@ fn handle_item(
                 .with_backref(scope.get_selectors().one());
             let subscope = ScopeRef::sub_selectors(scope, selectors.clone());
             if !selectors.is_root() {
-                let mut rule = dest.start_rule(selectors.real()).no_pos()?;
+                let mut rule =
+                    dest.start_rule(selectors.real_new()).no_pos()?;
                 handle_body(body, &mut rule, subscope, file_context)?;
             } else {
                 handle_body(body, dest, subscope, file_context)?;
@@ -361,7 +362,7 @@ fn handle_item(
             let selectors =
                 OldSelectorCtx::from(selectors.eval(scope.clone())?)
                     .inside(scope.get_selectors());
-            let mut dest = dest.start_rule(selectors.real()).no_pos()?;
+            let mut dest = dest.start_rule(selectors.real_new()).no_pos()?;
             let scope = ScopeRef::sub_selectors(scope, selectors);
             handle_body(body, &mut dest, scope, file_context)?;
         }
