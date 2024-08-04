@@ -1,5 +1,6 @@
-use super::{logical::Selector, BadSelector, BadSelector0, CssSelectorSet};
-use super::{OldSelectors, Opt};
+use super::{
+    BadSelector, BadSelector0, CssSelectorSet, OldSelectors, Opt, Selector,
+};
 use crate::output::CssBuf;
 use crate::parser::input_span;
 use crate::value::ListSeparator;
@@ -81,6 +82,7 @@ impl SelectorSet {
         Ok(())
     }
 
+    /// Write this set of selectors to a formatted buffer.
     pub fn write_to(&self, buf: &mut CssBuf) {
         if let Some((first, rest)) = self.s.split_first() {
             first.write_to(buf);
@@ -91,20 +93,6 @@ impl SelectorSet {
         }
     }
 
-    // TODO: Get rid of this, use the above!
-    pub(super) fn write_to_buf(&self, buf: &mut String) {
-        fn write_one(s: &Selector, buf: &mut String) {
-            // Note: this should be made much more efficient!
-            buf.push_str(&s.clone().into_string_vec().join(" "));
-        }
-        if let Some((first, rest)) = self.s.split_first() {
-            write_one(first, buf);
-            for one in rest {
-                buf.push_str(", "); // TODO: Only ',' is compressed!
-                write_one(one, buf);
-            }
-        }
-    }
     pub(super) fn has_backref(&self) -> bool {
         self.s.iter().any(Selector::has_backref)
     }
@@ -116,24 +104,6 @@ impl SelectorSet {
                 .flat_map(|o| o.resolve_ref(ctx))
                 .collect::<Vec<_>>(),
         }
-    }
-
-    /* // Get these selectors with a specific backref selector.
-    ///
-    /// Used to create `@at-root` contexts, to have `&` work in them.
-    pub(crate) fn with_backref(self, context: Selector) -> SelectorCtx {
-        SelectorCtx {
-            s: self.try_into().unwrap(),
-            backref: CssSelectorSet,
-        }.inside(&SelectorCtx {
-            s: Self::root().try_into().unwrap(),
-            backref: context,
-        })
-    }*/
-
-    /// Get the first of these selectors (or the root selector if empty).
-    pub(crate) fn one(&self) -> Selector {
-        self.s.first().cloned().unwrap_or_else(Selector::default)
     }
 }
 
@@ -148,9 +118,7 @@ impl TryFrom<&OldSelectors> for SelectorSet {
         }
         let formatted = s.to_string();
         let span = input_span(formatted.clone());
-        ParseError::check(parser::selector_set(span.borrow()))?
-            .try_into()
-            .map_err(|_| BadSelector::Value(formatted.into()))
+        Ok(ParseError::check(parser::selector_set(span.borrow()))?)
     }
 }
 

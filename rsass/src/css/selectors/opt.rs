@@ -52,13 +52,3 @@ impl<T> Opt<T> {
         }
     }
 }
-
-impl<T> Opt<Vec<T>> {
-    pub(crate) fn positive(self) -> Option<Vec<T>> {
-        match self {
-            Opt::Some(v) => Some(v),
-            Opt::Any => Some(vec![]),
-            Opt::None => None,
-        }
-    }
-}

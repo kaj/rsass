@@ -1,5 +1,5 @@
 use super::selectorset::SelectorSet;
-use super::{BadSelector, BadSelector0, Opt};
+use super::{BadSelector, BadSelector0};
 use crate::css::Value;
 use crate::error::Invalid;
 use crate::output::CssBuf;
@@ -72,9 +72,6 @@ impl CssSelectorSet {
         }
     }
 
-    pub(crate) fn no_placeholder(&self) -> Opt<Self> {
-        self.s.no_placeholder().map(|s| Self { s })
-    }
     pub fn is_superselector(&self, sub: &Self) -> bool {
         self.s.is_superselector(&sub.s)
     }

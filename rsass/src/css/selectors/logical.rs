@@ -396,7 +396,7 @@ impl Selector {
         self._unify(other).unwrap_or_default()
     }
 
-    pub fn unify_extend(&self, other: &Self) -> Vec<Self> {
+    pub(crate) fn unify_extend(&self, other: &Self) -> Vec<Self> {
         self.clone()._unify(other.clone()).unwrap_or_default()
     }
 
@@ -575,6 +575,7 @@ impl Selector {
         Ok(result)
     }
 
+    /// Write this `Selector` to a formatted buffer.
     pub fn write_to(&self, buf: &mut CssBuf) {
         if let Some((kind, sel)) = self.rel_of.as_deref() {
             sel.write_to(buf);
