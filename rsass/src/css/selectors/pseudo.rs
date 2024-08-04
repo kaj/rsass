@@ -111,9 +111,9 @@ impl Pseudo {
     }
 
     pub(super) fn write_to_buf(&self, buf: &mut CssBuf) {
-        buf.add_str(":");
+        buf.add_char(':');
         if self.element {
-            buf.add_str(":");
+            buf.add_char(':');
         }
         buf.add_str(&self.name);
         // Note: This is an ugly workaround for lack of proper support

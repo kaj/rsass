@@ -9,14 +9,14 @@ use nom::combinator::{into, map, map_res, opt, value};
 use nom::multi::{many1, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 
-pub fn selectors(input: Span) -> PResult<OldSelectors> {
+pub(crate) fn selectors(input: Span) -> PResult<OldSelectors> {
     map(
         separated_list1(terminated(tag(","), ignore_comments), selector),
         OldSelectors::new,
     )(input)
 }
 
-pub fn selector(input: Span) -> PResult<OldSelector> {
+pub(crate) fn selector(input: Span) -> PResult<OldSelector> {
     let (input, mut s) = selector_parts(input)?;
     if s.last() == Some(&OldSelectorPart::Descendant) {
         s.pop();

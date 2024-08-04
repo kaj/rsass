@@ -22,15 +22,15 @@ impl Attribute {
     }
 
     pub(super) fn write_to_buf(&self, buf: &mut CssBuf) {
-        buf.add_str("[");
+        buf.add_char('[');
         buf.add_str(&self.name);
         buf.add_str(&self.op);
         buf.add_str(&self.val.to_string());
         if let Some(m) = self.modifier {
-            buf.add_str(" ");
+            buf.add_char(' ');
             buf.add_char(m);
         }
-        buf.add_str("]");
+        buf.add_char(']');
     }
 }
 
