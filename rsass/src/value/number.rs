@@ -494,7 +494,7 @@ impl Number {
     pub fn into_integer(self) -> Result<i64, Self> {
         fn float_int(s: f64) -> Option<i64> {
             let sr = s.round();
-            if (sr - s).abs() <= std::f32::EPSILON.into() {
+            if (sr - s).abs() <= f32::EPSILON.into() {
                 Some(sr as i64)
             } else {
                 None
