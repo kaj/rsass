@@ -7,7 +7,7 @@ edition = "2021"
 rust-version = "1.65.0"
 
 [dependencies]
-rsass = { path = "../rsass", version = "0.28.10" }
+rsass = { path = "../rsass" }
 deunicode = "1.0"
 hrx-get = "0.2.0"
 lazy-regex = "3.0.0"
