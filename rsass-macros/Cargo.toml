@@ -1,6 +1,6 @@
 [package]
 name = "rsass-macros"
-version = "0.28.10"
+version = "0.28.11-PRE"
 categories = ["web-programming"]
 keywords = ["scss", "sass", "css", "web", "macro"]
 description = "Sass as a rust function-like macro."
