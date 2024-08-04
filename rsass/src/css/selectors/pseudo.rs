@@ -1,4 +1,5 @@
-use super::{selectorset::SelectorSet, CssSelectorSet};
+use super::{CssSelectorSet, Opt, SelectorSet};
+use crate::output::CssBuf;
 
 /// A pseudo-class or a css2 pseudo-element (:foo)
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -12,19 +13,30 @@ pub(crate) struct Pseudo {
 }
 
 impl Pseudo {
-    // TODO: IS None match-all (ignore this) or match none (ignore container)?
-    pub(crate) fn no_placeholder(&self) -> Option<Self> {
+    pub(crate) fn no_placeholder(&self) -> Opt<Self> {
         let arg = match &self.arg {
             Arg::Selector(s) => {
-                if let Some(s) = s.no_placeholder() {
-                    Arg::Selector(s)
-                } else {
-                    return None; // TODO! Positive or negative None?
+                match (s.no_placeholder(), self.name_in(&["not"])) {
+                    (Opt::Some(t), _) => {
+                        if self.name_in(&["is"]) {
+                            match t.no_leading_combinator() {
+                                Opt::Some(t) => Arg::Selector(t),
+                                Opt::Any => return Opt::Any,
+                                Opt::None => return Opt::None,
+                            }
+                        } else {
+                            Arg::Selector(t)
+                        }
+                    }
+                    (Opt::Any, false) | (Opt::None, true) => return Opt::Any,
+                    (Opt::None, false) | (Opt::Any, true) => {
+                        return Opt::None
+                    }
                 }
             }
             arg => arg.clone(),
         };
-        Some(Self {
+        Opt::Some(Self {
             arg,
             name: self.name.clone(),
             element: self.element,
@@ -98,12 +110,12 @@ impl Pseudo {
         self
     }
 
-    pub(super) fn write_to_buf(&self, buf: &mut String) {
-        buf.push(':');
+    pub(super) fn write_to_buf(&self, buf: &mut CssBuf) {
+        buf.add_str(":");
         if self.element {
-            buf.push(':');
+            buf.add_str(":");
         }
-        buf.push_str(&self.name);
+        buf.add_str(&self.name);
         // Note: This is an ugly workaround for lack of proper support
         // for "nth" type of pseudoclass arguments.
         if self.name_in(&[
@@ -112,9 +124,11 @@ impl Pseudo {
             "nth-last-of-type",
             "nth-of-type",
         ]) {
-            let mut t = String::new();
+            let mut t = CssBuf::new(buf.format());
             self.arg.write_to_buf(&mut t);
-            buf.push_str(&t.replacen(" + ", "+", 1));
+            buf.add_str(
+                &String::from_utf8_lossy(&t.take()).replacen(" + ", "+", 1),
+            );
         } else {
             self.arg.write_to_buf(buf);
         }
@@ -167,17 +181,17 @@ impl Arg {
             _ => false,
         }
     }
-    pub(super) fn write_to_buf(&self, buf: &mut String) {
+    pub(super) fn write_to_buf(&self, buf: &mut CssBuf) {
         match self {
             Self::Selector(s) => {
-                buf.push('(');
-                s.write_to_buf(buf);
-                buf.push(')');
+                buf.add_str("(");
+                s.write_to(buf);
+                buf.add_str(")");
             }
             Self::Other(a) => {
-                buf.push('(');
-                buf.push_str(a);
-                buf.push(')');
+                buf.add_str("(");
+                buf.add_str(a);
+                buf.add_str(")");
             }
             Self::None => (),
         }

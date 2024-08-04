@@ -18,6 +18,9 @@ impl CssBuf {
     pub fn take(self) -> Vec<u8> {
         self.buf
     }
+    pub(crate) fn len(&self) -> usize {
+        self.buf.len()
+    }
     pub(crate) fn format(&self) -> Format {
         self.format
     }
@@ -58,6 +61,10 @@ impl CssBuf {
 
     pub fn add_str(&mut self, sub: &str) {
         self.buf.extend_from_slice(sub.as_bytes());
+    }
+    pub(crate) fn add_char(&mut self, ch: char) {
+        let mut buf = [b'0'; 6];
+        self.add_str(ch.encode_utf8(&mut buf))
     }
     pub fn add_one(&mut self, normal: &str, compressed: &str) {
         self.add_str(if self.format.is_compressed() {

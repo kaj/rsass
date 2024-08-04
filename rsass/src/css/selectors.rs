@@ -18,9 +18,11 @@ use std::io::Write;
 mod attribute;
 mod cssselectorset;
 mod logical;
+mod opt;
 mod pseudo;
 mod selectorset;
 
+pub(crate) use self::opt::Opt;
 pub(crate) use cssselectorset::CssSelectorSet;
 pub use logical::Selector;
 pub use selectorset::SelectorSet;
@@ -167,6 +169,86 @@ impl From<OldSelectors> for Value {
             })
             .collect::<Vec<_>>();
         Self::List(content, Some(ListSeparator::Comma), false)
+    }
+}
+
+/// A full set of selectors with a separate backref.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SelectorCtx {
+    /// The actual selectors.
+    s: CssSelectorSet,
+    backref: CssSelectorSet,
+}
+
+impl SelectorCtx {
+    pub fn root() -> Self {
+        Self {
+            s: CssSelectorSet::root(),
+            backref: CssSelectorSet::root(),
+        }
+    }
+    /// Return true if this is a root (empty) selector.
+    pub fn is_root(&self) -> bool {
+        // TODO: Just s?  Or really both s and backref?
+        self.s.is_root() && self.backref.is_root()
+    }
+
+    pub fn real(&self) -> CssSelectorSet {
+        self.s.clone()
+    }
+
+    /// Get the first of these selectors (or the root selector if empty).
+    pub(crate) fn one(&self) -> Selector {
+        self.s.s.one()
+    }
+
+    /// Evaluate selectors inside this context.
+    pub(crate) fn nest(&self, selectors: SelectorSet) -> CssSelectorSet {
+        if selectors.has_backref() {
+            let backref = if self.s.is_root() {
+                &self.backref
+            } else {
+                &self.s
+            };
+            CssSelectorSet {
+                s: selectors.resolve_ref(backref),
+            }
+        } else {
+            self.s.nest(selectors)
+        }
+    }
+    pub(crate) fn at_root(&self, selectors: SelectorSet) -> Self {
+        let backref = if self.s.is_root() {
+            &self.backref
+        } else {
+            &self.s
+        };
+        let s = selectors
+            .s
+            .into_iter()
+            .flat_map(|s| {
+                if s.has_backref() {
+                    s.resolve_ref(backref)
+                } else {
+                    vec![s]
+                }
+            })
+            .collect();
+        Self {
+            s: CssSelectorSet {
+                s: SelectorSet { s },
+            },
+            backref: backref.clone(),
+        }
+    }
+}
+
+impl From<CssSelectorSet> for SelectorCtx {
+    fn from(value: CssSelectorSet) -> Self {
+        Self {
+            s: value,
+            backref: CssSelectorSet::root(),
+        }
     }
 }
 

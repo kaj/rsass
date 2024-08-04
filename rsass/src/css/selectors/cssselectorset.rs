@@ -1,5 +1,5 @@
 use super::selectorset::SelectorSet;
-use super::{BadSelector, BadSelector0};
+use super::{BadSelector, BadSelector0, Opt};
 use crate::css::Value;
 use crate::error::Invalid;
 use crate::output::CssBuf;
@@ -7,19 +7,28 @@ use crate::parser::{input_span, ParseError};
 use crate::sass::CallError;
 use crate::value::ListSeparator;
 use nom::Finish;
-use std::io;
 
 /// A `CssSelectorset` is like a [`Selectorset`] but valid in css.
 ///
 /// The practical difference is that a `CssSelectorset` is guaranteed
 /// not to contain backrefs (`&`), which may be present in a
 /// `Selectorset`.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct CssSelectorSet {
     pub(super) s: SelectorSet,
 }
 
 impl CssSelectorSet {
+    pub(crate) fn root() -> Self {
+        Self {
+            s: SelectorSet::root(),
+        }
+    }
+    /// Return true if this is a root (empty) selector.
+    pub fn is_root(&self) -> bool {
+        self.s.is_root()
+    }
+
     pub fn parse_value(value: Value) -> Result<Self, BadSelector> {
         fn join(value: &Value) -> Result<String, BadSelector0> {
             if let Value::List(vs, Some(ListSeparator::Comma), false) = value
@@ -63,7 +72,7 @@ impl CssSelectorSet {
         }
     }
 
-    pub fn no_placeholder(&self) -> Option<Self> {
+    pub(crate) fn no_placeholder(&self) -> Opt<Self> {
         self.s.no_placeholder().map(|s| Self { s })
     }
     pub fn is_superselector(&self, sub: &Self) -> bool {
@@ -95,6 +104,8 @@ impl CssSelectorSet {
         self.s.extend(&extendee.s, &extender.s).map(|s| Self { s })
     }
 
+    /// Nest `other` selectors inside this as though they were nested
+    /// within one another in the stylesheet.
     pub(crate) fn nest(&self, other: SelectorSet) -> Self {
         let mut parts = other
             .s
@@ -155,7 +166,7 @@ impl CssSelectorSet {
         }
     }
 
-    pub fn write_to(&self, buf: &mut CssBuf) -> io::Result<()> {
+    pub fn write_to(&self, buf: &mut CssBuf) {
         self.s.write_to(buf)
     }
 }

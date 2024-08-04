@@ -3,7 +3,7 @@
 
 use super::cssdest::CssDestination;
 use super::CssData;
-use crate::css::{self, AtRule, Import, OldSelectorCtx};
+use crate::css::{self, AtRule, Import, SelectorCtx, SelectorSet};
 use crate::error::ResultPos;
 use crate::input::{Context, Loader, Parsed, SourceKind};
 use crate::sass::{get_global_module, Expose, Item, UseAs};
@@ -152,7 +152,7 @@ fn handle_item(
                                 let selectors = scope.get_selectors();
                                 if !selectors.is_root() {
                                     let mut rule = thead
-                                        .start_rule(selectors.real_new())
+                                        .start_rule(selectors.real())
                                         .at(pos)?;
                                     handle_body(
                                         &items,
@@ -202,13 +202,14 @@ fn handle_item(
             }
         }
         Item::AtRoot(ref selectors, ref body) => {
-            let selectors = selectors
-                .eval(scope.clone())?
-                .with_backref(scope.get_selectors().one());
-            let subscope = ScopeRef::sub_selectors(scope, selectors.clone());
+            let selectors = selectors.eval(scope.clone())?;
+            let selectors = SelectorSet::try_from(&selectors)
+                .map_err(|e| Error::S(e.to_string()))?;
+            let ctx = scope.get_selectors().at_root(selectors);
+            let selectors = ctx.real();
+            let subscope = ScopeRef::sub_selectors(scope, ctx);
             if !selectors.is_root() {
-                let mut rule =
-                    dest.start_rule(selectors.real_new()).no_pos()?;
+                let mut rule = dest.start_rule(selectors).no_pos()?;
                 handle_body(body, &mut rule, subscope, file_context)?;
             } else {
                 handle_body(body, dest, subscope, file_context)?;
@@ -233,7 +234,7 @@ fn handle_item(
             if let Some(ref body) = *body {
                 let mut atrule = dest.start_atrule(name.clone(), args);
                 let local = if name == "keyframes" {
-                    ScopeRef::sub_selectors(scope, OldSelectorCtx::root())
+                    ScopeRef::sub_selectors(scope, SelectorCtx::root())
                 } else {
                     ScopeRef::sub(scope)
                 };
@@ -359,11 +360,12 @@ fn handle_item(
 
         Item::Rule(ref selectors, ref body) => {
             check_body(body, BodyContext::Rule)?;
-            let selectors =
-                OldSelectorCtx::from(selectors.eval(scope.clone())?)
-                    .inside(scope.get_selectors());
-            let mut dest = dest.start_rule(selectors.real_new()).no_pos()?;
-            let scope = ScopeRef::sub_selectors(scope, selectors);
+            let selectors = selectors.eval(scope.clone())?;
+            let selectors = SelectorSet::try_from(&selectors)
+                .map_err(|e| Error::S(e.to_string()))?;
+            let selectors = scope.get_selectors().nest(selectors);
+            let mut dest = dest.start_rule(selectors.clone()).no_pos()?;
+            let scope = ScopeRef::sub_selectors(scope, selectors.into());
             handle_body(body, &mut dest, scope, file_context)?;
         }
         Item::Property(ref name, ref value, ref pos) => {

@@ -260,7 +260,6 @@ fn t49_interpolants_in_css_imports() {
 }
 
 #[test]
-#[ignore = "argument selectors currently not compressed"]
 fn t50_wrapped_pseudo_selectors() {
     check(
         b"div {\n  \

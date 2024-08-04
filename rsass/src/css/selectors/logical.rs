@@ -7,6 +7,7 @@
 use super::attribute::Attribute;
 use super::pseudo::Pseudo;
 use super::selectorset::SelectorSet;
+use super::Opt;
 use super::{BadSelector, BadSelector0, CssSelectorSet};
 use crate::css::Value;
 use crate::output::CssBuf;
@@ -16,7 +17,6 @@ use crate::value::ListSeparator;
 use crate::{Invalid, ParseError};
 use core::fmt;
 use lazy_static::lazy_static;
-use std::io;
 use std::iter::once;
 
 type RelBox = Box<(RelKind, Selector)>;
@@ -37,28 +37,51 @@ pub struct Selector {
 }
 
 impl Selector {
-    pub fn no_placeholder(&self) -> Option<Self> {
+    pub(crate) fn no_placeholder(&self) -> Opt<Self> {
         if !self.placeholders.is_empty() {
-            return None;
+            return Opt::None;
         }
+        if self.is_local_empty() && self.rel_of.is_some() {
+            eprintln!("Deprecated dobule empty relation");
+            return Opt::None;
+        }
+
         let rel_of = if let Some((kind, rel)) = self.rel_of.as_deref() {
-            if let Some(rel) = rel.no_placeholder() {
-                Some(Box::new((*kind, rel)))
-            } else {
-                return None;
+            match rel.no_placeholder() {
+                Opt::Some(rel) => Some(Box::new((*kind, rel))),
+                Opt::Any => None,
+                Opt::None => return Opt::None,
             }
         } else {
             None
         };
-        let pseudo = self
-            .pseudo
-            .iter()
-            .filter_map(Pseudo::no_placeholder)
-            .collect();
-        Some(Self {
+        let pseudo = match Opt::collect_neg(
+            self.pseudo.iter().map(Pseudo::no_placeholder),
+        ) {
+            Opt::Some(p) => p,
+            Opt::Any => vec![],
+            Opt::None => return Opt::None,
+        };
+        Opt::Some(Self {
             rel_of,
             pseudo,
             ..self.clone()
+        })
+    }
+    pub(crate) fn no_leading_combinator(&self) -> Opt<Self> {
+        if self.has_leading_combinator() {
+            Opt::None
+        } else {
+            Opt::Some(self.clone())
+        }
+    }
+    fn has_leading_combinator(&self) -> bool {
+        self.rel_of.as_deref().map_or(false, |(_k, r)| {
+            if r.rel_of.is_none() {
+                r.is_local_empty()
+            } else {
+                r.has_leading_combinator()
+            }
         })
     }
 
@@ -148,10 +171,32 @@ impl Selector {
 
     pub(super) fn nest(&self, other: &Self) -> Self {
         let mut result = other.clone();
-        if let Some(rel) = result.rel_of.take() {
-            result.rel_of = Some(Box::new((rel.0, self.nest(&rel.1))));
-        } else {
-            result.rel_of = Some(Box::new((RelKind::Ancestor, self.clone())));
+        if !self.is_local_empty() || self.rel_of.is_some() {
+            result.rel_of = match result.rel_of.take().map(|b| *b) {
+                Some((kind, rel)) => {
+                    let rel = self.nest(&rel);
+                    if rel.is_local_empty() {
+                        match rel.rel_of.map(|b| *b) {
+                            Some((rk, rr)) => match (kind, rk) {
+                                (kind, RelKind::Ancestor) => {
+                                    Some(Box::new((kind, rr)))
+                                }
+                                (kind, rk) => Some(Box::new((
+                                    kind,
+                                    Selector {
+                                        rel_of: Some(Box::new((rk, rr))),
+                                        ..Default::default()
+                                    },
+                                ))),
+                            },
+                            None => None,
+                        }
+                    } else {
+                        Some(Box::new((kind, rel)))
+                    }
+                }
+                None => Some(Box::new((RelKind::Ancestor, self.clone()))),
+            };
         }
         result
     }
@@ -176,7 +221,7 @@ impl Selector {
                             s: format!("{}{}", a.s, b.s),
                         }),
                     };
-                    slf.unify(s)
+                    s.unify(slf)
                 })
                 .collect()
         } else {
@@ -518,21 +563,21 @@ impl Selector {
         result.extend(self.classes.iter().map(|c| format!(".{c}")));
         result.extend(self.id.iter().map(|id| format!("#{id}")));
         result.extend(self.attr.iter().map(|a| {
-            let mut s = String::new();
+            let mut s = CssBuf::new(Default::default());
             a.write_to_buf(&mut s);
-            s
+            String::from_utf8_lossy(&s.take()).to_string()
         }));
         result.extend(self.pseudo.iter().map(|p| {
-            let mut s = String::new();
+            let mut s = CssBuf::new(Default::default());
             p.write_to_buf(&mut s);
-            s
+            String::from_utf8_lossy(&s.take()).to_string()
         }));
         Ok(result)
     }
 
-    pub fn write_to(&self, buf: &mut CssBuf) -> io::Result<()> {
+    pub fn write_to(&self, buf: &mut CssBuf) {
         if let Some((kind, sel)) = self.rel_of.as_deref() {
-            sel.write_to(buf)?;
+            sel.write_to(buf);
             if let Some(symbol) = kind.symbol() {
                 if !sel.is_local_empty() {
                     buf.add_one(" ", "");
@@ -543,9 +588,7 @@ impl Selector {
                 buf.add_str(" ");
             }
         }
-        // TODO: This could be much more efficient!  :-)
-        buf.add_str(&self.clone().last_compound_str());
-        Ok(())
+        self.write_last_compound_to(buf)
     }
 
     pub(super) fn into_string_vec(mut self) -> Vec<String> {
@@ -567,40 +610,42 @@ impl Selector {
     }
 
     fn last_compound_str(self) -> String {
-        let mut buf = String::new();
+        let mut buf = CssBuf::new(Default::default());
+        self.write_last_compound_to(&mut buf);
+        String::from_utf8_lossy(&buf.take()).to_string()
+    }
+    fn write_last_compound_to(&self, buf: &mut CssBuf) {
         if self.backref.is_some() {
-            buf.push('&');
+            buf.add_str("&");
         }
-        if let Some(e) = self.element {
+        if let Some(e) = &self.element {
             if !e.is_any()
                 || (self.classes.is_empty()
                     && self.placeholders.is_empty()
                     && self.id.is_none()
-                    && self.attr.is_empty()
                     && self.pseudo.is_empty())
             {
-                buf.push_str(&e.s);
+                buf.add_str(&e.s);
             }
         }
         for p in &self.placeholders {
-            buf.push('%');
-            buf.push_str(p);
+            buf.add_str("%");
+            buf.add_str(p);
         }
         if let Some(id) = &self.id {
-            buf.push('#');
-            buf.push_str(id);
+            buf.add_str("#");
+            buf.add_str(id);
         }
         for c in &self.classes {
-            buf.push('.');
-            buf.push_str(c);
+            buf.add_str(".");
+            buf.add_str(c);
         }
         for attr in &self.attr {
-            attr.write_to_buf(&mut buf);
+            attr.write_to_buf(buf);
         }
         for pseudo in &self.pseudo {
-            pseudo.write_to_buf(&mut buf);
+            pseudo.write_to_buf(buf);
         }
-        buf
     }
 
     fn pseudo_element(&self) -> Option<&Pseudo> {
@@ -832,7 +877,7 @@ impl fmt::Debug for Selector {
             s.field("backref", &"&");
         }
         if let Some(elem) = &self.element {
-            s.field("element", elem);
+            s.field("element", &elem.s);
         }
         if !self.placeholders.is_empty() {
             s.field("placeholders", &self.placeholders);

@@ -1,10 +1,10 @@
 use super::{logical::Selector, BadSelector, BadSelector0, CssSelectorSet};
+use super::{OldSelectors, Opt};
 use crate::output::CssBuf;
 use crate::parser::input_span;
 use crate::value::ListSeparator;
 use crate::ParseError;
 use crate::{css::Value, Invalid};
-use std::io;
 
 /// A set of selectors.
 /// This is the normal top-level selector, which can be a single
@@ -15,17 +15,23 @@ pub struct SelectorSet {
 }
 
 impl SelectorSet {
-    pub fn no_placeholder(&self) -> Option<Self> {
-        let s = self
-            .s
-            .iter()
-            .filter_map(Selector::no_placeholder)
-            .collect::<Vec<_>>();
-        if s.is_empty() {
-            None
-        } else {
-            Some(Self { s })
+    pub(crate) fn root() -> Self {
+        Self {
+            s: vec![Selector::default()],
         }
+    }
+    /// Return true if this is a root (empty) selector.
+    pub fn is_root(&self) -> bool {
+        self.s.len() == 1 && self.s[0] == Selector::default()
+    }
+
+    pub(crate) fn no_placeholder(&self) -> Opt<Self> {
+        let s = self.s.iter().map(Selector::no_placeholder);
+        Opt::collect_pos(s).map(|s| Self { s })
+    }
+    pub(crate) fn no_leading_combinator(&self) -> Opt<Self> {
+        let s = self.s.iter().map(Selector::no_leading_combinator);
+        Opt::collect_pos(s).map(|s| Self { s })
     }
 
     pub(crate) fn extend(
@@ -75,16 +81,16 @@ impl SelectorSet {
         Ok(())
     }
 
-    pub fn write_to(&self, buf: &mut CssBuf) -> io::Result<()> {
+    pub fn write_to(&self, buf: &mut CssBuf) {
         if let Some((first, rest)) = self.s.split_first() {
-            first.write_to(buf)?;
+            first.write_to(buf);
             for one in rest {
                 buf.add_one(", ", ",");
-                one.write_to(buf)?;
+                one.write_to(buf);
             }
         }
-        Ok(())
     }
+
     // TODO: Get rid of this, use the above!
     pub(super) fn write_to_buf(&self, buf: &mut String) {
         fn write_one(s: &Selector, buf: &mut String) {
@@ -111,10 +117,48 @@ impl SelectorSet {
                 .collect::<Vec<_>>(),
         }
     }
+
+    /* // Get these selectors with a specific backref selector.
+    ///
+    /// Used to create `@at-root` contexts, to have `&` work in them.
+    pub(crate) fn with_backref(self, context: Selector) -> SelectorCtx {
+        SelectorCtx {
+            s: self.try_into().unwrap(),
+            backref: CssSelectorSet,
+        }.inside(&SelectorCtx {
+            s: Self::root().try_into().unwrap(),
+            backref: context,
+        })
+    }*/
+
+    /// Get the first of these selectors (or the root selector if empty).
+    pub(crate) fn one(&self) -> Selector {
+        self.s.first().cloned().unwrap_or_else(Selector::default)
+    }
+}
+
+impl TryFrom<&OldSelectors> for SelectorSet {
+    type Error = BadSelector;
+
+    fn try_from(s: &OldSelectors) -> Result<Self, Self::Error> {
+        if s.is_root() {
+            return Ok(SelectorSet {
+                s: vec![Selector::default()],
+            });
+        }
+        let formatted = s.to_string();
+        let span = input_span(formatted.clone());
+        ParseError::check(parser::selector_set(span.borrow()))?
+            .try_into()
+            .map_err(|_| BadSelector::Value(formatted.into()))
+    }
 }
 
 impl From<SelectorSet> for Value {
     fn from(value: SelectorSet) -> Self {
+        if value.is_root() {
+            return Self::Null;
+        }
         let v = value.s.into_iter().map(Self::from).collect::<Vec<_>>();
         if v.is_empty() {
             Self::Null
