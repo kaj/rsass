@@ -5,16 +5,22 @@ use crate::sass::{Selector, SelectorPart, Selectors};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::one_of;
-use nom::combinator::{map, map_res, opt, value};
+use nom::combinator::{map, map_opt, map_res, opt, value};
 use nom::multi::{many1, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 
 pub fn selectors(input: Span) -> PResult<Selectors> {
-    let (input, v) = separated_list1(
-        terminated(tag(","), ignore_comments),
-        opt(selector),
-    )(input)?;
-    Ok((input, Selectors::new(v.into_iter().flatten().collect())))
+    map_opt(
+        separated_list1(terminated(tag(","), ignore_comments), opt(selector)),
+        |v| {
+            let v = v.into_iter().flatten().collect::<Vec<_>>();
+            if v.is_empty() {
+                None
+            } else {
+                Some(Selectors::new(v))
+            }
+        },
+    )(input)
 }
 
 pub fn selector(input: Span) -> PResult<Selector> {

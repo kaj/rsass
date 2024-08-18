@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn multiple_parent_selectors_with_trailing_ident() {
     assert_eq!(
         runner().ok("// Regression test for sass/libsass#2630\

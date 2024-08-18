@@ -1,18 +1,17 @@
-use super::{
-    BadSelector, BadSelector0, CssSelectorSet, OldSelectors, Opt, Selector,
-};
+use super::error::BadSelector0;
+use super::{BadSelector, CssSelectorSet, Opt, Selector};
+use crate::css::Value;
 use crate::output::CssBuf;
 use crate::parser::input_span;
 use crate::value::ListSeparator;
-use crate::ParseError;
-use crate::{css::Value, Invalid};
+use crate::{Invalid, ParseError};
 
 /// A set of selectors.
 /// This is the normal top-level selector, which can be a single
 /// [`Selector`] or a comma-separated list (set) of such selectors.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SelectorSet {
-    pub(super) s: Vec<Selector>,
+    pub(crate) s: Vec<Selector>,
 }
 
 impl SelectorSet {
@@ -97,28 +96,27 @@ impl SelectorSet {
         self.s.iter().any(Selector::has_backref)
     }
     pub(super) fn resolve_ref(self, ctx: &CssSelectorSet) -> Self {
-        Self {
-            s: self
-                .s
-                .into_iter()
-                .flat_map(|o| o.resolve_ref(ctx))
-                .collect::<Vec<_>>(),
+        let mut resolved = self
+            .s
+            .into_iter()
+            .map(|s| s.resolve_ref(ctx).into_iter())
+            .collect::<Vec<_>>();
+        // Now put the resolved items in the correct order.
+        // We have [[a1, b1], [a2, b2]] but want [a1, a2, b1, b2]
+        let mut s = Vec::new();
+        loop {
+            let mut done = true;
+            for v in &mut resolved {
+                if let Some(next) = v.next() {
+                    s.push(next);
+                    done = false;
+                }
+            }
+            if done {
+                break;
+            }
         }
-    }
-}
-
-impl TryFrom<&OldSelectors> for SelectorSet {
-    type Error = BadSelector;
-
-    fn try_from(s: &OldSelectors) -> Result<Self, Self::Error> {
-        if s.is_root() {
-            return Ok(SelectorSet {
-                s: vec![Selector::default()],
-            });
-        }
-        let formatted = s.to_string();
-        let span = input_span(formatted.clone());
-        Ok(ParseError::check(parser::selector_set(span.borrow()))?)
+        Self { s }
     }
 }
 

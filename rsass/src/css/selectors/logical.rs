@@ -5,10 +5,9 @@
 //! implementation.  But as that is a major breaking change, I keep
 //! these types internal for now.
 use super::attribute::Attribute;
+use super::error::BadSelector0;
 use super::pseudo::Pseudo;
-use super::selectorset::SelectorSet;
-use super::Opt;
-use super::{BadSelector, BadSelector0, CssSelectorSet};
+use super::{BadSelector, CssSelectorSet, Opt, SelectorSet};
 use crate::css::Value;
 use crate::output::CssBuf;
 use crate::parser::input_span;
@@ -211,17 +210,25 @@ impl Selector {
                 .s
                 .iter()
                 .flat_map(|s| {
-                    let mut slf = self.clone();
-                    let mut s = s.clone();
-                    slf.element = match (s.element.take(), slf.element.take())
-                    {
-                        (None, None) => None,
-                        (Some(e), None) | (None, Some(e)) => Some(e),
-                        (Some(a), Some(b)) => Some(ElemType {
-                            s: format!("{}{}", a.s, b.s),
-                        }),
+                    let mut buf = CssBuf::new(Default::default());
+                    s.write_last_compound_to(&mut buf);
+                    self.write_last_compound_to(&mut buf);
+                    let buf = buf.take();
+                    let mut result = if buf.is_empty() {
+                        Selector::default()
+                    } else {
+                        let span = input_span(
+                            String::from_utf8_lossy(&buf).to_string(),
+                        );
+                        ParseError::check(parser::compound_selector(
+                            span.borrow(),
+                        ))
+                        .unwrap()
                     };
-                    s.unify(slf)
+                    result.rel_of = self.rel_of.clone();
+                    let mut s2 = Selector::default();
+                    s2.rel_of = s.rel_of.clone();
+                    s2.unify(result)
                 })
                 .collect()
         } else {
@@ -564,12 +571,12 @@ impl Selector {
         result.extend(self.id.iter().map(|id| format!("#{id}")));
         result.extend(self.attr.iter().map(|a| {
             let mut s = CssBuf::new(Default::default());
-            a.write_to_buf(&mut s);
+            a.write_to(&mut s);
             String::from_utf8_lossy(&s.take()).to_string()
         }));
         result.extend(self.pseudo.iter().map(|p| {
             let mut s = CssBuf::new(Default::default());
-            p.write_to_buf(&mut s);
+            p.write_to(&mut s);
             String::from_utf8_lossy(&s.take()).to_string()
         }));
         Ok(result)
@@ -642,10 +649,10 @@ impl Selector {
             buf.add_str(c);
         }
         for attr in &self.attr {
-            attr.write_to_buf(buf);
+            attr.write_to(buf);
         }
         for pseudo in &self.pseudo {
-            pseudo.write_to_buf(buf);
+            pseudo.write_to(buf);
         }
     }
 
@@ -979,8 +986,6 @@ impl RelKind {
 }
 
 pub(crate) mod parser {
-    use std::str::from_utf8;
-
     use super::super::attribute::parser::attribute;
     use super::super::pseudo::parser::pseudo;
     use super::{ElemType, RelKind, Selector};
@@ -1047,7 +1052,7 @@ pub(crate) mod parser {
             // TODO: Remove this.
             // It is a temporary workaround for keyframe support.
             result.element = Some(ElemType {
-                s: dbg!(from_utf8(stop.fragment()).unwrap()).to_string(),
+                s: String::from_utf8_lossy(stop.fragment()).to_string(),
             });
             return Ok((rest, result));
         }

@@ -21,7 +21,7 @@ impl Attribute {
             && self.modifier == b.modifier
     }
 
-    pub(super) fn write_to_buf(&self, buf: &mut CssBuf) {
+    pub(super) fn write_to(&self, buf: &mut CssBuf) {
         buf.add_char('[');
         buf.add_str(&self.name);
         buf.add_str(&self.op);

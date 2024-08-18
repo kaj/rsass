@@ -1,5 +1,5 @@
-use super::selectorset::SelectorSet;
-use super::{BadSelector, BadSelector0};
+use super::error::BadSelector0;
+use super::{BadSelector, SelectorSet};
 use crate::css::Value;
 use crate::error::Invalid;
 use crate::output::CssBuf;

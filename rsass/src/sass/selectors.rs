@@ -6,9 +6,12 @@
 //!
 //! This _may_ change to a something like a tree of operators with
 //! leafs of simple selectors in some future release.
-use crate::css;
+use crate::css::parser::selector_set;
+use crate::css::{self, SelectorSet};
+use crate::parser::input_span;
 use crate::sass::SassString;
 use crate::{Error, ParseError, ScopeRef};
+use std::fmt::Write;
 
 /// A full set of selectors
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
@@ -32,22 +35,26 @@ impl Selectors {
     }
 
     /// Evaluate any interpolation in these Selectors.
-    pub fn eval(&self, scope: ScopeRef) -> Result<css::OldSelectors, Error> {
-        let s = css::OldSelectors::new(
-            self.s
-                .iter()
-                .map(|s| s.eval(scope.clone()))
-                .collect::<Result<Vec<_>, Error>>()?,
-        );
-        // The "simple" parts we get from evaluating interpolations may
-        // contain high-level selector separators (i.e. ","), so we need to
-        // parse the selectors again, from a string representation.
-        use crate::parser::css::selectors;
-        use crate::parser::input_span;
-        // TODO: Get the span from the source of self!
-        Ok(ParseError::check(selectors(
-            input_span(format!("{s} ")).borrow(),
-        ))?)
+    pub fn eval(&self, scope: ScopeRef) -> Result<SelectorSet, Error> {
+        let mut s = Vec::new();
+        for sel in &self.s {
+            s.extend(sel.eval(scope.clone())?);
+        }
+        Ok(SelectorSet { s })
+    }
+    fn write_eval(
+        &self,
+        f: &mut String,
+        scope: ScopeRef,
+    ) -> Result<(), Error> {
+        if let Some((first, rest)) = self.s.split_first() {
+            first.write_eval(f, scope.clone())?;
+            for s in rest {
+                f.push_str(", ");
+                s.write_eval(f, scope.clone())?;
+            }
+        }
+        Ok(())
     }
 }
 
@@ -67,12 +74,25 @@ impl Selector {
     pub fn new(s: Vec<SelectorPart>) -> Self {
         Self(s)
     }
-    fn eval(&self, scope: ScopeRef) -> Result<css::OldSelector, Error> {
-        self.0
-            .iter()
-            .map(|sp| sp.eval(scope.clone()))
-            .collect::<Result<_, _>>()
-            .map(css::OldSelector)
+    fn eval(&self, scope: ScopeRef) -> Result<Vec<css::Selector>, Error> {
+        if self.0.is_empty() {
+            Ok(vec![css::Selector::default()])
+        } else {
+            let mut text = String::new();
+            self.write_eval(&mut text, scope)?;
+            Ok(ParseError::check(selector_set(input_span(text).borrow()))?.s)
+        }
+    }
+
+    fn write_eval(
+        &self,
+        f: &mut String,
+        scope: ScopeRef,
+    ) -> Result<(), Error> {
+        for p in &self.0 {
+            p.write_eval(f, scope.clone())?;
+        }
+        Ok(())
     }
 }
 
@@ -120,45 +140,65 @@ pub enum SelectorPart {
 }
 
 impl SelectorPart {
-    fn eval(&self, scope: ScopeRef) -> Result<css::OldSelectorPart, Error> {
-        match *self {
-            Self::Attribute {
-                ref name,
-                ref op,
-                ref val,
-                ref modifier,
-            } => Ok(css::OldSelectorPart::Attribute {
-                name: name.evaluate(scope.clone())?,
-                op: op.clone(),
-                val: val.evaluate(scope)?.opt_unquote(),
-                modifier: *modifier,
-            }),
-            Self::Simple(ref v) => Ok(css::OldSelectorPart::Simple(
-                v.evaluate(scope)?.to_string(),
-            )),
-            Self::Pseudo { ref name, ref arg } => {
-                let arg = match &arg {
-                    Some(ref a) => Some(a.eval(scope.clone())?),
-                    None => None,
-                };
-                Ok(css::OldSelectorPart::Pseudo {
-                    name: name.evaluate(scope)?,
-                    arg,
-                })
+    fn write_eval(
+        &self,
+        f: &mut String,
+        scope: ScopeRef,
+    ) -> Result<(), Error> {
+        match self {
+            SelectorPart::Simple(s) => we(s, f, scope)?,
+            SelectorPart::Descendant => f.push(' '),
+            SelectorPart::RelOp(op) => {
+                if let Some(ch) = char::from_u32(u32::from(*op)) {
+                    f.push(' ');
+                    f.push(ch);
+                    f.push(' ');
+                }
             }
-            Self::PseudoElement { ref name, ref arg } => {
-                let arg = match &arg {
-                    Some(ref a) => Some(a.eval(scope.clone())?),
-                    None => None,
-                };
-                Ok(css::OldSelectorPart::PseudoElement {
-                    name: name.evaluate(scope)?,
-                    arg,
-                })
+            SelectorPart::Attribute {
+                name,
+                op,
+                val,
+                modifier,
+            } => {
+                f.push('[');
+                we(name, f, scope.clone())?;
+                f.push_str(op);
+                let val = val.evaluate(scope)?.opt_unquote();
+                write!(f, "{val}")?;
+                if let Some(modifier) = modifier {
+                    if val.quotes().is_none() {
+                        f.push(' ');
+                    }
+                    f.push(*modifier);
+                }
+                f.push(']');
             }
-            Self::Descendant => Ok(css::OldSelectorPart::Descendant),
-            Self::RelOp(op) => Ok(css::OldSelectorPart::RelOp(op)),
-            Self::BackRef => Ok(css::OldSelectorPart::BackRef),
+            SelectorPart::PseudoElement { name, arg } => {
+                f.push_str("::");
+                we(name, f, scope.clone())?;
+                if let Some(arg) = arg {
+                    f.push('(');
+                    arg.write_eval(f, scope)?;
+                    f.push(')');
+                }
+            }
+            SelectorPart::Pseudo { name, arg } => {
+                f.push(':');
+                we(name, f, scope.clone())?;
+                if let Some(arg) = arg {
+                    f.push('(');
+                    arg.write_eval(f, scope)?;
+                    f.push(')');
+                }
+            }
+            SelectorPart::BackRef => f.push('&'),
         }
+        Ok(())
     }
+}
+
+fn we(s: &SassString, f: &mut String, scope: ScopeRef) -> Result<(), Error> {
+    write!(f, "{}", s.evaluate(scope)?)?;
+    Ok(())
 }

@@ -3,7 +3,7 @@
 
 use super::cssdest::CssDestination;
 use super::CssData;
-use crate::css::{self, AtRule, Import, SelectorCtx, SelectorSet};
+use crate::css::{self, AtRule, Import, SelectorCtx};
 use crate::error::ResultPos;
 use crate::input::{Context, Loader, Parsed, SourceKind};
 use crate::sass::{get_global_module, Expose, Item, UseAs};
@@ -203,8 +203,6 @@ fn handle_item(
         }
         Item::AtRoot(ref selectors, ref body) => {
             let selectors = selectors.eval(scope.clone())?;
-            let selectors = SelectorSet::try_from(&selectors)
-                .map_err(|e| Error::S(e.to_string()))?;
             let ctx = scope.get_selectors().at_root(selectors);
             let selectors = ctx.real();
             let subscope = ScopeRef::sub_selectors(scope, ctx);
@@ -361,8 +359,6 @@ fn handle_item(
         Item::Rule(ref selectors, ref body) => {
             check_body(body, BodyContext::Rule)?;
             let selectors = selectors.eval(scope.clone())?;
-            let selectors = SelectorSet::try_from(&selectors)
-                .map_err(|e| Error::S(e.to_string()))?;
             let selectors = scope.get_selectors().nest(selectors);
             let mut dest = dest.start_rule(selectors.clone()).no_pos()?;
             let scope = ScopeRef::sub_selectors(scope, selectors.into());

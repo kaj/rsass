@@ -110,7 +110,7 @@ impl Pseudo {
         self
     }
 
-    pub(super) fn write_to_buf(&self, buf: &mut CssBuf) {
+    pub(super) fn write_to(&self, buf: &mut CssBuf) {
         buf.add_char(':');
         if self.element {
             buf.add_char(':');
@@ -125,12 +125,12 @@ impl Pseudo {
             "nth-of-type",
         ]) {
             let mut t = CssBuf::new(buf.format());
-            self.arg.write_to_buf(&mut t);
+            self.arg.write_to(&mut t);
             buf.add_str(
                 &String::from_utf8_lossy(&t.take()).replacen(" + ", "+", 1),
             );
         } else {
-            self.arg.write_to_buf(buf);
+            self.arg.write_to(buf);
         }
     }
     fn name_in(&self, names: &[&str]) -> bool {
@@ -181,17 +181,17 @@ impl Arg {
             _ => false,
         }
     }
-    pub(super) fn write_to_buf(&self, buf: &mut CssBuf) {
+    pub(super) fn write_to(&self, buf: &mut CssBuf) {
         match self {
             Self::Selector(s) => {
-                buf.add_str("(");
+                buf.add_char('(');
                 s.write_to(buf);
-                buf.add_str(")");
+                buf.add_char(')');
             }
             Self::Other(a) => {
-                buf.add_str("(");
+                buf.add_char('(');
                 buf.add_str(a);
-                buf.add_str(")");
+                buf.add_char(')');
             }
             Self::None => (),
         }

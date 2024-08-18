@@ -1,10 +1,7 @@
 pub(crate) mod media;
 mod rule;
-mod selectors;
 pub(crate) mod strings;
 mod values;
-
-pub(crate) use self::selectors::selectors;
 
 use super::util::{opt_spacelike, spacelike};
 use super::{PResult, Span};
