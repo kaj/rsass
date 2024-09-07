@@ -34,8 +34,8 @@ impl Attribute {
     }
 }
 
-pub(crate) mod parser {
-    use super::super::logical::parser::name_opt_ns;
+pub(super) mod parser {
+    use super::super::parser::name_opt_ns;
     use super::Attribute;
     use crate::parser::css::strings::css_string_any;
     use crate::parser::util::term_opt_space;

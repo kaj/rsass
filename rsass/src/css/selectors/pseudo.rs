@@ -198,8 +198,8 @@ impl Arg {
     }
 }
 
-pub(crate) mod parser {
-    use super::super::selectorset::parser::selector_set;
+pub(super) mod parser {
+    use super::super::parser::selector_set;
     use super::{Arg, Pseudo};
     use crate::parser::css::strings::{
         css_string_nohash, custom_value_inner,

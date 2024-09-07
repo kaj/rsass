@@ -4,10 +4,10 @@
 //! In the future, I might use this as the primary (only) css selector
 //! implementation.  But as that is a major breaking change, I keep
 //! these types internal for now.
-use super::attribute::Attribute;
+use super::compound::CompoundSelector;
 use super::error::BadSelector0;
-use super::pseudo::Pseudo;
-use super::{BadSelector, CssSelectorSet, Opt, SelectorSet};
+use super::parser::compound_selector;
+use super::{BadSelector, CssSelectorSet, Opt, Pseudo, SelectorSet};
 use crate::css::Value;
 use crate::output::CssBuf;
 use crate::parser::input_span;
@@ -15,31 +15,28 @@ use crate::sass::CallError;
 use crate::value::ListSeparator;
 use crate::{Invalid, ParseError};
 use core::fmt;
-use lazy_static::lazy_static;
 use std::iter::once;
 
 type RelBox = Box<(RelKind, Selector)>;
 
 /// A selector more aimed at making it easy to implement selector functions.
 ///
-/// A logical selector is fully resolved (cannot contain an `&` backref).
+/// A logical selector is a sequence of compound selectors, joined by
+/// relational operators (where the "ancestor" relation is just
+/// whitespace in the text representation).
 #[derive(Default, Clone, PartialEq, Eq)]
 pub struct Selector {
-    backref: Option<()>,
-    element: Option<ElemType>,
-    placeholders: Vec<String>,
-    classes: Vec<String>,
-    id: Option<String>,
-    attr: Vec<Attribute>,
-    pseudo: Vec<Pseudo>,
     rel_of: Option<RelBox>,
+    compound: CompoundSelector,
 }
 
 impl Selector {
     pub(crate) fn no_placeholder(&self) -> Opt<Self> {
-        if !self.placeholders.is_empty() {
-            return Opt::None;
-        }
+        let compound = match self.compound.no_placeholder() {
+            Opt::Some(compound) => compound,
+            Opt::Any => CompoundSelector::default(),
+            Opt::None => return Opt::None,
+        };
         if self.is_local_empty() && self.rel_of.is_some() {
             eprintln!("Deprecated dobule empty relation");
             return Opt::None;
@@ -54,18 +51,7 @@ impl Selector {
         } else {
             None
         };
-        let pseudo = match Opt::collect_neg(
-            self.pseudo.iter().map(Pseudo::no_placeholder),
-        ) {
-            Opt::Some(p) => p,
-            Opt::Any => vec![],
-            Opt::None => return Opt::None,
-        };
-        Opt::Some(Self {
-            rel_of,
-            pseudo,
-            ..self.clone()
-        })
+        Opt::Some(Self { rel_of, compound })
     }
     pub(crate) fn no_leading_combinator(&self) -> Opt<Self> {
         if self.has_leading_combinator() {
@@ -94,7 +80,7 @@ impl Selector {
             result.rel_of = Some(Box::new((rel.0, self.append(&rel.1)?)));
             Ok(result)
         } else {
-            let rel = self.rel_of.clone();
+            let rel_of = self.rel_of.clone();
             if result.is_local_empty() {
                 return Err(AppendError::Sub);
             }
@@ -109,10 +95,12 @@ impl Selector {
             }
             let s = s + &other;
             let span = input_span(s);
-            let mut result =
-                ParseError::check(parser::compound_selector(span.borrow()))?;
-            result.rel_of = rel;
-            Ok(result)
+            Ok(Self {
+                rel_of,
+                compound: ParseError::check(compound_selector(
+                    span.borrow(),
+                ))?,
+            })
         }
     }
 
@@ -128,29 +116,7 @@ impl Selector {
                 .flat_map(|mut s| {
                     if original.is_superselector(&s) {
                         let base = s.clone();
-                        if original.element == s.element
-                            && !s
-                                .element
-                                .as_ref()
-                                .map_or(true, |e| e.s == "*")
-                        {
-                            s.element = None;
-                        }
-                        s.placeholders.retain(|p| {
-                            !original.placeholders.iter().any(|o| o == p)
-                        });
-                        if original.id == s.id {
-                            s.id = None;
-                        }
-                        s.attr.retain(|a| {
-                            !original.attr.iter().any(|o| a == o)
-                        });
-                        s.classes.retain(|c| {
-                            !original.classes.iter().any(|o| c == o)
-                        });
-                        s.pseudo.retain(|p| {
-                            !original.pseudo.iter().any(|o| p == o)
-                        });
+                        s.compound.dedup(&original.compound);
                         let mut result = extender
                             .s
                             .iter()
@@ -204,31 +170,32 @@ impl Selector {
         self = self.resolve_ref_in_pseudo(ctx);
         let rel_of = self.rel_of.take();
 
-        let result = if self.backref.is_some() {
-            self.backref = None;
+        let result = if self.compound.has_backref() {
+            self.compound.backref = None;
             ctx.s
                 .s
                 .iter()
                 .flat_map(|s| {
                     let mut buf = CssBuf::new(Default::default());
-                    s.write_last_compound_to(&mut buf);
-                    self.write_last_compound_to(&mut buf);
+                    s.compound.write_to(&mut buf);
+                    self.compound.write_to(&mut buf);
                     let buf = buf.take();
-                    let mut result = if buf.is_empty() {
-                        Selector::default()
+                    let compound = if buf.is_empty() {
+                        CompoundSelector::default()
                     } else {
-                        let span = input_span(
-                            String::from_utf8_lossy(&buf).to_string(),
-                        );
-                        ParseError::check(parser::compound_selector(
-                            span.borrow(),
-                        ))
-                        .unwrap()
+                        let span = input_span(buf);
+                        ParseError::check(compound_selector(span.borrow()))
+                            .unwrap()
                     };
-                    result.rel_of = self.rel_of.clone();
-                    let mut s2 = Selector::default();
-                    s2.rel_of = s.rel_of.clone();
-                    s2.unify(result)
+                    let result = Selector {
+                        rel_of: self.rel_of.clone(),
+                        compound,
+                    };
+                    Selector {
+                        rel_of: s.rel_of.clone(),
+                        compound: CompoundSelector::default(),
+                    }
+                    .unify(result)
                 })
                 .collect()
         } else {
@@ -272,13 +239,10 @@ impl Selector {
             rel.1 = rel.1.resolve_ref_in_pseudo(ctx);
             rel
         });
-        self.pseudo = self
-            .pseudo
-            .into_iter()
-            .map(|p| p.resolve_ref(ctx))
-            .collect();
+        self.compound.resolve_ref_in_pseudo(ctx);
         self
     }
+
     /// Return true iff this selector is a superselector of `sub`.
     pub(super) fn is_superselector(&self, sub: &Self) -> bool {
         self.is_local_superselector(sub)
@@ -339,27 +303,7 @@ impl Selector {
     }
 
     fn is_local_superselector(&self, sub: &Self) -> bool {
-        fn elem_or_default(e: &Option<ElemType>) -> &ElemType {
-            lazy_static! {
-                static ref DEF: ElemType = ElemType::default();
-            }
-            e.as_ref().unwrap_or(&DEF)
-        }
-        elem_or_default(&self.element)
-            .is_superselector(elem_or_default(&sub.element))
-            && all_any(&self.placeholders, &sub.placeholders, PartialEq::eq)
-            && all_any(&self.classes, &sub.classes, PartialEq::eq)
-            && self.id.iter().all(|id| sub.id.as_ref() == Some(id))
-            && all_any(&self.attr, &sub.attr, Attribute::is_superselector)
-            && all_any(&self.pseudo, &sub.pseudo, Pseudo::is_superselector)
-            && self.pseudo_element().as_ref().map_or_else(
-                || sub.pseudo_element().is_none(),
-                |aa| {
-                    sub.pseudo_element()
-                        .as_ref()
-                        .map_or(false, |ba| aa.is_superselector(ba))
-                },
-            )
+        self.compound.is_superselector(&sub.compound)
     }
 
     pub(super) fn replace(
@@ -367,11 +311,7 @@ impl Selector {
         original: &SelectorSet,
         replacement: &SelectorSet,
     ) -> Vec<Self> {
-        self.pseudo = self
-            .pseudo
-            .into_iter()
-            .map(|p| p.replace(original, replacement))
-            .collect();
+        self.compound.replace_in_pseudo(original, replacement);
 
         let mut result = vec![self];
         for original in &original.s {
@@ -379,12 +319,7 @@ impl Selector {
                 .into_iter()
                 .flat_map(|mut s| {
                     if original.is_superselector(&s) {
-                        if original.element == s.element {
-                            s.element = None;
-                        }
-                        s.classes.retain(|c| {
-                            !original.classes.iter().any(|o| c == o)
-                        });
+                        s.compound.dedup(&original.compound);
                         replacement
                             .s
                             .iter()
@@ -407,8 +342,8 @@ impl Selector {
         self.clone()._unify(other.clone()).unwrap_or_default()
     }
 
-    fn _unify(mut self, mut other: Self) -> Option<Vec<Self>> {
-        let rel_of = match (self.rel_of.take(), other.rel_of.take()) {
+    fn _unify(self, other: Self) -> Option<Vec<Self>> {
+        let rel_of = match (self.rel_of, other.rel_of) {
             (None, None) => vec![],
             (None, Some(rel)) | (Some(rel), None) => vec![rel],
             (Some(a), Some(b)) => {
@@ -419,88 +354,24 @@ impl Selector {
                 v
             }
         };
-        let pseudo_element =
-            match (self.pseudo_element(), other.pseudo_element()) {
-                (None, None) => None,
-                (Some(pe), None) | (None, Some(pe)) => Some(pe),
-                (Some(a), Some(b)) => {
-                    if b.is_superselector(a) {
-                        Some(a)
-                    } else if a.is_superselector(b) {
-                        Some(b)
-                    } else {
-                        return None;
-                    }
-                }
-            }
-            .cloned();
-        self.pseudo.retain(|p| !p.is_element());
-        other.pseudo.retain(|p| !p.is_element());
-
-        self.element = match (self.element, other.element) {
-            (None, None) => None,
-            (None, Some(e)) | (Some(e), None) => Some(e),
-            (Some(a), Some(b)) => Some(a.unify(&b)?),
-        };
-        for c in other.placeholders {
-            if !self.placeholders.iter().any(|sc| sc == &c) {
-                self.placeholders.push(c);
-            }
-        }
-        for c in other.classes {
-            if !self.classes.iter().any(|sc| sc == &c) {
-                self.classes.push(c);
-            }
-        }
-        self.id = match (self.id, other.id) {
-            (None, None) => None,
-            (None, Some(id)) | (Some(id), None) => Some(id),
-            (Some(s_id), Some(o_id)) => {
-                if s_id == o_id {
-                    Some(s_id)
-                } else {
-                    return None;
-                }
-            }
-        };
-
-        combine_vital(
-            &mut self.attr,
-            &mut other.attr,
-            Attribute::is_superselector,
-        );
-        combine_vital(
-            &mut self.pseudo,
-            &mut other.pseudo,
-            Pseudo::is_superselector,
-        );
-        if let Some(pseudo_element) = pseudo_element {
-            self.pseudo.push(pseudo_element);
-        }
-        if self.pseudo.iter().any(Pseudo::is_host)
-            && (self.pseudo.iter().any(Pseudo::is_hover)
-                || self.element.is_some()
-                || !self.classes.is_empty()
-                || !rel_of.is_empty())
-        {
-            return None;
-        }
+        let compound = self.compound.unify(other.compound)?;
 
         Some(if rel_of.is_empty() {
-            vec![self]
-        } else if self.is_local_empty() {
+            vec![compound.into()]
+        } else if compound.is_empty() {
             vec![]
         } else if rel_of.len() == 1 {
             let mut rel_of = rel_of;
-            self.rel_of = Some(rel_of.pop().unwrap());
-            vec![self]
+            vec![Selector {
+                rel_of: rel_of.pop(),
+                compound,
+            }]
         } else {
             rel_of
                 .into_iter()
-                .map(|r| {
-                    let mut t = self.clone();
-                    t.rel_of = Some(r);
-                    t
+                .map(|r| Selector {
+                    rel_of: Some(r),
+                    compound: compound.clone(),
                 })
                 .collect()
         })
@@ -512,18 +383,11 @@ impl Selector {
     }
 
     fn is_local_empty(&self) -> bool {
-        self.element.is_none()
-            && self.backref.is_none()
-            && self.placeholders.is_empty()
-            && self.classes.is_empty()
-            && self.id.is_none()
-            && self.attr.is_empty()
-            && self.pseudo.is_empty()
+        self.compound.is_empty()
     }
 
     pub(super) fn has_backref(&self) -> bool {
-        self.backref.is_some()
-            || self.pseudo.iter().any(Pseudo::has_backref)
+        self.compound.has_backref()
             || self
                 .rel_of
                 .as_deref()
@@ -548,7 +412,7 @@ impl Selector {
                 rel_of: Some(Box::new((rel, other))),
                 ..Self::default()
             })
-        } else if self.pseudo.iter().any(Pseudo::is_rootish) {
+        } else if self.compound.is_rootish() {
             vec![]
         } else {
             self.rel_of = Some(Box::new((rel, other)));
@@ -562,24 +426,7 @@ impl Selector {
                 "Combinators not allowed in simple-selectors.".into(),
             ));
         }
-        let mut result = Vec::new();
-        if let Some(element) = &self.element {
-            result.push(element.s.clone());
-        }
-        result.extend(self.placeholders.iter().map(|p| format!("%{p}")));
-        result.extend(self.classes.iter().map(|c| format!(".{c}")));
-        result.extend(self.id.iter().map(|id| format!("#{id}")));
-        result.extend(self.attr.iter().map(|a| {
-            let mut s = CssBuf::new(Default::default());
-            a.write_to(&mut s);
-            String::from_utf8_lossy(&s.take()).to_string()
-        }));
-        result.extend(self.pseudo.iter().map(|p| {
-            let mut s = CssBuf::new(Default::default());
-            p.write_to(&mut s);
-            String::from_utf8_lossy(&s.take()).to_string()
-        }));
-        Ok(result)
+        Ok(self.compound.simple_selectors())
     }
 
     /// Write this `Selector` to a formatted buffer.
@@ -596,7 +443,7 @@ impl Selector {
                 buf.add_str(" ");
             }
         }
-        self.write_last_compound_to(buf)
+        self.compound.write_to(buf)
     }
 
     pub(super) fn into_string_vec(mut self) -> Vec<String> {
@@ -619,71 +466,32 @@ impl Selector {
 
     fn last_compound_str(self) -> String {
         let mut buf = CssBuf::new(Default::default());
-        self.write_last_compound_to(&mut buf);
+        self.compound.write_to(&mut buf);
         String::from_utf8_lossy(&buf.take()).to_string()
-    }
-    fn write_last_compound_to(&self, buf: &mut CssBuf) {
-        if self.backref.is_some() {
-            buf.add_str("&");
-        }
-        if let Some(e) = &self.element {
-            if !e.is_any()
-                || (self.classes.is_empty()
-                    && self.placeholders.is_empty()
-                    && self.id.is_none()
-                    && self.pseudo.is_empty())
-            {
-                buf.add_str(&e.s);
-            }
-        }
-        for p in &self.placeholders {
-            buf.add_str("%");
-            buf.add_str(p);
-        }
-        if let Some(id) = &self.id {
-            buf.add_str("#");
-            buf.add_str(id);
-        }
-        for c in &self.classes {
-            buf.add_str(".");
-            buf.add_str(c);
-        }
-        for attr in &self.attr {
-            attr.write_to(buf);
-        }
-        for pseudo in &self.pseudo {
-            pseudo.write_to(buf);
-        }
     }
 
     fn pseudo_element(&self) -> Option<&Pseudo> {
-        self.pseudo.iter().find(|p| p.is_element())
+        self.compound.pseudo_element()
     }
 
     /// Internal (the api is [`TryFrom`]).
     pub(super) fn _try_from_value(v: &Value) -> Result<Self, BadSelector0> {
         match v {
-            Value::List(list, None | Some(ListSeparator::Space), _) => {
-                list.iter()
-                    .try_fold(None, |a, v| {
-                        let mut s = match v {
-                            // TODO: This is probably broken when
-                            // a vailue is like ["a", ">", "b"]
-                            Value::Literal(s) => {
-                                ParseError::check(parser::selector(
-                                    input_span(s.value()).borrow(),
-                                ))?
-                            }
-                            _ => return Err(BadSelector0::Value),
-                        };
-                        // TODO: Handle operator at end of a!
-                        if let Some(a) = a {
-                            s.add_root_ancestor(a);
-                        }
-                        Ok(Some(s))
-                    })
-                    .map(Option::unwrap_or_default)
-            }
+            Value::List(list, None | Some(ListSeparator::Space), _) => list
+                .iter()
+                .try_fold(None, |a, v| {
+                    let mut s = match v {
+                        Value::Literal(s) => ParseError::check(
+                            parser::selector(input_span(s.value()).borrow()),
+                        )?,
+                        _ => return Err(BadSelector0::Value),
+                    };
+                    if let Some(a) = a {
+                        s.add_root_ancestor(a);
+                    }
+                    Ok(Some(s))
+                })
+                .map(Option::unwrap_or_default),
             Value::Literal(s) => {
                 if s.value().is_empty() {
                     Ok(Self::default())
@@ -693,6 +501,15 @@ impl Selector {
                 }
             }
             _ => Err(BadSelector0::Value),
+        }
+    }
+}
+
+impl From<CompoundSelector> for Selector {
+    fn from(compound: CompoundSelector) -> Self {
+        Self {
+            rel_of: None,
+            compound,
         }
     }
 }
@@ -752,10 +569,7 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
     ) -> Vec<RelBox> {
         s.into_iter().map(|s| Box::new((kind, s))).collect()
     }
-    if a.0 == b.0
-        && a.1.pseudo.iter().any(Pseudo::is_rootish)
-        && b.1.pseudo.iter().any(Pseudo::is_rootish)
-    {
+    if a.0 == b.0 && a.1.compound.is_rootish() && b.1.compound.is_rootish() {
         return Some(as_rel_vec(a.0, b.1.unify(a.1)));
     }
 
@@ -766,7 +580,7 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
             if b.is_local_superselector(&a) {
                 as_rel_vec(Ancestor, a._unify(b)?)
             } else if a.is_local_superselector(&b)
-                || have_same(&a.id, &b.id)
+                || have_same(&a.compound.id, &b.compound.id)
                 || have_same(&a.pseudo_element(), &b.pseudo_element())
             {
                 as_rel_vec(Ancestor, b._unify(a)?)
@@ -785,7 +599,7 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
                 as_rel_vec(Sibling, once(b))
             } else if b.is_superselector(&a) {
                 as_rel_vec(Sibling, once(a))
-            } else if !have_same(&a.id, &b.id) {
+            } else if !have_same(&a.compound.id, &b.compound.id) {
                 as_rel_vec(
                     Sibling,
                     b.clone()
@@ -802,7 +616,7 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
         | ((Sibling, b_s), (a_k @ AdjacentSibling, a_s)) => {
             if b_s.is_superselector(&a_s) {
                 as_rel_vec(a_k, once(a_s))
-            } else if a_s.id.is_some() || b_s.id.is_some() {
+            } else if a_s.compound.id.is_some() || b_s.compound.id.is_some() {
                 as_rel_vec(a_k, a_s.with_rel_of(Sibling, b_s))
             } else {
                 as_rel_vec(
@@ -830,27 +644,6 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
 
 fn have_same<T: Eq>(one: &Option<T>, other: &Option<T>) -> bool {
     one.is_some() && one == other
-}
-
-/// Return true if all elements of `one` has an element in `other` for
-/// whitch `cond` is true.
-fn all_any<T, F>(one: &[T], other: &[T], cond: F) -> bool
-where
-    F: Fn(&T, &T) -> bool,
-{
-    one.iter().all(|a| other.iter().any(|b| cond(a, b)))
-}
-
-// Combine all alements from `v` that is not made redundant by `other`
-// with those from `other` that is not redunant with `v`, into `v`
-// (leaving `other` empty).
-fn combine_vital<T, Q>(v: &mut Vec<T>, other: &mut Vec<T>, q: Q)
-where
-    Q: Fn(&T, &T) -> bool,
-{
-    v.retain(|a| !other.iter().any(|b| q(b, a)));
-    other.retain(|a| !v.iter().any(|b| q(b, a)));
-    v.append(other);
 }
 
 impl TryFrom<Value> for Selector {
@@ -881,89 +674,17 @@ impl fmt::Debug for Selector {
         if let Some((kind, rel)) = self.rel_of.as_deref() {
             s.field(&format!("{kind:?}"), &rel);
         }
-        if self.backref.is_some() {
-            s.field("backref", &"&");
-        }
-        if let Some(elem) = &self.element {
-            s.field("element", &elem.s);
-        }
-        if !self.placeholders.is_empty() {
-            s.field("placeholders", &self.placeholders);
-        }
-        if let Some(id) = &self.id {
-            s.field("id", &id);
-        }
-        if !self.classes.is_empty() {
-            s.field("classes", &self.classes);
-        }
-        if !self.attr.is_empty() {
-            s.field("attr", &self.attr);
-        }
-        if !self.pseudo.is_empty() {
-            s.field("pseudo", &self.pseudo);
-        }
+        s.field("compound", &NoAlt { t: &self.compound });
         s.finish()
     }
 }
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-struct ElemType {
-    s: String,
+struct NoAlt<T> {
+    t: T,
 }
-
-impl Default for ElemType {
-    fn default() -> Self {
-        Self { s: "*".into() }
+impl<T: fmt::Debug> fmt::Debug for NoAlt<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self.t)
     }
-}
-
-impl ElemType {
-    fn is_any(&self) -> bool {
-        self.s == "*"
-    }
-
-    fn is_superselector(&self, sub: &Self) -> bool {
-        let (e_ns, e_name) = self.split_ns();
-        let (sub_ns, sub_name) = sub.split_ns();
-        match_name(e_ns.unwrap_or("*"), sub_ns.unwrap_or("*"))
-            && match_name(e_name, sub_name)
-    }
-
-    fn unify(&self, other: &Self) -> Option<Self> {
-        let (e_ns, e_name) = self.split_ns();
-        let (o_ns, o_name) = other.split_ns();
-        let ns = match (e_ns, o_ns) {
-            (None, None) => None,
-            (Some("*"), ns) | (ns, Some("*")) => ns,
-            (Some(e), Some(o)) if e == o => Some(e),
-            _ => return None,
-        };
-        let name = match (e_name, o_name) {
-            ("*", name) | (name, "*") => name,
-            (e, o) if e == o => e,
-            _ => return None,
-        };
-        Some(Self {
-            s: if let Some(ns) = ns {
-                format!("{ns}|{name}")
-            } else {
-                name.to_string()
-            },
-        })
-    }
-
-    fn split_ns(&self) -> (Option<&str>, &str) {
-        let mut e = self.s.splitn(2, '|');
-        match (e.next(), e.next()) {
-            (Some(ns), Some(elem)) => (Some(ns), elem),
-            (Some(elem), None) => (None, elem),
-            _ => unreachable!(),
-        }
-    }
-}
-
-fn match_name(a: &str, b: &str) -> bool {
-    a == "*" || a == b
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -986,28 +707,28 @@ impl RelKind {
 }
 
 pub(crate) mod parser {
-    use super::super::attribute::parser::attribute;
-    use super::super::pseudo::parser::pseudo;
-    use super::{ElemType, RelKind, Selector};
-    use crate::parser::css::strings::css_string_nohash as css_string;
+    use super::super::parser::compound_selector;
+    use super::{RelKind, Selector};
     use crate::parser::util::{opt_spacelike, spacelike};
     use crate::parser::{PResult, Span};
     use nom::branch::alt;
-    use nom::bytes::complete::{is_a, tag};
-    use nom::combinator::{map, opt, recognize, value, verify};
+    use nom::bytes::complete::tag;
+    use nom::combinator::{into, opt, value, verify};
     use nom::multi::fold_many0;
-    use nom::sequence::{delimited, pair, preceded, terminated, tuple};
+    use nom::sequence::{delimited, pair, preceded, terminated};
 
     pub(crate) fn selector(input: Span) -> PResult<Selector> {
         let (input, prerel) =
             preceded(opt_spacelike, opt(explicit_rel_kind))(input)?;
         let (input, first) = if let Some(prerel) = prerel {
             let (input, first) = opt(compound_selector)(input)?;
-            let mut first = first.unwrap_or_default();
-            first.rel_of = Some(Box::new((prerel, Selector::default())));
+            let first = Selector {
+                rel_of: Some(Box::new((prerel, Selector::default()))),
+                compound: first.unwrap_or_default(),
+            };
             (input, first)
         } else {
-            compound_selector(input)?
+            into(compound_selector)(input)?
         };
         terminated(
             fold_many0(
@@ -1015,10 +736,9 @@ pub(crate) mod parser {
                     k.symbol().is_some() || s.is_some()
                 }),
                 move || first.clone(),
-                |rel, (kind, e)| {
-                    let mut e = e.unwrap_or_default();
-                    e.rel_of = Some(Box::new((kind, rel)));
-                    e
+                |rel, (kind, e)| Selector {
+                    compound: e.unwrap_or_default(),
+                    rel_of: Some(Box::new((kind, rel))),
                 },
             ),
             opt_spacelike,
@@ -1039,81 +759,5 @@ pub(crate) mod parser {
 
     fn rel_kind(input: Span) -> PResult<RelKind> {
         alt((explicit_rel_kind, value(RelKind::Ancestor, spacelike)))(input)
-    }
-
-    pub(crate) fn compound_selector(input: Span) -> PResult<Selector> {
-        let mut result = Selector::default();
-        if let PResult::Ok((rest, stop)) = recognize(tuple((
-            is_a("0123456789."),
-            opt(tuple((is_a("eE"), opt(tag("-")), is_a("0123456789")))),
-            tag("%"),
-        )))(input)
-        {
-            // TODO: Remove this.
-            // It is a temporary workaround for keyframe support.
-            result.element = Some(ElemType {
-                s: String::from_utf8_lossy(stop.fragment()).to_string(),
-            });
-            return Ok((rest, result));
-        }
-        let (rest, backref) = opt(value((), tag("&")))(input)?;
-        result.backref = backref;
-        let (mut rest, elem) = opt(name_opt_ns)(rest)?;
-        result.element = elem.map(|s| ElemType { s });
-
-        loop {
-            rest = match rest.first() {
-                Some(b'#') => {
-                    let (r, id) = preceded(tag("#"), css_string)(rest)?;
-                    result.id = Some(id);
-                    r
-                }
-                Some(b'%') => {
-                    let (r, p) = preceded(tag("%"), css_string)(rest)?;
-                    result.placeholders.push(p);
-                    r
-                }
-                Some(b'.') => {
-                    let (r, c) = preceded(tag("."), css_string)(rest)?;
-                    result.classes.push(c);
-                    r
-                }
-                Some(b':') => {
-                    let (r, p) = pseudo(rest)?;
-                    result.pseudo.push(p);
-                    r
-                }
-                Some(b'[') => {
-                    let (r, c) = attribute(rest)?;
-                    result.attr.push(c);
-                    r
-                }
-                _ => break,
-            };
-        }
-        verify(tag(""), |_| !result.is_local_empty())(rest)?;
-        Ok((rest, result))
-    }
-
-    pub(crate) fn name_opt_ns(input: Span) -> PResult<String> {
-        fn name_part(input: Span) -> PResult<String> {
-            alt((value(String::from("*"), tag("*")), css_string))(input)
-        }
-        alt((
-            map(preceded(tag("|"), name_part), |mut s| {
-                s.insert(0, '|');
-                s
-            }),
-            map(
-                pair(name_part, opt(preceded(tag("|"), name_part))),
-                |(a, b)| {
-                    if let Some(b) = b {
-                        format!("{a}|{b}")
-                    } else {
-                        a
-                    }
-                },
-            ),
-        ))(input)
     }
 }

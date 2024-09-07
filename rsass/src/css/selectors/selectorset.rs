@@ -166,7 +166,7 @@ fn value_to_selectors(v: &Value) -> Result<SelectorSet, BadSelector0> {
     }
 }
 
-pub(crate) mod parser {
+pub(super) mod parser {
     use super::SelectorSet;
     use crate::parser::{util::opt_spacelike, PResult, Span};
     use nom::bytes::complete::tag;
@@ -178,7 +178,7 @@ pub(crate) mod parser {
         map(
             separated_list1(
                 delimited(opt_spacelike, tag(","), opt_spacelike),
-                super::super::logical::parser::selector,
+                super::super::parser::selector,
             ),
             |s| SelectorSet { s },
         )(input)
