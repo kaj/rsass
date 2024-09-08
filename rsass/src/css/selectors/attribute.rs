@@ -1,6 +1,6 @@
 use crate::{css::CssString, output::CssBuf};
 
-/// A logical attribute selector.
+/// An attribute selector.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Attribute {
     /// The attribute name

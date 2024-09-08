@@ -21,7 +21,8 @@ impl From<ParseError> for BadSelector0 {
     }
 }
 
-/// The error when a [Value] cannot be converted to a [Selectors] or [Selector].
+/// The error when a [`Value`] cannot be converted to a
+/// [`SelectorSet`][super::SelectorSet] or [`Selector`][super::Selector].
 #[derive(Debug)]
 pub enum BadSelector {
     /// The value was not the expected type of list or string.

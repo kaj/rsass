@@ -76,7 +76,7 @@ impl CssSelectorSet {
         self.s.is_superselector(&sub.s)
     }
 
-    pub(crate) fn append(self, ext: Self) -> Result<Self, CallError> {
+    pub(crate) fn append(self, ext: &Self) -> Result<Self, CallError> {
         Ok(Self {
             s: SelectorSet {
                 s: self
@@ -144,7 +144,7 @@ impl CssSelectorSet {
             .map(|s| Self { s })
     }
 
-    pub(crate) fn unify(self, other: Self) -> Self {
+    pub(crate) fn unify(self, other: &Self) -> Self {
         Self {
             s: SelectorSet {
                 s: self
@@ -164,7 +164,7 @@ impl CssSelectorSet {
     }
 
     pub fn write_to(&self, buf: &mut CssBuf) {
-        self.s.write_to(buf)
+        self.s.write_to(buf);
     }
 }
 

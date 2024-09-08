@@ -6,8 +6,7 @@
 //!
 //! This _may_ change to a something like a tree of operators with
 //! leafs of simple selectors in some future release.
-use crate::css::parser::selector_set;
-use crate::css::{self, SelectorSet};
+use crate::css::{self, parser::selector_set};
 use crate::parser::input_span;
 use crate::sass::SassString;
 use crate::{Error, ParseError, ScopeRef};
@@ -35,12 +34,12 @@ impl Selectors {
     }
 
     /// Evaluate any interpolation in these Selectors.
-    pub fn eval(&self, scope: ScopeRef) -> Result<SelectorSet, Error> {
+    pub fn eval(&self, scope: ScopeRef) -> Result<css::SelectorSet, Error> {
         let mut s = Vec::new();
         for sel in &self.s {
             s.extend(sel.eval(scope.clone())?);
         }
-        Ok(SelectorSet { s })
+        Ok(css::SelectorSet { s })
     }
     fn write_eval(
         &self,

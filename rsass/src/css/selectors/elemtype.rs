@@ -2,7 +2,7 @@ use crate::output::CssBuf;
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(super) struct ElemType {
+pub(crate) struct ElemType {
     s: String,
 }
 
@@ -15,6 +15,9 @@ impl Default for ElemType {
 impl ElemType {
     pub fn is_any(&self) -> bool {
         self.s == "*"
+    }
+    pub(super) fn cant_append(&self) -> bool {
+        self.s.starts_with('*') || self.s.starts_with('|')
     }
 
     pub fn is_superselector(&self, sub: &Self) -> bool {
@@ -48,16 +51,14 @@ impl ElemType {
     }
 
     fn split_ns(&self) -> (Option<&str>, &str) {
-        let mut e = self.s.splitn(2, '|');
-        match (e.next(), e.next()) {
-            (Some(ns), Some(elem)) => (Some(ns), elem),
-            (Some(elem), None) => (None, elem),
-            _ => unreachable!(),
+        match self.s.split_once('|') {
+            Some((ns, name)) => (Some(ns), name),
+            None => (None, &self.s),
         }
     }
 
     pub fn write_to(&self, buf: &mut CssBuf) {
-        buf.add_str(&self.s)
+        buf.add_str(&self.s);
     }
 }
 impl fmt::Display for ElemType {

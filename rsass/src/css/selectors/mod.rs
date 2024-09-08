@@ -9,9 +9,9 @@ mod context;
 mod cssselectorset;
 mod elemtype;
 mod error;
-mod logical;
 mod opt;
 mod pseudo;
+mod selector;
 mod selectorset;
 
 use self::attribute::Attribute;
@@ -21,7 +21,7 @@ use self::pseudo::Pseudo;
 pub use context::SelectorCtx;
 pub(crate) use cssselectorset::CssSelectorSet;
 pub use error::BadSelector;
-pub use logical::Selector;
+pub use selector::Selector;
 pub use selectorset::SelectorSet;
 
 pub(crate) mod parser {
@@ -30,7 +30,7 @@ pub(crate) mod parser {
     pub(super) use super::elemtype::parser::{
         elem_name, keyframe_stop, name_opt_ns,
     };
-    pub(super) use super::logical::parser::selector;
     pub(super) use super::pseudo::parser::pseudo;
+    pub(super) use super::selector::parser::selector;
     pub(crate) use super::selectorset::parser::selector_set;
 }

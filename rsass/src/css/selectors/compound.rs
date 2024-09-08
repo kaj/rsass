@@ -1,5 +1,5 @@
 use super::{Attribute, CssSelectorSet, ElemType, Opt, Pseudo, SelectorSet};
-use crate::output::CssBuf;
+use crate::{output::CssBuf, parser::input_span, ParseError};
 use lazy_static::lazy_static;
 use std::fmt;
 
@@ -31,6 +31,23 @@ impl CompoundSelector {
     pub(super) fn has_id(&self) -> bool {
         self.id.is_some()
     }
+    pub(super) fn cant_append(&self) -> bool {
+        self.is_empty()
+            || self.element.as_ref().map_or(false, ElemType::cant_append)
+    }
+    pub(super) fn append(&self, other: &Self) -> Result<Self, ParseError> {
+        let mut s = CssBuf::new(Default::default());
+        self.write_to(&mut s);
+        other.write_to(&mut s);
+        let s = s.take();
+        if s.is_empty() {
+            Ok(Self::default())
+        } else {
+            let span = input_span(s);
+            Ok(ParseError::check(parser::compound_selector(span.borrow()))?)
+        }
+    }
+
     pub(super) fn is_rootish(&self) -> bool {
         self.pseudo.iter().any(Pseudo::is_rootish)
     }
@@ -152,7 +169,7 @@ impl CompoundSelector {
 
     pub fn write_to(&self, buf: &mut CssBuf) {
         if self.backref.is_some() {
-            buf.add_str("&");
+            buf.add_char('&');
         }
         if let Some(e) = &self.element {
             if !e.is_any()
@@ -165,15 +182,15 @@ impl CompoundSelector {
             }
         }
         for p in &self.placeholders {
-            buf.add_str("%");
+            buf.add_char('%');
             buf.add_str(p);
         }
         if let Some(id) = &self.id {
-            buf.add_str("#");
+            buf.add_char('#');
             buf.add_str(id);
         }
         for c in &self.classes {
-            buf.add_str(".");
+            buf.add_char('.');
             buf.add_str(c);
         }
         for attr in &self.attr {

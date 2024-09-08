@@ -1,13 +1,6 @@
-//! A logical selector is a css selector, but representend in a way
-//! that I hope make implementing the sass selector functions easier.
-//!
-//! In the future, I might use this as the primary (only) css selector
-//! implementation.  But as that is a major breaking change, I keep
-//! these types internal for now.
 use super::compound::CompoundSelector;
 use super::error::BadSelector0;
-use super::parser::compound_selector;
-use super::{BadSelector, CssSelectorSet, Opt, Pseudo, SelectorSet};
+use super::{BadSelector, CssSelectorSet, Opt, SelectorSet};
 use crate::css::Value;
 use crate::output::CssBuf;
 use crate::parser::input_span;
@@ -19,9 +12,9 @@ use std::iter::once;
 
 type RelBox = Box<(RelKind, Selector)>;
 
-/// A selector more aimed at making it easy to implement selector functions.
+/// A css selector.
 ///
-/// A logical selector is a sequence of compound selectors, joined by
+/// A selector is a sequence of compound selectors, joined by
 /// relational operators (where the "ancestor" relation is just
 /// whitespace in the text representation).
 #[derive(Default, Clone, PartialEq, Eq)]
@@ -72,34 +65,18 @@ impl Selector {
 
     pub(super) fn append(&self, other: &Self) -> Result<Self, AppendError> {
         if self.is_local_empty() {
-            return Err(AppendError::Parent);
-        }
-
-        let mut result = other.to_owned();
-        if let Some(rel) = result.rel_of.take() {
-            result.rel_of = Some(Box::new((rel.0, self.append(&rel.1)?)));
-            Ok(result)
-        } else {
-            let rel_of = self.rel_of.clone();
-            if result.is_local_empty() {
-                return Err(AppendError::Sub);
-            }
-            let s = self.clone().last_compound_str();
-            let other = result.last_compound_str();
-            if other
-                .bytes()
-                .next()
-                .map_or(true, |c| c == b'*' || c == b'|')
-            {
-                return Err(AppendError::Sub);
-            }
-            let s = s + &other;
-            let span = input_span(s);
+            Err(AppendError::Parent)
+        } else if let Some(rel) = other.rel_of.clone() {
             Ok(Self {
-                rel_of,
-                compound: ParseError::check(compound_selector(
-                    span.borrow(),
-                ))?,
+                rel_of: Some(Box::new((rel.0, self.append(&rel.1)?))),
+                compound: other.compound.clone(),
+            })
+        } else if other.compound.cant_append() {
+            Err(AppendError::Sub)
+        } else {
+            Ok(Self {
+                rel_of: self.rel_of.clone(),
+                compound: self.compound.append(&other.compound)?,
             })
         }
     }
@@ -170,32 +147,20 @@ impl Selector {
         self = self.resolve_ref_in_pseudo(ctx);
         let rel_of = self.rel_of.take();
 
-        let result = if self.compound.has_backref() {
+        let result = if self.compound.backref.is_some() {
             self.compound.backref = None;
             ctx.s
                 .s
                 .iter()
                 .flat_map(|s| {
-                    let mut buf = CssBuf::new(Default::default());
-                    s.compound.write_to(&mut buf);
-                    self.compound.write_to(&mut buf);
-                    let buf = buf.take();
-                    let compound = if buf.is_empty() {
-                        CompoundSelector::default()
-                    } else {
-                        let span = input_span(buf);
-                        ParseError::check(compound_selector(span.borrow()))
-                            .unwrap()
-                    };
-                    let result = Selector {
-                        rel_of: self.rel_of.clone(),
-                        compound,
-                    };
                     Selector {
                         rel_of: s.rel_of.clone(),
                         compound: CompoundSelector::default(),
                     }
-                    .unify(result)
+                    .unify(Selector {
+                        rel_of: self.rel_of.clone(),
+                        compound: s.compound.append(&self.compound).unwrap(),
+                    })
                 })
                 .collect()
         } else {
@@ -443,35 +408,25 @@ impl Selector {
                 buf.add_str(" ");
             }
         }
-        self.compound.write_to(buf)
+        self.compound.write_to(buf);
     }
 
-    pub(super) fn into_string_vec(mut self) -> Vec<String> {
-        let mut vec =
-            if let Some((kind, sel)) = self.rel_of.take().map(|b| *b) {
-                let mut vec = sel.into_string_vec();
-                if let Some(symbol) = kind.symbol() {
-                    vec.push(symbol.to_string());
-                }
-                vec
-            } else {
-                Vec::new()
-            };
-        let last = self.last_compound_str();
-        if !last.is_empty() {
-            vec.push(last);
+    pub(super) fn into_string_vec(self) -> Vec<String> {
+        let mut vec = if let Some((kind, sel)) = self.rel_of.map(|b| *b) {
+            let mut vec = sel.into_string_vec();
+            if let Some(symbol) = kind.symbol() {
+                vec.push(symbol.to_string());
+            }
+            vec
+        } else {
+            Vec::new()
+        };
+        if !self.compound.is_empty() {
+            let mut buf = CssBuf::new(Default::default());
+            self.compound.write_to(&mut buf);
+            vec.push(String::from_utf8_lossy(&buf.take()).to_string());
         }
         vec
-    }
-
-    fn last_compound_str(self) -> String {
-        let mut buf = CssBuf::new(Default::default());
-        self.compound.write_to(&mut buf);
-        String::from_utf8_lossy(&buf.take()).to_string()
-    }
-
-    fn pseudo_element(&self) -> Option<&Pseudo> {
-        self.compound.pseudo_element()
     }
 
     /// Internal (the api is [`TryFrom`]).
@@ -580,8 +535,7 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
             if b.is_local_superselector(&a) {
                 as_rel_vec(Ancestor, a._unify(b)?)
             } else if a.is_local_superselector(&b)
-                || have_same(&a.compound.id, &b.compound.id)
-                || have_same(&a.pseudo_element(), &b.pseudo_element())
+                || a.compound.must_not_inherit(&b.compound)
             {
                 as_rel_vec(Ancestor, b._unify(a)?)
             } else {
@@ -599,7 +553,7 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
                 as_rel_vec(Sibling, once(b))
             } else if b.is_superselector(&a) {
                 as_rel_vec(Sibling, once(a))
-            } else if !have_same(&a.compound.id, &b.compound.id) {
+            } else if !a.compound.must_not_inherit(&b.compound) {
                 as_rel_vec(
                     Sibling,
                     b.clone()
@@ -616,7 +570,7 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
         | ((Sibling, b_s), (a_k @ AdjacentSibling, a_s)) => {
             if b_s.is_superselector(&a_s) {
                 as_rel_vec(a_k, once(a_s))
-            } else if a_s.compound.id.is_some() || b_s.compound.id.is_some() {
+            } else if a_s.compound.has_id() || b_s.compound.has_id() {
                 as_rel_vec(a_k, a_s.with_rel_of(Sibling, b_s))
             } else {
                 as_rel_vec(
@@ -640,10 +594,6 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
             }
         }
     })
-}
-
-fn have_same<T: Eq>(one: &Option<T>, other: &Option<T>) -> bool {
-    one.is_some() && one == other
 }
 
 impl TryFrom<Value> for Selector {

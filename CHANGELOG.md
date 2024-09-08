@@ -9,7 +9,13 @@ project adheres to
 
 ## Unreleased
 
-(Nothing yet)
+### Breaking changes:
+
+* Replaced the css `Selector` implementation.
+  The new "logical" selector types that was used in selector
+  function in rsass 0.28 is now the only css selector implementation.
+  Most of the api to those types are private.
+  Some will probably be made public after some stabilization period.
 
 ## Release 0.28.10
 
