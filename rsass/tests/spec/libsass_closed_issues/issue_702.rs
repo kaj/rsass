@@ -8,9 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(".foo {\
-             \n  content: function-exists(\"feature-exists\");\
-             \n  content: feature-exists(\"foo\");\
+        runner().ok("@use \"sass:meta\";\
+             \n.foo {\
+             \n  content: meta.function-exists(\"feature-exists\");\
+             \n  content: meta.feature-exists(\"foo\");\
              \n}\n"),
         ".foo {\
          \n  content: true;\

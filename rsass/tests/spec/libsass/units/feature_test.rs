@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@if feature-exists(units-level-3) {\
+        runner().ok("@use \"sass:meta\";\
+             \n@if meta.feature-exists(units-level-3) {\
              \n  div {\
              \n    feature: true;\
              \n  }\

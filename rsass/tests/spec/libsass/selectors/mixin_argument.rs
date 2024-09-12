@@ -9,15 +9,17 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok("@mixin selector-info($selector) {\
-             \n  type: type-of($selector);\
-             \n  length: length($selector);\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@mixin selector-info($selector) {\
+             \n  type: meta.type-of($selector);\
+             \n  length: list.length($selector);\
              \n  content: $selector;\
-             \n  @for $i from 1 through length($selector) {\
+             \n  @for $i from 1 through list.length($selector) {\
              \n    index: $i;\
-             \n    length: length(nth($selector, $i));\
-             \n    type: type-of(nth($selector, $i));\
-             \n    content: nth($selector, $i);\
+             \n    length: list.length(list.nth($selector, $i));\
+             \n    type: meta.type-of(list.nth($selector, $i));\
+             \n    content: list.nth($selector, $i);\
              \n  }\
              \n}\n\
              \n.foo {\

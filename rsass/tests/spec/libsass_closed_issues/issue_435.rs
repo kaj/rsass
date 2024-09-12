@@ -9,13 +9,14 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$skin-name: \"CMS_Black\";\r\
+            "@use \"sass:string\";\
+             \n$skin-name: \"CMS_Black\";\r\
              \n\r\
-             \n$QUOTE: unquote(\'\"\');\r\
-             \n$EMPTY_STRING: unquote( \"\" );\r\
-             \n$SLASH: unquote(\"/\");\r\
+             \n$QUOTE: string.unquote(\'\"\');\r\
+             \n$EMPTY_STRING: string.unquote( \"\" );\r\
+             \n$SLASH: string.unquote(\"/\");\r\
              \n\r\
-             \n$SKINS_PATH: unquote(\"/CMS/Skins\");\r\
+             \n$SKINS_PATH: string.unquote(\"/CMS/Skins\");\r\
              \n$URL_SEPARATOR: $SLASH;\r\
              \n$URL_PREFIX: $EMPTY_STRING;\r\
              \n$URL_SUFFIX: $EMPTY_STRING;\r\

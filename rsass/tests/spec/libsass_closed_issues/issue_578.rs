@@ -8,9 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$list: one foo three bar six seven;\
-             \n$pos: set-nth($list, 2, two);\
-             \n$neg: set-nth($pos, -3, four five);\n\
+        runner().ok("@use \"sass:list\";\
+             \n$list: one foo three bar six seven;\
+             \n$pos: list.set-nth($list, 2, two);\
+             \n$neg: list.set-nth($pos, -3, four five);\n\
              \n.test {\
              \n  -positive: $pos;\
              \n  -negative: $neg;\

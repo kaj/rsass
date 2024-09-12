@@ -13,7 +13,9 @@ mod in_a_row {
     fn different() {
         assert_eq!(
         runner().ok(
-            "a {b: inspect(selector-unify(\".c + ~ > .d\", \".e + > ~ ~ .f\"))}\n"
+            "@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\".c + ~ > .d\", \".e + > ~ ~ .f\"))}\n"
         ),
         "a {\
          \n  b: null;\
@@ -23,9 +25,8 @@ mod in_a_row {
     #[test]
     fn same() {
         assert_eq!(
-            runner().ok(
-                "a {b: selector-unify(\".c + ~ > .d\", \".e + ~ > .f\")}\n"
-            ),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c + ~ > .d\", \".e + ~ > .f\")}\n"),
             ""
         );
     }
@@ -36,28 +37,30 @@ mod in_a_row {
         #[test]
         fn contiguous() {
             assert_eq!(
-        runner().ok(
-            "a {b: selector-unify(\".c + ~ > .d\", \".e > + ~ > > .f\")}\n"
-        ),
-        ""
-    );
+                runner().ok(
+                    "@use \"sass:selector\";\
+             \na {b: selector.unify(\".c + ~ > .d\", \".e > + ~ > > .f\")}\n"
+                ),
+                ""
+            );
         }
         #[test]
         fn non_contiguous() {
             assert_eq!(
-        runner().ok(
-            "a {b: selector-unify(\".c + ~ > .d\", \".e + > ~ ~ > .f\")}\n"
-        ),
-        ""
-    );
+                runner().ok(
+                    "@use \"sass:selector\";\
+             \na {b: selector.unify(\".c + ~ > .d\", \".e + > ~ ~ > .f\")}\n"
+                ),
+                ""
+            );
         }
     }
 }
 #[test]
 fn isolated() {
     assert_eq!(
-        runner()
-            .ok("a {b: selector-unify(\".c > .d + .e\", \".f .g ~ .h\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c > .d + .e\", \".f .g ~ .h\")}\n"),
         "a {\
          \n  b: .f .c > .g ~ .d + .e.h, .f .c > .d.g + .e.h;\
          \n}\n"

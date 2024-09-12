@@ -9,8 +9,9 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "div {\
-             \n  blah: \"hello #{2+2} world #{unit(23px)} #{\'bloo\\n\'} blah\";\
+            "@use \"sass:math\";\
+             \ndiv {\
+             \n  blah: \"hello #{2+2} world #{math.unit(23px)} #{\'bloo\\n\'} blah\";\
              \n}"
         ),
         "div {\

@@ -8,18 +8,19 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("foo {\
-             \n  c0: opacity(rgba(0,0,0,0.0));\
-             \n  c1: opacity(rgba(0,0,0,0.1));\
-             \n  c2: opacity(rgba(0,0,0,0.2));\
-             \n  c3: opacity(rgba(0,0,0,0.3));\
-             \n  c4: opacity(rgba(0,0,0,0.4));\
-             \n  c5: opacity(rgba(0,0,0,0.5));\
-             \n  c6: opacity(rgba(0,0,0,0.6));\
-             \n  c7: opacity(rgba(0,0,0,0.7));\
-             \n  c8: opacity(rgba(0,0,0,0.8));\
-             \n  c9: opacity(rgba(0,0,0,0.9));\
-             \n  c10: opacity(rgba(0,0,0,1));\
+        runner().ok("@use \"sass:color\";\
+             \nfoo {\
+             \n  c0: color.opacity(rgba(0,0,0,0.0));\
+             \n  c1: color.opacity(rgba(0,0,0,0.1));\
+             \n  c2: color.opacity(rgba(0,0,0,0.2));\
+             \n  c3: color.opacity(rgba(0,0,0,0.3));\
+             \n  c4: color.opacity(rgba(0,0,0,0.4));\
+             \n  c5: color.opacity(rgba(0,0,0,0.5));\
+             \n  c6: color.opacity(rgba(0,0,0,0.6));\
+             \n  c7: color.opacity(rgba(0,0,0,0.7));\
+             \n  c8: color.opacity(rgba(0,0,0,0.8));\
+             \n  c9: color.opacity(rgba(0,0,0,0.9));\
+             \n  c10: color.opacity(rgba(0,0,0,1));\
              \n}\n"),
         "foo {\
          \n  c0: 0;\

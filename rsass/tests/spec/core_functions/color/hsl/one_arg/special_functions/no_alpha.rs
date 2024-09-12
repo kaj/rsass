@@ -48,7 +48,8 @@ mod calc {
         #[test]
         fn arg_1() {
             assert_eq!(
-                runner().ok("a {b: hsl(unquote(\"calc(1)\") 2% 3%)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: hsl(string.unquote(\"calc(1)\") 2% 3%)}\n"),
                 "a {\
          \n  b: hsl(calc(1), 2%, 3%);\
          \n}\n"
@@ -57,7 +58,8 @@ mod calc {
         #[test]
         fn arg_2() {
             assert_eq!(
-                runner().ok("a {b: hsl(1 unquote(\"calc(2%)\") 3%)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: hsl(1 string.unquote(\"calc(2%)\") 3%)}\n"),
                 "a {\
          \n  b: hsl(1, calc(2%), 3%);\
          \n}\n"
@@ -66,7 +68,8 @@ mod calc {
         #[test]
         fn arg_3() {
             assert_eq!(
-                runner().ok("a {b: hsl(1 2% unquote(\"calc(3%)\"))}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: hsl(1 2% string.unquote(\"calc(3%)\"))}\n"),
                 "a {\
          \n  b: hsl(1, 2%, calc(3%));\
          \n}\n"
@@ -85,8 +88,8 @@ mod clamp {
         #[test]
         fn arg_1() {
             assert_eq!(
-                runner()
-                    .ok("a {b: hsl(unquote(\"clamp(1, 2, 3)\") 2% 3%)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: hsl(string.unquote(\"clamp(1, 2, 3)\") 2% 3%)}\n"),
                 "a {\
          \n  b: hsl(clamp(1, 2, 3), 2%, 3%);\
          \n}\n"
@@ -95,8 +98,8 @@ mod clamp {
         #[test]
         fn arg_2() {
             assert_eq!(
-                runner()
-                    .ok("a {b: hsl(1 unquote(\"clamp(2%, 3%, 4%)\") 3%)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: hsl(1 string.unquote(\"clamp(2%, 3%, 4%)\") 3%)}\n"),
                 "a {\
          \n  b: hsl(1, clamp(2%, 3%, 4%), 3%);\
          \n}\n"
@@ -105,8 +108,8 @@ mod clamp {
         #[test]
         fn arg_3() {
             assert_eq!(
-                runner()
-                    .ok("a {b: hsl(1 2% unquote(\"clamp(3%, 4%, 5%)\"))}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: hsl(1 2% string.unquote(\"clamp(3%, 4%, 5%)\"))}\n"),
                 "a {\
          \n  b: hsl(1, 2%, clamp(3%, 4%, 5%));\
          \n}\n"
@@ -157,7 +160,8 @@ mod max {
         #[test]
         fn arg_1() {
             assert_eq!(
-                runner().ok("a {b: hsl(unquote(\"max(1)\") 2% 3%)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: hsl(string.unquote(\"max(1)\") 2% 3%)}\n"),
                 "a {\
          \n  b: hsl(max(1), 2%, 3%);\
          \n}\n"
@@ -166,7 +170,8 @@ mod max {
         #[test]
         fn arg_2() {
             assert_eq!(
-                runner().ok("a {b: hsl(1 unquote(\"max(2%)\") 3%)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: hsl(1 string.unquote(\"max(2%)\") 3%)}\n"),
                 "a {\
          \n  b: hsl(1, max(2%), 3%);\
          \n}\n"
@@ -175,7 +180,8 @@ mod max {
         #[test]
         fn arg_3() {
             assert_eq!(
-                runner().ok("a {b: hsl(1 2% unquote(\"max(3%)\"))}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: hsl(1 2% string.unquote(\"max(3%)\"))}\n"),
                 "a {\
          \n  b: hsl(1, 2%, max(3%));\
          \n}\n"
@@ -194,7 +200,8 @@ mod min {
         #[test]
         fn arg_1() {
             assert_eq!(
-                runner().ok("a {b: hsl(unquote(\"min(1)\") 2% 3%)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: hsl(string.unquote(\"min(1)\") 2% 3%)}\n"),
                 "a {\
          \n  b: hsl(min(1), 2%, 3%);\
          \n}\n"
@@ -203,7 +210,8 @@ mod min {
         #[test]
         fn arg_2() {
             assert_eq!(
-                runner().ok("a {b: hsl(1 unquote(\"min(2%)\") 3%)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: hsl(1 string.unquote(\"min(2%)\") 3%)}\n"),
                 "a {\
          \n  b: hsl(1, min(2%), 3%);\
          \n}\n"
@@ -212,7 +220,8 @@ mod min {
         #[test]
         fn arg_3() {
             assert_eq!(
-                runner().ok("a {b: hsl(1 2% unquote(\"min(3%)\"))}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: hsl(1 2% string.unquote(\"min(3%)\"))}\n"),
                 "a {\
          \n  b: hsl(1, 2%, min(3%));\
          \n}\n"

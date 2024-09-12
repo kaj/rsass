@@ -19,7 +19,7 @@ fn runner() -> crate::TestRunner {
 fn with_intermediate() {
     let runner = runner().with_cwd("with_intermediate");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  b: 1/2/foo/bar;\
          \n}\n"
@@ -36,7 +36,7 @@ mod without_intermediate {
     fn no_whitespace() {
         let runner = runner().with_cwd("no_whitespace");
         assert_eq!(
-            runner.ok("@import \"plain\";\n"),
+            runner.ok("@use \"plain\";\n"),
             "a {\
          \n  b: 1///bar;\
          \n}\n"
@@ -47,7 +47,7 @@ mod without_intermediate {
     fn whitespace() {
         let runner = runner().with_cwd("whitespace");
         assert_eq!(
-            runner.ok("@import \"plain\";\n"),
+            runner.ok("@use \"plain\";\n"),
             "a {\
          \n  b: 1///bar;\
          \n}\n"

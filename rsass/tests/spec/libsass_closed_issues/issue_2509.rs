@@ -6,10 +6,11 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong error
 fn test() {
     assert_eq!(
-        runner().ok("[charset i] {\r\
+        runner().err(
+            "[charset i] {\r\
              \n\tdisplay: block;\r\
              \n}\r\
              \n\r\
@@ -23,18 +24,13 @@ fn test() {
              \n\r\
              \n[charset=\"utf-8\" I] {\r\
              \n\tdisplay: block;\r\
-             \n}"),
-        "[charset i] {\
-         \n  display: block;\
-         \n}\
-         \n[charset I] {\
-         \n  display: block;\
-         \n}\
-         \n[charset=\"utf-8\" i] {\
-         \n  display: block;\
-         \n}\
-         \n[charset=\"utf-8\" I] {\
-         \n  display: block;\
-         \n}\n"
+             \n}"
+        ),
+        "Error: Expected \"]\".\
+         \n  ,\
+         \n1 | [charset i] {\
+         \n  |          ^\
+         \n  \'\
+         \n  input.scss 1:10  root stylesheet",
     );
 }

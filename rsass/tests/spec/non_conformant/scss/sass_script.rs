@@ -8,11 +8,12 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("foo {\
+        runner().ok("@use \"sass:math\";\
+             \nfoo {\
              \n  a: 1 + 2;\
              \n  b: 1 - 2;\
              \n  c: foo + bar;\
-             \n  d: floor(12.3px); }\n"),
+             \n  d: math.floor(12.3px); }\n"),
         "foo {\
          \n  a: 3;\
          \n  b: -1;\

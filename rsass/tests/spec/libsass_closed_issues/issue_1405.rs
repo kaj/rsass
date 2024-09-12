@@ -9,12 +9,15 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok("div {\r\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:math\";\
+             \n@use \"sass:meta\";\
+             \ndiv {\r\
              \n  foo: (1a2b3c);\r\
              \n\r\
-             \n  length-1: length(1a2b3c);\r\
+             \n  length-1: list.length(1a2b3c);\r\
              \n\r\
-             \n  unit-1: unit(1a2b3c);\r\
+             \n  unit-1: math.unit(1a2b3c);\r\
              \n\r\
              \n  result-1: 1em-.75em;\r\
              \n  result-2: 2em-1em;\r\
@@ -22,12 +25,12 @@ fn test() {
              \n  result-4: 1.5em-1em;\r\
              \n  result-5: 2em-1.5em;\r\
              \n\r\
-             \n  type-1: type-of(1em-.75em);\r\
-             \n  type-2: type-of(2em-1em);\r\
-             \n  type-3: type-of(2em-0.75em);\r\
-             \n  type-4: type-of(1.5em-1em);\r\
-             \n  type-5: type-of(2em-1.5em);\r\
-             \n  type-6: type-of(1a2b3c);\r\
+             \n  type-1: meta.type-of(1em-.75em);\r\
+             \n  type-2: meta.type-of(2em-1em);\r\
+             \n  type-3: meta.type-of(2em-0.75em);\r\
+             \n  type-4: meta.type-of(1.5em-1em);\r\
+             \n  type-5: meta.type-of(2em-1.5em);\r\
+             \n  type-6: meta.type-of(1a2b3c);\r\
              \n\r\
              \n  test-1: (1-em-2-em);\r\
              \n  test-1: (1-em - 2-em);\r\

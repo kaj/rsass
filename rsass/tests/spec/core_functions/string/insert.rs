@@ -9,11 +9,12 @@ fn runner() -> crate::TestRunner {
 fn combining_character() {
     assert_eq!(
         runner().ok(
-            "// Sass does *not* treat strings as sequences of glyphs, so this string which\
+            "@use \"sass:string\";\
+             \n// Sass does *not* treat strings as sequences of glyphs, so this string which\
              \n// contains \"c\" followed by a combining umlaut should be considered two separate\
              \n// characters even though it\'s rendered as only one and the \"d\" should be\
              \n// injected between the two.\
-             \na {b: str-insert(\"c\\0308\", \"d\", 2)}\n"
+             \na {b: string.insert(\"c\\0308\", \"d\", 2)}\n"
         ),
         "@charset \"UTF-8\";\
          \na {\
@@ -25,10 +26,11 @@ fn combining_character() {
 fn double_width_character() {
     assert_eq!(
         runner().ok(
-            "// Sass treats strings as sequences of Unicode codepoint; it doesn\'t care if a\
+            "@use \"sass:string\";\
+             \n// Sass treats strings as sequences of Unicode codepoint; it doesn\'t care if a\
              \n// character is represented as two UTF-16 code units, so inserting a character\
              \n// at index 2 shouldn\'t break this emoji in two.\
-             \na {b: str-insert(\"👭\", \"c\", 2)}\n"
+             \na {b: string.insert(\"👭\", \"c\", 2)}\n"
         ),
         "@charset \"UTF-8\";\
          \na {\
@@ -43,7 +45,8 @@ mod empty_destination {
     #[test]
     fn empty_source() {
         assert_eq!(
-            runner().ok("a {b: str-insert(\"\", \"\", 1)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"\", \"\", 1)}\n"),
             "a {\
          \n  b: \"\";\
          \n}\n"
@@ -52,7 +55,8 @@ mod empty_destination {
     #[test]
     fn index_0() {
         assert_eq!(
-            runner().ok("a {b: str-insert(\"\", \"c\", 0)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"\", \"c\", 0)}\n"),
             "a {\
          \n  b: \"c\";\
          \n}\n"
@@ -61,7 +65,8 @@ mod empty_destination {
     #[test]
     fn index_1() {
         assert_eq!(
-            runner().ok("a {b: str-insert(\"\", \"c\", 1)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"\", \"c\", 1)}\n"),
             "a {\
          \n  b: \"c\";\
          \n}\n"
@@ -70,7 +75,8 @@ mod empty_destination {
     #[test]
     fn index_2() {
         assert_eq!(
-            runner().ok("a {b: str-insert(\"\", \"c\", 2)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"\", \"c\", 2)}\n"),
             "a {\
          \n  b: \"c\";\
          \n}\n"
@@ -79,7 +85,8 @@ mod empty_destination {
     #[test]
     fn index_negative_1() {
         assert_eq!(
-            runner().ok("a {b: str-insert(\"\", \"c\", -1)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"\", \"c\", -1)}\n"),
             "a {\
          \n  b: \"c\";\
          \n}\n"
@@ -89,7 +96,8 @@ mod empty_destination {
 #[test]
 fn empty_insertion() {
     assert_eq!(
-        runner().ok("a {b: str-insert(\"cde\", \"\", 1)}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"cde\", \"\", 1)}\n"),
         "a {\
          \n  b: \"cde\";\
          \n}\n"
@@ -102,45 +110,54 @@ mod error {
     #[test]
     fn decimal() {
         assert_eq!(
-            runner().err("a {b: str-insert(\"\", \"\", 0.5)}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.insert(\"\", \"\", 0.5)}\n"
+            ),
             "Error: $index: 0.5 is not an int.\
          \n  ,\
-         \n1 | a {b: str-insert(\"\", \"\", 0.5)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: string.insert(\"\", \"\", 0.5)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: str-insert(\"\", \"\")}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.insert(\"\", \"\")}\n"
+            ),
             "Error: Missing argument $index.\
          \n  ,--> input.scss\
-         \n1 | a {b: str-insert(\"\", \"\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: string.insert(\"\", \"\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:string\
          \n1 | @function insert($string, $insert, $index) {\
          \n  |           ================================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: str-insert(\"\", \"\", 1, 2)}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.insert(\"\", \"\", 1, 2)}\n"
+            ),
             "Error: Only 3 arguments allowed, but 4 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: str-insert(\"\", \"\", 1, 2)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: string.insert(\"\", \"\", 1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:string\
          \n1 | @function insert($string, $insert, $index) {\
          \n  |           ================================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     mod test_type {
@@ -150,39 +167,63 @@ mod error {
         #[test]
         fn index() {
             assert_eq!(
-                runner().err("a {b: str-insert(\"\", \"\", \"\")}\n"),
+                runner().err(
+                    "@use \"sass:string\";\
+             \na {b: string.insert(\"\", \"\", \"\")}\n"
+                ),
                 "Error: $index: \"\" is not a number.\
          \n  ,\
-         \n1 | a {b: str-insert(\"\", \"\", \"\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: string.insert(\"\", \"\", \"\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
         fn insert() {
             assert_eq!(
-                runner().err("a {b: str-insert(\"\", 1, 1)}\n"),
+                runner().err(
+                    "@use \"sass:string\";\
+             \na {b: string.insert(\"\", 1, 1)}\n"
+                ),
                 "Error: $insert: 1 is not a string.\
          \n  ,\
-         \n1 | a {b: str-insert(\"\", 1, 1)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: string.insert(\"\", 1, 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
         fn string() {
             assert_eq!(
-                runner().err("a {b: str-insert(1, \"\", 1)}\n"),
+                runner().err(
+                    "@use \"sass:string\";\
+             \na {b: string.insert(1, \"\", 1)}\n"
+                ),
                 "Error: $string: 1 is not a string.\
          \n  ,\
-         \n1 | a {b: str-insert(1, \"\", 1)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: string.insert(1, \"\", 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
+    }
+    #[test]
+    fn wrong_name() {
+        assert_eq!(
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.str-insert(\"c\", 1, \"d\")}\n"
+            ),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: string.str-insert(\"c\", 1, \"d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+        );
     }
 }
 mod index {
@@ -196,7 +237,8 @@ mod index {
         #[test]
         fn t1() {
             assert_eq!(
-                runner().ok("a {b: str-insert(\"cde\", \"f\", -1)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"cde\", \"f\", -1)}\n"),
                 "a {\
          \n  b: \"cdef\";\
          \n}\n"
@@ -205,7 +247,8 @@ mod index {
         #[test]
         fn t2() {
             assert_eq!(
-                runner().ok("a {b: str-insert(\"cde\", \"f\", -2)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"cde\", \"f\", -2)}\n"),
                 "a {\
          \n  b: \"cdfe\";\
          \n}\n"
@@ -218,8 +261,9 @@ mod index {
             #[test]
             fn less_than_double() {
                 assert_eq!(
-                    runner().ok("// Regression test for sass/dart-sass#1568\
-             \na {b: str-insert(\"cdefghijkl\", \"mno\", -15)}\n"),
+                    runner().ok("@use \"sass:string\";\
+             \n// Regression test for sass/dart-sass#1568\
+             \na {b: string.insert(\"cdefghijkl\", \"mno\", -15)}\n"),
                     "a {\
          \n  b: \"mnocdefghijkl\";\
          \n}\n"
@@ -228,7 +272,8 @@ mod index {
             #[test]
             fn more_than_double() {
                 assert_eq!(
-                    runner().ok("a {b: str-insert(\"cde\", \"f\", -100)}\n"),
+                    runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"cde\", \"f\", -100)}\n"),
                     "a {\
          \n  b: \"fcde\";\
          \n}\n"
@@ -238,7 +283,8 @@ mod index {
         #[test]
         fn last() {
             assert_eq!(
-                runner().ok("a {b: str-insert(\"cde\", \"f\", -4)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"cde\", \"f\", -4)}\n"),
                 "a {\
          \n  b: \"fcde\";\
          \n}\n"
@@ -252,7 +298,8 @@ mod index {
         #[test]
         fn t0() {
             assert_eq!(
-                runner().ok("a {b: str-insert(\"cde\", \"f\", 0)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"cde\", \"f\", 0)}\n"),
                 "a {\
          \n  b: \"fcde\";\
          \n}\n"
@@ -261,7 +308,8 @@ mod index {
         #[test]
         fn t1() {
             assert_eq!(
-                runner().ok("a {b: str-insert(\"cde\", \"f\", 1)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"cde\", \"f\", 1)}\n"),
                 "a {\
          \n  b: \"fcde\";\
          \n}\n"
@@ -270,7 +318,8 @@ mod index {
         #[test]
         fn t2() {
             assert_eq!(
-                runner().ok("a {b: str-insert(\"cde\", \"f\", 2)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"cde\", \"f\", 2)}\n"),
                 "a {\
          \n  b: \"cfde\";\
          \n}\n"
@@ -279,7 +328,8 @@ mod index {
         #[test]
         fn after_last() {
             assert_eq!(
-                runner().ok("a {b: str-insert(\"cde\", \"f\", 100)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"cde\", \"f\", 100)}\n"),
                 "a {\
          \n  b: \"cdef\";\
          \n}\n"
@@ -288,7 +338,8 @@ mod index {
         #[test]
         fn last() {
             assert_eq!(
-                runner().ok("a {b: str-insert(\"cde\", \"f\", 4)}\n"),
+                runner().ok("@use \"sass:string\";\
+             \na {b: string.insert(\"cde\", \"f\", 4)}\n"),
                 "a {\
          \n  b: \"cdef\";\
          \n}\n"
@@ -300,7 +351,8 @@ mod index {
 fn named() {
     assert_eq!(
         runner().ok(
-            "a {b: str-insert($string: \"cde\", $insert: \"f\", $index: 2)}\n"
+            "@use \"sass:string\";\
+             \na {b: string.insert($string: \"cde\", $insert: \"f\", $index: 2)}\n"
         ),
         "a {\
          \n  b: \"cfde\";\

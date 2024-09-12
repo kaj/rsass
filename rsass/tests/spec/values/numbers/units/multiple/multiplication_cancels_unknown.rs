@@ -8,13 +8,12 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(
-            "// Units cancel even if they\'re totally unknown to Sass.\
+        runner().ok("@use \"sass:meta\";\
+             \n// Units cancel even if they\'re totally unknown to Sass.\
              \n$number: 1foo * 1bar / 1baz / 1qux;\
              \na {\
-             \n  b: inspect($number * 1baz);\
-             \n}\n"
-        ),
+             \n  b: meta.inspect($number * 1baz);\
+             \n}\n"),
         "a {\
          \n  b: calc(1foo * 1bar / 1qux);\
          \n}\n"

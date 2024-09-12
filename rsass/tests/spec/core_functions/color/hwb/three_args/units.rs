@@ -10,12 +10,13 @@ mod hue {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn deg() {
         assert_eq!(
-            runner().ok("@use \'sass:color\';\
+            runner().ok("@use \"sass:color\";\
              \na {b: color.hwb(0deg, 30%, 40%)}\n"),
             "a {\
-         \n  b: #994d4d;\
+         \n  b: hsl(0, 33.3333333333%, 45%);\
          \n}\n"
         );
     }
@@ -23,20 +24,21 @@ mod hue {
     #[ignore] // unexepected error
     fn non_angle() {
         assert_eq!(
-            runner().ok("@use \'sass:color\';\
+            runner().ok("@use \"sass:color\";\
              \na {b: color.hwb(1in, 30%, 40%)}\n"),
             "a {\
-         \n  b: #994e4d;\
+         \n  b: hsl(1, 33.3333333333%, 45%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn rad() {
         assert_eq!(
-            runner().ok("@use \'sass:color\';\
+            runner().ok("@use \"sass:color\";\
              \na {b: color.hwb(1rad, 30%, 40%)}\n"),
             "a {\
-         \n  b: #99964d;\
+         \n  b: hsl(57.2957795131, 33.3333333333%, 45%);\
          \n}\n"
         );
     }

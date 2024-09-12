@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 fn bare_sub() {
     assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":not(c d, e f, g h)\", \"c d, e f, g h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":not(c d, e f, g h)\", \"c d, e f, g h\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -29,7 +30,8 @@ mod equivalence {
         fn subset() {
             assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":not(c d.i, e j f)\", \":not(c d):not(e f):not(g h)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":not(c d.i, e j f)\", \":not(c d):not(e f):not(g h)\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -40,7 +42,8 @@ mod equivalence {
         fn superset() {
             assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":not(c d, e f, g h)\", \":not(c d.i):not(e j f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":not(c d, e f, g h)\", \":not(c d.i):not(e j f)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -56,7 +59,8 @@ mod equivalence {
         fn subset() {
             assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":not(c d.i):not(e j f)\", \":not(c d, e f, g h)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":not(c d.i):not(e j f)\", \":not(c d, e f, g h)\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -67,7 +71,8 @@ mod equivalence {
         fn superset() {
             assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":not(c d):not(e f):not(g h)\", \":not(c d.i, e j f)\")}"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":not(c d):not(e f):not(g h)\", \":not(c d.i, e j f)\")}"
         ),
         "a {\
          \n  b: false;\
@@ -80,7 +85,8 @@ mod equivalence {
 #[ignore] // wrong result
 fn id() {
     assert_eq!(
-        runner().ok("a {b: is-superselector(\":not(#c.d)\", \"#e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":not(#c.d)\", \"#e\")}\n"),
         "a {\
          \n  b: true;\
          \n}\n"
@@ -94,7 +100,8 @@ mod prefix {
     fn subset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":-pfx-not(c d.i, e j f)\", \":-pfx-not(c d, e f, g h)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":-pfx-not(c d.i, e j f)\", \":-pfx-not(c d, e f, g h)\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -105,7 +112,8 @@ mod prefix {
     fn superset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":-pfx-not(c d, e f, g h)\", \":-pfx-not(c d.i, e j f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":-pfx-not(c d, e f, g h)\", \":-pfx-not(c d.i, e j f)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -117,7 +125,8 @@ mod prefix {
 fn subset() {
     assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":not(c d.i, e j f)\", \":not(c d, e f, g h)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":not(c d.i, e j f)\", \":not(c d, e f, g h)\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -128,7 +137,8 @@ fn subset() {
 fn superset() {
     assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":not(c d, e f, g h)\", \":not(c d.i, e j f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":not(c d, e f, g h)\", \":not(c d.i, e j f)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -139,7 +149,8 @@ fn superset() {
 #[ignore] // wrong result
 fn test_type() {
     assert_eq!(
-        runner().ok("a {b: is-superselector(\":not(c.d)\", \"e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":not(c.d)\", \"e\")}\n"),
         "a {\
          \n  b: true;\
          \n}\n"

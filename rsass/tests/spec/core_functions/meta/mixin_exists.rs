@@ -64,8 +64,9 @@ mod different_module {
     fn chosen_prefix() {
         let runner = runner().with_cwd("chosen_prefix");
         assert_eq!(
-            runner.ok("@use \"other\" as a;\
-             \nb {c: mixin-exists(\"d\", \"a\")}\n"),
+            runner.ok("@use \"sass:meta\";\
+             \n@use \"other\" as a;\
+             \nb {c: meta.mixin-exists(\"d\", \"a\")}\n"),
             "b {\
          \n  c: true;\
          \n}\n"
@@ -75,8 +76,9 @@ mod different_module {
     fn defined() {
         let runner = runner().with_cwd("defined");
         assert_eq!(
-            runner.ok("@use \"other\";\
-             \na {b: mixin-exists(\"c\", \"other\")}\n"),
+            runner.ok("@use \"sass:meta\";\
+             \n@use \"other\";\
+             \na {b: meta.mixin-exists(\"c\", \"other\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -92,10 +94,11 @@ mod different_module {
         fn test_as() {
             let runner = runner().with_cwd("as");
             assert_eq!(
-                runner.ok("@use \"midstream\" as *;\
+                runner.ok("@use \"sass:meta\";\
+             \n@use \"midstream\" as *;\
              \na {\
-             \n  with-prefix: mixin-exists(b-c);\
-             \n  without-prefix: mixin-exists(c);\
+             \n  with-prefix: meta.mixin-exists(b-c);\
+             \n  without-prefix: meta.mixin-exists(c);\
              \n}\n"),
                 "a {\
          \n  with-prefix: true;\
@@ -107,8 +110,9 @@ mod different_module {
         fn bare() {
             let runner = runner().with_cwd("bare");
             assert_eq!(
-                runner.ok("@use \"midstream\" as *;\
-             \na {b: mixin-exists(c)}\n"),
+                runner.ok("@use \"sass:meta\";\
+             \n@use \"midstream\" as *;\
+             \na {b: meta.mixin-exists(c)}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -118,10 +122,11 @@ mod different_module {
         fn hide() {
             let runner = runner().with_cwd("hide");
             assert_eq!(
-                runner.ok("@use \"midstream\" as *;\
+                runner.ok("@use \"sass:meta\";\
+             \n@use \"midstream\" as *;\
              \na {\
-             \n  hidden: mixin-exists(b);\
-             \n  not-hidden: mixin-exists(c);\
+             \n  hidden: meta.mixin-exists(b);\
+             \n  not-hidden: meta.mixin-exists(c);\
              \n}\n"),
                 "a {\
          \n  hidden: false;\
@@ -133,10 +138,11 @@ mod different_module {
         fn show() {
             let runner = runner().with_cwd("show");
             assert_eq!(
-                runner.ok("@use \"midstream\" as *;\
+                runner.ok("@use \"sass:meta\";\
+             \n@use \"midstream\" as *;\
              \na {\
-             \n  shown: mixin-exists(b);\
-             \n  not-shown: mixin-exists(c);\
+             \n  shown: meta.mixin-exists(b);\
+             \n  not-shown: meta.mixin-exists(c);\
              \n}\n"),
                 "a {\
          \n  shown: true;\
@@ -149,8 +155,9 @@ mod different_module {
     fn through_use() {
         let runner = runner().with_cwd("through_use");
         assert_eq!(
-            runner.ok("@use \"other\" as *;\
-             \na {b: mixin-exists(global-mixin)}\n"),
+            runner.ok("@use \"sass:meta\";\
+             \n@use \"other\" as *;\
+             \na {b: meta.mixin-exists(global-mixin)}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -160,8 +167,9 @@ mod different_module {
     fn undefined() {
         let runner = runner().with_cwd("undefined");
         assert_eq!(
-            runner.ok("@use \"sass:color\";\
-             \na {b: mixin-exists(\"c\", \"color\")}\n"),
+            runner.ok("@use \"sass:meta\";\
+             \n@use \"sass:color\";\
+             \na {b: meta.mixin-exists(\"c\", \"color\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -184,34 +192,40 @@ mod error {
         fn too_few() {
             let runner = runner().with_cwd("too_few");
             assert_eq!(
-                runner.err("a {b: mixin-exists()}\n"),
+                runner.err(
+                    "@use \"sass:meta\";\
+             \na {b: meta.mixin-exists()}\n"
+                ),
                 "Error: Missing argument $name.\
          \n  ,--> input.scss\
-         \n1 | a {b: mixin-exists()}\
-         \n  |       ^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: meta.mixin-exists()}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:meta\
          \n1 | @function mixin-exists($name, $module: null) {\
          \n  |           ================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
         fn too_many() {
             let runner = runner().with_cwd("too_many");
             assert_eq!(
-                runner.err("a {b: mixin-exists(c, d, e)}\n"),
+                runner.err(
+                    "@use \"sass:meta\";\
+             \na {b: meta.mixin-exists(c, d, e)}\n"
+                ),
                 "Error: Only 2 arguments allowed, but 3 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: mixin-exists(c, d, e)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: meta.mixin-exists(c, d, e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:meta\
          \n1 | @function mixin-exists($name, $module: null) {\
          \n  |           ================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         mod test_type {
@@ -224,26 +238,32 @@ mod error {
             fn module() {
                 let runner = runner().with_cwd("module");
                 assert_eq!(
-                    runner.err("a {b: mixin-exists(c, 1)}\n"),
+                    runner.err(
+                        "@use \"sass:meta\";\
+             \na {b: meta.mixin-exists(c, 1)}\n"
+                    ),
                     "Error: $module: 1 is not a string.\
          \n  ,\
-         \n1 | a {b: mixin-exists(c, 1)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: meta.mixin-exists(c, 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
                 );
             }
             #[test]
             fn name() {
                 let runner = runner().with_cwd("name");
                 assert_eq!(
-                    runner.err("a {b: mixin-exists(12px)}\n"),
+                    runner.err(
+                        "@use \"sass:meta\";\
+             \na {b: meta.mixin-exists(12px)}\n"
+                    ),
                     "Error: $name: 12px is not a string.\
          \n  ,\
-         \n1 | a {b: mixin-exists(12px)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: meta.mixin-exists(12px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
                 );
             }
         }
@@ -254,21 +274,22 @@ mod error {
         let runner = runner().with_cwd("conflict");
         assert_eq!(
             runner.err(
-                "@use \"other1\" as *;\
+                "@use \"sass:meta\";\
+             \n@use \"other1\" as *;\
              \n@use \"other2\" as *;\n\
-             \na {b: mixin-exists(member)}\n"
+             \na {b: meta.mixin-exists(member)}\n"
             ),
             "Error: This mixin is available from multiple global modules.\
          \n    ,\
-         \n1   | @use \"other1\" as *;\
+         \n2   | @use \"other1\" as *;\
          \n    | ================== includes mixin\
-         \n2   | @use \"other2\" as *;\
+         \n3   | @use \"other2\" as *;\
          \n    | ================== includes mixin\
          \n... |\
-         \n4   | a {b: mixin-exists(member)}\
-         \n    |       ^^^^^^^^^^^^^^^^^^^^ mixin use\
+         \n5   | a {b: meta.mixin-exists(member)}\
+         \n    |       ^^^^^^^^^^^^^^^^^^^^^^^^^ mixin use\
          \n    \'\
-         \n  input.scss 4:7  root stylesheet",
+         \n  input.scss 5:7  root stylesheet",
         );
     }
     mod module {
@@ -281,13 +302,16 @@ mod error {
         fn built_in_but_not_loaded() {
             let runner = runner().with_cwd("built_in_but_not_loaded");
             assert_eq!(
-                runner.err("a {b: mixin-exists(\"c\", \"color\")}\n"),
+                runner.err(
+                    "@use \"sass:meta\";\
+             \na {b: meta.mixin-exists(\"c\", \"color\")}\n"
+                ),
                 "Error: There is no module with the namespace \"color\".\
          \n  ,\
-         \n1 | a {b: mixin-exists(\"c\", \"color\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: meta.mixin-exists(\"c\", \"color\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -295,28 +319,32 @@ mod error {
             let runner = runner().with_cwd("dash_sensitive");
             assert_eq!(
                 runner.err(
-                    "@use \"sass:color\" as a-b;\
-             \nc {d: mixin-exists(\"c\", $module: \"a_b\")}\n"
+                    "@use \"sass:meta\";\
+             \n@use \"sass:color\" as a-b;\
+             \nc {d: meta.mixin-exists(\"c\", $module: \"a_b\")}\n"
                 ),
                 "Error: There is no module with the namespace \"a_b\".\
          \n  ,\
-         \n2 | c {d: mixin-exists(\"c\", $module: \"a_b\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n3 | c {d: meta.mixin-exists(\"c\", $module: \"a_b\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet",
+         \n  input.scss 3:7  root stylesheet",
             );
         }
         #[test]
         fn non_existent() {
             let runner = runner().with_cwd("non_existent");
             assert_eq!(
-                runner.err("a {b: mixin-exists(\"c\", \"d\")}\n"),
+                runner.err(
+                    "@use \"sass:meta\";\
+             \na {b: meta.mixin-exists(\"c\", \"d\")}\n"
+                ),
                 "Error: There is no module with the namespace \"d\".\
          \n  ,\
-         \n1 | a {b: mixin-exists(\"c\", \"d\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: meta.mixin-exists(\"c\", \"d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }
@@ -325,8 +353,9 @@ mod error {
 fn named() {
     let runner = runner().with_cwd("named");
     assert_eq!(
-        runner.ok("@use \"other\";\
-             \na {b: mixin-exists($name: \"c\", $module: \"other\")}\n"),
+        runner.ok("@use \"sass:meta\";\
+             \n@use \"other\";\
+             \na {b: meta.mixin-exists($name: \"c\", $module: \"other\")}\n"),
         "a {\
          \n  b: true;\
          \n}\n"
@@ -342,8 +371,9 @@ mod same_module {
     fn global() {
         let runner = runner().with_cwd("global");
         assert_eq!(
-            runner.ok("@mixin global-mixin() {}\n\
-             \na {b: mixin-exists(global-mixin)}\n"),
+            runner.ok("@use \"sass:meta\";\
+             \n@mixin global-mixin() {}\n\
+             \na {b: meta.mixin-exists(global-mixin)}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -353,9 +383,10 @@ mod same_module {
     fn local() {
         let runner = runner().with_cwd("local");
         assert_eq!(
-            runner.ok("a {\
+            runner.ok("@use \"sass:meta\";\
+             \na {\
              \n  @mixin local-mixin() {}\
-             \n  b: mixin-exists(local-mixin);\
+             \n  b: meta.mixin-exists(local-mixin);\
              \n}\n"),
             "a {\
          \n  b: true;\
@@ -366,8 +397,9 @@ mod same_module {
     fn non_existent() {
         let runner = runner().with_cwd("non_existent");
         assert_eq!(
-            runner.ok("a {\
-             \n  b: mixin-exists(non-existent);\
+            runner.ok("@use \"sass:meta\";\
+             \na {\
+             \n  b: meta.mixin-exists(non-existent);\
              \n}\n"),
             "a {\
          \n  b: false;\
@@ -378,8 +410,9 @@ mod same_module {
     fn through_import() {
         let runner = runner().with_cwd("through_import");
         assert_eq!(
-            runner.ok("@import \"other\";\
-             \na {b: mixin-exists(global-mixin)}\n"),
+            runner.ok("@use \"sass:meta\";\
+             \n@import \"other\";\
+             \na {b: meta.mixin-exists(global-mixin)}\n"),
             "a {\
          \n  b: true;\
          \n}\n"

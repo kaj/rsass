@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 fn bare_sub() {
     assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":current(c d, e f)\", \"c d, e f\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":current(c d, e f)\", \"c d, e f\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -20,7 +21,8 @@ fn bare_sub() {
 fn equal() {
     assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":current(c d, e f)\", \":current(c d, e f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":current(c d, e f)\", \":current(c d, e f)\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -35,7 +37,8 @@ mod prefix {
     fn equal() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":-pfx-current(c d, e f)\", \":-pfx-current(c d, e f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":-pfx-current(c d, e f)\", \":-pfx-current(c d, e f)\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -45,8 +48,9 @@ mod prefix {
     #[test]
     fn subset() {
         assert_eq!(
-            runner().ok("a {\
-             \n  b: is-superselector(\
+            runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.is-superselector(\
              \n      \":-pfx-current(c d.i, e j f)\",\
              \n      \":-pfx-current(c d, e f, g h)\");\
              \n}\n"),
@@ -58,8 +62,9 @@ mod prefix {
     #[test]
     fn superset() {
         assert_eq!(
-            runner().ok("a {\
-             \n  b: is-superselector(\
+            runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.is-superselector(\
              \n      \":-pfx-current(c d, e f, g h)\",\
              \n      \":-pfx-current(c d.i, e j f)\");\
              \n}\n"),
@@ -73,7 +78,8 @@ mod prefix {
 fn subset() {
     assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":current(c d.i, e j f)\", \":current(c d, e f, g h)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":current(c d.i, e j f)\", \":current(c d, e f, g h)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -84,7 +90,8 @@ fn subset() {
 fn superset() {
     assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":current(c d, e f, g h)\", \":current(c d.i, e j f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":current(c d, e f, g h)\", \":current(c d.i, e j f)\")}\n"
         ),
         "a {\
          \n  b: false;\

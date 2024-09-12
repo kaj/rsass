@@ -8,19 +8,20 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("foo {\
+        runner().ok("@use \"sass:color\";\
+             \nfoo {\
              \n  // c-1: change-color(black,$alpha:-1);\
-             \n  c0: change-color(black,$alpha:0.0);\
-             \n  c1: change-color(black,$alpha:0.1);\
-             \n  c2: change-color(black,$alpha:0.2);\
-             \n  c3: change-color(black,$alpha:0.3);\
-             \n  c4: change-color(black,$alpha:0.4);\
-             \n  c5: change-color(black,$alpha:0.5);\
-             \n  c6: change-color(black,$alpha:0.6);\
-             \n  c7: change-color(black,$alpha:0.7);\
-             \n  c8: change-color(black,$alpha:0.8);\
-             \n  c9: change-color(black,$alpha:0.9);\
-             \n  c10: change-color(black,$alpha:1);\
+             \n  c0: color.change(black,$alpha:0.0);\
+             \n  c1: color.change(black,$alpha:0.1);\
+             \n  c2: color.change(black,$alpha:0.2);\
+             \n  c3: color.change(black,$alpha:0.3);\
+             \n  c4: color.change(black,$alpha:0.4);\
+             \n  c5: color.change(black,$alpha:0.5);\
+             \n  c6: color.change(black,$alpha:0.6);\
+             \n  c7: color.change(black,$alpha:0.7);\
+             \n  c8: color.change(black,$alpha:0.8);\
+             \n  c9: color.change(black,$alpha:0.9);\
+             \n  c10: color.change(black,$alpha:1);\
              \n  // c11: change-color(black,$alpha:1.1);\
              \n  // c12: change-color(black,$alpha:2);\
              \n}\n"),

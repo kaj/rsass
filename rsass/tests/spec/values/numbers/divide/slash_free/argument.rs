@@ -12,7 +12,8 @@ mod function {
     #[test]
     fn built_in() {
         assert_eq!(
-            runner().ok("c {d: join(1/2, 3/4)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \nc {d: list.join(1/2, 3/4)}\n"),
             "c {\
          \n  d: 0.5 0.75;\
          \n}\n"
@@ -21,7 +22,8 @@ mod function {
     #[test]
     fn named() {
         assert_eq!(
-            runner().ok("c {d: join($list1: 1/2, $list2: 3/4)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \nc {d: list.join($list1: 1/2, $list2: 3/4)}\n"),
             "c {\
          \n  d: 0.5 0.75;\
          \n}\n"
@@ -34,7 +36,8 @@ mod function {
         #[test]
         fn kwargs() {
             assert_eq!(
-                runner().ok("c {d: join(1/2..., (\"list2\": 3/4)...)}\n"),
+                runner().ok("@use \"sass:list\";\
+             \nc {d: list.join(1/2..., (\"list2\": 3/4)...)}\n"),
                 "c {\
          \n  d: 0.5 0.75;\
          \n}\n"
@@ -43,7 +46,8 @@ mod function {
         #[test]
         fn list() {
             assert_eq!(
-                runner().ok("c {d: join(1/2 3/4...)}\n"),
+                runner().ok("@use \"sass:list\";\
+             \nc {d: list.join(1/2 3/4...)}\n"),
                 "c {\
          \n  d: 0.5 0.75;\
          \n}\n"
@@ -52,8 +56,8 @@ mod function {
         #[test]
         fn map() {
             assert_eq!(
-                runner()
-                    .ok("c {d: join((\"list1\": 1/2, \"list2\": 3/4)...)}\n"),
+                runner().ok("@use \"sass:list\";\
+             \nc {d: list.join((\"list1\": 1/2, \"list2\": 3/4)...)}\n"),
                 "c {\
          \n  d: 0.5 0.75;\
          \n}\n"
@@ -62,7 +66,8 @@ mod function {
         #[test]
         fn single() {
             assert_eq!(
-                runner().ok("c {d: join(1/2, 3/4...)}\n"),
+                runner().ok("@use \"sass:list\";\
+             \nc {d: list.join(1/2, 3/4...)}\n"),
                 "c {\
          \n  d: 0.5 0.75;\
          \n}\n"

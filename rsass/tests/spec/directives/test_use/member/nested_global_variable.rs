@@ -14,8 +14,9 @@ fn runner() -> crate::TestRunner {
 fn direct() {
     let runner = runner().with_cwd("direct");
     assert_eq!(
-        runner.ok("@use \"other\";\n\
-             \na {b: inspect(other.$member)}\n"),
+        runner.ok("@use \"sass:meta\";\
+             \n@use \"other\";\n\
+             \na {b: meta.inspect(other.$member)}\n"),
         "a {\
          \n  b: null;\
          \n}\n"
@@ -26,8 +27,9 @@ fn direct() {
 fn through_import() {
     let runner = runner().with_cwd("through_import");
     assert_eq!(
-        runner.ok("@use \"used\";\n\
-             \na {b: inspect(used.$member)}\n"),
+        runner.ok("@use \"sass:meta\";\
+             \n@use \"used\";\n\
+             \na {b: meta.inspect(used.$member)}\n"),
         "a {\
          \n  b: null;\
          \n}\n"

@@ -9,7 +9,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok("\
+        runner().ok("@use \"sass:map\";\n\
              \n@function hello($name) {\
              \n    @return $name;\
              \n}\n\
@@ -19,10 +19,10 @@ fn test() {
              \n  hello(\"bob\") : bam,\
              \n);\n\
              \na {\
-             \n  foo: map-get($foo, \"bar()\");\
-             \n  foo: map-get($foo, \"bar(\\\"foo\\\")\");\
-             \n  foo: map-get($foo, \'bar(\"foo\")\');\
-             \n  foo: map-get($foo, \"bob\");\
+             \n  foo: map.get($foo, \"bar()\");\
+             \n  foo: map.get($foo, \"bar(\\\"foo\\\")\");\
+             \n  foo: map.get($foo, \'bar(\"foo\")\');\
+             \n  foo: map.get($foo, \"bob\");\
              \n}\n"),
         "a {\
          \n  foo: baz;\

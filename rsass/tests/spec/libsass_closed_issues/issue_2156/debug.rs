@@ -8,11 +8,12 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@debug \"\\\"foo\\\"\" + \"\";\r\
+        runner().ok("@use \"sass:string\";\
+             \n@debug \"\\\"foo\\\"\" + \"\";\r\
              \n@debug \"\" + \"\\\"foo\\\"\";\r\
              \n@debug \"\" + \"\\\"foo\";\r\
              \n@debug \"\\\"foo\\\"\" + \"bar\";\r\
-             \n@debug unquote(\"\\\"foo\\\" and \\\"bar\\\"\");\r\n"),
+             \n@debug string.unquote(\"\\\"foo\\\" and \\\"bar\\\"\");\r\n"),
         ""
     );
 }

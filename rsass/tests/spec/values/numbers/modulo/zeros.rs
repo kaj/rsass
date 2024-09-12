@@ -52,8 +52,9 @@ fn positive_positive() {
 #[test]
 fn zero_divider() {
     assert_eq!(
-        runner().ok("a {\
-             \n  b: inspect(1 % 0);\
+        runner().ok("@use \"sass:meta\";\n\
+             \na {\
+             \n  b: meta.inspect(1 % 0);\
              \n}\n"),
         "a {\
          \n  b: calc(NaN);\

@@ -8,26 +8,29 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$ls: ((foo,));\n\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"sass:string\";\n\
+             \n$ls: ((foo,));\n\
              \nfoo {\
-             \n  baz: length($ls);\
-             \n  baz: type-of($ls);\
-             \n  baz: inspect($ls);\
+             \n  baz: list.length($ls);\
+             \n  baz: meta.type-of($ls);\
+             \n  baz: meta.inspect($ls);\
              \n}\n\
              \nbar {\
-             \n  baz: length(&);\
-             \n  baz: type-of(&);\
-             \n  baz: inspect(&);\
+             \n  baz: list.length(&);\
+             \n  baz: meta.type-of(&);\
+             \n  baz: meta.inspect(&);\
              \n}\n\
              \nfoo {\
-             \n  string: inspect(&);\
-             \n  str-length: str-length(inspect(&));\
-             \n  list-length: length(&);\
+             \n  string: meta.inspect(&);\
+             \n  str-length: string.length(meta.inspect(&));\
+             \n  list-length: list.length(&);\
              \n}\n\
              \nfoo, bar {\
-             \n  string: inspect(&);\
-             \n  str-length: str-length(inspect(&));\
-             \n  list-length: length(&);\
+             \n  string: meta.inspect(&);\
+             \n  str-length: string.length(meta.inspect(&));\
+             \n  list-length: list.length(&);\
              \n}\n"),
         "foo {\
          \n  baz: 1;\

@@ -10,26 +10,25 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err(
-            "@function fncall($void) {\r\
-             \n  @return \"key\";\r\
-             \n}\r\
-             \n\r\
-             \n$map: (\r\
-             \n  fncall(1+2): \'foo\',\r\
-             \n  fncall(1+2): \'bar\',\r\
-             \n);\r\
-             \n\r\
-             \n.foo {\r\
-             \n  content: inspect($map);\r\
+            "@use \"sass:meta\";\n\
+             \n@function fncall($void) {\
+             \n  @return \"key\";\
+             \n}\n\
+             \n$map: (\
+             \n  fncall(1+2): \'foo\',\
+             \n  fncall(1+2): \'bar\',\
+             \n);\n\
+             \n.foo {\
+             \n  content: meta.inspect($map);\
              \n}"
         ),
         "Error: Duplicate key.\
          \n  ,\
-         \n6 |   fncall(1+2): \'foo\',\
+         \n8 |   fncall(1+2): \'foo\',\
          \n  |   =========== first key\
-         \n7 |   fncall(1+2): \'bar\',\
+         \n9 |   fncall(1+2): \'bar\',\
          \n  |   ^^^^^^^^^^^ second key\
          \n  \'\
-         \n  input.scss 7:3  root stylesheet",
+         \n  input.scss 9:3  root stylesheet",
     );
 }

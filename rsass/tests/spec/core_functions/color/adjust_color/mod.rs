@@ -6,13 +6,3 @@ fn runner() -> crate::TestRunner {
 }
 
 mod error;
-
-mod hsl;
-
-mod hwb;
-
-mod no_rgb_hsl;
-
-mod rgb;
-
-mod units;

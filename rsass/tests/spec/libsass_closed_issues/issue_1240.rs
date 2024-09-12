@@ -8,9 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$var: 1;\
+        runner().ok("@use \"sass:list\";\
+             \n$var: 1;\
              \n$list: 2, 3;\
-             \n$new-list: append($var, $list);\
+             \n$new-list: list.append($var, $list);\
              \n$nested-list: $var $list;\
              \n@debug($var);\
              \n@debug($list);\

@@ -9,13 +9,14 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$x: oo, ba;\
+            "@use \"sass:list\";\
+             \n$x: oo, ba;\
              \n$y: az, hu;\n\
              \nf#{$x}r {\
              \n  p: 1;\
              \n  b#{$y}x {\
              \n    q: 2;\
-             \n    mumble#{length($x) + length($y)} {\
+             \n    mumble#{list.length($x) + list.length($y)} {\
              \n      r: 3;\
              \n    }\
              \n  }\

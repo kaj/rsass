@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn built_in() {
     assert_eq!(
-        runner().ok("a {b: nth(3 1/2 4, 2)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.nth(3 1/2 4, 2)}\n"),
         "a {\
          \n  b: 0.5;\
          \n}\n"

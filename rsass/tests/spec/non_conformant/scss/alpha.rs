@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$x: rgb(0, 255, 255);\n\
+        runner().ok("@use \"sass:color\";\
+             \n$x: rgb(0, 255, 255);\n\
              \ndiv {\
              \n  color: rgb(255, $blue: 0, $green: 255);\
              \n  background: rgb(123, 45, 6);\
@@ -22,13 +23,13 @@ fn test() {
              \n  \
              \n  $x: rgb(123, 45, 6);\
              \n  \
-             \n  hoo: red($x);\
-             \n  moo: green($x);\
-             \n  poo: blue($x);\
+             \n  hoo: color.red($x);\
+             \n  moo: color.green($x);\
+             \n  poo: color.blue($x);\
              \n  \
              \n//  goo: mix(rgba(255, 0, 0, 0.5), #00f);\
              \n  \
-             \n  boo: invert(#123456);\
+             \n  boo: color.invert(#123456);\
              \n}\n"),
         "div {\
          \n  color: rgb(255, 255, 0);\

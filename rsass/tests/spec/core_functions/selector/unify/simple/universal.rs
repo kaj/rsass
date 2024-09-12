@@ -16,7 +16,8 @@ mod and_type {
         #[test]
         fn and_any() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"*|*\", \"*|c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"*|*\", \"*|c\")}\n"),
                 "a {\
          \n  b: *|c;\
          \n}\n"
@@ -25,7 +26,8 @@ mod and_type {
         #[test]
         fn and_default() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"*|*\", \"c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"*|*\", \"c\")}\n"),
                 "a {\
          \n  b: c;\
          \n}\n"
@@ -34,7 +36,8 @@ mod and_type {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"*|*\", \"|c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"*|*\", \"|c\")}\n"),
                 "a {\
          \n  b: |c;\
          \n}\n"
@@ -43,7 +46,8 @@ mod and_type {
         #[test]
         fn and_explicit() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"*|*\", \"c|d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"*|*\", \"c|d\")}\n"),
                 "a {\
          \n  b: c|d;\
          \n}\n"
@@ -57,7 +61,8 @@ mod and_type {
         #[test]
         fn and_any() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"*\", \"*|c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"*\", \"*|c\")}\n"),
                 "a {\
          \n  b: c;\
          \n}\n"
@@ -66,7 +71,8 @@ mod and_type {
         #[test]
         fn and_default() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"*\", \"c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"*\", \"c\")}\n"),
                 "a {\
          \n  b: c;\
          \n}\n"
@@ -75,8 +81,9 @@ mod and_type {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"*\", \"|c\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"*\", \"|c\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -85,8 +92,9 @@ mod and_type {
         #[test]
         fn and_explicit() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"*\", \"c|d\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"*\", \"c|d\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -100,7 +108,8 @@ mod and_type {
         #[test]
         fn and_any() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"|*\", \"*|c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"|*\", \"*|c\")}\n"),
                 "a {\
          \n  b: |c;\
          \n}\n"
@@ -109,8 +118,9 @@ mod and_type {
         #[test]
         fn and_default() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"|*\", \"c\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"|*\", \"c\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -119,7 +129,8 @@ mod and_type {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"|*\", \"|c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"|*\", \"|c\")}\n"),
                 "a {\
          \n  b: |c;\
          \n}\n"
@@ -128,8 +139,9 @@ mod and_type {
         #[test]
         fn and_explicit() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"|*\", \"c|d\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"|*\", \"c|d\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -143,7 +155,8 @@ mod and_type {
         #[test]
         fn and_any() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"c|*\", \"*|d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"c|*\", \"*|d\")}\n"),
                 "a {\
          \n  b: c|d;\
          \n}\n"
@@ -152,8 +165,9 @@ mod and_type {
         #[test]
         fn and_default() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"c|*\", \"d\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"c|*\", \"d\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -162,8 +176,9 @@ mod and_type {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"c|*\", \"|d\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"c|*\", \"|d\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -176,9 +191,9 @@ mod and_type {
             #[test]
             fn different() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: inspect(selector-unify(\"c|*\", \"d|e\"))}\n"
-                    ),
+                    runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"c|*\", \"d|e\"))}\n"),
                     "a {\
          \n  b: null;\
          \n}\n"
@@ -187,7 +202,8 @@ mod and_type {
             #[test]
             fn same() {
                 assert_eq!(
-                    runner().ok("a {b: selector-unify(\"c|*\", \"c|d\")}\n"),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"c|*\", \"c|d\")}\n"),
                     "a {\
          \n  b: c|d;\
          \n}\n"
@@ -207,7 +223,8 @@ mod and_universal {
         #[test]
         fn and_any() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"*|*\", \"*|*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"*|*\", \"*|*\")}\n"),
                 "a {\
          \n  b: *|*;\
          \n}\n"
@@ -216,7 +233,8 @@ mod and_universal {
         #[test]
         fn and_default() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"*|*\", \"*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"*|*\", \"*\")}\n"),
                 "a {\
          \n  b: *;\
          \n}\n"
@@ -225,7 +243,8 @@ mod and_universal {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"*|*\", \"|*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"*|*\", \"|*\")}\n"),
                 "a {\
          \n  b: |*;\
          \n}\n"
@@ -234,7 +253,8 @@ mod and_universal {
         #[test]
         fn and_explicit() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"*|*\", \"c|*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"*|*\", \"c|*\")}\n"),
                 "a {\
          \n  b: c|*;\
          \n}\n"
@@ -248,7 +268,8 @@ mod and_universal {
         #[test]
         fn and_any() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"*\", \"*|*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"*\", \"*|*\")}\n"),
                 "a {\
          \n  b: *;\
          \n}\n"
@@ -257,7 +278,8 @@ mod and_universal {
         #[test]
         fn and_default() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"*\", \"*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"*\", \"*\")}\n"),
                 "a {\
          \n  b: *;\
          \n}\n"
@@ -266,8 +288,9 @@ mod and_universal {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"*\", \"|*\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"*\", \"|*\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -276,8 +299,9 @@ mod and_universal {
         #[test]
         fn and_explicit() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"*\", \"e|*\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"*\", \"e|*\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -291,7 +315,8 @@ mod and_universal {
         #[test]
         fn and_any() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"|*\", \"*|*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"|*\", \"*|*\")}\n"),
                 "a {\
          \n  b: |*;\
          \n}\n"
@@ -300,8 +325,9 @@ mod and_universal {
         #[test]
         fn and_default() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"|*\", \"*\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"|*\", \"*\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -310,7 +336,8 @@ mod and_universal {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"|*\", \"|*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"|*\", \"|*\")}\n"),
                 "a {\
          \n  b: |*;\
          \n}\n"
@@ -319,8 +346,9 @@ mod and_universal {
         #[test]
         fn and_explicit() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"|*\", \"e|*\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"|*\", \"e|*\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -334,7 +362,8 @@ mod and_universal {
         #[test]
         fn and_any() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"c|*\", \"*|*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"c|*\", \"*|*\")}\n"),
                 "a {\
          \n  b: c|*;\
          \n}\n"
@@ -343,8 +372,9 @@ mod and_universal {
         #[test]
         fn and_default() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"c|*\", \"*\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"c|*\", \"*\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -353,8 +383,9 @@ mod and_universal {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"c|*\", \"|*\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"c|*\", \"|*\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -363,7 +394,8 @@ mod and_universal {
         #[test]
         fn and_explicit() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"c|*\", \"c|*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"c|*\", \"c|*\")}\n"),
                 "a {\
          \n  b: c|*;\
          \n}\n"

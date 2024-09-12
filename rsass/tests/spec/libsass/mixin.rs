@@ -9,12 +9,15 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "// @charset \"UTF-8\";\n\
+            "@use \"sass:list\";\
+             \n@use \"sass:math\";\
+             \n@use \"sass:string\";\
+             \n// @charset \"UTF-8\";\n\
              \n@mixin background-image-retina($file, $type, $width, $height) {\
-             \n  background-image: unquote(image-url(\"#{$file}.#{$type}\", true));\
-             \n  hey: length(a b c d);\
-             \n  ho: unquote(\"hello\");\
-             \n  hee: unquote(unit(10fudge));\n\
+             \n  background-image: string.unquote(image-url(\"#{$file}.#{$type}\", true));\
+             \n  hey: list.length(a b c d);\
+             \n  ho: string.unquote(\"hello\");\
+             \n  hee: string.unquote(math.unit(10fudge));\n\
              \n  @media (-webkit-min-device-pixel-ratio: 2), (-moz-min-device-pixel-ratio: 2) {\
              \n    & {\
              \n      background-image: image-url(\"#{$file}@2x.#{$type}\");\
@@ -49,7 +52,7 @@ fn test() {
              \n  @include bar(1);\
              \n  @include bar($x: n1, $y: n2);\
              \n  @include bar($x: n1);\
-             \n  blah: unquote(\"hello\");\
+             \n  blah: string.unquote(\"hello\");\
              \n}"
         ),
         "div {\

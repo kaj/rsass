@@ -12,7 +12,8 @@ mod empty {
     #[test]
     fn bracketed() {
         assert_eq!(
-            runner().ok("a {b: inspect([])}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \na {b: meta.inspect([])}\n"),
             "a {\
          \n  b: [];\
          \n}\n"

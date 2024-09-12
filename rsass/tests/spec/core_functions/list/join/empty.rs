@@ -16,11 +16,13 @@ mod both {
         #[test]
         fn first() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: join($empty-comma-list, ());\
+                runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.join(utils.$empty-comma-list, ());\
              \na {\
-             \n  value: inspect($result);\
-             \n  separator: real-separator($result);\
+             \n  value: meta.inspect($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
                 "a {\
          \n  value: ();\
@@ -31,11 +33,13 @@ mod both {
         #[test]
         fn last() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: join((), $empty-comma-list);\
+                runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.join((), utils.$empty-comma-list);\
              \na {\
-             \n  value: inspect($result);\
-             \n  separator: real-separator($result);\
+             \n  value: meta.inspect($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
                 "a {\
          \n  value: ();\
@@ -51,12 +55,14 @@ mod both {
         #[test]
         fn first() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$empty-slash-list: join((), (), $separator: slash);\
-             \n$result: join($empty-slash-list, ());\
+                runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$empty-slash-list: list.join((), (), $separator: slash);\
+             \n$result: list.join($empty-slash-list, ());\
              \na {\
-             \n  value: inspect($result);\
-             \n  separator: real-separator($result);\
+             \n  value: meta.inspect($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
                 "a {\
          \n  value: ();\
@@ -67,12 +73,14 @@ mod both {
         #[test]
         fn last() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$empty-slash-list: join((), (), $separator: slash);\
-             \n$result: join((), $empty-slash-list);\
+                runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$empty-slash-list: list.join((), (), $separator: slash);\
+             \n$result: list.join((), $empty-slash-list);\
              \na {\
-             \n  value: inspect($result);\
-             \n  separator: real-separator($result);\
+             \n  value: meta.inspect($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
                 "a {\
          \n  value: ();\
@@ -88,11 +96,13 @@ mod both {
         #[test]
         fn first() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: join($empty-space-list, ());\
+                runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.join(utils.$empty-space-list, ());\
              \na {\
-             \n  value: inspect($result);\
-             \n  separator: real-separator($result);\
+             \n  value: meta.inspect($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
                 "a {\
          \n  value: ();\
@@ -103,11 +113,13 @@ mod both {
         #[test]
         fn last() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: join((), $empty-space-list);\
+                runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.join((), utils.$empty-space-list);\
              \na {\
-             \n  value: inspect($result);\
-             \n  separator: real-separator($result);\
+             \n  value: meta.inspect($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
                 "a {\
          \n  value: ();\
@@ -120,13 +132,15 @@ mod both {
     fn undecided() {
         assert_eq!(
         runner().ok(
-            "@import \"core_functions/list/utils\";\n\
-             \n$result: join((), ());\
+            "@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.join((), ());\
              \na {\
-             \n  value: inspect($result);\n\
+             \n  value: meta.inspect($result);\n\
              \n  // `join()` should always produce a real separator, even when the inputs have\
              \n  // undecided separators. It should default to `space`.\
-             \n  separator: real-separator($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"
         ),
         "a {\
@@ -143,8 +157,9 @@ mod first {
     #[test]
     fn comma() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: join($empty-comma-list, 1 2 3)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"core_functions/list/utils\";\
+             \na {b: list.join(utils.$empty-comma-list, 1 2 3)}\n"),
             "a {\
          \n  b: 1, 2, 3;\
          \n}\n"
@@ -153,9 +168,9 @@ mod first {
     #[test]
     fn slash() {
         assert_eq!(
-            runner()
-                .ok("$empty-slash-list: join((), (), $separator: slash);\
-             \na {b: join($empty-slash-list, 1 2 3)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n$empty-slash-list: list.join((), (), $separator: slash);\
+             \na {b: list.join($empty-slash-list, 1 2 3)}\n"),
             "a {\
          \n  b: 1 / 2 / 3;\
          \n}\n"
@@ -164,8 +179,9 @@ mod first {
     #[test]
     fn space() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: join($empty-space-list, (1, 2, 3))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"core_functions/list/utils\";\
+             \na {b: list.join(utils.$empty-space-list, (1, 2, 3))}\n"),
             "a {\
          \n  b: 1 2 3;\
          \n}\n"
@@ -178,7 +194,8 @@ mod first {
         #[test]
         fn and_comma() {
             assert_eq!(
-                runner().ok("a {b: join((), (1, 2, 3))}\n"),
+                runner().ok("@use \"sass:list\";\
+             \na {b: list.join((), (1, 2, 3))}\n"),
                 "a {\
          \n  b: 1, 2, 3;\
          \n}\n"
@@ -188,7 +205,7 @@ mod first {
         fn and_slash() {
             assert_eq!(
                 runner().ok("@use \"sass:list\";\
-             \na {b: join((), list.slash(1, 2, 3))}\n"),
+             \na {b: list.join((), list.slash(1, 2, 3))}\n"),
                 "a {\
          \n  b: 1 / 2 / 3;\
          \n}\n"
@@ -197,7 +214,8 @@ mod first {
         #[test]
         fn and_space() {
             assert_eq!(
-                runner().ok("a {b: join((), 1 2 3)}\n"),
+                runner().ok("@use \"sass:list\";\
+             \na {b: list.join((), 1 2 3)}\n"),
                 "a {\
          \n  b: 1 2 3;\
          \n}\n"
@@ -216,8 +234,9 @@ mod map {
         #[test]
         fn comma() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: join($empty-map, (1, 2, 3))}\n"),
+                runner().ok("@use \"sass:list\";\
+             \n@use \"core_functions/list/utils\";\
+             \na {b: list.join(utils.$empty-map, (1, 2, 3))}\n"),
                 "a {\
          \n  b: 1, 2, 3;\
          \n}\n"
@@ -227,8 +246,8 @@ mod map {
         fn slash() {
             assert_eq!(
                 runner().ok("@use \"sass:list\";\
-             \n@import \"core_functions/list/utils\";\
-             \na {b: join($empty-map, list.slash(1, 2, 3))}\n"),
+             \n@use \"core_functions/list/utils\";\
+             \na {b: list.join(utils.$empty-map, list.slash(1, 2, 3))}\n"),
                 "a {\
          \n  b: 1 / 2 / 3;\
          \n}\n"
@@ -237,8 +256,9 @@ mod map {
         #[test]
         fn space() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: join($empty-map, 1 2 3)}\n"),
+                runner().ok("@use \"sass:list\";\
+             \n@use \"core_functions/list/utils\";\
+             \na {b: list.join(utils.$empty-map, 1 2 3)}\n"),
                 "a {\
          \n  b: 1 2 3;\
          \n}\n"
@@ -247,11 +267,13 @@ mod map {
         #[test]
         fn undecided() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: join($empty-map, ());\
+                runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.join(utils.$empty-map, ());\
              \na {\
-             \n  value: inspect($result);\
-             \n  separator: real-separator($result);\
+             \n  value: meta.inspect($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
                 "a {\
          \n  value: ();\
@@ -267,8 +289,9 @@ mod map {
         #[test]
         fn comma() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: join((1, 2, 3), $empty-map)}\n"),
+                runner().ok("@use \"sass:list\";\
+             \n@use \"core_functions/list/utils\";\
+             \na {b: list.join((1, 2, 3), utils.$empty-map)}\n"),
                 "a {\
          \n  b: 1, 2, 3;\
          \n}\n"
@@ -278,8 +301,8 @@ mod map {
         fn slash() {
             assert_eq!(
                 runner().ok("@use \"sass:list\";\
-             \n@import \"core_functions/list/utils\";\
-             \na {b: join(list.slash(1, 2, 3), $empty-map)}\n"),
+             \n@use \"core_functions/list/utils\";\
+             \na {b: list.join(list.slash(1, 2, 3), utils.$empty-map)}\n"),
                 "a {\
          \n  b: 1 / 2 / 3;\
          \n}\n"
@@ -288,8 +311,9 @@ mod map {
         #[test]
         fn space() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: join(1 2 3, $empty-map)}\n"),
+                runner().ok("@use \"sass:list\";\
+             \n@use \"core_functions/list/utils\";\
+             \na {b: list.join(1 2 3, utils.$empty-map)}\n"),
                 "a {\
          \n  b: 1 2 3;\
          \n}\n"
@@ -298,11 +322,13 @@ mod map {
         #[test]
         fn undecided() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: join($empty-map, ());\
+                runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.join(utils.$empty-map, ());\
              \na {\
-             \n  value: inspect($result);\
-             \n  separator: real-separator($result);\
+             \n  value: meta.inspect($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
                 "a {\
          \n  value: ();\
@@ -319,8 +345,9 @@ mod second {
     #[test]
     fn comma() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: join(1 2 3, $empty-comma-list)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"core_functions/list/utils\";\
+             \na {b: list.join(1 2 3, utils.$empty-comma-list)}\n"),
             "a {\
          \n  b: 1 2 3;\
          \n}\n"
@@ -329,9 +356,9 @@ mod second {
     #[test]
     fn slash() {
         assert_eq!(
-            runner()
-                .ok("$empty-slash-list: join((), (), $separator: slash);\
-             \na {b: join(1 2 3, $empty-slash-list)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n$empty-slash-list: list.join((), (), $separator: slash);\
+             \na {b: list.join(1 2 3, $empty-slash-list)}\n"),
             "a {\
          \n  b: 1 2 3;\
          \n}\n"
@@ -340,8 +367,9 @@ mod second {
     #[test]
     fn space() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: join((1, 2, 3), $empty-space-list)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"core_functions/list/utils\";\
+             \na {b: list.join((1, 2, 3), utils.$empty-space-list)}\n"),
             "a {\
          \n  b: 1, 2, 3;\
          \n}\n"
@@ -354,7 +382,8 @@ mod second {
         #[test]
         fn comma() {
             assert_eq!(
-                runner().ok("a {b: join((1, 2, 3), ())}\n"),
+                runner().ok("@use \"sass:list\";\
+             \na {b: list.join((1, 2, 3), ())}\n"),
                 "a {\
          \n  b: 1, 2, 3;\
          \n}\n"
@@ -364,7 +393,7 @@ mod second {
         fn slash() {
             assert_eq!(
                 runner().ok("@use \"sass:list\";\
-             \na {b: join(list.slash(1, 2, 3), ())}\n"),
+             \na {b: list.join(list.slash(1, 2, 3), ())}\n"),
                 "a {\
          \n  b: 1 / 2 / 3;\
          \n}\n"
@@ -373,7 +402,8 @@ mod second {
         #[test]
         fn space() {
             assert_eq!(
-                runner().ok("a {b: join(1 2 3, ())}\n"),
+                runner().ok("@use \"sass:list\";\
+             \na {b: list.join(1 2 3, ())}\n"),
                 "a {\
          \n  b: 1 2 3;\
          \n}\n"

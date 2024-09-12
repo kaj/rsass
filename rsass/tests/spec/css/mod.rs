@@ -39,6 +39,8 @@ mod propset;
 
 mod selector;
 
+mod style_rule;
+
 mod supports;
 
 mod unicode_range;

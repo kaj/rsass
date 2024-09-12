@@ -13,7 +13,9 @@ mod and_child {
     fn conflict() {
         assert_eq!(
         runner().ok(
-            "a {b: inspect(selector-unify(\"#s1-1 > .s1-2\", \"#s2-1 > .s2-2\"))}\n"
+            "@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"#s1-1 > .s1-2\", \"#s2-1 > .s2-2\"))}\n"
         ),
         "a {\
          \n  b: null;\
@@ -23,7 +25,8 @@ mod and_child {
     #[test]
     fn distinct() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\".c > .d\", \".e > .f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c > .d\", \".e > .f\")}\n"),
             "a {\
          \n  b: .e.c > .d.f;\
          \n}\n"
@@ -33,7 +36,8 @@ mod and_child {
     fn overlap() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-unify(\".c.s1-1 > .s1-2\", \".c.s2-1 > .s2-2\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.unify(\".c.s1-1 > .s1-2\", \".c.s2-1 > .s2-2\")}\n"
         ),
         "a {\
          \n  b: .c.s2-1.s1-1 > .s1-2.s2-2;\
@@ -43,9 +47,8 @@ mod and_child {
     #[test]
     fn superselector() {
         assert_eq!(
-            runner().ok(
-                "a {b: selector-unify(\".c.s1-1 > .s1-2\", \".c > .s2\")}\n"
-            ),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c.s1-1 > .s1-2\", \".c > .s2\")}\n"),
             "a {\
          \n  b: .c.s1-1 > .s1-2.s2;\
          \n}\n"
@@ -59,7 +62,8 @@ mod and_descendant {
     #[test]
     fn distinct() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\".c > .d\", \".e .f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c > .d\", \".e .f\")}\n"),
             "a {\
          \n  b: .e .c > .d.f;\
          \n}\n"
@@ -68,7 +72,8 @@ mod and_descendant {
     #[test]
     fn identical() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\".c > .s1\", \".c .s2\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c > .s1\", \".c .s2\")}\n"),
             "a {\
          \n  b: .c > .s1.s2;\
          \n}\n"
@@ -78,7 +83,8 @@ mod and_descendant {
     fn overlap() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-unify(\".c.s1-1 > .s1-2\", \".c.s2-1 .s2-2\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.unify(\".c.s1-1 > .s1-2\", \".c.s2-1 .s2-2\")}\n"
         ),
         "a {\
          \n  b: .c.s2-1 .c.s1-1 > .s1-2.s2-2;\
@@ -88,9 +94,8 @@ mod and_descendant {
     #[test]
     fn superselector() {
         assert_eq!(
-            runner().ok(
-                "a {b: selector-unify(\".c.s1-1 > .s1-2\", \".c .s2\")}\n"
-            ),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c.s1-1 > .s1-2\", \".c .s2\")}\n"),
             "a {\
          \n  b: .c.s1-1 > .s1-2.s2;\
          \n}\n"
@@ -100,7 +105,8 @@ mod and_descendant {
 #[test]
 fn and_next_sibling() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\".c > .s1\", \".c + .s2\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c > .s1\", \".c + .s2\")}\n"),
         "a {\
          \n  b: .c > .c + .s1.s2;\
          \n}\n"
@@ -109,7 +115,8 @@ fn and_next_sibling() {
 #[test]
 fn and_sibling() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\".c > .s1\", \".c ~ .s2\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c > .s1\", \".c ~ .s2\")}\n"),
         "a {\
          \n  b: .c > .c ~ .s1.s2;\
          \n}\n"

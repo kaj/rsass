@@ -13,7 +13,8 @@ mod both {
     fn subset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":matches(c d.i, e j f)\", \":matches(c d, e f, g h)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":matches(c d.i, e j f)\", \":matches(c d, e f, g h)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -24,7 +25,8 @@ mod both {
     fn superset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":matches(c d, e f, g h)\", \":matches(c d.i, e j f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":matches(c d, e f, g h)\", \":matches(c d.i, e j f)\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -39,64 +41,9 @@ mod complex {
     #[test]
     fn subset() {
         assert_eq!(
-            runner().ok(
-                "a {b: is-superselector(\":matches(c d e)\", \"c e\")}\n"
-            ),
-            "a {\
-         \n  b: false;\
-         \n}\n"
-        );
-    }
-    #[test]
-    #[ignore] // wrong result
-    fn superset() {
-        assert_eq!(
-            runner().ok(
-                "a {b: is-superselector(\":matches(c e)\", \"c d e\")}\n"
-            ),
-            "a {\
-         \n  b: true;\
-         \n}\n"
-        );
-    }
-}
-mod compound {
-    #[allow(unused)]
-    use super::runner;
-
-    #[test]
-    fn subset() {
-        assert_eq!(
-            runner().ok(
-                "a {b: is-superselector(\":matches(c.d.e)\", \"c e\")}\n"
-            ),
-            "a {\
-         \n  b: false;\
-         \n}\n"
-        );
-    }
-    #[test]
-    #[ignore] // wrong result
-    fn superset() {
-        assert_eq!(
-            runner().ok(
-                "a {b: is-superselector(\":matches(c.e)\", \"c.d.e\")}\n"
-            ),
-            "a {\
-         \n  b: true;\
-         \n}\n"
-        );
-    }
-}
-mod list {
-    #[allow(unused)]
-    use super::runner;
-
-    #[test]
-    fn subset() {
-        assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":matches(c d, e f)\", \"c d, e f, g h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":matches(c d e)\", \"c e\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -108,7 +55,68 @@ mod list {
     fn superset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":matches(c d, e f, g h)\", \"c d, e f\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":matches(c e)\", \"c d e\")}\n"
+        ),
+        "a {\
+         \n  b: true;\
+         \n}\n"
+    );
+    }
+}
+mod compound {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn subset() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":matches(c.d.e)\", \"c e\")}\n"
+        ),
+        "a {\
+         \n  b: false;\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn superset() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":matches(c.e)\", \"c.d.e\")}\n"
+        ),
+        "a {\
+         \n  b: true;\
+         \n}\n"
+    );
+    }
+}
+mod list {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn subset() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":matches(c d, e f)\", \"c d, e f, g h\")}\n"
+        ),
+        "a {\
+         \n  b: false;\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn superset() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":matches(c d, e f, g h)\", \"c d, e f\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -124,7 +132,8 @@ mod not_superselector_of {
     fn any() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":matches(c, d)\", \":any(c, d)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":matches(c, d)\", \":any(c, d)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -135,7 +144,8 @@ mod not_superselector_of {
     fn prefixed() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":matches(c, d)\", \":-pfx-matches(c, d)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":matches(c, d)\", \":-pfx-matches(c, d)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -151,7 +161,8 @@ mod prefix {
     fn subset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":-pfx-matches(c d.i, e j f)\", \"c d, e f, g h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":-pfx-matches(c d.i, e j f)\", \"c d, e f, g h\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -163,7 +174,8 @@ mod prefix {
     fn superset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":-pfx-matches(c d, e f, g h)\", \"c d.i, e j f\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":-pfx-matches(c d, e f, g h)\", \"c d.i, e j f\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -179,7 +191,8 @@ mod simple {
     #[ignore] // wrong result
     fn equal() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":matches(c)\", \"c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":matches(c)\", \"c\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -188,7 +201,8 @@ mod simple {
     #[test]
     fn unequal() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":matches(c)\", \"d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":matches(c)\", \"d\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"

@@ -8,14 +8,17 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$base-text-color: #666;\n\
+        runner().ok(
+            "@use \"sass:color\";\
+             \n$base-text-color: #666;\n\
              \n@function calcNavbarTextColor ($base-text-color) {\
              \n        @return $base-text-color;\
              \n}\n\
              \n$header-text-color: calcNavbarTextColor($base-text-color);\n\
              \n.test_class {\
-             \n        color: lighten($header-text-color, 20%);\
-             \n}"),
+             \n        color: color.adjust($header-text-color, $lightness: 20%);\
+             \n}"
+        ),
         ".test_class {\
          \n  color: #999999;\
          \n}\n"

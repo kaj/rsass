@@ -16,7 +16,8 @@ mod input {
         #[test]
         fn selector1() {
             assert_eq!(
-                runner().ok("a {b: selector-unify((c, d c), \".e\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify((c, d c), \".e\")}\n"),
                 "a {\
          \n  b: c.e, d c.e;\
          \n}\n"
@@ -25,7 +26,8 @@ mod input {
         #[test]
         fn selector2() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\".e\", (c, d c))}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".e\", (c, d c))}\n"),
                 "a {\
          \n  b: c.e, d c.e;\
          \n}\n"
@@ -35,7 +37,8 @@ mod input {
     #[test]
     fn two_lists() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\".c, .d\", \".e, .f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c, .d\", \".e, .f\")}\n"),
             "a {\
          \n  b: .c.e, .c.f, .d.e, .d.f;\
          \n}\n"
@@ -45,7 +48,8 @@ mod input {
 #[test]
 fn output() {
     assert_eq!(
-        runner().ok("$result: selector-unify(\"c d, e f\", \".g\");\
+        runner().ok("@use \"sass:selector\";\
+             \n$result: selector.unify(\"c d, e f\", \".g\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (\"c\" \"d.g\", \"e\" \"f.g\");\

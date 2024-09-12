@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn full_overlap() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\".c.d\", \".c.d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c.d\", \".c.d\")}\n"),
         "a {\
          \n  b: .c.d;\
          \n}\n"
@@ -17,7 +18,8 @@ fn full_overlap() {
 #[test]
 fn no_overlap() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\".c.d\", \".e.f\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c.d\", \".e.f\")}\n"),
         "a {\
          \n  b: .c.d.e.f;\
          \n}\n"
@@ -30,7 +32,8 @@ mod order {
     #[test]
     fn element_at_start() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\".c\", \"d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c\", \"d\")}\n"),
             "a {\
          \n  b: d.c;\
          \n}\n"
@@ -39,7 +42,8 @@ mod order {
     #[test]
     fn preserved_by_default() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\".c.d\", \".e.f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c.d\", \".e.f\")}\n"),
             "a {\
          \n  b: .c.d.e.f;\
          \n}\n"
@@ -48,7 +52,8 @@ mod order {
     #[test]
     fn pseudo_class_at_end() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\":c\", \".d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":c\", \".d\")}\n"),
             "a {\
          \n  b: .d:c;\
          \n}\n"
@@ -61,7 +66,8 @@ mod order {
         #[test]
         fn class_first() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\":c\", \"::d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":c\", \"::d\")}\n"),
                 "a {\
          \n  b: :c::d;\
          \n}\n"
@@ -70,7 +76,8 @@ mod order {
         #[test]
         fn element_first() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"::c\", \":d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"::c\", \":d\")}\n"),
                 "a {\
          \n  b: :d::c;\
          \n}\n"
@@ -80,7 +87,8 @@ mod order {
     #[test]
     fn pseudo_element_at_end() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\"::c\", \".d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"::c\", \".d\")}\n"),
             "a {\
          \n  b: .d::c;\
          \n}\n"
@@ -90,7 +98,8 @@ mod order {
 #[test]
 fn partial_overlap() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\".c.d\", \".d.e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c.d\", \".d.e\")}\n"),
         "a {\
          \n  b: .c.d.e;\
          \n}\n"

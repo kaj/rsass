@@ -10,7 +10,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@import \"plain\";\n"),
+        runner().ok("@use \"plain\";\n"),
         "a {\
          \n  and: true and false;\
          \n  or: true or false;\

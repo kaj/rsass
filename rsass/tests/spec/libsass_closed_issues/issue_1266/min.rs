@@ -10,23 +10,24 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err(
-            "$foo: 1 2 3 blah 4;\
+            "@use \"sass:meta\";\
+             \n$foo: 1 2 3 blah 4;\
              \nfoo {\
-             \n  bar: call(min, $foo...);\
+             \n  bar: meta.call(min, $foo...);\
              \n}\n"
         ),
         "DEPRECATION WARNING: Passing a string to call() is deprecated and will be illegal in Dart Sass 2.0.0.\n\
          \nRecommendation: call(get-function(min))\n\
          \n  ,\
-         \n3 |   bar: call(min, $foo...);\
-         \n  |        ^^^^^^^^^^^^^^^^^^\
+         \n4 |   bar: meta.call(min, $foo...);\
+         \n  |        ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n    input.scss 3:8  root stylesheet\n\
+         \n    input.scss 4:8  root stylesheet\n\
          \nError: blah is not a number.\
          \n  ,\
-         \n3 |   bar: call(min, $foo...);\
-         \n  |        ^^^^^^^^^^^^^^^^^^\
+         \n4 |   bar: meta.call(min, $foo...);\
+         \n  |        ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:8  root stylesheet",
+         \n  input.scss 4:8  root stylesheet",
     );
 }

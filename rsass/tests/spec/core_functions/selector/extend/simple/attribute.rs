@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn equal() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\"[c=d]\", \"[c=d]\", \"e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"[c=d]\", \"[c=d]\", \"e\")}\n"),
         "a {\
          \n  b: [c=d], e;\
          \n}\n"
@@ -21,8 +22,8 @@ mod unequal {
     #[test]
     fn name() {
         assert_eq!(
-            runner()
-                .ok("a {b: selector-extend(\"[c=d]\", \"[e=d]\", \"f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"[c=d]\", \"[e=d]\", \"f\")}\n"),
             "a {\
          \n  b: [c=d];\
          \n}\n"
@@ -31,8 +32,8 @@ mod unequal {
     #[test]
     fn operator() {
         assert_eq!(
-            runner()
-                .ok("a {b: selector-extend(\"[c=d]\", \"[c^=d]\", \"f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"[c=d]\", \"[c^=d]\", \"f\")}\n"),
             "a {\
          \n  b: [c=d];\
          \n}\n"
@@ -41,8 +42,8 @@ mod unequal {
     #[test]
     fn value() {
         assert_eq!(
-            runner()
-                .ok("a {b: selector-extend(\"[c=d]\", \"[c=e]\", \"f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"[c=d]\", \"[c=e]\", \"f\")}\n"),
             "a {\
          \n  b: [c=d];\
          \n}\n"

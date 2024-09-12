@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function _test1() {\
+        runner().ok("@use \"sass:meta\";\
+             \n@function _test1() {\
              \n  @return \'hello\';\
              \n}\n\
              \n@function -test2() {\
@@ -30,34 +31,34 @@ fn test() {
              \n$_test2: true;\
              \n$test: true;\n\
              \n.test {\
-             \n  function: function-exists(\'_test1\');\
-             \n  function: function-exists(\'-test1\');\
-             \n  function: function-exists(\'_test2\');\
-             \n  function: function-exists(\'-test2\');\
-             \n  function: function-exists(\'test1\');\
-             \n  function: function-exists(\'test2\');\
-             \n  function: function-exists(\'test\');\
-             \n  mixin: mixin-exists(\'_test1\');\
-             \n  mixin: mixin-exists(\'-test1\');\
-             \n  mixin: mixin-exists(\'_test2\');\
-             \n  mixin: mixin-exists(\'-test2\');\
-             \n  mixin: mixin-exists(\'test1\');\
-             \n  mixin: mixin-exists(\'test2\');\
-             \n  mixin: mixin-exists(\'test\');\
-             \n  variable: variable-exists(\'_test1\');\
-             \n  variable: variable-exists(\'-test1\');\
-             \n  variable: variable-exists(\'_test2\');\
-             \n  variable: variable-exists(\'-test2\');\
-             \n  variable: variable-exists(\'test1\');\
-             \n  variable: variable-exists(\'test2\');\
-             \n  variable: variable-exists(\'test\');\
-             \n  global-variable: global-variable-exists(\'_test1\');\
-             \n  global-variable: global-variable-exists(\'-test1\');\
-             \n  global-variable: global-variable-exists(\'_test2\');\
-             \n  global-variable: global-variable-exists(\'-test2\');\
-             \n  global-variable: global-variable-exists(\'test1\');\
-             \n  global-variable: global-variable-exists(\'test2\');\
-             \n  global-variable: global-variable-exists(\'test\');\
+             \n  function: meta.function-exists(\'_test1\');\
+             \n  function: meta.function-exists(\'-test1\');\
+             \n  function: meta.function-exists(\'_test2\');\
+             \n  function: meta.function-exists(\'-test2\');\
+             \n  function: meta.function-exists(\'test1\');\
+             \n  function: meta.function-exists(\'test2\');\
+             \n  function: meta.function-exists(\'test\');\
+             \n  mixin: meta.mixin-exists(\'_test1\');\
+             \n  mixin: meta.mixin-exists(\'-test1\');\
+             \n  mixin: meta.mixin-exists(\'_test2\');\
+             \n  mixin: meta.mixin-exists(\'-test2\');\
+             \n  mixin: meta.mixin-exists(\'test1\');\
+             \n  mixin: meta.mixin-exists(\'test2\');\
+             \n  mixin: meta.mixin-exists(\'test\');\
+             \n  variable: meta.variable-exists(\'_test1\');\
+             \n  variable: meta.variable-exists(\'-test1\');\
+             \n  variable: meta.variable-exists(\'_test2\');\
+             \n  variable: meta.variable-exists(\'-test2\');\
+             \n  variable: meta.variable-exists(\'test1\');\
+             \n  variable: meta.variable-exists(\'test2\');\
+             \n  variable: meta.variable-exists(\'test\');\
+             \n  global-variable: meta.global-variable-exists(\'_test1\');\
+             \n  global-variable: meta.global-variable-exists(\'-test1\');\
+             \n  global-variable: meta.global-variable-exists(\'_test2\');\
+             \n  global-variable: meta.global-variable-exists(\'-test2\');\
+             \n  global-variable: meta.global-variable-exists(\'test1\');\
+             \n  global-variable: meta.global-variable-exists(\'test2\');\
+             \n  global-variable: meta.global-variable-exists(\'test\');\
              \n}\n"),
         ".test {\
          \n  function: true;\

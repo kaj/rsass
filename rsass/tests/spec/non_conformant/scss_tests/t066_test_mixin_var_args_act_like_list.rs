@@ -8,9 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@mixin foo($a, $b...) {\
-             \n  a: length($b);\
-             \n  b: nth($b, 2);\
+        runner().ok("@use \"sass:list\";\
+             \n@mixin foo($a, $b...) {\
+             \n  a: list.length($b);\
+             \n  b: list.nth($b, 2);\
              \n}\n\
              \n.foo {@include foo(1, 2, 3, 4)}\n"),
         ".foo {\

@@ -8,34 +8,35 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function exists($name) {\
-             \n  @return variable-exists($name);\
+        runner().ok("@use \"sass:meta\";\
+             \n@function exists($name) {\
+             \n  @return meta.variable-exists($name);\
              \n}\n\
              \n@function f() {\
              \n  $foo: hi;\
              \n  @return g();\
              \n}\n\
              \n@function g() {\
-             \n  @return variable-exists(foo);\
+             \n  @return meta.variable-exists(foo);\
              \n}\n\
              \ndiv {\
-             \n  foo: variable-exists(x);\
-             \n  foo: variable-exists(\"x\");\n\
+             \n  foo: meta.variable-exists(x);\
+             \n  foo: meta.variable-exists(\"x\");\n\
              \n  span {\
              \n    $x: false;\n\
-             \n    foo: variable-exists(x);\
-             \n    foo: variable-exists(\"x\");\
-             \n    foo: variable-exists(y);\
-             \n    foo: variable-exists(\"y\");\
+             \n    foo: meta.variable-exists(x);\
+             \n    foo: meta.variable-exists(\"x\");\
+             \n    foo: meta.variable-exists(y);\
+             \n    foo: meta.variable-exists(\"y\");\
              \n    foo: exists(x);\
              \n    foo: exists(\"x\");\n\
              \n    p {\
-             \n      foo: variable-exists(x);\
-             \n      foo: variable-exists(\"x\");\
+             \n      foo: meta.variable-exists(x);\
+             \n      foo: meta.variable-exists(\"x\");\
              \n      foo: exists(x);\
              \n      foo: exists(\"x\");\
-             \n      foo: variable-exists(y);\
-             \n      foo: variable-exists(\"y\");\
+             \n      foo: meta.variable-exists(y);\
+             \n      foo: meta.variable-exists(\"y\");\
              \n      foo: f();\
              \n      $y: blah;\
              \n    }\

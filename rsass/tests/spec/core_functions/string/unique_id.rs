@@ -12,17 +12,20 @@ mod error {
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: unique-id(c)}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.unique-id(c)}\n"
+            ),
             "Error: Only 0 arguments allowed, but 1 was passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: unique-id(c)}\
-         \n  |       ^^^^^^^^^^^^ invocation\
+         \n2 | a {b: string.unique-id(c)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:string\
          \n1 | @function unique-id() {\
          \n  |           =========== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
@@ -30,11 +33,13 @@ mod error {
 fn is_identifier() {
     assert_eq!(
         runner().ok(
-            "// Every call to unique-id() should return a valid CSS identifier. We can\'t test\
+            "@use \"sass:selector\";\
+             \n@use \"sass:string\";\
+             \n// Every call to unique-id() should return a valid CSS identifier. We can\'t test\
              \n// this directly, so we make sure it can parse as a class selector with\
              \n// selector-parse().\
              \n@for $i from 1 to 1000 {\
-             \n  $_: selector-parse(\".#{unique-id()}\");\
+             \n  $_: selector.parse(\".#{string.unique-id()}\");\
              \n}\n"
         ),
         ""
@@ -44,15 +49,17 @@ fn is_identifier() {
 fn is_unique() {
     assert_eq!(
         runner().ok(
-            "// As the name suggests, every call to unique-id() should return a different\
+            "@use \"sass:map\";\
+             \n@use \"sass:string\";\
+             \n// As the name suggests, every call to unique-id() should return a different\
              \n// value.\
              \n$ids: ();\
              \n@for $i from 1 to 1000 {\
-             \n  $id: unique-id();\
-             \n  @if map-has-key($ids, $id) {\
+             \n  $id: string.unique-id();\
+             \n  @if map.has-key($ids, $id) {\
              \n    @error \"#{$id} generated more than once\";\
              \n  }\n\
-             \n  $ids: map-merge($ids, ($id: null));\
+             \n  $ids: map.merge($ids, ($id: null));\
              \n}\n"
         ),
         ""

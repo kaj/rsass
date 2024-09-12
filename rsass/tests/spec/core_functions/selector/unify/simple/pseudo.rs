@@ -16,8 +16,8 @@ mod arg {
         #[test]
         fn different() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-unify(\":c(@#$)\", \":c(*&^)\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":c(@#$)\", \":c(*&^)\")}\n"),
                 "a {\
          \n  b: :c(@#$):c(*&^);\
          \n}\n"
@@ -26,8 +26,8 @@ mod arg {
         #[test]
         fn same() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-unify(\":c(@#$)\", \":c(@#$)\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":c(@#$)\", \":c(@#$)\")}\n"),
                 "a {\
          \n  b: :c(@#$);\
          \n}\n"
@@ -42,7 +42,9 @@ mod arg {
         fn different() {
             assert_eq!(
         runner().ok(
-            "a {b: inspect(selector-unify(\"::c(@#$)\", \"::c(*&^)\"))}\n"
+            "@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"::c(@#$)\", \"::c(*&^)\"))}\n"
         ),
         "a {\
          \n  b: null;\
@@ -52,9 +54,8 @@ mod arg {
         #[test]
         fn same() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-unify(\"::c(@#$)\", \"::c(@#$)\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"::c(@#$)\", \"::c(@#$)\")}\n"),
                 "a {\
          \n  b: ::c(@#$);\
          \n}\n"
@@ -78,9 +79,8 @@ mod host {
             #[ignore] // wrong result
             fn left() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: selector-unify(\":host(.c)\", \":is(.d)\")}\n"
-                    ),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":host(.c)\", \":is(.d)\")}\n"),
                     "a {\
          \n  b: :is(.d):host(.c);\
          \n}\n"
@@ -89,9 +89,8 @@ mod host {
             #[test]
             fn right() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: selector-unify(\":is(.c)\", \":host(.d)\")}\n"
-                    ),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":is(.c)\", \":host(.d)\")}\n"),
                     "a {\
          \n  b: :is(.c):host(.d);\
          \n}\n"
@@ -105,24 +104,24 @@ mod host {
             #[test]
             fn left() {
                 assert_eq!(
-        runner().ok(
-            "a {b: inspect(selector-unify(\":host(.c)\", \".d\"))}\n"
-        ),
-        "a {\
+                    runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\":host(.c)\", \".d\"))}\n"),
+                    "a {\
          \n  b: null;\
          \n}\n"
-    );
+                );
             }
             #[test]
             fn right() {
                 assert_eq!(
-        runner().ok(
-            "a {b: inspect(selector-unify(\".c\", \":host(.d)\"))}\n"
-        ),
-        "a {\
+                    runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\".c\", \":host(.d)\"))}\n"),
+                    "a {\
          \n  b: null;\
          \n}\n"
-    );
+                );
             }
         }
     }
@@ -137,9 +136,9 @@ mod host {
             #[test]
             fn left() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: inspect(selector-unify(\":host\", \".c\"))}\n"
-                    ),
+                    runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\":host\", \".c\"))}\n"),
                     "a {\
          \n  b: null;\
          \n}\n"
@@ -148,9 +147,9 @@ mod host {
             #[test]
             fn right() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: inspect(selector-unify(\".c\", \":host\"))}\n"
-                    ),
+                    runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\".c\", \":host\"))}\n"),
                     "a {\
          \n  b: null;\
          \n}\n"
@@ -169,7 +168,9 @@ mod host {
                 fn left() {
                     assert_eq!(
         runner().ok(
-            "a {b: inspect(selector-unify(\":host\", \".c:is(.d)\"))}\n"
+            "@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\":host\", \".c:is(.d)\"))}\n"
         ),
         "a {\
          \n  b: null;\
@@ -180,7 +181,9 @@ mod host {
                 fn right() {
                     assert_eq!(
         runner().ok(
-            "a {b: inspect(selector-unify(\".c:is(.d)\", \":host\"))}\n"
+            "@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\".c:is(.d)\", \":host\"))}\n"
         ),
         "a {\
          \n  b: null;\
@@ -195,24 +198,28 @@ mod host {
                 #[test]
                 fn left() {
                     assert_eq!(
-        runner().ok(
-            "a {b: inspect(selector-unify(\":host\", \":host.c\"))}\n"
-        ),
-        "a {\
+                        runner().ok(
+                            "@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\":host\", \":host.c\"))}\n"
+                        ),
+                        "a {\
          \n  b: null;\
          \n}\n"
-    );
+                    );
                 }
                 #[test]
                 fn right() {
                     assert_eq!(
-        runner().ok(
-            "a {b: inspect(selector-unify(\":host.c\", \":host\"))}\n"
-        ),
-        "a {\
+                        runner().ok(
+                            "@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\":host.c\", \":host\"))}\n"
+                        ),
+                        "a {\
          \n  b: null;\
          \n}\n"
-    );
+                    );
                 }
             }
             mod selector_pseudos {
@@ -223,24 +230,22 @@ mod host {
                 #[ignore] // wrong result
                 fn left() {
                     assert_eq!(
-        runner().ok(
-            "a {b: selector-unify(\":host\", \":is(.c):is(.d)\")}\n"
-        ),
-        "a {\
+                        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":host\", \":is(.c):is(.d)\")}\n"),
+                        "a {\
          \n  b: :is(.c):host:is(.d);\
          \n}\n"
-    );
+                    );
                 }
                 #[test]
                 fn right() {
                     assert_eq!(
-        runner().ok(
-            "a {b: selector-unify(\":is(.c):is(.d)\", \":host\")}\n"
-        ),
-        "a {\
+                        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":is(.c):is(.d)\", \":host\")}\n"),
+                        "a {\
          \n  b: :is(.c):is(.d):host;\
          \n}\n"
-    );
+                    );
                 }
             }
         }
@@ -251,9 +256,8 @@ mod host {
             #[test]
             fn arg() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: selector-unify(\":host\", \":host(.c)\")}\n"
-                    ),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":host\", \":host(.c)\")}\n"),
                     "a {\
          \n  b: :host:host(.c);\
          \n}\n"
@@ -262,8 +266,8 @@ mod host {
             #[test]
             fn argless() {
                 assert_eq!(
-                    runner()
-                        .ok("a {b: selector-unify(\":host\", \":host\")}\n"),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":host\", \":host\")}\n"),
                     "a {\
          \n  b: :host;\
          \n}\n"
@@ -277,24 +281,22 @@ mod host {
             #[test]
             fn left() {
                 assert_eq!(
-        runner().ok(
-            "a {b: selector-unify(\":host\", \":host-context(.c)\")}\n"
-        ),
-        "a {\
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":host\", \":host-context(.c)\")}\n"),
+                    "a {\
          \n  b: :host:host-context(.c);\
          \n}\n"
-    );
+                );
             }
             #[test]
             fn right() {
                 assert_eq!(
-        runner().ok(
-            "a {b: selector-unify(\":host-context(.c)\", \":host\")}\n"
-        ),
-        "a {\
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":host-context(.c)\", \":host\")}\n"),
+                    "a {\
          \n  b: :host-context(.c):host;\
          \n}\n"
-    );
+                );
             }
         }
         mod pseudo {
@@ -304,24 +306,24 @@ mod host {
             #[test]
             fn left() {
                 assert_eq!(
-        runner().ok(
-            "a {b: inspect(selector-unify(\":host\", \":hover\"))}\n"
-        ),
-        "a {\
+                    runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\":host\", \":hover\"))}\n"),
+                    "a {\
          \n  b: null;\
          \n}\n"
-    );
+                );
             }
             #[test]
             fn right() {
                 assert_eq!(
-        runner().ok(
-            "a {b: inspect(selector-unify(\":hover\", \":host\"))}\n"
-        ),
-        "a {\
+                    runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\":hover\", \":host\"))}\n"),
+                    "a {\
          \n  b: null;\
          \n}\n"
-    );
+                );
             }
         }
         mod selector_pseudo {
@@ -332,9 +334,8 @@ mod host {
             #[ignore] // wrong result
             fn left() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: selector-unify(\":host\", \":is(.c)\")}\n"
-                    ),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":host\", \":is(.c)\")}\n"),
                     "a {\
          \n  b: :is(.c):host;\
          \n}\n"
@@ -343,9 +344,8 @@ mod host {
             #[test]
             fn right() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: selector-unify(\":is(.c)\", \":host\")}\n"
-                    ),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":is(.c)\", \":host\")}\n"),
                     "a {\
          \n  b: :is(.c):host;\
          \n}\n"
@@ -359,9 +359,9 @@ mod host {
             #[test]
             fn left() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: inspect(selector-unify(\":host\", \"*\"))}\n"
-                    ),
+                    runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\":host\", \"*\"))}\n"),
                     "a {\
          \n  b: null;\
          \n}\n"
@@ -370,9 +370,9 @@ mod host {
             #[test]
             fn right() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: inspect(selector-unify(\"*\", \":host\"))}\n"
-                    ),
+                    runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"*\", \":host\"))}\n"),
                     "a {\
          \n  b: null;\
          \n}\n"
@@ -393,24 +393,22 @@ mod host_context {
         #[ignore] // wrong result
         fn left() {
             assert_eq!(
-        runner().ok(
-            "a {b: selector-unify(\":host-context(.c)\", \":is(.d)\")}\n"
-        ),
-        "a {\
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":host-context(.c)\", \":is(.d)\")}\n"),
+                "a {\
          \n  b: :is(.d):host-context(.c);\
          \n}\n"
-    );
+            );
         }
         #[test]
         fn right() {
             assert_eq!(
-        runner().ok(
-            "a {b: selector-unify(\":is(.c)\", \":host-context(.d)\")}\n"
-        ),
-        "a {\
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":is(.c)\", \":host-context(.d)\")}\n"),
+                "a {\
          \n  b: :is(.c):host-context(.d);\
          \n}\n"
-    );
+            );
         }
     }
     mod removed {
@@ -421,7 +419,9 @@ mod host_context {
         fn left() {
             assert_eq!(
         runner().ok(
-            "a {b: inspect(selector-unify(\":host-context(.c)\", \".d\"))}\n"
+            "@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\":host-context(.c)\", \".d\"))}\n"
         ),
         "a {\
          \n  b: null;\
@@ -432,7 +432,9 @@ mod host_context {
         fn right() {
             assert_eq!(
         runner().ok(
-            "a {b: inspect(selector-unify(\".c\", \":host-context(.d)\"))}\n"
+            "@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\".c\", \":host-context(.d)\"))}\n"
         ),
         "a {\
          \n  b: null;\
@@ -452,7 +454,8 @@ mod no_arg {
         #[test]
         fn different() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\":c\", \":d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":c\", \":d\")}\n"),
                 "a {\
          \n  b: :c:d;\
          \n}\n"
@@ -461,7 +464,8 @@ mod no_arg {
         #[test]
         fn same() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\":c\", \":c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":c\", \":c\")}\n"),
                 "a {\
          \n  b: :c;\
          \n}\n"
@@ -475,8 +479,8 @@ mod no_arg {
         #[test]
         fn after() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-unify(\":after\", \"::after\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":after\", \"::after\")}\n"),
                 "a {\
          \n  b: :after;\
          \n}\n"
@@ -485,8 +489,8 @@ mod no_arg {
         #[test]
         fn before() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-unify(\":before\", \"::before\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":before\", \"::before\")}\n"),
                 "a {\
          \n  b: :before;\
          \n}\n"
@@ -496,7 +500,8 @@ mod no_arg {
         fn first_letter() {
             assert_eq!(
         runner().ok(
-            "a {b: selector-unify(\":first-letter\", \"::first-letter\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.unify(\":first-letter\", \"::first-letter\")}\n"
         ),
         "a {\
          \n  b: :first-letter;\
@@ -506,13 +511,12 @@ mod no_arg {
         #[test]
         fn first_line() {
             assert_eq!(
-        runner().ok(
-            "a {b: selector-unify(\":first-line\", \"::first-line\")}\n"
-        ),
-        "a {\
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":first-line\", \"::first-line\")}\n"),
+                "a {\
          \n  b: :first-line;\
          \n}\n"
-    );
+            );
         }
     }
     mod element {
@@ -522,8 +526,9 @@ mod no_arg {
         #[test]
         fn different() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(selector-unify(\"::c\", \"::d\"))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"::c\", \"::d\"))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -532,7 +537,8 @@ mod no_arg {
         #[test]
         fn same() {
             assert_eq!(
-                runner().ok("a {b: selector-unify(\"::c\", \"::c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"::c\", \"::c\")}\n"),
                 "a {\
          \n  b: ::c;\
          \n}\n"
@@ -551,8 +557,8 @@ mod selector_arg {
         #[test]
         fn different() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-unify(\":is(.c)\", \":is(.d)\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":is(.c)\", \":is(.d)\")}\n"),
                 "a {\
          \n  b: :is(.c):is(.d);\
          \n}\n"
@@ -561,8 +567,8 @@ mod selector_arg {
         #[test]
         fn same() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-unify(\":is(.c)\", \":is(.c)\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":is(.c)\", \":is(.c)\")}\n"),
                 "a {\
          \n  b: :is(.c);\
          \n}\n"
@@ -576,24 +582,22 @@ mod selector_arg {
         #[test]
         fn different() {
             assert_eq!(
-        runner().ok(
-            "a {b: selector-unify(\":matches(.c)\", \":matches(.d)\")}\n"
-        ),
-        "a {\
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":matches(.c)\", \":matches(.d)\")}\n"),
+                "a {\
          \n  b: :matches(.c):matches(.d);\
          \n}\n"
-    );
+            );
         }
         #[test]
         fn same() {
             assert_eq!(
-        runner().ok(
-            "a {b: selector-unify(\":matches(.c)\", \":matches(.c)\")}\n"
-        ),
-        "a {\
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":matches(.c)\", \":matches(.c)\")}\n"),
+                "a {\
          \n  b: :matches(.c);\
          \n}\n"
-    );
+            );
         }
     }
     mod test_where {
@@ -603,9 +607,8 @@ mod selector_arg {
         #[test]
         fn different() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-unify(\":where(.c)\", \":where(.d)\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":where(.c)\", \":where(.d)\")}\n"),
                 "a {\
          \n  b: :where(.c):where(.d);\
          \n}\n"
@@ -614,9 +617,8 @@ mod selector_arg {
         #[test]
         fn same() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-unify(\":where(.c)\", \":where(.c)\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":where(.c)\", \":where(.c)\")}\n"),
                 "a {\
          \n  b: :where(.c);\
          \n}\n"

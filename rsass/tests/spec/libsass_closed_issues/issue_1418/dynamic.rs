@@ -10,22 +10,23 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err(
-            "foo {\
-             \n    color: call(missing, $a: b);\
+            "@use \"sass:meta\";\
+             \nfoo {\
+             \n    color: meta.call(missing, $a: b);\
              \n}\n"
         ),
         "DEPRECATION WARNING: Passing a string to call() is deprecated and will be illegal in Dart Sass 2.0.0.\n\
          \nRecommendation: call(get-function(missing))\n\
          \n  ,\
-         \n2 |     color: call(missing, $a: b);\
-         \n  |            ^^^^^^^^^^^^^^^^^^^^\
+         \n3 |     color: meta.call(missing, $a: b);\
+         \n  |            ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n    input.scss 2:12  root stylesheet\n\
+         \n    input.scss 3:12  root stylesheet\n\
          \nError: Plain CSS functions don\'t support keyword arguments.\
          \n  ,\
-         \n2 |     color: call(missing, $a: b);\
-         \n  |            ^^^^^^^^^^^^^^^^^^^^\
+         \n3 |     color: meta.call(missing, $a: b);\
+         \n  |            ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:12  root stylesheet",
+         \n  input.scss 3:12  root stylesheet",
     );
 }

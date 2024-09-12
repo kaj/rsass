@@ -9,7 +9,9 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$inputs-list: \'input[type=\"email\"]\',\
+            "@use \"sass:string\";\
+             \n@use \"sass:list\";\n\
+             \n$inputs-list: \'input[type=\"email\"]\',\
              \n              \'input[type=\"number\"]\',\
              \n              \'input[type=\"password\"]\',\
              \n              \'input[type=\"search\"]\',\
@@ -26,12 +28,12 @@ fn test() {
              \n              \'input[type=\"week\"]\';\n\
              \n$unquoted-inputs-list: ();\n\
              \n@each $input-type in $inputs-list {\
-             \n  $unquoted-inputs-list: append($unquoted-inputs-list, unquote($input-type), comma);\
+             \n  $unquoted-inputs-list: list.append($unquoted-inputs-list, string.unquote($input-type), comma);\
              \n}\n\
              \ndiv {\
              \n  content: $unquoted-inputs-list;\
-             \n  content: append((), hello);\
-             \n  content: length(());\
+             \n  content: list.append((), hello);\
+             \n  content: list.length(());\
              \n}"
         ),
         "div {\

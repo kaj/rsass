@@ -9,11 +9,12 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "@function str-replace($string, $search, $replace: \'\') {\
-             \n  $index: str-index($string, $search);\
+            "@use \"sass:string\";\
+             \n@function str-replace($string, $search, $replace: \'\') {\
+             \n  $index: string.index($string, $search);\
              \n  @if $index {\
-             \n    @return str-slice($string, 1, $index - 1) + $replace +\
-             \n      str-replace(str-slice($string, $index + str-length($search)), $search, $replace);\
+             \n    @return string.slice($string, 1, $index - 1) + $replace +\
+             \n      str-replace(string.slice($string, $index + string.length($search)), $search, $replace);\
              \n  }\
              \n  @return $string;\
              \n}\n\

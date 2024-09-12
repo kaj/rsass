@@ -9,9 +9,10 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$list: (\"a\", \"b\");\n\
+            "@use \"sass:list\";\
+             \n$list: (\"a\", \"b\");\n\
              \ntest {\
-             \n    content: if( length($list) > 2, nth($list, 3), nth($list, 1) );\
+             \n    content: if( list.length($list) > 2, list.nth($list, 3), list.nth($list, 1) );\
              \n}\n"
         ),
         "test {\

@@ -9,9 +9,10 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "// The full set of possible input formats is tested with `selector-parse()`;\
+            "@use \"sass:selector\";\
+             \n// The full set of possible input formats is tested with `selector-parse()`;\
              \n// this spec just verifies one example for `is-superselector()`.\
-             \na {b: is-superselector((c, d e), (c, d e))}\n"
+             \na {b: selector.is-superselector((c, d e), (c, d e))}\n"
         ),
         "a {\
          \n  b: true;\

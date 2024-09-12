@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$count: 0;\n\
+        runner().ok("@use \"sass:meta\";\n\
+             \n$count: 0;\n\
              \n@function counter() {\
              \n  $count: $count + 1 !global;\
              \n  @return $count;\
@@ -18,7 +19,7 @@ fn test() {
              \n  counter(): \'foo\',\
              \n);\n\
              \n.foo {\
-             \n  content: inspect($map);\
+             \n  content: meta.inspect($map);\
              \n}"),
         ".foo {\
          \n  content: (1: \"bar\", 2: \"foo\");\

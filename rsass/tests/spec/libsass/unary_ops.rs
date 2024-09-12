@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$x: 20%;\n\
+        runner().ok("@use \"sass:meta\";\
+             \n$x: 20%;\n\
              \ndiv {\
              \n  a: -10;\
              \n  b: -10px + 10px;\
@@ -19,7 +20,7 @@ fn test() {
              \n  g: -hello;\
              \n  h: +hello;\
              \n  i: + hello;\
-             \n  j: type-of(+ hello);\
+             \n  j: meta.type-of(+ hello);\
              \n}"),
         "div {\
          \n  a: -10;\

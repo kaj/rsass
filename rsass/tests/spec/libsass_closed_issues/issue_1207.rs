@@ -8,12 +8,13 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function test($pos) {\
+        runner().ok("@use \"sass:string\";\
+             \n@function test($pos) {\
              \n  @return test-#{$pos};\
              \n}\n\
              \n.foo {\
-             \n  content: test(str-slice(\'scale-0\', 7));   // Nope\
-             \n  content: test-#{str-slice(\'scale-0\', 7)}; // Yep\
+             \n  content: test(string.slice(\'scale-0\', 7));   // Nope\
+             \n  content: test-#{string.slice(\'scale-0\', 7)}; // Yep\
              \n}"),
         ".foo {\
          \n  content: test-0;\

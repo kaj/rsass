@@ -8,37 +8,38 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function foo($arg2) {\
-             \n  @return type-of($arg2);\
+        runner().ok("@use \"sass:meta\";\
+             \n@function foo($arg2) {\
+             \n  @return meta.type-of($arg2);\
              \n}\n\
              \n@function foo_($arg2...) {\
-             \n  @return type-of($arg2);\
+             \n  @return meta.type-of($arg2);\
              \n}\n\
              \n@function bar($arg1, $arg2) {\
-             \n  @return type-of($arg1) + \"::\" + type-of($arg2);\
+             \n  @return meta.type-of($arg1) + \"::\" + meta.type-of($arg2);\
              \n}\n\
              \n@function bar_($arg1, $arg2...) {\
-             \n  @return type-of($arg1) + \"::\" + type-of($arg2);\
+             \n  @return meta.type-of($arg1) + \"::\" + meta.type-of($arg2);\
              \n}\n\
              \nfoo {\
              \n  foo: foo(one);\
              \n  foo: foo(one...);\
              \n  bar: bar(one, two);\
              \n  bar: bar(one, two...);\
-             \n  foo: call(\'foo\', one);\
-             \n  foo: call(\'foo\', one...);\
-             \n  bar: call(\'bar\', one, two);\
-             \n  bar: call(\'bar\', one, two...);\
+             \n  foo: meta.call(\'foo\', one);\
+             \n  foo: meta.call(\'foo\', one...);\
+             \n  bar: meta.call(\'bar\', one, two);\
+             \n  bar: meta.call(\'bar\', one, two...);\
              \n}\n\
              \nbar {\
              \n  foo: foo_(one);\
              \n  foo: foo_(one...);\
              \n  bar: bar_(one, two);\
              \n  bar: bar_(one, two...);\
-             \n  foo: call(\'foo_\', one);\
-             \n  foo: call(\'foo_\', one...);\
-             \n  bar: call(\'bar_\', one, two);\
-             \n  bar: call(\'bar_\', one, two...);\
+             \n  foo: meta.call(\'foo_\', one);\
+             \n  foo: meta.call(\'foo_\', one...);\
+             \n  bar: meta.call(\'bar_\', one, two);\
+             \n  bar: meta.call(\'bar_\', one, two...);\
              \n}"),
         "foo {\
          \n  foo: string;\

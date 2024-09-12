@@ -9,10 +9,11 @@ fn runner() -> crate::TestRunner {
 fn different_arg_in_extender() {
     assert_eq!(
         runner().ok(
-            "// This should produce `:nth-child(2n + 1 of .c, :nth-child(2n + 1 of .d, .e))`.\
+            "@use \"sass:selector\";\
+             \n// This should produce `:nth-child(2n + 1 of .c, :nth-child(2n + 1 of .d, .e))`.\
              \n// See sass/sass#2828.\
              \na {\
-             \n  b: selector-extend(\
+             \n  b: selector.extend(\
              \n      \":nth-child(2n + 1 of .c)\",\
              \n      \".c\",\
              \n      \":nth-child(2n + 2 of .d, .e)\");\
@@ -28,7 +29,8 @@ fn different_arg_in_extender() {
 fn list() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":nth-child(2n + 1 of .c)\", \".c\", \".d, .e\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":nth-child(2n + 1 of .c)\", \".c\", \".d, .e\")}\n"
         ),
         "a {\
          \n  b: :nth-child(2n+1 of .c, .d, .e);\
@@ -39,8 +41,9 @@ fn list() {
 #[ignore] // wrong result
 fn same_arg_in_extender() {
     assert_eq!(
-        runner().ok("a {\
-             \n  b: selector-extend(\
+        runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.extend(\
              \n      \":nth-child(2n + 1 of .c)\",\
              \n      \".c\",\
              \n      \":nth-child(2n + 1 of .d, .e)\");\
@@ -55,7 +58,8 @@ fn same_arg_in_extender() {
 fn simple() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":nth-child(2n + 1 of .c)\", \".c\", \".d\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":nth-child(2n + 1 of .c)\", \".c\", \".d\")}\n"
         ),
         "a {\
          \n  b: :nth-child(2n+1 of .c, .d);\

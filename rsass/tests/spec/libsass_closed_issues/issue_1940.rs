@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("// ----\r\
+        runner().ok("@use \"sass:map\";\
+             \n// ----\r\
              \n// libsass (v3.3.2)\r\
              \n// ----\r\
              \n\r\
@@ -17,17 +18,17 @@ fn test() {
              \n\tbar: #bar\r\
              \n);\r\
              \n\r\
-             \n#{map-get($prefix, foo)} {\r\
+             \n#{map.get($prefix, foo)} {\r\
              \n  color: red;\r\
              \n}\r\
-             \n#{map-get($prefix, bar)} {\r\
+             \n#{map.get($prefix, bar)} {\r\
              \n  color: red;\r\
              \n}\r\
              \n\r\
-             \n#{map-get($prefix, foo)} .baz {\r\
+             \n#{map.get($prefix, foo)} .baz {\r\
              \n  color: red;\r\
              \n}\r\
-             \n#{map-get($prefix, bar)} .baz {\r\
+             \n#{map.get($prefix, bar)} .baz {\r\
              \n  color: red;\r\
              \n}"),
         "foo {\

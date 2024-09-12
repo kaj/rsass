@@ -8,12 +8,14 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function test($args...) {\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\n\
+             \n@function test($args...) {\
              \n  $all: ();\n\
              \n  @each $arg in $args {\
-             \n    $all: append($all, $arg);\
+             \n    $all: list.append($all, $arg);\
              \n  }\n\
-             \n  @return inspect($all);\
+             \n  @return meta.inspect($all);\
              \n}\n\
              \ntest {\
              \n  args-1: test(1 2 3);\

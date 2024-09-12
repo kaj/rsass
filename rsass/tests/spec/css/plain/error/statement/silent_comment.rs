@@ -11,13 +11,13 @@ fn runner() -> crate::TestRunner {
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        runner().err("@import \'plain\'\n"),
+        runner().err("@use \'plain\'\n"),
         "Error: Silent comments aren\'t allowed in plain CSS.\
          \n  ,\
          \n1 | // silent\
          \n  | ^^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }

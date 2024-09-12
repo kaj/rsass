@@ -5,6 +5,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("use")
 }
 
+mod comment;
+
 mod css;
 
 mod error;

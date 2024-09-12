@@ -9,27 +9,26 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok("test-1 test-2 test-3 test-4 test-5,\r\
-             \ntest-6 test-7 test-8 test-9 test-10 {\r\
-             \n    @each $set in & {\r\
-             \n        set: inspect($set);\r\
-             \n\r\
-             \n        @each $selector in $set {\r\
-             \n            selector: inspect($selector);\r\
-             \n        }\r\
-             \n    }\r\
-             \n}\r\
-             \n\r\
-             \ntest-1 test-2 test-3 test-4 test-5,\r\
-             \ntest-6 test-7 test-8 test-9 test-10 {\r\
-             \n    @for $i from 1 through length(&) {\r\
-             \n        $set: nth(&, $i);\r\
-             \n        set: inspect($set);\r\
-             \n\r\
-             \n        @each $selector in $set {\r\
-             \n            selector: inspect($selector);\r\
-             \n        }\r\
-             \n    }\r\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\n\
+             \ntest-1 test-2 test-3 test-4 test-5,\
+             \ntest-6 test-7 test-8 test-9 test-10 {\
+             \n    @each $set in & {\
+             \n        set: meta.inspect($set);\n\
+             \n        @each $selector in $set {\
+             \n            selector: meta.inspect($selector);\
+             \n        }\
+             \n    }\
+             \n}\n\
+             \ntest-1 test-2 test-3 test-4 test-5,\
+             \ntest-6 test-7 test-8 test-9 test-10 {\
+             \n    @for $i from 1 through list.length(&) {\
+             \n        $set: list.nth(&, $i);\
+             \n        set: meta.inspect($set);\n\
+             \n        @each $selector in $set {\
+             \n            selector: meta.inspect($selector);\
+             \n        }\
+             \n    }\
              \n}"),
         "test-1 test-2 test-3 test-4 test-5,\
          \ntest-6 test-7 test-8 test-9 test-10 {\

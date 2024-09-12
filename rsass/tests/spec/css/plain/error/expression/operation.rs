@@ -24,14 +24,14 @@ fn runner() -> crate::TestRunner {
 fn addition() {
     let runner = runner().with_cwd("addition");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y + z;\
          \n  |        ^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -39,14 +39,14 @@ fn addition() {
 fn equals() {
     let runner = runner().with_cwd("equals");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y == z;\
          \n  |        ^^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -54,14 +54,14 @@ fn equals() {
 fn greater_than() {
     let runner = runner().with_cwd("greater_than");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y > z;\
          \n  |        ^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -69,14 +69,14 @@ fn greater_than() {
 fn greater_than_or_equal() {
     let runner = runner().with_cwd("greater_than_or_equal");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y >= z;\
          \n  |        ^^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -84,14 +84,14 @@ fn greater_than_or_equal() {
 fn less_than() {
     let runner = runner().with_cwd("less_than");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y < z;\
          \n  |        ^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -99,14 +99,14 @@ fn less_than() {
 fn less_than_or_equal() {
     let runner = runner().with_cwd("less_than_or_equal");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y <= z;\
          \n  |        ^^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -114,14 +114,14 @@ fn less_than_or_equal() {
 fn modulo() {
     let runner = runner().with_cwd("modulo");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y % z;\
          \n  |        ^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -129,14 +129,14 @@ fn modulo() {
 fn multiplication() {
     let runner = runner().with_cwd("multiplication");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y * z;\
          \n  |        ^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -144,14 +144,14 @@ fn multiplication() {
 fn not_equals() {
     let runner = runner().with_cwd("not_equals");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y != z;\
          \n  |        ^^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -159,13 +159,13 @@ fn not_equals() {
 fn subtraction() {
     let runner = runner().with_cwd("subtraction");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y - z;\
          \n  |        ^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }

@@ -8,10 +8,11 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$result: inspect(1 2 3);\
+        runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect(1 2 3);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
         "a {\
          \n  value: 1 2 3;\

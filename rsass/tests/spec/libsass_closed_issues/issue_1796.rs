@@ -9,14 +9,15 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            ".parent {\
+            "@use \"sass:list\";\
+             \n.parent {\
              \n    .brother, .sister, .cousin {\
              \n        color: green;\
              \n        sel: &;\n\
              \n        $new-sel: ();\
              \n        @each $s in & {\
-             \n            $last: nth($s, -1);\
-             \n            $new-sel: append($new-sel, $s #{\'+\'} $last, comma);\
+             \n            $last: list.nth($s, -1);\
+             \n            $new-sel: list.append($new-sel, $s #{\'+\'} $last, comma);\
              \n            x: $new-sel;\
              \n        }\
              \n        @at-root #{$new-sel} {\

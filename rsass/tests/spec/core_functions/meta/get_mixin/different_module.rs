@@ -4,48 +4,18 @@
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("different_module")
-        .mock_file(
-            "chosen_prefix/_other.scss",
-            "@mixin a($color) {c: red($color)}\n",
-        )
-        .mock_file(
-            "defined/_other.scss",
-            "@mixin a($color) {b: red($color)}\n",
-        )
-        .mock_file("named/_other.scss", "@mixin a($color) {b: red($color)}\n")
-        .mock_file(
-            "through_forward/as/_midstream.scss",
-            "@forward \"upstream\" as c-*;\n",
-        )
+        .mock_file("chosen_prefix/_other.scss", "@use \"sass:color\";\n@mixin a($color) {c: color.channel($color, 'red')}\n")
+        .mock_file("defined/_other.scss", "@use \"sass:color\";\n@mixin a($color) {b: color.channel($color, 'red')}\n")
+        .mock_file("named/_other.scss", "@use \"sass:color\";\n@mixin a($color) {b: color.channel($color, 'red')}\n")
+        .mock_file("through_forward/as/_midstream.scss", "@forward \"upstream\" as c-*;\n")
         .mock_file("through_forward/as/_upstream.scss", "@mixin d() {b: d}\n")
-        .mock_file(
-            "through_forward/bare/_midstream.scss",
-            "@forward \"upstream\";\n",
-        )
-        .mock_file(
-            "through_forward/bare/_upstream.scss",
-            "@mixin c() {b: c}\n",
-        )
-        .mock_file(
-            "through_forward/hide/_midstream.scss",
-            "@forward \"upstream\" hide c;\n",
-        )
-        .mock_file(
-            "through_forward/hide/_upstream.scss",
-            "@mixin d() {b: d}\n",
-        )
-        .mock_file(
-            "through_forward/show/_midstream.scss",
-            "@forward \"upstream\" show c;\n",
-        )
-        .mock_file(
-            "through_forward/show/_upstream.scss",
-            "@mixin c() {b: c}\n",
-        )
-        .mock_file(
-            "through_use/other.scss",
-            "@mixin add-two($v) {b: $v + 2}\n",
-        )
+        .mock_file("through_forward/bare/_midstream.scss", "@forward \"upstream\";\n")
+        .mock_file("through_forward/bare/_upstream.scss", "@mixin c() {b: c}\n")
+        .mock_file("through_forward/hide/_midstream.scss", "@forward \"upstream\" hide c;\n")
+        .mock_file("through_forward/hide/_upstream.scss", "@mixin d() {b: d}\n")
+        .mock_file("through_forward/show/_midstream.scss", "@forward \"upstream\" show c;\n")
+        .mock_file("through_forward/show/_upstream.scss", "@mixin c() {b: c}\n")
+        .mock_file("through_use/other.scss", "@mixin add-two($v) {b: $v + 2}\n")
 }
 
 #[test]

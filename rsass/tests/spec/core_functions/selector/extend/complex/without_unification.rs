@@ -13,8 +13,8 @@ mod leading_combinator {
     #[ignore] // wrong result
     fn both() {
         assert_eq!(
-            runner()
-                .ok("a {b: selector-extend(\"~ .c\", \".c\", \"+ .d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"~ .c\", \".c\", \"+ .d\")}\n"),
             "a {\
          \n  b: ~ .c;\
          \n}\n"
@@ -23,7 +23,8 @@ mod leading_combinator {
     #[test]
     fn extender() {
         assert_eq!(
-            runner().ok("a {b: selector-extend(\".c\", \".c\", \"+ .d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c\", \".c\", \"+ .d\")}\n"),
             "a {\
          \n  b: .c, + .d;\
          \n}\n"
@@ -32,7 +33,8 @@ mod leading_combinator {
     #[test]
     fn selector() {
         assert_eq!(
-            runner().ok("a {b: selector-extend(\"> .c\", \".c\", \".d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"> .c\", \".c\", \".d\")}\n"),
             "a {\
          \n  b: > .c, > .d;\
          \n}\n"
@@ -51,9 +53,8 @@ mod multiple_combinators {
         #[ignore] // wrong result
         fn extender() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\".c\", \".c\", \"+ ~ .d\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c\", \".c\", \"+ ~ .d\")}\n"),
                 "a {\
          \n  b: .c;\
          \n}\n"
@@ -63,9 +64,8 @@ mod multiple_combinators {
         #[ignore] // wrong result
         fn selector() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\"> + .c\", \".c\", \".d\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"> + .c\", \".c\", \".d\")}\n"),
                 "a {\
          \n  b: > + .c;\
          \n}\n"
@@ -80,9 +80,8 @@ mod multiple_combinators {
         #[ignore] // wrong result
         fn extender() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\".c\", \".c\", \".d ~ + .e\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c\", \".c\", \".d ~ + .e\")}\n"),
                 "a {\
          \n  b: .c;\
          \n}\n"
@@ -91,9 +90,8 @@ mod multiple_combinators {
         #[test]
         fn selector() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\".c ~ ~ .d\", \".c\", \".e\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c ~ ~ .d\", \".c\", \".e\")}\n"),
                 "a {\
          \n  b: .c ~ ~ .d;\
          \n}\n"
@@ -107,9 +105,8 @@ mod multiple_combinators {
         #[test]
         fn extender() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\".c\", \".c\", \".d + +\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c\", \".c\", \".d + +\")}\n"),
                 "a {\
          \n  b: .c;\
          \n}\n"
@@ -118,9 +115,8 @@ mod multiple_combinators {
         #[test]
         fn selector() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\".c > ~\", \".c\", \".d\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c > ~\", \".c\", \".d\")}\n"),
                 "a {\
          \n  b: .c > ~;\
          \n}\n"
@@ -140,33 +136,30 @@ mod parent {
         #[ignore] // wrong result
         fn complex() {
             assert_eq!(
-        runner().ok(
-            "a {b: selector-extend(\".c .d .e\", \".d\", \".f .g\")}\n"
-        ),
-        "a {\
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c .d .e\", \".d\", \".f .g\")}\n"),
+                "a {\
          \n  b: .c .d .e, .c .f .g .e, .f .c .g .e;\
          \n}\n"
-    );
+            );
         }
         #[test]
         #[ignore] // wrong result
         fn list() {
             assert_eq!(
-        runner().ok(
-            "a {b: selector-extend(\".c .d .e\", \".d\", \".f, .g\")}\n"
-        ),
-        "a {\
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c .d .e\", \".d\", \".f, .g\")}\n"),
+                "a {\
          \n  b: .c .d .e, .c .f .e, .c .g .e;\
          \n}\n"
-    );
+            );
         }
         #[test]
         #[ignore] // wrong result
         fn simple() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\".c .d .e\", \".d\", \".f\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c .d .e\", \".d\", \".f\")}\n"),
                 "a {\
          \n  b: .c .d .e, .c .f .e;\
          \n}\n"
@@ -181,9 +174,8 @@ mod parent {
         #[ignore] // wrong result
         fn complex() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\".c .d\", \".c\", \".e .f\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c .d\", \".c\", \".e .f\")}\n"),
                 "a {\
          \n  b: .c .d, .e .f .d;\
          \n}\n"
@@ -193,9 +185,8 @@ mod parent {
         #[ignore] // wrong result
         fn list() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\".c .d\", \".c\", \".e, .f\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c .d\", \".c\", \".e, .f\")}\n"),
                 "a {\
          \n  b: .c .d, .e .d, .f .d;\
          \n}\n"
@@ -205,9 +196,8 @@ mod parent {
         #[ignore] // wrong result
         fn simple() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\".c .d\", \".c\", \".e\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c .d\", \".c\", \".e\")}\n"),
                 "a {\
          \n  b: .c .d, .e .d;\
          \n}\n"
@@ -222,8 +212,8 @@ mod trailing_combinator {
     #[test]
     fn both() {
         assert_eq!(
-            runner()
-                .ok("a {b: selector-extend(\".c ~\", \".c\", \".d >\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c ~\", \".c\", \".d >\")}\n"),
             "a {\
          \n  b: .c ~;\
          \n}\n"
@@ -237,9 +227,8 @@ mod trailing_combinator {
         #[ignore] // wrong result
         fn child() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\".c .d\", \".c\", \".e >\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c .d\", \".c\", \".e >\")}\n"),
                 "a {\
          \n  b: .c .d, .e > .d;\
          \n}\n"
@@ -249,9 +238,8 @@ mod trailing_combinator {
         #[ignore] // wrong result
         fn next_sibling() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\".c .d\", \".c\", \".e +\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c .d\", \".c\", \".e +\")}\n"),
                 "a {\
          \n  b: .c .d, .e + .d;\
          \n}\n"
@@ -261,9 +249,8 @@ mod trailing_combinator {
         #[ignore] // wrong result
         fn sibling() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\".c .d\", \".c\", \".e ~\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c .d\", \".c\", \".e ~\")}\n"),
                 "a {\
          \n  b: .c .d, .e ~ .d;\
          \n}\n"
@@ -274,7 +261,8 @@ mod trailing_combinator {
     #[ignore] // wrong result
     fn selector() {
         assert_eq!(
-            runner().ok("a {b: selector-extend(\".c +\", \".c\", \".d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c +\", \".c\", \".d\")}\n"),
             "a {\
          \n  b: .c +, .d +;\
          \n}\n"

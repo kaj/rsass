@@ -8,9 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("div {\
-             \n  foo: map-values((foo: 1, bar: 2));\
-             \n  foo: map-values((foo: 1, bar: 2, baz: 2));\
+        runner().ok("@use \"sass:map\";\
+             \ndiv {\
+             \n  foo: map.values((foo: 1, bar: 2));\
+             \n  foo: map.values((foo: 1, bar: 2, baz: 2));\
              \n}\n"),
         "div {\
          \n  foo: 1, 2;\

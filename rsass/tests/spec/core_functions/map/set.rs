@@ -8,8 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn empty() {
     assert_eq!(
-        runner().ok("@use \"sass:map\";\
-             \na {b: inspect(map.set((), c, d))}\n"),
+        runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:map\";\
+             \na {b: meta.inspect(map.set((), c, d))}\n"),
         "a {\
          \n  b: (c: d);\
          \n}\n"
@@ -87,8 +88,11 @@ mod error {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("@use \"sass:map\";\
-             \na {b: inspect(map.set($map: (c: d), $key: c, $value: e))}\n"),
+        runner().ok(
+            "@use \"sass:meta\";\
+             \n@use \"sass:map\";\
+             \na {b: meta.inspect(map.set($map: (c: d), $key: c, $value: e))}\n"
+        ),
         "a {\
          \n  b: (c: e);\
          \n}\n"
@@ -101,8 +105,9 @@ mod nested {
     #[test]
     fn empty() {
         assert_eq!(
-            runner().ok("@use \"sass:map\";\
-             \na {b: inspect(map.set((c: ()), c, d, e, f))}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:map\";\
+             \na {b: meta.inspect(map.set((c: ()), c, d, e, f))}\n"),
             "a {\
          \n  b: (c: (d: (e: f)));\
          \n}\n"
@@ -112,8 +117,9 @@ mod nested {
     fn long() {
         assert_eq!(
         runner().ok(
-            "@use \"sass:map\";\
-             \na {b: inspect(map.set((c: (d: (e: (f: (g: h))))), c, d, e, f, g, i))}\n"
+            "@use \"sass:meta\";\
+             \n@use \"sass:map\";\
+             \na {b: meta.inspect(map.set((c: (d: (e: (f: (g: h))))), c, d, e, f, g, i))}\n"
         ),
         "a {\
          \n  b: (c: (d: (e: (f: (g: i)))));\
@@ -123,8 +129,9 @@ mod nested {
     #[test]
     fn new_key() {
         assert_eq!(
-            runner().ok("@use \"sass:map\";\
-             \na {b: inspect(map.set((c: (d: e)), c, f, g))}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:map\";\
+             \na {b: meta.inspect(map.set((c: (d: e)), c, f, g))}\n"),
             "a {\
          \n  b: (c: (d: e, f: g));\
          \n}\n"
@@ -133,8 +140,9 @@ mod nested {
     #[test]
     fn update_existing_key() {
         assert_eq!(
-            runner().ok("@use \"sass:map\";\
-             \na {b: inspect(map.set((c: (d: e)), c, d, f))}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:map\";\
+             \na {b: meta.inspect(map.set((c: (d: e)), c, d, f))}\n"),
             "a {\
          \n  b: (c: (d: f));\
          \n}\n"
@@ -143,8 +151,9 @@ mod nested {
     #[test]
     fn value_is_not_a_map() {
         assert_eq!(
-            runner().ok("@use \"sass:map\";\
-             \na {b: inspect(map.set((c: 1), c, d, f))}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:map\";\
+             \na {b: meta.inspect(map.set((c: 1), c, d, f))}\n"),
             "a {\
          \n  b: (c: (d: f));\
          \n}\n"
@@ -154,8 +163,9 @@ mod nested {
 #[test]
 fn new_key() {
     assert_eq!(
-        runner().ok("@use \"sass:map\";\
-             \na {b: inspect(map.set((c: d), e, f))}\n"),
+        runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:map\";\
+             \na {b: meta.inspect(map.set((c: d), e, f))}\n"),
         "a {\
          \n  b: (c: d, e: f);\
          \n}\n"
@@ -164,8 +174,9 @@ fn new_key() {
 #[test]
 fn update_existing_key() {
     assert_eq!(
-        runner().ok("@use \"sass:map\";\
-             \na {b: inspect(map.set((c: d), c, e))}\n"),
+        runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:map\";\
+             \na {b: meta.inspect(map.set((c: d), c, e))}\n"),
         "a {\
          \n  b: (c: e);\
          \n}\n"

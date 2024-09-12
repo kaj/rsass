@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("div { color: desaturate(#999, 50%); }"),
+        runner().ok("@use \"sass:color\";\
+             \ndiv { color: color.adjust(#999, $saturation: -50%); }"),
         "div {\
          \n  color: #999999;\
          \n}\n"

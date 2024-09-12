@@ -8,8 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("foo {\
-             \n  bar: type-of(selector-unify(\'p\', \'a\'));\
+        runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \nfoo {\
+             \n  bar: meta.type-of(selector.unify(\'p\', \'a\'));\
              \n}"),
         "foo {\
          \n  bar: null;\

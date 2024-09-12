@@ -13,7 +13,8 @@ mod both {
     fn subset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":where(c d.i, e j f)\", \":where(c d, e f, g h)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":where(c d.i, e j f)\", \":where(c d, e f, g h)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -24,7 +25,8 @@ mod both {
     fn superset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":where(c d, e f, g h)\", \":where(c d.i, e j f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":where(c d, e f, g h)\", \":where(c d.i, e j f)\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -39,60 +41,9 @@ mod complex {
     #[test]
     fn subset() {
         assert_eq!(
-            runner()
-                .ok("a {b: is-superselector(\":where(c d e)\", \"c e\")}\n"),
-            "a {\
-         \n  b: false;\
-         \n}\n"
-        );
-    }
-    #[test]
-    #[ignore] // wrong result
-    fn superset() {
-        assert_eq!(
-            runner()
-                .ok("a {b: is-superselector(\":where(c e)\", \"c d e\")}\n"),
-            "a {\
-         \n  b: true;\
-         \n}\n"
-        );
-    }
-}
-mod compound {
-    #[allow(unused)]
-    use super::runner;
-
-    #[test]
-    fn subset() {
-        assert_eq!(
-            runner()
-                .ok("a {b: is-superselector(\":where(c.d.e)\", \"c e\")}\n"),
-            "a {\
-         \n  b: false;\
-         \n}\n"
-        );
-    }
-    #[test]
-    #[ignore] // wrong result
-    fn superset() {
-        assert_eq!(
-            runner()
-                .ok("a {b: is-superselector(\":where(c.e)\", \"c.d.e\")}\n"),
-            "a {\
-         \n  b: true;\
-         \n}\n"
-        );
-    }
-}
-mod list {
-    #[allow(unused)]
-    use super::runner;
-
-    #[test]
-    fn subset() {
-        assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":where(c d, e f)\", \"c d, e f, g h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":where(c d e)\", \"c e\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -104,7 +55,68 @@ mod list {
     fn superset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":where(c d, e f, g h)\", \"c d, e f\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":where(c e)\", \"c d e\")}\n"
+        ),
+        "a {\
+         \n  b: true;\
+         \n}\n"
+    );
+    }
+}
+mod compound {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn subset() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":where(c.d.e)\", \"c e\")}\n"
+        ),
+        "a {\
+         \n  b: false;\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn superset() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":where(c.e)\", \"c.d.e\")}\n"
+        ),
+        "a {\
+         \n  b: true;\
+         \n}\n"
+    );
+    }
+}
+mod list {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn subset() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":where(c d, e f)\", \"c d, e f, g h\")}\n"
+        ),
+        "a {\
+         \n  b: false;\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn superset() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":where(c d, e f, g h)\", \"c d, e f\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -119,19 +131,21 @@ mod not_superselector_of {
     #[test]
     fn any() {
         assert_eq!(
-            runner().ok(
-                "a {b: is-superselector(\":where(c, d)\", \":any(c, d)\")}\n"
-            ),
-            "a {\
+        runner().ok(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":where(c, d)\", \":any(c, d)\")}\n"
+        ),
+        "a {\
          \n  b: false;\
          \n}\n"
-        );
+    );
     }
     #[test]
     fn prefixed() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":where(c, d)\", \":-pfx-where(c, d)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":where(c, d)\", \":-pfx-where(c, d)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -147,7 +161,8 @@ mod prefix {
     fn subset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":-pfx-is(c d.i, e j f)\", \"c d, e f, g h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":-pfx-is(c d.i, e j f)\", \"c d, e f, g h\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -159,7 +174,8 @@ mod prefix {
     fn superset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":-pfx-is(c d, e f, g h)\", \"c d.i, e j f\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":-pfx-is(c d, e f, g h)\", \"c d.i, e j f\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -175,7 +191,8 @@ mod simple {
     #[ignore] // wrong result
     fn equal() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":where(c)\", \"c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":where(c)\", \"c\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -184,7 +201,8 @@ mod simple {
     #[test]
     fn unequal() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":where(c)\", \"d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":where(c)\", \"d\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"

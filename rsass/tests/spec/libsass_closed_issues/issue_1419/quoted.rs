@@ -8,8 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("foo {\
-             \n  foo: to-upper-case(\"ab\\63 d\");\
+        runner().ok("@use \"sass:string\";\
+             \nfoo {\
+             \n  foo: string.to-upper-case(\"ab\\63 d\");\
              \n}\n"),
         "foo {\
          \n  foo: \"ABCD\";\

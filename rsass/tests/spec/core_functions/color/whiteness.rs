@@ -10,10 +10,26 @@ mod error {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong error
+    fn non_legacy() {
+        assert_eq!(
+        runner().err(
+            "@use \"sass:color\";\
+             \na {b: color.whiteness(color(srgb 1 1 1))}\n"
+        ),
+        "Error: color.whiteness() is only supported for legacy colors. Please use color.channel() instead with an explicit $space argument.\
+         \n  ,\
+         \n2 | a {b: color.whiteness(color(srgb 1 1 1))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+    );
+    }
+    #[test]
     fn too_few_args() {
         assert_eq!(
             runner().err(
-                "@use \'sass:color\';\
+                "@use \"sass:color\";\
              \na {b: color.whiteness()}\n"
             ),
             "Error: Missing argument $color.\
@@ -32,7 +48,7 @@ mod error {
     fn too_many_args() {
         assert_eq!(
             runner().err(
-                "@use \'sass:color\';\
+                "@use \"sass:color\";\
              \na {b: color.whiteness(red, green)}\n"
             ),
             "Error: Only 1 argument allowed, but 2 were passed.\
@@ -51,7 +67,7 @@ mod error {
     fn test_type() {
         assert_eq!(
             runner().err(
-                "@use \'sass:color\';\
+                "@use \"sass:color\";\
              \na {b: color.whiteness(1)}\n"
             ),
             "Error: $color: 1 is not a color.\
@@ -64,19 +80,20 @@ mod error {
     }
 }
 #[test]
+#[ignore] // wrong result
 fn fraction() {
     assert_eq!(
-        runner().ok("@use \'sass:color\';\
+        runner().ok("@use \"sass:color\";\
              \na {b: color.whiteness(color.hwb(0, 0.5%, 0%))}\n"),
         "a {\
-         \n  b: 0.3921568627%;\
+         \n  b: 0.5%;\
          \n}\n"
     );
 }
 #[test]
 fn max() {
     assert_eq!(
-        runner().ok("@use \'sass:color\';\
+        runner().ok("@use \"sass:color\";\
              \na {b: color.whiteness(white)}\n"),
         "a {\
          \n  b: 100%;\
@@ -88,32 +105,35 @@ mod middle {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn half_blackness() {
         assert_eq!(
-            runner().ok("@use \'sass:color\';\
+            runner().ok("@use \"sass:color\";\
              \na {b: color.whiteness(color.hwb(0, 50%, 50%))}\n"),
             "a {\
-         \n  b: 50.1960784314%;\
+         \n  b: 50%;\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn high_blackness() {
         assert_eq!(
-            runner().ok("@use \'sass:color\';\
+            runner().ok("@use \"sass:color\";\
              \na {b: color.whiteness(color.hwb(0, 70%, 70%))}\n"),
             "a {\
-         \n  b: 50.1960784314%;\
+         \n  b: 50%;\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn zero_blackness() {
         assert_eq!(
-            runner().ok("@use \'sass:color\';\
+            runner().ok("@use \"sass:color\";\
              \na {b: color.whiteness(color.hwb(0, 50%, 0%))}\n"),
             "a {\
-         \n  b: 50.1960784314%;\
+         \n  b: 50%;\
          \n}\n"
         );
     }
@@ -121,7 +141,7 @@ mod middle {
 #[test]
 fn min() {
     assert_eq!(
-        runner().ok("@use \'sass:color\';\
+        runner().ok("@use \"sass:color\";\
              \na {b: color.whiteness(black)}\n"),
         "a {\
          \n  b: 0%;\
@@ -129,12 +149,13 @@ fn min() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn named() {
     assert_eq!(
-        runner().ok("@use \'sass:color\';\
+        runner().ok("@use \"sass:color\";\
              \na {b: color.whiteness($color: color.hwb(0, 42%, 0%))}\n"),
         "a {\
-         \n  b: 41.9607843137%;\
+         \n  b: 42%;\
          \n}\n"
     );
 }

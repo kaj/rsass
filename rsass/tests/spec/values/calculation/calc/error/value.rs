@@ -63,7 +63,7 @@ mod function {
                 "@function a() {@return 1 2 3}\
              \nb {c: calc(a())}\n"
             ),
-            "Error: Value 1 2 3 can\'t be used in a calculation.\
+            "Error: Value (1 2 3) can\'t be used in a calculation.\
          \n  ,\
          \n2 | b {c: calc(a())}\
          \n  |            ^^^\
@@ -175,7 +175,7 @@ mod variable {
                 "$a: 1 2 3;\
              \nb {c: calc($a)}\n"
             ),
-            "Error: Value 1 2 3 can\'t be used in a calculation.\
+            "Error: Value (1 2 3) can\'t be used in a calculation.\
          \n  ,\
          \n2 | b {c: calc($a)}\
          \n  |            ^^\

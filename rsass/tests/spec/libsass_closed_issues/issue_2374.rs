@@ -10,61 +10,59 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$colors: (\r\
-             \n    yellow: #ffeb3b\r\
-             \n);\r\
-             \n@each $name, $color in $colors {\r\
-             \n    $amount: 40;\r\
-             \n    @for $i from 0 through 9 {\r\
-             \n        .#{$name}-#{($i*100)} { background-color: lighten($color, $amount) };\r\
-             \n        $amount: $amount - 2;\r\
-             \n    }\r\
-             \n}\r\
-             \n\r\
-             \n$colors: (\r\
-             \n    yellow: yellow,\r\
-             \n    red: red,\r\
-             \n    blue: blue,\r\
-             \n    \r\
-             \n);\r\
-             \n@each $name, $color in $colors {\r\
-             \n    @for $i from 0 through 2 {\r\
-             \n        .#{$name}-#{($i*100)} { \r\
-             \n          background-color: lighten($color, 10) \r\
-             \n        };\r\
-             \n    }\r\
-             \n}\r\
-             \n\r\n"
+            "@use \"sass:color\";\
+             \n$colors: (\
+             \n    yellow: #ffeb3b\
+             \n);\
+             \n@each $name, $color in $colors {\
+             \n    $amount: 40%;\
+             \n    @for $i from 0 through 9 {\
+             \n        .#{$name}-#{($i*100)} { background-color: color.adjust($color, $lightness: $amount) };\
+             \n        $amount: $amount - 2;\
+             \n    }\
+             \n}\n\
+             \n$colors: (\
+             \n    yellow: yellow,\
+             \n    red: red,\
+             \n    blue: blue,\n\
+             \n);\
+             \n@each $name, $color in $colors {\
+             \n    @for $i from 0 through 2 {\
+             \n        .#{$name}-#{($i*100)} {\
+             \n          background-color: color.adjust($color, $lightness: 10%)\
+             \n        };\
+             \n    }\
+             \n}\n\n"
         ),
         ".yellow-0 {\
-         \n  background-color: white;\
+         \n  background-color: hsl(53.8775510204, 100%, 101.568627451%);\
          \n}\
          \n.yellow-100 {\
-         \n  background-color: #fffffd;\
+         \n  background-color: rgb(255, 254.7755102041, 252.8);\
          \n}\
          \n.yellow-200 {\
-         \n  background-color: #fffef3;\
+         \n  background-color: rgb(255, 253.7346938776, 242.6);\
          \n}\
          \n.yellow-300 {\
-         \n  background-color: #fffde8;\
+         \n  background-color: rgb(255, 252.693877551, 232.4);\
          \n}\
          \n.yellow-400 {\
-         \n  background-color: #fffcde;\
+         \n  background-color: rgb(255, 251.6530612245, 222.2);\
          \n}\
          \n.yellow-500 {\
-         \n  background-color: #fffbd4;\
+         \n  background-color: rgb(255, 250.612244898, 212);\
          \n}\
          \n.yellow-600 {\
-         \n  background-color: #fffaca;\
+         \n  background-color: rgb(255, 249.5714285714, 201.8);\
          \n}\
          \n.yellow-700 {\
-         \n  background-color: #fff9c0;\
+         \n  background-color: rgb(255, 248.5306122449, 191.6);\
          \n}\
          \n.yellow-800 {\
-         \n  background-color: #fff7b5;\
+         \n  background-color: rgb(255, 247.4897959184, 181.4);\
          \n}\
          \n.yellow-900 {\
-         \n  background-color: #fff6ab;\
+         \n  background-color: rgb(255, 246.4489795918, 171.2);\
          \n}\
          \n.yellow-0 {\
          \n  background-color: #ffff33;\

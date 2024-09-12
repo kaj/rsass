@@ -16,8 +16,8 @@ mod input {
         #[test]
         fn compound() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c.d\", \"c.d\", \".e\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c.d\", \"c.d\", \".e\")}\n"),
                 "a {\
          \n  b: c.d, .e;\
          \n}\n"
@@ -27,9 +27,8 @@ mod input {
         #[ignore] // wrong result
         fn list() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\"c.d\", \"c, .d\", \".e\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c.d\", \"c, .d\", \".e\")}\n"),
                 "a {\
          \n  b: c.d, .e;\
          \n}\n"
@@ -39,13 +38,12 @@ mod input {
         #[ignore] // wrong result
         fn list_of_compound() {
             assert_eq!(
-        runner().ok(
-            "a {b: selector-extend(\"c.d.e.f\", \"c.d, .e.f\", \".g\")}\n"
-        ),
-        "a {\
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c.d.e.f\", \"c.d, .e.f\", \".g\")}\n"),
+                "a {\
          \n  b: c.d.e.f, .g;\
          \n}\n"
-    );
+            );
         }
     }
     mod non_string {
@@ -56,9 +54,8 @@ mod input {
         #[ignore] // wrong result
         fn extendee() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\"c.d\", (c, \".d\"), \".e\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c.d\", (c, \".d\"), \".e\")}\n"),
                 "a {\
          \n  b: c.d, .e;\
          \n}\n"
@@ -67,8 +64,8 @@ mod input {
         #[test]
         fn extender() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c\", \"c\", (d, e f))}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c\", \"c\", (d, e f))}\n"),
                 "a {\
          \n  b: c, d, e f;\
          \n}\n"
@@ -78,8 +75,8 @@ mod input {
         #[ignore] // wrong result
         fn selector() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend((c, d c), \"c\", \"e\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend((c, d c), \"c\", \"e\")}\n"),
                 "a {\
          \n  b: c, e, d c;\
          \n}\n"
@@ -90,7 +87,8 @@ mod input {
 #[test]
 fn output() {
     assert_eq!(
-        runner().ok("$result: selector-extend(\"c d, e f\", \"g\", \"g\");\
+        runner().ok("@use \"sass:selector\";\
+             \n$result: selector.extend(\"c d, e f\", \"g\", \"g\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (\"c\" \"d\", \"e\" \"f\");\

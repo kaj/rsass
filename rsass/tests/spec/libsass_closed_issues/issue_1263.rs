@@ -6,6 +6,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("foo {\
@@ -17,8 +18,8 @@ fn test() {
         "foo {\
          \n  @apply;\
          \n  @apply (--bar);\
-         \n  @apply (  --bar  );\
-         \n  @apply (   --bar , --foo  );\
+         \n  @apply ( --bar );\
+         \n  @apply ( --bar , --foo );\
          \n}\n"
     );
 }

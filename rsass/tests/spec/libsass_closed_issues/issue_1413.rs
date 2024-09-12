@@ -8,7 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("div {\r\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \ndiv {\r\
              \n    foo: \'A\'#{B};\r\
              \n    foo: #{A}\'B\';\r\
              \n    foo: \'A\'#{B}\'C\';\r\
@@ -23,31 +25,31 @@ fn test() {
              \n}\r\
              \n\r\
              \ndiv {\r\
-             \n    foo: type-of(\'A\'#{B});\r\
-             \n    foo: type-of(#{A}\'B\');\r\
-             \n    foo: type-of(\'A\'#{B}\'C\');\r\
-             \n    foo: type-of(#{A}\'B\'#{C});\r\
-             \n    foo: type-of(A#{B}\'C\');\r\
-             \n    foo: type-of(\'A\'#{B}C);\r\
-             \n    foo: type-of(#{A}B\'C\');\r\
-             \n    foo: type-of(\'A\'#{B}C\'D\');\r\
-             \n    foo: type-of(\'A\'B#{C}D\'E\');\r\
-             \n    foo: type-of(A\'B\'#{C}D\'E\');\r\
-             \n    foo: type-of(#{A}\'B\'C\'D\'\'E\');\r\
+             \n    foo: meta.type-of(\'A\'#{B});\r\
+             \n    foo: meta.type-of(#{A}\'B\');\r\
+             \n    foo: meta.type-of(\'A\'#{B}\'C\');\r\
+             \n    foo: meta.type-of(#{A}\'B\'#{C});\r\
+             \n    foo: meta.type-of(A#{B}\'C\');\r\
+             \n    foo: meta.type-of(\'A\'#{B}C);\r\
+             \n    foo: meta.type-of(#{A}B\'C\');\r\
+             \n    foo: meta.type-of(\'A\'#{B}C\'D\');\r\
+             \n    foo: meta.type-of(\'A\'B#{C}D\'E\');\r\
+             \n    foo: meta.type-of(A\'B\'#{C}D\'E\');\r\
+             \n    foo: meta.type-of(#{A}\'B\'C\'D\'\'E\');\r\
              \n}\r\
              \n\r\
              \ndiv {\r\
-             \n    foo: length(\'A\'#{B});\r\
-             \n    foo: length(#{A}\'B\');\r\
-             \n    foo: length(\'A\'#{B}\'C\');\r\
-             \n    foo: length(#{A}\'B\'#{C});\r\
-             \n    foo: length(A#{B}\'C\');\r\
-             \n    foo: length(\'A\'#{B}C);\r\
-             \n    foo: length(#{A}B\'C\');\r\
-             \n    foo: length(\'A\'#{B}C\'D\');\r\
-             \n    foo: length(\'A\'B#{C}D\'E\');\r\
-             \n    foo: length(A\'B\'#{C}D\'E\');\r\
-             \n    foo: length(#{A}\'B\'C\'D\'\'E\');\r\
+             \n    foo: list.length(\'A\'#{B});\r\
+             \n    foo: list.length(#{A}\'B\');\r\
+             \n    foo: list.length(\'A\'#{B}\'C\');\r\
+             \n    foo: list.length(#{A}\'B\'#{C});\r\
+             \n    foo: list.length(A#{B}\'C\');\r\
+             \n    foo: list.length(\'A\'#{B}C);\r\
+             \n    foo: list.length(#{A}B\'C\');\r\
+             \n    foo: list.length(\'A\'#{B}C\'D\');\r\
+             \n    foo: list.length(\'A\'B#{C}D\'E\');\r\
+             \n    foo: list.length(A\'B\'#{C}D\'E\');\r\
+             \n    foo: list.length(#{A}\'B\'C\'D\'\'E\');\r\
              \n}"),
         "div {\
          \n  foo: \"A\" B;\

@@ -9,7 +9,9 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$button-sizes: (\r\
+            "@use \"sass:list\";\
+             \n@use \"sass:map\";\
+             \n$button-sizes: (\r\
              \n  \'xs\': (\r\
              \n    \'line-height\': 16 / 12,\r\
              \n  ),\r\
@@ -25,10 +27,10 @@ fn test() {
              \n);\r\
              \n\r\
              \n@each $size in $button-sizes {\r\
-             \n  $size-metrics: nth($size, 2);\r\
+             \n  $size-metrics: list.nth($size, 2);\r\
              \n\r\
              \n  .c-button__icon {\r\
-             \n    min-height: map-get($size-metrics, \'line-height\') * 1em;\r\
+             \n    min-height: map.get($size-metrics, \'line-height\') * 1em;\r\
              \n  }\r\
              \n}"
         ),

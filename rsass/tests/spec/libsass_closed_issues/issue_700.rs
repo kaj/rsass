@@ -8,8 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(".selector {\
-             \n  color: invert(transparent);\
+        runner().ok("@use \"sass:color\";\
+             \n.selector {\
+             \n  color: color.invert(transparent);\
              \n}"),
         ".selector {\
          \n  color: rgba(255, 255, 255, 0);\

@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok("$root_default: initial;\r\
+        runner().ok("@use \"sass:meta\";\
+             \n$root_default: initial;\r\
              \n$root_implicit: initial;\r\
              \n$root_explicit: initial !global;\r\
              \n\r\
@@ -38,31 +39,31 @@ fn test() {
              \n\r\
              \nresult {\r\
              \n  fn: fn();\r\
-             \n  @if variable-exists(outer) {\r\
+             \n  @if meta.variable-exists(outer) {\r\
              \n    outer: $outer;\r\
              \n  }\r\
-             \n  @if variable-exists(inner) {\r\
+             \n  @if meta.variable-exists(inner) {\r\
              \n    inner: $inner;\r\
              \n  }\r\
-             \n  @if variable-exists(check_implicit) {\r\
+             \n  @if meta.variable-exists(check_implicit) {\r\
              \n    check_implicit: $check_implicit;\r\
              \n  }\r\
-             \n  @if variable-exists(check_explicit) {\r\
+             \n  @if meta.variable-exists(check_explicit) {\r\
              \n    check_explicit: $check_explicit;\r\
              \n  }\r\
-             \n  @if variable-exists(check_default) {\r\
+             \n  @if meta.variable-exists(check_default) {\r\
              \n    check_default: $check_default;\r\
              \n  }\r\
              \n  root_default: $root_default;\r\
              \n  root_implicit: $root_implicit;\r\
              \n  root_explicit: $root_explicit;\r\
-             \n  @if variable-exists(local_default) {\r\
+             \n  @if meta.variable-exists(local_default) {\r\
              \n    local_default: $local_default;\r\
              \n  }\r\
-             \n  @if variable-exists(local_implicit) {\r\
+             \n  @if meta.variable-exists(local_implicit) {\r\
              \n    local_implicit: $local_implicit;\r\
              \n  }\r\
-             \n  @if variable-exists(local_explicit) {\r\
+             \n  @if meta.variable-exists(local_explicit) {\r\
              \n    local_explicit: $local_explicit;\r\
              \n  }\r\
              \n}\r\n"),

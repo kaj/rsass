@@ -13,21 +13,19 @@ mod has {
     #[ignore] // wrong result
     fn has_in_extender() {
         assert_eq!(
-        runner().ok(
-            "a {b: selector-extend(\":has(.c)\", \".c\", \":has(.d)\")}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":has(.c)\", \".c\", \":has(.d)\")}\n"),
+            "a {\
          \n  b: :has(.c, :has(.d));\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // wrong result
     fn list() {
         assert_eq!(
-            runner().ok(
-                "a {b: selector-extend(\":has(.c)\", \".c\", \".d, .e\")}\n"
-            ),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":has(.c)\", \".c\", \".d, .e\")}\n"),
             "a {\
          \n  b: :has(.c, .d, .e);\
          \n}\n"
@@ -37,8 +35,8 @@ mod has {
     #[ignore] // wrong result
     fn simple() {
         assert_eq!(
-            runner()
-                .ok("a {b: selector-extend(\":has(.c)\", \".c\", \".d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":has(.c)\", \".c\", \".d\")}\n"),
             "a {\
          \n  b: :has(.c, .d);\
          \n}\n"
@@ -54,7 +52,8 @@ mod host {
     fn host_in_extender() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":host(.c)\", \".c\", \":host(.d)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":host(.c)\", \".c\", \":host(.d)\")}\n"
         ),
         "a {\
          \n  b: :host(.c, :host(.d));\
@@ -65,9 +64,8 @@ mod host {
     #[ignore] // wrong result
     fn list() {
         assert_eq!(
-            runner().ok(
-                "a {b: selector-extend(\":host(.c)\", \".c\", \".d, .e\")}\n"
-            ),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":host(.c)\", \".c\", \".d, .e\")}\n"),
             "a {\
          \n  b: :host(.c, .d, .e);\
          \n}\n"
@@ -77,9 +75,8 @@ mod host {
     #[ignore] // wrong result
     fn simple() {
         assert_eq!(
-            runner().ok(
-                "a {b: selector-extend(\":host(.c)\", \".c\", \".d\")}\n"
-            ),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":host(.c)\", \".c\", \".d\")}\n"),
             "a {\
          \n  b: :host(.c, .d);\
          \n}\n"
@@ -95,7 +92,8 @@ mod host_context {
     fn host_context_in_extender() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":host-context(.c)\", \".c\", \":host-context(.d)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":host-context(.c)\", \".c\", \":host-context(.d)\")}\n"
         ),
         "a {\
          \n  b: :host-context(.c, :host-context(.d));\
@@ -107,7 +105,8 @@ mod host_context {
     fn list() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":host-context(.c)\", \".c\", \".d, .e\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":host-context(.c)\", \".c\", \".d, .e\")}\n"
         ),
         "a {\
          \n  b: :host-context(.c, .d, .e);\
@@ -119,7 +118,8 @@ mod host_context {
     fn simple() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":host-context(.c)\", \".c\", \".d\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":host-context(.c)\", \".c\", \".d\")}\n"
         ),
         "a {\
          \n  b: :host-context(.c, .d);\
@@ -136,7 +136,8 @@ mod slotted {
     fn list() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\"::slotted(.c)\", \".c\", \".d, .e\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\"::slotted(.c)\", \".c\", \".d, .e\")}\n"
         ),
         "a {\
          \n  b: ::slotted(.c, .d, .e);\
@@ -147,9 +148,8 @@ mod slotted {
     #[ignore] // wrong result
     fn simple() {
         assert_eq!(
-            runner().ok(
-                "a {b: selector-extend(\"::slotted(.c)\", \".c\", \".d\")}\n"
-            ),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"::slotted(.c)\", \".c\", \".d\")}\n"),
             "a {\
          \n  b: ::slotted(.c, .d);\
          \n}\n"
@@ -160,7 +160,8 @@ mod slotted {
     fn slotted_in_extender() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\"::slotted(.c)\", \".c\", \"::slotted(.d)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\"::slotted(.c)\", \".c\", \"::slotted(.d)\")}\n"
         ),
         "a {\
          \n  b: ::slotted(.c, ::slotted(.d));\

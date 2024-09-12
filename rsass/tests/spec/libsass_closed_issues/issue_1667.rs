@@ -8,14 +8,15 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$map: (\r\
+        runner().ok("@use \"sass:map\";\
+             \n$map: (\r\
              \n  1: 1,\r\
              \n  1px: 1px\r\
              \n);\r\
              \n\r\
              \nfoo {\r\
-             \n  a: map-get($map, 1);\r\
-             \n  b: map-get($map, 1px);\r\
+             \n  a: map.get($map, 1);\r\
+             \n  b: map.get($map, 1px);\r\
              \n}\r\
              \n\r\
              \n$type-scale: (\r\
@@ -50,8 +51,8 @@ fn test() {
              \n);\r\
              \n\r\
              \n@function get-size($size) {\r\
-             \n\t@if map-has-key($type-scale, $size) {\r\
-             \n\t\t@return map-get($type-scale, $size);\r\
+             \n\t@if map.has-key($type-scale, $size) {\r\
+             \n\t\t@return map.get($type-scale, $size);\r\
              \n\t}\r\
              \n\r\
              \n\t@warn \"Not a valid size.\";\r\

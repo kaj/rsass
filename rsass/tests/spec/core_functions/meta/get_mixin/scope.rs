@@ -20,7 +20,7 @@ fn captures_inner_scope() {
              \n      @mixin add-two($v) {a: $v + 2}\n\
              \n      // Like a normal mixin call, get-mixin() will always use the\
              \n      // innermost definition of a mixin.\
-             \n      @include meta.apply(get-mixin(add-two), 10);\
+             \n      @include meta.apply(meta.get-mixin(add-two), 10);\
              \n    }\
              \n  }\
              \n}\n"
@@ -80,7 +80,7 @@ fn stores_local_scope() {
              \n  @mixin add-two($v) {b: $v + 2}\n\
              \n  // This mixin reference will still refer to this nested `add-two` mixin\
              \n  // even when it goes out of scope.\
-             \n  $add-two-mixin: get-mixin(add-two) !global;\
+             \n  $add-two-mixin: meta.get-mixin(add-two) !global;\
              \n}\n\
              \na {@include meta.apply($add-two-mixin, 10)}\n"
         ),

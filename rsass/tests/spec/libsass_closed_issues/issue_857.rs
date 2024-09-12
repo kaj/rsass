@@ -8,9 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$list: \"item-1\" \"item-2\" \"item-3\";\n\
+        runner().ok("@use \"sass:list\";\
+             \n$list: \"item-1\" \"item-2\" \"item-3\";\n\
              \n#hello {\
-             \n  @if length($list) % 2 == 0 {\
+             \n  @if list.length($list) % 2 == 0 {\
              \n    color: blue;\
              \n  }\n\
              \n  @else {\

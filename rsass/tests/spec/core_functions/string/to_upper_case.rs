@@ -8,7 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn alphabet() {
     assert_eq!(
-        runner().ok("a {b: to-upper-case(\"abcdefghijklmnopqrstuvqxyz\")}\n"),
+        runner().ok(
+            "@use \"sass:string\";\
+             \na {b: string.to-upper-case(\"abcdefghijklmnopqrstuvqxyz\")}\n"
+        ),
         "a {\
          \n  b: \"ABCDEFGHIJKLMNOPQRSTUVQXYZ\";\
          \n}\n"
@@ -17,7 +20,8 @@ fn alphabet() {
 #[test]
 fn empty() {
     assert_eq!(
-        runner().ok("a {b: to-upper-case(\"\")}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.to-upper-case(\"\")}\n"),
         "a {\
          \n  b: \"\";\
          \n}\n"
@@ -30,52 +34,62 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: to-upper-case()}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.to-upper-case()}\n"
+            ),
             "Error: Missing argument $string.\
          \n  ,--> input.scss\
-         \n1 | a {b: to-upper-case()}\
-         \n  |       ^^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: string.to-upper-case()}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:string\
          \n1 | @function to-upper-case($string) {\
          \n  |           ====================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: to-upper-case(\"\", \"\")}\n\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.to-upper-case(\"\", \"\")}\n\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: to-upper-case(\"\", \"\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: string.to-upper-case(\"\", \"\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:string\
          \n1 | @function to-upper-case($string) {\
          \n  |           ====================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: to-upper-case(1)}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.to-upper-case(1)}\n"
+            ),
             "Error: $string: 1 is not a string.\
          \n  ,\
-         \n1 | a {b: to-upper-case(1)}\
-         \n  |       ^^^^^^^^^^^^^^^^\
+         \n2 | a {b: string.to-upper-case(1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: to-upper-case($string: abcDEF)}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.to-upper-case($string: abcDEF)}\n"),
         "a {\
          \n  b: ABCDEF;\
          \n}\n"
@@ -84,8 +98,9 @@ fn named() {
 #[test]
 fn non_ascii() {
     assert_eq!(
-        runner().ok("// Only ASCII characters have their case changed.\
-             \na {b: to-upper-case(\"äçðøþ\")}\n"),
+        runner().ok("@use \"sass:string\";\
+             \n// Only ASCII characters have their case changed.\
+             \na {b: string.to-upper-case(\"äçðøþ\")}\n"),
         "@charset \"UTF-8\";\
          \na {\
          \n  b: \"äçðøþ\";\
@@ -95,7 +110,8 @@ fn non_ascii() {
 #[test]
 fn number() {
     assert_eq!(
-        runner().ok("a {b: to-upper-case(\"1234567890\")}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.to-upper-case(\"1234567890\")}\n"),
         "a {\
          \n  b: \"1234567890\";\
          \n}\n"
@@ -104,7 +120,8 @@ fn number() {
 #[test]
 fn unquoted() {
     assert_eq!(
-        runner().ok("a {b: to-upper-case(aBcDeF)}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.to-upper-case(aBcDeF)}\n"),
         "a {\
          \n  b: ABCDEF;\
          \n}\n"

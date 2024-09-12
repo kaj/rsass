@@ -9,9 +9,10 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$EQ-Selectors: ();\n\
+            "@use \"sass:list\";\
+             \n$EQ-Selectors: ();\n\
              \n.el {\
-             \n    $EQ-Selectors: append($EQ-Selectors, &, \'comma\') !global;\
+             \n    $EQ-Selectors: list.append($EQ-Selectors, &, \'comma\') !global;\
              \n}\n\
              \nhtml:before {\
              \n  content: \"#{$EQ-Selectors}\";\

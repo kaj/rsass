@@ -6,6 +6,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("@function dark(\r\
@@ -31,11 +32,11 @@ fn test() {
              \n  function2: dark2(#102030, 5%);\r\
              \n}"),
         ".single {\
-         \n  direct: #0a131d;\
-         \n  arg: #0a131d;\
-         \n  call: #0a131d;\
-         \n  function: #0a131d;\
-         \n  function2: #0a131d;\
+         \n  direct: rgb(9.625, 19.25, 28.875);\
+         \n  arg: rgb(9.625, 19.25, 28.875);\
+         \n  call: rgb(9.625, 19.25, 28.875);\
+         \n  function: rgb(9.625, 19.25, 28.875);\
+         \n  function2: rgb(9.625, 19.25, 28.875);\
          \n}\n"
     );
 }

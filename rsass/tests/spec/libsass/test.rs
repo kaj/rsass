@@ -10,7 +10,10 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$x: 3;\n\
+            "@use \"sass:color\";\
+             \n@use \"sass:list\";\
+             \n@use \"sass:math\";\
+             \n$x: 3;\n\
              \ndiv {\
              \n\tnoo: not $x;\
              \n\tpoo: not 3;\
@@ -29,13 +32,13 @@ fn test() {
              \n  a: rgba(100, 20, 0, 1);\
              \n  b: rgba(#abc, 1);\
              \n  c: compact(hello, my, false, name, is, false, aaron, false, false);\
-             \n  d: join(1 2 3, 4 5 6, comma);\
-             \n  e: join(a b c, d e f);\
-             \n  f: change-color(#102030, $blue: 5);\
-             \n  g: change-color(#102030, $red: 120, $blue: 5);\
+             \n  d: list.join(1 2 3, 4 5 6, comma);\
+             \n  e: list.join(a b c, d e f);\
+             \n  f: color.change(#102030, $blue: 5);\
+             \n  g: color.change(#102030, $red: 120, $blue: 5);\
              \n  h: hsl(25, 100%, 80%);\
-             \n  h: change-color(#ffc499, $alpha: 0.8, $lightness: 40%);\
-             \n  h: change-color(hsl(25, 100%, 80%), $alpha: 0.8, $lightness: 40%);\
+             \n  h: color.change(#ffc499, $alpha: 0.8, $lightness: 40%);\
+             \n  h: color.change(hsl(25, 100%, 80%), $alpha: 0.8, $lightness: 40%);\
              \n  i: hsla(25, 100%, 40%, 0.8);\
              \n  foo: url(\"http://blah/flah/grah\");\
              \n  foo: url(http://foo/bar/buzz.css);\
@@ -50,11 +53,11 @@ fn test() {
              \n}\n\
              \ndiv {\
              \n  flug: url(bug.mug);\
-             \n  krug: nth(1 2 3, 2px);\
-             \n  blug: nth(a b c d, 3);\
-             \n  flig: comparable(34, 22px) comparable(1%, 3) comparable(2, 1) comparable(4cm, 1in);\
-             \n  flug: comparable(1px, 2.3in) comparable(1%, 2pt);\
-             \n  flib: comparable(3ex, 2px) comparable(3em, 2cm);\
+             \n  krug: list.nth(1 2 3, 2px);\
+             \n  blug: list.nth(a b c d, 3);\
+             \n  flig: math.compatible(34, 22px) math.compatible(1%, 3) math.compatible(2, 1) math.compatible(4cm, 1in);\
+             \n  flug: math.compatible(1px, 2.3in) math.compatible(1%, 2pt);\
+             \n  flib: math.compatible(3ex, 2px) math.compatible(3em, 2cm);\
              \n  glib: not(fudge) not(false) not(0) not(red);\
              \n  trib: if(red, yellow, not taken);\
              \n  trub: if(not(fudge), not taken, here we are);\
@@ -106,7 +109,7 @@ fn test() {
          \n  g: #782005;\
          \n  h: hsl(25, 100%, 80%);\
          \n  h: rgba(204, 86, 0, 0.8);\
-         \n  h: rgba(204, 85, 0, 0.8);\
+         \n  h: hsla(25, 100%, 40%, 0.8);\
          \n  i: hsla(25, 100%, 40%, 0.8);\
          \n  foo: url(\"http://blah/flah/grah\");\
          \n  foo: url(http://foo/bar/buzz.css);\

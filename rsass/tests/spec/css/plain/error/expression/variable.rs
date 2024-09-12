@@ -13,14 +13,14 @@ fn runner() -> crate::TestRunner {
 fn declaration() {
     let runner = runner().with_cwd("declaration");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Sass variables aren\'t allowed in plain CSS.\
          \n  ,\
          \n1 | $var: value;\
          \n  | ^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -28,13 +28,13 @@ fn declaration() {
 fn test_use() {
     let runner = runner().with_cwd("use");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Sass variables aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: $var;\
          \n  |      ^^^^\
          \n  \'\
-         \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:6   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }

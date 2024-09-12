@@ -8,12 +8,14 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$mylist: (alpha, beta, gamma, );\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n$mylist: (alpha, beta, gamma, );\
              \n$my-single-item-list: (alpha,);\
              \n.test { \
-             \n  out1: length($mylist);\
-             \n  blah: type-of(nth($mylist,3));\
-             \n  out: length($my-single-item-list); \
+             \n  out1: list.length($mylist);\
+             \n  blah: meta.type-of(list.nth($mylist,3));\
+             \n  out: list.length($my-single-item-list); \
              \n}"),
         ".test {\
          \n  out1: 3;\

@@ -8,7 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$x: 3/4;\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n$x: 3/4;\
              \n$xs: hey 3/4 ho;\n\
              \ndiv {\
              \n  /* $x: 3/4 */\
@@ -16,9 +18,9 @@ fn test() {
              \n  b: hey $x ho;\
              \n  /* $xs: hey 3/4 ho */\
              \n  c: $xs;\
-             \n  d: nth($xs, 2);\
-             \n  e: nth($xs, 2) == 0.75;\
-             \n  f: type-of(nth($xs, 2));\
+             \n  d: list.nth($xs, 2);\
+             \n  e: list.nth($xs, 2) == 0.75;\
+             \n  f: meta.type-of(list.nth($xs, 2));\
              \n}"),
         "div {\
          \n  /* $x: 3/4 */\

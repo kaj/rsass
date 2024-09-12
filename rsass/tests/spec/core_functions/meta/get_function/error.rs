@@ -41,18 +41,19 @@ mod argument {
         let runner = runner().with_cwd("function_ref");
         assert_eq!(
             runner.err(
-                "@function foo() {\
+                "@use \"sass:meta\";\
+             \n@function foo() {\
              \n  @return null;\
              \n}\n\
-             \n$foo-ref: get-function(foo);\
-             \na {b: get-function($foo-ref)}\n"
+             \n$foo-ref: meta.get-function(foo);\
+             \na {b: meta.get-function($foo-ref)}\n"
             ),
             "Error: $name: get-function(\"foo\") is not a string.\
          \n  ,\
-         \n6 | a {b: get-function($foo-ref)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n7 | a {b: meta.get-function($foo-ref)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 6:7  root stylesheet",
+         \n  input.scss 7:7  root stylesheet",
         );
     }
     #[test]
@@ -103,26 +104,32 @@ mod argument {
         fn module() {
             let runner = runner().with_cwd("module");
             assert_eq!(
-                runner.err("a {b: get-function(c, $module: 1)}\n"),
+                runner.err(
+                    "@use \"sass:meta\";\
+             \na {b: meta.get-function(c, $module: 1)}\n"
+                ),
                 "Error: $module: 1 is not a string.\
          \n  ,\
-         \n1 | a {b: get-function(c, $module: 1)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: meta.get-function(c, $module: 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
         fn name() {
             let runner = runner().with_cwd("name");
             assert_eq!(
-                runner.err("a {b: get-function(2px)}\n"),
+                runner.err(
+                    "@use \"sass:meta\";\
+             \na {b: meta.get-function(2px)}\n"
+                ),
                 "Error: $name: 2px is not a string.\
          \n  ,\
-         \n1 | a {b: get-function(2px)}\
-         \n  |       ^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: meta.get-function(2px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }
@@ -133,55 +140,61 @@ fn conflict() {
     let runner = runner().with_cwd("conflict");
     assert_eq!(
         runner.err(
-            "@use \"other1\" as *;\
+            "@use \"sass:meta\";\
+             \n@use \"other1\" as *;\
              \n@use \"other2\" as *;\n\
-             \na {b: get-function(member)}\n"
+             \na {b: meta.get-function(member)}\n"
         ),
         "Error: This function is available from multiple global modules.\
          \n    ,\
-         \n1   | @use \"other1\" as *;\
+         \n2   | @use \"other1\" as *;\
          \n    | ================== includes function\
-         \n2   | @use \"other2\" as *;\
+         \n3   | @use \"other2\" as *;\
          \n    | ================== includes function\
          \n... |\
-         \n4   | a {b: get-function(member)}\
-         \n    |       ^^^^^^^^^^^^^^^^^^^^ function use\
+         \n5   | a {b: meta.get-function(member)}\
+         \n    |       ^^^^^^^^^^^^^^^^^^^^^^^^^ function use\
          \n    \'\
-         \n  input.scss 4:7  root stylesheet",
+         \n  input.scss 5:7  root stylesheet",
     );
 }
 #[test]
 fn division() {
     let runner = runner().with_cwd("division");
     assert_eq!(
-        runner.err("a {b: get-function(rgb) / get-function(lighten)}\n"),
+        runner.err(
+            "@use \"sass:meta\";\
+             \na {b: meta.get-function(rgb) / meta.get-function(lighten)}\n"
+        ),
         "Error: get-function(\"rgb\") isn\'t a valid CSS value.\
          \n  ,\
-         \n1 | a {b: get-function(rgb) / get-function(lighten)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: meta.get-function(rgb) / meta.get-function(lighten)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
     );
 }
 #[test]
+#[ignore] // wrong error
 fn function_exists() {
     let runner = runner().with_cwd("function_exists");
     assert_eq!(
         runner.err(
-            "@function add-two($v) {\
+            "@use \"sass:meta\";\n\
+             \n@function add-two($v) {\
              \n  @return $v + 2;\
              \n}\n\
-             \n$add-two-fn: get-function(add-two);\n\
+             \n$add-two-fn: meta.get-function(add-two);\n\
              \n.error {\
-             \n  error: get-function($add-two-fn);\
+             \n  error: meta.get-function($add-two-fn);\
              \n}\n"
         ),
         "Error: $name: get-function(\"add-two\") is not a string.\
-         \n  ,\
-         \n8 |   error: get-function($add-two-fn);\
-         \n  |          ^^^^^^^^^^^^^^^^^^^^^^^^^\
-         \n  \'\
-         \n  input.scss 8:10  root stylesheet",
+         \n   ,\
+         \n10 |   error: meta.get-function($add-two-fn);\
+         \n   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n   \'\
+         \n  input.scss 10:10  root stylesheet",
     );
 }
 mod module {
@@ -196,27 +209,31 @@ mod module {
         assert_eq!(
         runner.err(
             "@use \"sass:color\";\
-             \na {b: get-function(\"red\", $css: true, $module: \"color\")}\n"
+             \n@use \"sass:meta\";\
+             \na {b: meta.get-function(\"red\", $css: true, $module: \"color\")}\n"
         ),
         "Error: $css and $module may not both be passed at once.\
          \n  ,\
-         \n2 | a {b: get-function(\"red\", $css: true, $module: \"color\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n3 | a {b: meta.get-function(\"red\", $css: true, $module: \"color\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet",
+         \n  input.scss 3:7  root stylesheet",
     );
     }
     #[test]
     fn built_in_but_not_loaded() {
         let runner = runner().with_cwd("built_in_but_not_loaded");
         assert_eq!(
-            runner.err("a {b: get-function(\"red\", $module: \"color\")}\n"),
+            runner.err(
+                "@use \"sass:meta\";\
+             \na {b: meta.get-function(\"red\", $module: \"color\")}\n"
+            ),
             "Error: There is no module with the namespace \"color\".\
          \n  ,\
-         \n1 | a {b: get-function(\"red\", $module: \"color\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: meta.get-function(\"red\", $module: \"color\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -225,27 +242,31 @@ mod module {
         assert_eq!(
             runner.err(
                 "@use \"sass:color\" as a-b;\
-             \nc {d: get-function(\"c\", $module: \"a_b\")}\n"
+             \n@use \"sass:meta\";\
+             \nc {d: meta.get-function(\"c\", $module: \"a_b\")}\n"
             ),
             "Error: There is no module with the namespace \"a_b\".\
          \n  ,\
-         \n2 | c {d: get-function(\"c\", $module: \"a_b\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n3 | c {d: meta.get-function(\"c\", $module: \"a_b\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet",
+         \n  input.scss 3:7  root stylesheet",
         );
     }
     #[test]
     fn non_existent() {
         let runner = runner().with_cwd("non_existent");
         assert_eq!(
-            runner.err("a {b: get-function(\"c\", $module: \"d\")}\n"),
+            runner.err(
+                "@use \"sass:meta\";\
+             \na {b: meta.get-function(\"c\", $module: \"d\")}\n"
+            ),
             "Error: There is no module with the namespace \"d\".\
          \n  ,\
-         \n1 | a {b: get-function(\"c\", $module: \"d\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: meta.get-function(\"c\", $module: \"d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -254,14 +275,15 @@ mod module {
         assert_eq!(
             runner.err(
                 "@use \"sass:color\";\
-             \na {b: get-function(\"c\", $module: \"color\")}\n"
+             \n@use \"sass:meta\";\
+             \na {b: meta.get-function(\"c\", $module: \"color\")}\n"
             ),
             "Error: Function not found: \"c\"\
          \n  ,\
-         \n2 | a {b: get-function(\"c\", $module: \"color\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n3 | a {b: meta.get-function(\"c\", $module: \"color\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet",
+         \n  input.scss 3:7  root stylesheet",
         );
     }
 }
@@ -269,13 +291,16 @@ mod module {
 fn non_existent() {
     let runner = runner().with_cwd("non_existent");
     assert_eq!(
-        runner.err("a {b: get-function(does-not-exist)}\n"),
+        runner.err(
+            "@use \"sass:meta\";\
+             \na {b: meta.get-function(does-not-exist)}\n"
+        ),
         "Error: Function not found: does-not-exist\
          \n  ,\
-         \n1 | a {b: get-function(does-not-exist)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: meta.get-function(does-not-exist)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
     );
 }
 mod through_forward {
@@ -289,17 +314,18 @@ mod through_forward {
         let runner = runner().with_cwd("hide");
         assert_eq!(
             runner.err(
-                "@use \"midstream\" as *;\
+                "@use \"sass:meta\";\
+             \n@use \"midstream\" as *;\
              \na {\
-             \n  b: call(get-function(c));\
+             \n  b: meta.call(meta.get-function(c));\
              \n}\n"
             ),
             "Error: Function not found: c\
          \n  ,\
-         \n3 |   b: call(get-function(c));\
-         \n  |           ^^^^^^^^^^^^^^^\
+         \n4 |   b: meta.call(meta.get-function(c));\
+         \n  |                ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:11  root stylesheet",
+         \n  input.scss 4:16  root stylesheet",
         );
     }
     #[test]
@@ -307,17 +333,18 @@ mod through_forward {
         let runner = runner().with_cwd("show");
         assert_eq!(
             runner.err(
-                "@use \"midstream\" as *;\
+                "@use \"sass:meta\";\
+             \n@use \"midstream\" as *;\
              \na {\
-             \n  b: call(get-function(d));\
+             \n  b: meta.call(meta.get-function(d));\
              \n}\n"
             ),
             "Error: Function not found: d\
          \n  ,\
-         \n3 |   b: call(get-function(d));\
-         \n  |           ^^^^^^^^^^^^^^^\
+         \n4 |   b: meta.call(meta.get-function(d));\
+         \n  |                ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:11  root stylesheet",
+         \n  input.scss 4:16  root stylesheet",
         );
     }
 }

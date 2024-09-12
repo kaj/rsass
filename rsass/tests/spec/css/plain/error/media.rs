@@ -99,14 +99,14 @@ mod logic {
         fn or() {
             let runner = runner().with_cwd("or");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: expected \"{\".\
          \n  ,\
          \n1 | @media (a) or (b) and (c) {x {y: z}}\
          \n  |                   ^\
          \n  \'\
-         \n  plain.css 1:19  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:19  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
         #[test]
@@ -114,14 +114,14 @@ mod logic {
         fn type_and_not() {
             let runner = runner().with_cwd("type_and_not");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: expected \"{\".\
          \n  ,\
          \n1 | @media a and not (b) and (c) {x {y: z}}\
          \n  |                      ^\
          \n  \'\
-         \n  plain.css 1:22  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:22  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
     }
@@ -142,14 +142,14 @@ mod logic {
             fn after_paren() {
                 let runner = runner().with_cwd("after_paren");
                 assert_eq!(
-                    runner.err("@import \'plain\';\n"),
+                    runner.err("@use \'plain\';\n"),
                     "Error: expected media condition in parentheses.\
          \n  ,\
          \n1 | @media (a) and {x {y: z}}\
          \n  |                ^\
          \n  \'\
-         \n  plain.css 1:16  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:16  @use\
+         \n  input.scss 1:1  root stylesheet",
                 );
             }
             #[test]
@@ -157,14 +157,14 @@ mod logic {
             fn after_type() {
                 let runner = runner().with_cwd("after_type");
                 assert_eq!(
-                    runner.err("@import \'plain\';\n"),
+                    runner.err("@use \'plain\';\n"),
                     "Error: expected media condition in parentheses.\
          \n  ,\
          \n1 | @media a and {x {y: z}}\
          \n  |              ^\
          \n  \'\
-         \n  plain.css 1:14  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:14  @use\
+         \n  input.scss 1:1  root stylesheet",
                 );
             }
         }
@@ -173,14 +173,14 @@ mod logic {
         fn and_not() {
             let runner = runner().with_cwd("and_not");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: expected media condition in parentheses.\
          \n  ,\
          \n1 | @media a and not {x {y: z}}\
          \n  |                  ^\
          \n  \'\
-         \n  plain.css 1:18  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:18  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
         #[test]
@@ -188,14 +188,14 @@ mod logic {
         fn not() {
             let runner = runner().with_cwd("not");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: expected media condition in parentheses.\
          \n  ,\
          \n1 | @media not {x {y: z}}\
          \n  |            ^\
          \n  \'\
-         \n  plain.css 1:12  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:12  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
         #[test]
@@ -203,14 +203,14 @@ mod logic {
         fn or() {
             let runner = runner().with_cwd("or");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: expected media condition in parentheses.\
          \n  ,\
          \n1 | @media (a) or {x {y: z}}\
          \n  |               ^\
          \n  \'\
-         \n  plain.css 1:15  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:15  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
     }
@@ -225,14 +225,14 @@ mod logic {
         fn and() {
             let runner = runner().with_cwd("and");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: expected \"{\".\
          \n  ,\
          \n1 | @media (a) and (b) or (c) {x {y: z}}\
          \n  |                    ^\
          \n  \'\
-         \n  plain.css 1:20  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:20  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
         #[test]
@@ -240,14 +240,14 @@ mod logic {
         fn test_type() {
             let runner = runner().with_cwd("type");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: expected \"{\".\
          \n  ,\
          \n1 | @media a or (b) {x {y: z}}\
          \n  |             ^\
          \n  \'\
-         \n  plain.css 1:13  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:13  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
         #[test]
@@ -255,14 +255,14 @@ mod logic {
         fn type_and_not() {
             let runner = runner().with_cwd("type_and_not");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: expected \"{\".\
          \n  ,\
          \n1 | @media a and not (b) or (c) {x {y: z}}\
          \n  |                      ^\
          \n  \'\
-         \n  plain.css 1:22  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:22  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
         #[test]
@@ -270,14 +270,14 @@ mod logic {
         fn type_then_and() {
             let runner = runner().with_cwd("type_then_and");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: expected \"{\".\
          \n  ,\
          \n1 | @media a and (b) or (c) {x {y: z}}\
          \n  |                  ^\
          \n  \'\
-         \n  plain.css 1:18  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:18  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
     }
@@ -299,14 +299,14 @@ mod missing_whitespace {
         fn after_type() {
             let runner = runner().with_cwd("after_type");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: Expected whitespace.\
          \n  ,\
          \n1 | @media a and(b) {x {y: z}}\
          \n  |             ^\
          \n  \'\
-         \n  plain.css 1:13  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:13  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
         #[test]
@@ -314,14 +314,14 @@ mod missing_whitespace {
         fn first() {
             let runner = runner().with_cwd("first");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: Expected whitespace.\
          \n  ,\
          \n1 | @media (a) and(b) {x {y: z}}\
          \n  |               ^\
          \n  \'\
-         \n  plain.css 1:15  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:15  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
         #[test]
@@ -329,14 +329,14 @@ mod missing_whitespace {
         fn later() {
             let runner = runner().with_cwd("later");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: Expected whitespace.\
          \n  ,\
          \n1 | @media (a) and (b) and(c) {x {y: z}}\
          \n  |                       ^\
          \n  \'\
-         \n  plain.css 1:23  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:23  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
     }
@@ -351,14 +351,14 @@ mod missing_whitespace {
         fn test_type() {
             let runner = runner().with_cwd("type");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: Expected whitespace.\
          \n  ,\
          \n1 | @media a and not(b) {x {y: z}}\
          \n  |                 ^\
          \n  \'\
-         \n  plain.css 1:17  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:17  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
         #[test]
@@ -366,14 +366,14 @@ mod missing_whitespace {
         fn type_and_modifier() {
             let runner = runner().with_cwd("type_and_modifier");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: Expected whitespace.\
          \n  ,\
          \n1 | @media only a and not(b) {x {y: z}}\
          \n  |                      ^\
          \n  \'\
-         \n  plain.css 1:22  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:22  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
     }
@@ -382,14 +382,14 @@ mod missing_whitespace {
     fn not() {
         let runner = runner().with_cwd("not");
         assert_eq!(
-            runner.err("@import \'plain\';\n"),
+            runner.err("@use \'plain\';\n"),
             "Error: Expected whitespace.\
          \n  ,\
          \n1 | @media not(a) {x {y: z}}\
          \n  |           ^\
          \n  \'\
-         \n  plain.css 1:11  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:11  @use\
+         \n  input.scss 1:1  root stylesheet",
         );
     }
     mod or {
@@ -403,14 +403,14 @@ mod missing_whitespace {
         fn first() {
             let runner = runner().with_cwd("first");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: Expected whitespace.\
          \n  ,\
          \n1 | @media (a) or(b) {x {y: z}}\
          \n  |              ^\
          \n  \'\
-         \n  plain.css 1:14  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:14  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
         #[test]
@@ -418,14 +418,14 @@ mod missing_whitespace {
         fn later() {
             let runner = runner().with_cwd("later");
             assert_eq!(
-                runner.err("@import \'plain\';\n"),
+                runner.err("@use \'plain\';\n"),
                 "Error: Expected whitespace.\
          \n  ,\
          \n1 | @media (a) or (b) or(c) {x {y: z}}\
          \n  |                     ^\
          \n  \'\
-         \n  plain.css 1:21  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:21  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
     }

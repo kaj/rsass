@@ -10,7 +10,7 @@ fn runner() -> crate::TestRunner {
 fn builtin() {
     assert_eq!(
         runner().ok("@use \"sass:meta\";\
-             \na {b: inspect(meta.get-mixin(load-css, meta))};\n"),
+             \na {b: meta.inspect(meta.get-mixin(load-css, meta))};\n"),
         "a {\
          \n  b: get-mixin(\"load-css\");\
          \n}\n"
@@ -22,7 +22,7 @@ fn user_defined() {
     assert_eq!(
         runner().ok("@use \"sass:meta\";\
              \n@mixin a() {}\
-             \na {b: inspect(meta.get-mixin(a))};\n"),
+             \na {b: meta.inspect(meta.get-mixin(a))};\n"),
         "a {\
          \n  b: get-mixin(\"a\");\
          \n}\n"

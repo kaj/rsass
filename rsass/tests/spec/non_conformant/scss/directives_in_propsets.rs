@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$color: red;\
+        runner().ok("@use \"sass:meta\";\
+             \n$color: red;\
              \n$position: 50%;\
              \n$x: 0;\n\
              \n@mixin foo() {\
@@ -19,10 +20,10 @@ fn test() {
              \n    something: {\
              \n      color: green;\
              \n    }\
-             \n    @if (type-of($color) == \"color\") {\
+             \n    @if (meta.type-of($color) == \"color\") {\
              \n      color: $color;\
              \n    }\
-             \n    @if (type-of($position) == \"number\") {\
+             \n    @if (meta.type-of($position) == \"number\") {\
              \n      position: $position;\
              \n      @include foo();\
              \n    }\

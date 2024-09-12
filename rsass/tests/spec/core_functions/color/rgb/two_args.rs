@@ -116,7 +116,8 @@ mod special_functions {
             #[test]
             fn arg_2() {
                 assert_eq!(
-                    runner().ok("a {b: rgb(blue, unquote(\"calc(0.4)\"))}\n"),
+                    runner().ok("@use \"sass:string\";\
+             \na {b: rgb(blue, string.unquote(\"calc(0.4)\"))}\n"),
                     "a {\
          \n  b: rgb(0, 0, 255, calc(0.4));\
          \n}\n"

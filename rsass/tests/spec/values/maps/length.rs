@@ -8,9 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$map: (aaa: 100, bbb: 200, ccc: 300);\n\
+        runner().ok("@use \"sass:list\";\
+             \n$map: (aaa: 100, bbb: 200, ccc: 300);\n\
              \na {\
-             \n  b: length($map);\
+             \n  b: list.length($map);\
              \n}\n"),
         "a {\
          \n  b: 3;\

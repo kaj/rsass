@@ -60,28 +60,34 @@ mod error {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong error
         fn alpha() {
             assert_eq!(
-                runner().err("a {b: hsl(\"from\" #aaa h s l / 25%)}\n"),
-                "Error: Only 3 elements allowed, but 5 were passed.\
+        runner().err(
+            "a {b: hsl(\"from\" #aaa h s l / 25%)}\n"
+        ),
+        "Error: $channels: Expected hue channel to be a number, was \"from\".\
          \n  ,\
          \n1 | a {b: hsl(\"from\" #aaa h s l / 25%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
         #[test]
+        #[ignore] // wrong error
         fn no_alpha() {
             assert_eq!(
-                runner().err("a {b: hsl(\"from\" #aaa h s l)}\n"),
-                "Error: Only 3 elements allowed, but 5 were passed.\
+        runner().err(
+            "a {b: hsl(\"from\" #aaa h s l)}\n"
+        ),
+        "Error: $channels: Expected hue channel to be a number, was \"from\".\
          \n  ,\
          \n1 | a {b: hsl(\"from\" #aaa h s l)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
     }
     mod wrong_keyword {
@@ -89,28 +95,34 @@ mod error {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong error
         fn alpha() {
             assert_eq!(
-                runner().err("a {b: hsl(c #aaa h s l / 25%)}\n"),
-                "Error: Only 3 elements allowed, but 5 were passed.\
+        runner().err(
+            "a {b: hsl(c #aaa h s l / 25%)}\n"
+        ),
+        "Error: $channels: Expected hue channel to be a number, was c.\
          \n  ,\
          \n1 | a {b: hsl(c #aaa h s l / 25%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
         #[test]
+        #[ignore] // wrong error
         fn no_alpha() {
             assert_eq!(
-                runner().err("a {b: hsl(c #aaa h s l)}\n"),
-                "Error: Only 3 elements allowed, but 5 were passed.\
+        runner().err(
+            "a {b: hsl(c #aaa h s l)}\n"
+        ),
+        "Error: $channels: Expected hue channel to be a number, was c.\
          \n  ,\
          \n1 | a {b: hsl(c #aaa h s l)}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
     }
 }

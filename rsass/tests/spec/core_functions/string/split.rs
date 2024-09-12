@@ -33,11 +33,13 @@ fn double_width_character() {
 #[test]
 fn empty() {
     assert_eq!(
-        runner().ok("@use \"sass:string\";\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"sass:string\";\
              \n$result: string.split(\"\", \"/\");\
              \na {\
-             \n  value: inspect($result);\
-             \n  separator: list-separator($result); \
+             \n  value: meta.inspect($result);\
+             \n  separator: list.separator($result); \
              \n}\n"),
         "a {\
          \n  value: [];\
@@ -264,11 +266,13 @@ fn separator_not_found() {
 #[test]
 fn single() {
     assert_eq!(
-        runner().ok("@use \"sass:string\";\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"sass:string\";\
              \n$result: string.split(\"a\", \"\");\
              \na {\
-             \n  value: inspect($result);\
-             \n  separator: list-separator($result); \
+             \n  value: meta.inspect($result);\
+             \n  separator: list.separator($result); \
              \n}\n"),
         "a {\
          \n  value: [\"a\",];\

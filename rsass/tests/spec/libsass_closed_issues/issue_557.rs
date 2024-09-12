@@ -8,9 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("\
+        runner().ok("@use \"sass:map\";\n\
              \na {\
-             \n  foo: map-get((foo: 1, bar: 2), \"bar\");\
+             \n  foo: map.get((foo: 1, bar: 2), \"bar\");\
              \n}\n"),
         "a {\
          \n  foo: 2;\

@@ -7,6 +7,10 @@ fn runner() -> crate::TestRunner {
 
 mod color;
 
+mod general;
+
+mod global;
+
 mod list;
 
 mod map;

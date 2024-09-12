@@ -6,9 +6,11 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok("$x: rgb(0, 255, 255);\n\
+        runner().ok("@use \"sass:color\";\
+             \n$x: rgb(0, 255, 255);\n\
              \ndiv {\
              \n  color: rgb(255, $blue: 0, $green: 255);\
              \n  background: rgb(123, 45, 6);\
@@ -21,13 +23,13 @@ fn test() {
              \n  \
              \n  $x: rgb(123, 45, 6);\
              \n  \
-             \n  hoo: red($x);\
-             \n  moo: green($x);\
-             \n  poo: blue($x);\
+             \n  hoo: color.red($x);\
+             \n  moo: color.green($x);\
+             \n  poo: color.blue($x);\
              \n  \
-             \n  goo: mix(rgba(255, 0, 0, 0.5), #00f);\
+             \n  goo: color.mix(rgba(255, 0, 0, 0.5), #00f);\
              \n  \
-             \n  boo: invert(#123456);\
+             \n  boo: color.invert(#123456);\
              \n}\n"),
         "div {\
          \n  color: rgb(255, 255, 0);\
@@ -40,7 +42,7 @@ fn test() {
          \n  hoo: 123;\
          \n  moo: 45;\
          \n  poo: 6;\
-         \n  goo: rgba(64, 0, 191, 0.75);\
+         \n  goo: rgba(63.75, 0, 191.25, 0.75);\
          \n  boo: #edcba9;\
          \n}\n"
     );

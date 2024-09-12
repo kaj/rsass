@@ -12,7 +12,8 @@ mod color {
     #[test]
     fn max() {
         assert_eq!(
-            runner().ok("a {b: alpha(red)}\n"),
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.alpha(red)}\n"),
             "a {\
          \n  b: 1;\
          \n}\n"
@@ -21,7 +22,8 @@ mod color {
     #[test]
     fn middle() {
         assert_eq!(
-            runner().ok("a {b: alpha(rgba(red, 0.42))}\n"),
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.alpha(rgba(red, 0.42))}\n"),
             "a {\
          \n  b: 0.42;\
          \n}\n"
@@ -30,7 +32,8 @@ mod color {
     #[test]
     fn min() {
         assert_eq!(
-            runner().ok("a {b: alpha(rgba(red, 0))}\n"),
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.alpha(rgba(red, 0))}\n"),
             "a {\
          \n  b: 0;\
          \n}\n"
@@ -39,9 +42,50 @@ mod color {
     #[test]
     fn named() {
         assert_eq!(
-            runner().ok("a {b: alpha($color: rgba(red, 0.73))}\n"),
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.alpha($color: rgba(red, 0.73))}\n"),
             "a {\
          \n  b: 0.73;\
+         \n}\n"
+        );
+    }
+}
+mod css_overloads {
+    #[allow(unused)]
+    use super::runner;
+
+    mod alpha {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn multi_arg() {
+            assert_eq!(
+                runner().ok("@use \"sass:color\";\
+             \na {b: color.alpha(c=d, e=f, g=h)}\n"),
+                "a {\
+         \n  b: alpha(c=d, e=f, g=h);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn one_arg() {
+            assert_eq!(
+                runner().ok("@use \"sass:color\";\
+             \na {b: color.alpha(c=d)}\n"),
+                "a {\
+         \n  b: alpha(c=d);\
+         \n}\n"
+            );
+        }
+    }
+    #[test]
+    fn opacity() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.opacity(1)}\n"),
+            "a {\
+         \n  b: opacity(1);\
          \n}\n"
         );
     }
@@ -51,28 +95,50 @@ mod error {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong error
+    fn non_legacy() {
+        assert_eq!(
+        runner().err(
+            "@use \"sass:color\";\
+             \na {b: color.alpha(color(srgb 1 1 1))}\n"
+        ),
+        "Error: color.alpha() is only supported for legacy colors. Please use color.channel() instead.\
+         \n  ,\
+         \n2 | a {b: color.alpha(color(srgb 1 1 1))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+    );
+    }
+    #[test]
     fn quoted_string() {
         assert_eq!(
-            runner().err("a {b: alpha(\"c=d\")}\n"),
+            runner().err(
+                "@use \"sass:color\";\
+             \na {b: color.alpha(\"c=d\")}\n"
+            ),
             "Error: $color: \"c=d\" is not a color.\
          \n  ,\
-         \n1 | a {b: alpha(\"c=d\")}\
-         \n  |       ^^^^^^^^^^^^\
+         \n2 | a {b: color.alpha(\"c=d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: alpha()}\n"),
-            "Error: Missing argument $color.\
+            runner().err(
+                "@use \"sass:color\";\
+             \na {b: color.alpha()}\n"
+            ),
+            "Error: () isn\'t a valid CSS value.\
          \n  ,\
-         \n1 | a {b: alpha()}\
-         \n  |       ^^^^^^^\
+         \n2 | a {b: color.alpha()}\
+         \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -91,13 +157,16 @@ mod error {
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: alpha(1)}\n"),
+            runner().err(
+                "@use \"sass:color\";\
+             \na {b: color.alpha(1)}\n"
+            ),
             "Error: $color: 1 is not a color.\
          \n  ,\
-         \n1 | a {b: alpha(1)}\
-         \n  |       ^^^^^^^^\
+         \n2 | a {b: color.alpha(1)}\
+         \n  |       ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     mod unquoted_string {
@@ -107,25 +176,32 @@ mod error {
         #[test]
         fn no_equals() {
             assert_eq!(
-                runner().err("a {b: alpha(cd)}\n"),
+                runner().err(
+                    "@use \"sass:color\";\
+             \na {b: color.alpha(cd)}\n"
+                ),
                 "Error: $color: cd is not a color.\
          \n  ,\
-         \n1 | a {b: alpha(cd)}\
-         \n  |       ^^^^^^^^^\
+         \n2 | a {b: color.alpha(cd)}\
+         \n  |       ^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
         fn non_identifier_before_equals() {
             assert_eq!(
-                runner().err("a {b: alpha(unquote(\"1=c\"))}\n"),
+                runner().err(
+                    "@use \"sass:color\";\
+             \n@use \"sass:string\";\
+             \na {b: color.alpha(string.unquote(\"1=c\"))}\n"
+                ),
                 "Error: $color: 1=c is not a color.\
          \n  ,\
-         \n1 | a {b: alpha(unquote(\"1=c\"))}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n3 | a {b: color.alpha(string.unquote(\"1=c\"))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 3:7  root stylesheet",
             );
         }
     }
@@ -138,7 +214,7 @@ mod error {
         fn test_type() {
             assert_eq!(
                 runner().err(
-                    "@use \'sass:color\';\
+                    "@use \"sass:color\";\
              \na {b: color.opacity(var(--c))}\n"
                 ),
                 "Error: $color: var(--c) is not a color.\
@@ -176,7 +252,9 @@ mod filter {
     #[test]
     fn space_before_equals() {
         assert_eq!(
-            runner().ok("a {b: alpha(unquote(\"c = d\"))}\n"),
+            runner().ok("@use \"sass:color\";\
+             \n@use \"sass:string\";\
+             \na {b: color.alpha(string.unquote(\"c = d\"))}\n"),
             "a {\
          \n  b: alpha(c = d);\
          \n}\n"
@@ -199,7 +277,8 @@ mod opacity {
     #[test]
     fn named() {
         assert_eq!(
-            runner().ok("a {b: opacity($color: rgba(red, 0.2))}\n"),
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.opacity($color: rgba(red, 0.2))}\n"),
             "a {\
          \n  b: 0.2;\
          \n}\n"
@@ -208,7 +287,8 @@ mod opacity {
     #[test]
     fn positional() {
         assert_eq!(
-            runner().ok("a {b: opacity(rgba(red, 0.2))}\n"),
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.opacity(rgba(red, 0.2))}\n"),
             "a {\
          \n  b: 0.2;\
          \n}\n"
@@ -235,7 +315,8 @@ mod opacity {
     #[test]
     fn with_unquoted_calc() {
         assert_eq!(
-            runner().ok("a {b: opacity(unquote(\'calc(1)\'))}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: opacity(string.unquote(\'calc(1)\'))}\n"),
             "a {\
          \n  b: opacity(calc(1));\
          \n}\n"

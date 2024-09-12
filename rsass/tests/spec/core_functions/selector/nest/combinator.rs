@@ -12,7 +12,8 @@ mod leading {
     #[test]
     fn test_final() {
         assert_eq!(
-            runner().ok("a {b: selector-nest(\"c\", \"+ d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \"+ d\")}\n"),
             "a {\
          \n  b: c + d;\
          \n}\n"
@@ -21,7 +22,8 @@ mod leading {
     #[test]
     fn initial() {
         assert_eq!(
-            runner().ok("a {b: selector-nest(\"> c\", \"d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"> c\", \"d\")}\n"),
             "a {\
          \n  b: > c d;\
          \n}\n"
@@ -39,7 +41,8 @@ mod multiple {
         #[test]
         fn test_final() {
             assert_eq!(
-                runner().ok("a {b: selector-nest(\"c\", \"+ > d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \"+ > d\")}\n"),
                 "a {\
          \n  b: c + > d;\
          \n}\n"
@@ -48,7 +51,8 @@ mod multiple {
         #[test]
         fn initial() {
             assert_eq!(
-                runner().ok("a {b: selector-nest(\"~ ~ c\", \"d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"~ ~ c\", \"d\")}\n"),
                 "a {\
          \n  b: ~ ~ c d;\
          \n}\n"
@@ -58,7 +62,8 @@ mod multiple {
     #[test]
     fn middle() {
         assert_eq!(
-            runner().ok("a {b: selector-nest(\"c > > d\", \"e\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c > > d\", \"e\")}\n"),
             "a {\
          \n  b: c > > d e;\
          \n}\n"
@@ -71,7 +76,8 @@ mod multiple {
         #[test]
         fn test_final() {
             assert_eq!(
-                runner().ok("a {b: selector-nest(\"c\", \"d + >\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \"d + >\")}\n"),
                 "a {\
          \n  b: c d + >;\
          \n}\n"
@@ -80,7 +86,8 @@ mod multiple {
         #[test]
         fn initial() {
             assert_eq!(
-                runner().ok("a {b: selector-nest(\"c > ~\", \"d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c > ~\", \"d\")}\n"),
                 "a {\
          \n  b: c > ~ d;\
          \n}\n"
@@ -95,7 +102,8 @@ mod only {
     #[test]
     fn after() {
         assert_eq!(
-            runner().ok("a {b: selector-nest(\"c\", \"+\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \"+\")}\n"),
             "a {\
          \n  b: c +;\
          \n}\n"
@@ -104,7 +112,8 @@ mod only {
     #[test]
     fn before() {
         assert_eq!(
-            runner().ok("a {b: selector-nest(\"~\", \"c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"~\", \"c\")}\n"),
             "a {\
          \n  b: ~ c;\
          \n}\n"
@@ -113,7 +122,8 @@ mod only {
     #[test]
     fn between() {
         assert_eq!(
-            runner().ok("a {b: selector-nest(\"c\", \">\", \"d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \">\", \"d\")}\n"),
             "a {\
          \n  b: c > d;\
          \n}\n"
@@ -127,7 +137,8 @@ mod trailing {
     #[test]
     fn test_final() {
         assert_eq!(
-            runner().ok("a {b: selector-nest(\"c\", \"d >\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \"d >\")}\n"),
             "a {\
          \n  b: c d >;\
          \n}\n"
@@ -136,7 +147,8 @@ mod trailing {
     #[test]
     fn initial() {
         assert_eq!(
-            runner().ok("a {b: selector-nest(\"c ~\", \"d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c ~\", \"d\")}\n"),
             "a {\
          \n  b: c ~ d;\
          \n}\n"

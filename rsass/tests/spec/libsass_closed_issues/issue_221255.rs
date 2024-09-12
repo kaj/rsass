@@ -9,11 +9,12 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        runner().err(
-            "\'#{)\'{"
-        ),
-        "Error: Invalid CSS after \"\'#{\": expected expression (e.g. 1px, bold), was \")\'{\"\
-         \n        on line 1 of input.scss\
-         \n  Use --trace for backtrace.",
+        runner().err("\'#{)\'{\n"),
+        "Error: Expected expression.\
+         \n  ,\
+         \n1 | \'#{)\'{\
+         \n  |  ^^\
+         \n  \'\
+         \n  input.scss 1:2  root stylesheet",
     );
 }

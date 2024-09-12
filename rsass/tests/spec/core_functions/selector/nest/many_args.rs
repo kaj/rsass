@@ -8,8 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner()
-            .ok("a {b: selector-nest(\"c\", \"d\", \"e\", \"f\", \"g\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \"d\", \"e\", \"f\", \"g\")}\n"),
         "a {\
          \n  b: c d e f g;\
          \n}\n"

@@ -12,7 +12,8 @@ mod class {
     #[test]
     fn and_element() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":c\", \"::c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":c\", \"::c\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -21,7 +22,8 @@ mod class {
     #[test]
     fn equal() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":c\", \":c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":c\", \":c\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -30,7 +32,8 @@ mod class {
     #[test]
     fn unequal() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":c\", \":d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":c\", \":d\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -44,7 +47,8 @@ mod element {
     #[test]
     fn and_class() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"::c\", \":c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"::c\", \":c\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -53,7 +57,8 @@ mod element {
     #[test]
     fn equal() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"::c\", \"::c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"::c\", \"::c\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -62,7 +67,8 @@ mod element {
     #[test]
     fn unequal() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"::c\", \"::d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"::c\", \"::d\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"

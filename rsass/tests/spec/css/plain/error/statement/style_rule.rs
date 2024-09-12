@@ -53,14 +53,14 @@ mod interpolation {
     fn custom_property() {
         let runner = runner().with_cwd("custom_property");
         assert_eq!(
-            runner.err("@import \'plain\'"),
+            runner.err("@use \'plain\'"),
             "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   --b: #{c};\
          \n  |        ^^^^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
         );
     }
     #[test]
@@ -68,14 +68,14 @@ mod interpolation {
     fn declaration() {
         let runner = runner().with_cwd("declaration");
         assert_eq!(
-            runner.err("@import \'plain\'"),
+            runner.err("@use \'plain\'"),
             "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   w#{x}y: z;\
          \n  |    ^^^^\
          \n  \'\
-         \n  plain.css 2:4   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:4   @use\
+         \n  input.scss 1:1  root stylesheet",
         );
     }
     #[test]
@@ -83,14 +83,14 @@ mod interpolation {
     fn selector() {
         let runner = runner().with_cwd("selector");
         assert_eq!(
-            runner.err("@import \'plain\'"),
+            runner.err("@use \'plain\'"),
             "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | a#{b}c {\
          \n  |  ^^^^\
          \n  \'\
-         \n  plain.css 1:2   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:2   @use\
+         \n  input.scss 1:1  root stylesheet",
         );
     }
 }
@@ -164,14 +164,14 @@ mod nested_property {
     fn no_value() {
         let runner = runner().with_cwd("no_value");
         assert_eq!(
-            runner.err("@import \'plain\'"),
+            runner.err("@use \'plain\'"),
             "Error: Nested declarations aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: {\
          \n  |      ^\
          \n  \'\
-         \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:6   @use\
+         \n  input.scss 1:1  root stylesheet",
         );
     }
     #[test]
@@ -179,14 +179,14 @@ mod nested_property {
     fn value() {
         let runner = runner().with_cwd("value");
         assert_eq!(
-            runner.err("@import \'plain\'\n"),
+            runner.err("@use \'plain\'\n"),
             "Error: Nested declarations aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   b: c {\
          \n  |        ^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
         );
     }
 }
@@ -217,14 +217,14 @@ mod parent_selector {
 fn placeholder_selector() {
     let runner = runner().with_cwd("placeholder_selector");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Placeholder selectors aren\'t allowed in plain CSS.\
          \n  ,\
          \n1 | %foo {\
          \n  | ^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 mod trailing_combinator {

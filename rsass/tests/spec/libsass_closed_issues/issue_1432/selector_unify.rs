@@ -9,14 +9,15 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err(
-            "@debug(selector-unify(\"foo\", null));\n"
+            "@use \"sass:selector\";\
+             \n@debug(selector.unify(\"foo\", null));\n"
         ),
         "Error: $selector2: null is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
-         \n1 | @debug(selector-unify(\"foo\", null));\
+         \n2 | @debug(selector.unify(\"foo\", null));\
          \n  |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:8  root stylesheet",
+         \n  input.scss 2:8  root stylesheet",
     );
 }

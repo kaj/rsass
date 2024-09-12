@@ -5,7 +5,7 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("alpha")
 }
 
-mod clamped {
+mod bounds {
     #[allow(unused)]
     use super::runner;
 
@@ -13,74 +13,161 @@ mod clamped {
         #[allow(unused)]
         use super::runner;
 
-        #[test]
-        fn above() {
-            assert_eq!(
-                runner().ok("a {b: rgb(0 0 0 / 1.1)}\n"),
-                "a {\
-         \n  b: rgb(0, 0, 0);\
-         \n}\n"
-            );
-        }
-        #[test]
-        fn below() {
-            assert_eq!(
-                runner().ok("a {b: rgb(0 0 0 / -0.1)}\n"),
-                "a {\
-         \n  b: rgba(0, 0, 0, 0);\
-         \n}\n"
-            );
-        }
         mod percent {
             #[allow(unused)]
             use super::runner;
 
             #[test]
+            #[ignore] // unexepected error
             fn above() {
                 assert_eq!(
-                    runner().ok("a {b: rgb(0 0 0 / 250%)}\n"),
+                    runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(rgb(0 0 0 / 250%));\n"),
                     "a {\
-         \n  b: rgb(0, 0, 0);\
+         \n  value: rgb(0, 0, 0);\
+         \n  space: rgb;\
+         \n  channels: 0 0 0 / 1;\
          \n}\n"
                 );
             }
             #[test]
+            #[ignore] // unexepected error
             fn below() {
                 assert_eq!(
-                    runner().ok("a {b: rgb(0 0 0 / -10%)}\n"),
+                    runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(rgb(0 0 0 / -10%));\n"),
                     "a {\
-         \n  b: rgba(0, 0, 0, 0);\
+         \n  value: rgba(0, 0, 0, 0);\
+         \n  space: rgb;\
+         \n  channels: 0 0 0 / 0;\
+         \n}\n"
+                );
+            }
+        }
+        mod unitless {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            #[ignore] // unexepected error
+            fn above() {
+                assert_eq!(
+                    runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(rgb(0 0 0 / 1.1));\n"),
+                    "a {\
+         \n  value: rgb(0, 0, 0);\
+         \n  space: rgb;\
+         \n  channels: 0 0 0 / 1;\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn below() {
+                assert_eq!(
+                    runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(rgb(0 0 0 / -0.1));\n"),
+                    "a {\
+         \n  value: rgba(0, 0, 0, 0);\
+         \n  space: rgb;\
+         \n  channels: 0 0 0 / 0;\
          \n}\n"
                 );
             }
         }
     }
-    #[test]
-    fn blue() {
-        assert_eq!(
-            runner().ok("a {b: rgb(0 0 9999 / 0.5)}\n"),
-            "a {\
-         \n  b: rgba(0, 0, 255, 0.5);\
+    mod blue {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // unexepected error
+        fn above() {
+            assert_eq!(
+                runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(rgb(0 0 999));\n"),
+                "a {\
+         \n  value: rgb(0, 0, 255);\
+         \n  space: rgb;\
+         \n  channels: 0 0 255 / 1;\
          \n}\n"
-        );
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn below() {
+            assert_eq!(
+                runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(rgb(0 0 -500));\n"),
+                "a {\
+         \n  value: rgb(0, 0, 0);\
+         \n  space: rgb;\
+         \n  channels: 0 0 0 / 1;\
+         \n}\n"
+            );
+        }
     }
-    #[test]
-    fn green() {
-        assert_eq!(
-            runner().ok("a {b: rgb(0 -1 0 / 0.5)}\n"),
-            "a {\
-         \n  b: rgba(0, 0, 0, 0.5);\
+    mod green {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // unexepected error
+        fn above() {
+            assert_eq!(
+                runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(rgb(0 500 0));\n"),
+                "a {\
+         \n  value: rgb(0, 255, 0);\
+         \n  space: rgb;\
+         \n  channels: 0 255 0 / 1;\
          \n}\n"
-        );
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn below() {
+            assert_eq!(
+                runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(rgb(0 -100 0));\n"),
+                "a {\
+         \n  value: rgb(0, 0, 0);\
+         \n  space: rgb;\
+         \n  channels: 0 0 0 / 1;\
+         \n}\n"
+            );
+        }
     }
-    #[test]
-    fn red() {
-        assert_eq!(
-            runner().ok("a {b: rgb(256 0 0 / 0.5)}\n"),
-            "a {\
-         \n  b: rgba(255, 0, 0, 0.5);\
+    mod red {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // unexepected error
+        fn above() {
+            assert_eq!(
+                runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(rgb(256 0 0));\n"),
+                "a {\
+         \n  value: rgb(255, 0, 0);\
+         \n  space: rgb;\
+         \n  channels: 255 0 0 / 1;\
          \n}\n"
-        );
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn below() {
+            assert_eq!(
+                runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(rgb(-1 0 0));\n"),
+                "a {\
+         \n  value: rgb(0, 0, 0);\
+         \n  space: rgb;\
+         \n  channels: 0 0 0 / 1;\
+         \n}\n"
+            );
+        }
     }
 }
 mod in_gamut {
@@ -141,6 +228,32 @@ mod in_gamut {
             runner().ok("a {b: rgb(0 255 127 / 0)}\n"),
             "a {\
          \n  b: rgba(0, 255, 127, 0);\
+         \n}\n"
+        );
+    }
+}
+mod missing {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // wrong result
+    fn slash() {
+        assert_eq!(
+            runner().ok("a {b: rgb(0 255 127 / none)}\n"),
+            "a {\
+         \n  b: rgb(0 255 127 / none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn slash_list() {
+        assert_eq!(
+            runner().ok("@use \'sass:list\';\
+             \na {b: rgb(list.slash(0 255 127, none))}\n"),
+            "a {\
+         \n  b: rgb(0 255 127 / none);\
          \n}\n"
         );
     }

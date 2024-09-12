@@ -5,6 +5,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("if")
 }
 
+mod comment;
+
 mod error;
 
 mod escaped;

@@ -35,7 +35,7 @@ fn runner() -> crate::TestRunner {
         .mock_file("interpolation/plain.css", "@foo a#{b}c;\n")
         .mock_file(
             "mixin/plain.css",
-            "@mixin foo {\n  a {\n    x: y;\n  } \n}\n",
+            "@mixin foo {\n  a {\n    x: y;\n  }\n}\n",
         )
         .mock_file("return/plain.css", "@return foo;\n")
         .mock_file("warn/plain.css", "@warn foo;\n")
@@ -50,14 +50,14 @@ fn runner() -> crate::TestRunner {
 fn at_root() {
     let runner = runner().with_cwd("at_root");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   @at-root b {\
          \n  |   ^^^^^^^^^^^\
          \n  \'\
-         \n  plain.css 2:3   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:3   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -65,14 +65,14 @@ fn at_root() {
 fn content() {
     let runner = runner().with_cwd("content");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @content;\
          \n  | ^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -80,14 +80,14 @@ fn content() {
 fn debug() {
     let runner = runner().with_cwd("debug");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @debug foo;\
          \n  | ^^^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -95,14 +95,14 @@ fn debug() {
 fn each() {
     let runner = runner().with_cwd("each");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @each $i in 1 2 3 {\
          \n  | ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -110,14 +110,14 @@ fn each() {
 fn error() {
     let runner = runner().with_cwd("error");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @error foo;\
          \n  | ^^^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -125,14 +125,14 @@ fn error() {
 fn extend() {
     let runner = runner().with_cwd("extend");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   @extend b;\
          \n  |   ^^^^^^^^^\
          \n  \'\
-         \n  plain.css 2:3   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:3   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -140,14 +140,14 @@ fn extend() {
 fn test_for() {
     let runner = runner().with_cwd("for");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @for $i from 1 to 5 {\
          \n  | ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -155,14 +155,14 @@ fn test_for() {
 fn function() {
     let runner = runner().with_cwd("function");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @function foo() {\
          \n  | ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -170,14 +170,14 @@ fn function() {
 fn test_if() {
     let runner = runner().with_cwd("if");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @if true {\
          \n  | ^^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 mod import {
@@ -191,14 +191,14 @@ mod import {
     fn interpolated() {
         let runner = runner().with_cwd("interpolated");
         assert_eq!(
-            runner.err("@import \'plain\'"),
+            runner.err("@use \'plain\'"),
             "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @import url(\"foo#{bar}baz\");\
          \n  |                 ^^^^^^\
          \n  \'\
-         \n  plain.css 1:17  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:17  @use\
+         \n  input.scss 1:1  root stylesheet",
         );
     }
     #[test]
@@ -206,21 +206,21 @@ mod import {
     fn multi() {
         let runner = runner().with_cwd("multi");
         assert_eq!(
-            runner.err("@import \'plain\'"),
+            runner.err("@use \'plain\'"),
             "Error: expected \";\".\
          \n  ,\
          \n1 | @import \"foo\", \"bar\";\
          \n  |              ^\
          \n  \'\
-         \n  plain.css 1:14  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:14  @use\
+         \n  input.scss 1:1  root stylesheet",
         );
     }
     #[test]
     fn nested() {
         let runner = runner().with_cwd("nested");
         assert_eq!(
-            runner.ok("@import \'plain\'"),
+            runner.ok("@use \'plain\'"),
             "a {\
          \n  @import \"foo\";\
          \n}\n"
@@ -232,14 +232,14 @@ mod import {
 fn include() {
     let runner = runner().with_cwd("include");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @include foo;\
          \n  | ^^^^^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -247,14 +247,14 @@ fn include() {
 fn interpolation() {
     let runner = runner().with_cwd("interpolation");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @foo a#{b}c;\
          \n  |       ^^^^\
          \n  \'\
-         \n  plain.css 1:7   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:7   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -262,14 +262,14 @@ fn interpolation() {
 fn mixin() {
     let runner = runner().with_cwd("mixin");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @mixin foo {\
          \n  | ^^^^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -277,14 +277,14 @@ fn mixin() {
 fn test_return() {
     let runner = runner().with_cwd("return");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @return foo;\
          \n  | ^^^^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -292,14 +292,14 @@ fn test_return() {
 fn warn() {
     let runner = runner().with_cwd("warn");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @warn foo;\
          \n  | ^^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -307,13 +307,13 @@ fn warn() {
 fn test_while() {
     let runner = runner().with_cwd("while");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @while false {\
          \n  | ^^^^^^^^^^^^^\
          \n  \'\
-         \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:1   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }

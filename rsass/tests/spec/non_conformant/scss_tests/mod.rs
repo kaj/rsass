@@ -73,13 +73,9 @@ mod t038_test_nested_rules_with_fancy_selectors;
 
 mod t039_test_almost_ambiguous_nested_rules_and_declarations;
 
-mod t040_test_newlines_in_selectors;
-
 mod t041_test_newlines_in_selectors;
 
 mod t042_test_newlines_in_selectors;
-
-mod t043_test_newlines_in_selectors;
 
 mod t044_test_trailing_comma_in_selector;
 

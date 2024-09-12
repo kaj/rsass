@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "// Content blocks\' argument lists can define arguments in in all the same ways\
+            "@use \"sass:meta\";\
+             \n// Content blocks\' argument lists can define arguments in in all the same ways\
              \n// as they\'re defined in any other argument list.\n\
              \nwith-defaults {\
              \n  nothing-passed {\
@@ -46,8 +47,8 @@ fn test() {
              \n      @content;\
              \n    }\n\
              \n    @include mixin using ($args...) {\
-             \n      positional: inspect($args);\
-             \n      keywords: inspect(keywords($args));\
+             \n      positional: meta.inspect($args);\
+             \n      keywords: meta.inspect(meta.keywords($args));\
              \n    }\
              \n  }\n\
              \n  positional-passed {\
@@ -55,8 +56,8 @@ fn test() {
              \n      @content(value1, value2, value3);\
              \n    }\n\
              \n    @include mixin using ($args...) {\
-             \n      positional: inspect($args);\
-             \n      keywords: inspect(keywords($args));\
+             \n      positional: meta.inspect($args);\
+             \n      keywords: meta.inspect(meta.keywords($args));\
              \n    }\
              \n  }\n\
              \n  named-passed {\
@@ -64,8 +65,8 @@ fn test() {
              \n      @content($arg1: value1, $arg2: value2);\
              \n    }\n\
              \n    @include mixin using ($args...) {\
-             \n      positional: inspect($args);\
-             \n      keywords: inspect(keywords($args));\
+             \n      positional: meta.inspect($args);\
+             \n      keywords: meta.inspect(meta.keywords($args));\
              \n    }\
              \n  }\n\
              \n  both-passed {\
@@ -73,8 +74,8 @@ fn test() {
              \n      @content(value1, $arg2: value2);\
              \n    }\n\
              \n    @include mixin using ($args...) {\
-             \n      positional: inspect($args);\
-             \n      keywords: inspect(keywords($args));\
+             \n      positional: meta.inspect($args);\
+             \n      keywords: meta.inspect(meta.keywords($args));\
              \n    }\
              \n  }\
              \n}\n"

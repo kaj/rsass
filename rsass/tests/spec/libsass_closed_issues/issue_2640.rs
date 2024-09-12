@@ -8,12 +8,13 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(".theme1, .theme2 {\
+        runner().ok("@use \"sass:selector\";\
+             \n.theme1, .theme2 {\
              \n  .something {\
              \n    /* nothing */\
              \n  }\
              \n}\n\
-             \n$sel: selector-nest(\'.theme1, .theme2\', \'.something\');\
+             \n$sel: selector.nest(\'.theme1, .theme2\', \'.something\');\
              \n  \
              \n#{$sel} {\
              \n  /* nothing */\

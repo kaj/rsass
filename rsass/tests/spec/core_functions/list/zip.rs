@@ -12,7 +12,10 @@ mod map {
     #[test]
     fn empty() {
         assert_eq!(
-            runner().ok("a {b: inspect(zip(map-remove((c: d), c)))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(list.zip(map.remove((c: d), c)))}\n"),
             "a {\
          \n  b: ();\
          \n}\n"
@@ -21,7 +24,9 @@ mod map {
     #[test]
     fn non_empty() {
         assert_eq!(
-            runner().ok("a {b: inspect(zip((c: d, e: f, g: h), 1 2 3))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(list.zip((c: d, e: f, g: h), 1 2 3))}\n"),
             "a {\
          \n  b: (c d) 1, (e f) 2, (g h) 3;\
          \n}\n"
@@ -31,11 +36,13 @@ mod map {
 #[test]
 fn no_lists() {
     assert_eq!(
-        runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: zip();\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.zip();\
              \na {\
-             \n  value: inspect($result);\
-             \n  separator: real-separator($result);\
+             \n  value: meta.inspect($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
         "a {\
          \n  value: ();\
@@ -46,7 +53,8 @@ fn no_lists() {
 #[test]
 fn non_list() {
     assert_eq!(
-        runner().ok("a {b: zip(c, d, e)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.zip(c, d, e)}\n"),
         "a {\
          \n  b: c d e;\
          \n}\n"
@@ -59,14 +67,16 @@ mod one_list {
     #[test]
     fn bracketed() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: zip([1 2 3]);\
-             \n$element: nth($result, 2);\n\
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.zip([1 2 3]);\
+             \n$element: list.nth($result, 2);\n\
              \na {\
              \n  value: $result;\
              \n  element: $element {\
-             \n    type: type-of($element);\
-             \n    separator: real-separator($element);\
+             \n    type: meta.type-of($element);\
+             \n    separator: utils.real-separator($element);\
              \n  }\
              \n}\n"),
             "a {\
@@ -80,14 +90,16 @@ mod one_list {
     #[test]
     fn comma() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: zip((1, 2, 3));\
-             \n$element: nth($result, 2);\n\
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.zip((1, 2, 3));\
+             \n$element: list.nth($result, 2);\n\
              \na {\
              \n  value: $result;\
              \n  element: $element {\
-             \n    type: type-of($element);\
-             \n    separator: real-separator($element);\
+             \n    type: meta.type-of($element);\
+             \n    separator: utils.real-separator($element);\
              \n  }\
              \n}\n"),
             "a {\
@@ -101,11 +113,13 @@ mod one_list {
     #[test]
     fn empty() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: zip(());\
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.zip(());\
              \na {\
-             \n  value: inspect($result);\
-             \n  separator: real-separator($result);\
+             \n  value: meta.inspect($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
             "a {\
          \n  value: ();\
@@ -116,14 +130,16 @@ mod one_list {
     #[test]
     fn space() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: zip(1 2 3);\
-             \n$element: nth($result, 2);\n\
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.zip(1 2 3);\
+             \n$element: list.nth($result, 2);\n\
              \na {\
              \n  value: $result;\
              \n  element: $element {\
-             \n    type: type-of($element);\
-             \n    separator: real-separator($element);\
+             \n    type: meta.type-of($element);\
+             \n    separator: utils.real-separator($element);\
              \n  }\
              \n}\n"),
             "a {\
@@ -138,7 +154,8 @@ mod one_list {
 #[test]
 fn three_lists() {
     assert_eq!(
-        runner().ok("a {b: zip(1 2 3, c d e, red green blue)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.zip(1 2 3, c d e, red green blue)}\n"),
         "a {\
          \n  b: 1 c red, 2 d green, 3 e blue;\
          \n}\n"
@@ -151,7 +168,9 @@ mod two_lists {
     #[test]
     fn first_empty() {
         assert_eq!(
-            runner().ok("a {b: inspect(zip((), 1 2 3))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(list.zip((), 1 2 3))}\n"),
             "a {\
          \n  b: ();\
          \n}\n"
@@ -160,7 +179,8 @@ mod two_lists {
     #[test]
     fn first_longer() {
         assert_eq!(
-            runner().ok("a {b: zip(1 2 3 4, c d)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.zip(1 2 3 4, c d)}\n"),
             "a {\
          \n  b: 1 c, 2 d;\
          \n}\n"
@@ -169,7 +189,8 @@ mod two_lists {
     #[test]
     fn same_length() {
         assert_eq!(
-            runner().ok("a {b: zip(1 2 3, c d e)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.zip(1 2 3, c d e)}\n"),
             "a {\
          \n  b: 1 c, 2 d, 3 e;\
          \n}\n"
@@ -178,7 +199,9 @@ mod two_lists {
     #[test]
     fn second_empty() {
         assert_eq!(
-            runner().ok("a {b: inspect(zip(1 2 3, ()))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(list.zip(1 2 3, ()))}\n"),
             "a {\
          \n  b: ();\
          \n}\n"
@@ -187,7 +210,8 @@ mod two_lists {
     #[test]
     fn second_longer() {
         assert_eq!(
-            runner().ok("a {b: zip(1 2, c d e f)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.zip(1 2, c d e f)}\n"),
             "a {\
          \n  b: 1 c, 2 d;\
          \n}\n"

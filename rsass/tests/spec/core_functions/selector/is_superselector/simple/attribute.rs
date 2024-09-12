@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn equal() {
     assert_eq!(
-        runner().ok("a {b: is-superselector(\"[c=d]\", \"[c=d]\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"[c=d]\", \"[c=d]\")}\n"),
         "a {\
          \n  b: true;\
          \n}\n"
@@ -21,7 +22,8 @@ mod unequal {
     #[test]
     fn name() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"[c=d]\", \"[e=d]\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"[c=d]\", \"[e=d]\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -30,7 +32,8 @@ mod unequal {
     #[test]
     fn operator() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"[c=d]\", \"[c^=d]\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"[c=d]\", \"[c^=d]\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -39,7 +42,8 @@ mod unequal {
     #[test]
     fn value() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"[c=d]\", \"[c=e]\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"[c=d]\", \"[c=e]\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"

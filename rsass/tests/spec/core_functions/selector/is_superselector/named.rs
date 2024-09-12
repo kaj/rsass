@@ -8,8 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner()
-            .ok("a {b: is-superselector($super: \"c\", $sub: \"c.d\")}\n"),
+        runner().ok(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector($super: \"c\", $sub: \"c.d\")}\n"
+        ),
         "a {\
          \n  b: true;\
          \n}\n"

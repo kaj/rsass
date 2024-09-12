@@ -9,14 +9,15 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err(
-            "@debug(selector-extend(\".a .b\", \".b\", null));\n"
+            "@use \"sass:selector\";\
+             \n@debug(selector.extend(\".a .b\", \".b\", null));\n"
         ),
         "Error: $extender: null is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
-         \n1 | @debug(selector-extend(\".a .b\", \".b\", null));\
+         \n2 | @debug(selector.extend(\".a .b\", \".b\", null));\
          \n  |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:8  root stylesheet",
+         \n  input.scss 2:8  root stylesheet",
     );
 }

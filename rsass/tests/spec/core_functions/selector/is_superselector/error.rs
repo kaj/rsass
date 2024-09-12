@@ -12,7 +12,10 @@ mod sub {
     #[test]
     fn invalid() {
         assert_eq!(
-            runner().err("a {b: is-superselector(\"c\", \"[d\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"[d\")}\n"
+            ),
             "Error: $sub: expected more input.\
          \n  ,\
          \n1 | [d\
@@ -20,16 +23,19 @@ mod sub {
          \n  \'\
          \n  - 1:3  root stylesheet\
          \n  ,\
-         \n1 | a {b: is-superselector(\"c\", \"[d\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: selector.is-superselector(\"c\", \"[d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn parent() {
         assert_eq!(
-            runner().err("a {b: is-superselector(\"c\", \"&\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"&\")}\n"
+            ),
             "Error: $sub: Parent selectors aren\'t allowed here.\
          \n  ,\
          \n1 | &\
@@ -37,23 +43,26 @@ mod sub {
          \n  \'\
          \n  - 1:1  root stylesheet\
          \n  ,\
-         \n1 | a {b: is-superselector(\"c\", \"&\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: selector.is-superselector(\"c\", \"&\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: is-superselector(\"c\", 1)}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", 1)}\n"
+            ),
             "Error: $sub: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
-         \n1 | a {b: is-superselector(\"c\", 1)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: selector.is-superselector(\"c\", 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
@@ -64,7 +73,10 @@ mod test_super {
     #[test]
     fn invalid() {
         assert_eq!(
-            runner().err("a {b: is-superselector(\"[c\", \"d\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"[c\", \"d\")}\n"
+            ),
             "Error: $super: expected more input.\
          \n  ,\
          \n1 | [c\
@@ -72,16 +84,19 @@ mod test_super {
          \n  \'\
          \n  - 1:3  root stylesheet\
          \n  ,\
-         \n1 | a {b: is-superselector(\"[c\", \"d\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: selector.is-superselector(\"[c\", \"d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn parent() {
         assert_eq!(
-            runner().err("a {b: is-superselector(\"&\", \"c\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"&\", \"c\")}\n"
+            ),
             "Error: $super: Parent selectors aren\'t allowed here.\
          \n  ,\
          \n1 | &\
@@ -89,55 +104,64 @@ mod test_super {
          \n  \'\
          \n  - 1:1  root stylesheet\
          \n  ,\
-         \n1 | a {b: is-superselector(\"&\", \"c\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: selector.is-superselector(\"&\", \"c\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: is-superselector(1, \"c\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(1, \"c\")}\n"
+            ),
             "Error: $super: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
-         \n1 | a {b: is-superselector(1, \"c\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: selector.is-superselector(1, \"c\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
 #[test]
 fn too_few_args() {
     assert_eq!(
-        runner().err("a {b: is-superselector(\"c\")}\n"),
+        runner().err(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\")}\n"
+        ),
         "Error: Missing argument $sub.\
          \n  ,--> input.scss\
-         \n1 | a {b: is-superselector(\"c\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: selector.is-superselector(\"c\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:selector\
          \n1 | @function is-superselector($super, $sub) {\
          \n  |           ============================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
     );
 }
 #[test]
 fn too_many_args() {
     assert_eq!(
-        runner().err("a {b: is-superselector(\"c\", \"d\", \"e\")}\n"),
+        runner().err(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"d\", \"e\")}\n"
+        ),
         "Error: Only 2 arguments allowed, but 3 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: is-superselector(\"c\", \"d\", \"e\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: selector.is-superselector(\"c\", \"d\", \"e\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:selector\
          \n1 | @function is-superselector($super, $sub) {\
          \n  |           ============================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
     );
 }

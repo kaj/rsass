@@ -5,10 +5,95 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("saturate")
 }
 
+mod css_overload {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn named() {
+        assert_eq!(
+            runner().ok("a {b: saturate($amount: 50%)}\n"),
+            "a {\
+         \n  b: saturate(50%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn unit() {
+        assert_eq!(
+            runner().ok("a {b: saturate(50%)}\n"),
+            "a {\
+         \n  b: saturate(50%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn unitless() {
+        assert_eq!(
+            runner().ok("a {b: saturate(1)}\n"),
+            "a {\
+         \n  b: saturate(1);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn with_calc() {
+        assert_eq!(
+            runner().ok("a {b: saturate(calc(1 + 2))}\n"),
+            "a {\
+         \n  b: saturate(3);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn with_css_var() {
+        assert_eq!(
+            runner().ok("a {b: saturate(var(--c))}\n"),
+            "a {\
+         \n  b: saturate(var(--c));\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn with_sass_var() {
+        assert_eq!(
+            runner().ok("$c: 1;\
+             \na {b: saturate($c)}\n"),
+            "a {\
+         \n  b: saturate(1);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn with_unquoted_calc() {
+        assert_eq!(
+            runner().ok("@use \"sass:string\";\
+             \na {b: saturate(string.unquote(\'calc(1)\'))}\n"),
+            "a {\
+         \n  b: saturate(calc(1));\
+         \n}\n"
+        );
+    }
+}
 mod error {
     #[allow(unused)]
     use super::runner;
 
+    #[test]
+    #[ignore] // wrong error
+    fn non_legacy() {
+        assert_eq!(
+        runner().err(
+            "a {b: saturate(color(srgb 1 1 1), 10%)}\n"
+        ),
+        "Error: saturate() is only supported for legacy colors. Please use color.adjust() instead with an explicit $space argument.\
+         \n  ,\
+         \n1 | a {b: saturate(color(srgb 1 1 1), 10%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet",
+    );
+    }
     mod one_arg {
         #[allow(unused)]
         use super::runner;
@@ -135,7 +220,7 @@ mod error {
             fn test_type() {
                 assert_eq!(
                     runner().err(
-                        "@use \'sass:color\';\
+                        "@use \"sass:color\";\
              \na {b: color.saturate(var(--c))}\n"
                     ),
                     "Error: Missing argument $amount.\
@@ -151,75 +236,6 @@ mod error {
                 );
             }
         }
-    }
-}
-mod one_arg {
-    #[allow(unused)]
-    use super::runner;
-
-    #[test]
-    fn named() {
-        assert_eq!(
-            runner().ok("a {b: saturate($amount: 50%)}\n"),
-            "a {\
-         \n  b: saturate(50%);\
-         \n}\n"
-        );
-    }
-    #[test]
-    fn unit() {
-        assert_eq!(
-            runner().ok("a {b: saturate(50%)}\n"),
-            "a {\
-         \n  b: saturate(50%);\
-         \n}\n"
-        );
-    }
-    #[test]
-    fn unitless() {
-        assert_eq!(
-            runner().ok("a {b: saturate(1)}\n"),
-            "a {\
-         \n  b: saturate(1);\
-         \n}\n"
-        );
-    }
-    #[test]
-    fn with_calc() {
-        assert_eq!(
-            runner().ok("a {b: saturate(calc(1 + 2))}\n"),
-            "a {\
-         \n  b: saturate(3);\
-         \n}\n"
-        );
-    }
-    #[test]
-    fn with_css_var() {
-        assert_eq!(
-            runner().ok("a {b: saturate(var(--c))}\n"),
-            "a {\
-         \n  b: saturate(var(--c));\
-         \n}\n"
-        );
-    }
-    #[test]
-    fn with_sass_var() {
-        assert_eq!(
-            runner().ok("$c: 1;\
-             \na {b: saturate($c)}\n"),
-            "a {\
-         \n  b: saturate(1);\
-         \n}\n"
-        );
-    }
-    #[test]
-    fn with_unquoted_calc() {
-        assert_eq!(
-            runner().ok("a {b: saturate(unquote(\'calc(1)\'))}\n"),
-            "a {\
-         \n  b: saturate(calc(1));\
-         \n}\n"
-        );
     }
 }
 mod two_args {
@@ -254,11 +270,12 @@ mod two_args {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn middle() {
         assert_eq!(
             runner().ok("a {b: saturate(plum, 14%)}\n"),
             "a {\
-         \n  b: #e697e6;\
+         \n  b: rgb(230.03, 150.97, 230.03);\
          \n}\n"
         );
     }
@@ -272,11 +289,12 @@ mod two_args {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn named() {
         assert_eq!(
             runner().ok("a {b: saturate($color: plum, $amount: 14%)}\n"),
             "a {\
-         \n  b: #e697e6;\
+         \n  b: rgb(230.03, 150.97, 230.03);\
          \n}\n"
         );
     }

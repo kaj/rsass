@@ -5,6 +5,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("import")
 }
 
+mod comment;
+
 mod configuration;
 
 mod css;

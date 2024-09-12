@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn and_universal() {
     assert_eq!(
-        runner().ok("a {b: is-superselector(\"c\", \"*\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"*\")}\n"),
         "a {\
          \n  b: false;\
          \n}\n"
@@ -17,7 +18,8 @@ fn and_universal() {
 #[test]
 fn equal() {
     assert_eq!(
-        runner().ok("a {b: is-superselector(\"c\", \"c\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"c\")}\n"),
         "a {\
          \n  b: true;\
          \n}\n"
@@ -34,7 +36,8 @@ mod namespace {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"|c\", \"|c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"|c\", \"|c\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -43,7 +46,8 @@ mod namespace {
         #[test]
         fn and_explicit() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"|c\", \"d|c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"|c\", \"d|c\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -52,7 +56,8 @@ mod namespace {
         #[test]
         fn and_implicit() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"|c\", \"c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"|c\", \"c\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -61,7 +66,8 @@ mod namespace {
         #[test]
         fn and_universal() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"|c\", \"*|c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"|c\", \"*|c\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -75,7 +81,8 @@ mod namespace {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"c|d\", \"|d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c|d\", \"|d\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -88,8 +95,8 @@ mod namespace {
             #[test]
             fn equal() {
                 assert_eq!(
-                    runner()
-                        .ok("a {b: is-superselector(\"c|d\", \"c|d\")}\n"),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c|d\", \"c|d\")}\n"),
                     "a {\
          \n  b: true;\
          \n}\n"
@@ -98,8 +105,8 @@ mod namespace {
             #[test]
             fn unequal() {
                 assert_eq!(
-                    runner()
-                        .ok("a {b: is-superselector(\"c|d\", \"e|d\")}\n"),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c|d\", \"e|d\")}\n"),
                     "a {\
          \n  b: false;\
          \n}\n"
@@ -109,7 +116,8 @@ mod namespace {
         #[test]
         fn and_implicit() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"c|d\", \"d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c|d\", \"d\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -118,7 +126,8 @@ mod namespace {
         #[test]
         fn and_universal() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"c|d\", \"*|d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c|d\", \"*|d\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -132,7 +141,8 @@ mod namespace {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"*|c\", \"|c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"*|c\", \"|c\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -141,7 +151,8 @@ mod namespace {
         #[test]
         fn and_explicit() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"*|c\", \"d|c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"*|c\", \"d|c\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -150,7 +161,8 @@ mod namespace {
         #[test]
         fn and_implicit() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"*|c\", \"c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"*|c\", \"c\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -159,7 +171,8 @@ mod namespace {
         #[test]
         fn and_universal() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"*|c\", \"*|c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"*|c\", \"*|c\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -170,7 +183,8 @@ mod namespace {
 #[test]
 fn unequal() {
     assert_eq!(
-        runner().ok("a {b: is-superselector(\"c\", \"d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"d\")}\n"),
         "a {\
          \n  b: false;\
          \n}\n"

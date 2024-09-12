@@ -9,9 +9,10 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok("@mixin odd( $selector, $n) {\
+        runner().ok("@use \"sass:string\";\
+             \n@mixin odd( $selector, $n) {\
              \n  $selector: \"& + \" + $selector + \" + \" + $selector;\
-             \n  $placeholder: unique_id();\
+             \n  $placeholder: string.unique_id();\
              \n  %#{$placeholder} { @content; }\
              \n  #{$selector}:first-child {\
              \n    #{$selector} { @extend %#{$placeholder}; }\

@@ -8,13 +8,15 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function push($list, $items...) {\
-             \n  @return join($list, $items, $separator: auto);\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\n\
+             \n@function push($list, $items...) {\
+             \n  @return list.join($list, $items, $separator: auto);\
              \n}\n\
              \n.test {\
              \n  $list: push(1 2 3, 4, 5);\
-             \n  list: inspect($list);\
-             \n  value: nth($list, 4);\
+             \n  list: meta.inspect($list);\
+             \n  value: list.nth($list, 4);\
              \n}"),
         ".test {\
          \n  list: 1 2 3 4 5;\

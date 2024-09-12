@@ -9,14 +9,15 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "// SassScript functions operate on the normalized form of the identifier.\
+            "@use \"sass:string\";\
+             \n// SassScript functions operate on the normalized form of the identifier.\
              \n.script {\
-             \n  unescaped-str-length: str-length(ax) str-length(\\61x) str-length(\\00061 x);\
-             \n  escaped-str-length: str-length(\\1Ax) str-length(\\0001A x);\n\
-             \n  unescaped-slice: str-slice(xaz, 2, 2) str-slice(x\\61z, 2, 2) str-slice(x\\00061 z, 2, 2);\
-             \n  escaped-slice: str-slice(x\\1Az, 2, 5) str-slice(x\\0001A z, 2, 5);\n\
-             \n  unescaped-quote: quote(ax) quote(\\61x) quote(\\00061 x);\
-             \n  escaped-quote: quote(\\1Ax) quote(\\0001A x);\
+             \n  unescaped-str-length: string.length(ax) string.length(\\61x) string.length(\\00061 x);\
+             \n  escaped-str-length: string.length(\\1Ax) string.length(\\0001A x);\n\
+             \n  unescaped-slice: string.slice(xaz, 2, 2) string.slice(x\\61z, 2, 2) string.slice(x\\00061 z, 2, 2);\
+             \n  escaped-slice: string.slice(x\\1Az, 2, 5) string.slice(x\\0001A z, 2, 5);\n\
+             \n  unescaped-quote: string.quote(ax) string.quote(\\61x) string.quote(\\00061 x);\
+             \n  escaped-quote: string.quote(\\1Ax) string.quote(\\0001A x);\
              \n}\n"
         ),
         ".script {\

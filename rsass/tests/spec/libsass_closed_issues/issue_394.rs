@@ -8,11 +8,12 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$list1: alpha beta gamma;\
+        runner().ok("@use \"sass:list\";\
+             \n$list1: alpha beta gamma;\
              \n$list2: one two three;\n\
              \n$map: (alpha: one, beta: two, gamma: three);\n\
              \n.ma-list {\
-             \n  @each $item1, $item2 in zip($list1, $list2) {\
+             \n  @each $item1, $item2 in list.zip($list1, $list2) {\
              \n    #{$item1}: $item2;\
              \n  }\
              \n}\n\

@@ -9,19 +9,19 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "@function test () {\r\
-             \n  $m: ();\r\
-             \n  $abc: (a b c d e f g h i j k);\r\
-             \n\r\
-             \n  @for $index from 1 through length($abc) {;\r\
-             \n    $m: map-merge($m, (nth($abc, $index):$index) );\r\
-             \n  }\r\
-             \n\r\
-             \n  @return $m;\r\
-             \n}\r\
-             \n\r\
-             \ntest {\r\
-             \n  content: inspect(test());\r\
+            "@use \"sass:list\";\
+             \n@use \"sass:map\";\
+             \n@use \"sass:meta\";\n\
+             \n@function test () {\
+             \n  $m: ();\
+             \n  $abc: (a b c d e f g h i j k);\n\
+             \n  @for $index from 1 through list.length($abc) {;\
+             \n    $m: map.merge($m, (list.nth($abc, $index):$index) );\
+             \n  }\n\
+             \n  @return $m;\
+             \n}\n\
+             \ntest {\
+             \n  content: meta.inspect(test());\
              \n}"
         ),
         "test {\

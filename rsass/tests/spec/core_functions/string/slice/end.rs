@@ -12,7 +12,8 @@ mod negative {
     #[test]
     fn t1() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"cde\", 1, -1)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"cde\", 1, -1)}\n"),
             "a {\
          \n  b: \"cde\";\
          \n}\n"
@@ -21,7 +22,8 @@ mod negative {
     #[test]
     fn t2() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"cde\", 1, -2)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"cde\", 1, -2)}\n"),
             "a {\
          \n  b: \"cd\";\
          \n}\n"
@@ -30,7 +32,8 @@ mod negative {
     #[test]
     fn after_last() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"cde\", 1, -100)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"cde\", 1, -100)}\n"),
             "a {\
          \n  b: \"\";\
          \n}\n"
@@ -39,7 +42,8 @@ mod negative {
     #[test]
     fn last() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"cde\", 1, -4)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"cde\", 1, -4)}\n"),
             "a {\
          \n  b: \"\";\
          \n}\n"
@@ -53,7 +57,8 @@ mod positive {
     #[test]
     fn t0() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"cde\", 1, 0)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"cde\", 1, 0)}\n"),
             "a {\
          \n  b: \"\";\
          \n}\n"
@@ -62,7 +67,8 @@ mod positive {
     #[test]
     fn t1() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"cde\", 1, 1)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"cde\", 1, 1)}\n"),
             "a {\
          \n  b: \"c\";\
          \n}\n"
@@ -71,7 +77,8 @@ mod positive {
     #[test]
     fn t2() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"cde\", 1, 2)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"cde\", 1, 2)}\n"),
             "a {\
          \n  b: \"cd\";\
          \n}\n"
@@ -80,7 +87,8 @@ mod positive {
     #[test]
     fn after_last() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"cde\", 1, 100)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"cde\", 1, 100)}\n"),
             "a {\
          \n  b: \"cde\";\
          \n}\n"
@@ -89,7 +97,8 @@ mod positive {
     #[test]
     fn after_start() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"cdef\", 2, 3)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"cdef\", 2, 3)}\n"),
             "a {\
          \n  b: \"de\";\
          \n}\n"
@@ -98,7 +107,8 @@ mod positive {
     #[test]
     fn last() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"cde\", 1, 3)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"cde\", 1, 3)}\n"),
             "a {\
          \n  b: \"cde\";\
          \n}\n"

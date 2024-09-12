@@ -12,33 +12,39 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: index(c d e)}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.index(c d e)}\n"
+            ),
             "Error: Missing argument $value.\
          \n  ,--> input.scss\
-         \n1 | a {b: index(c d e)}\
-         \n  |       ^^^^^^^^^^^^ invocation\
+         \n2 | a {b: list.index(c d e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:list\
          \n1 | @function index($list, $value) {\
          \n  |           ==================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: index(c d e, d, e)}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.index(c d e, d, e)}\n"
+            ),
             "Error: Only 2 arguments allowed, but 3 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: index(c d e, d, e)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: list.index(c d e, d, e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:list\
          \n1 | @function index($list, $value) {\
          \n  |           ==================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
@@ -49,7 +55,8 @@ mod found {
     #[test]
     fn first() {
         assert_eq!(
-            runner().ok("a {b: index(a b c, a)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.index(a b c, a)}\n"),
             "a {\
          \n  b: 1;\
          \n}\n"
@@ -58,7 +65,8 @@ mod found {
     #[test]
     fn last() {
         assert_eq!(
-            runner().ok("a {b: index(a b c, c)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.index(a b c, c)}\n"),
             "a {\
          \n  b: 3;\
          \n}\n"
@@ -67,7 +75,8 @@ mod found {
     #[test]
     fn map() {
         assert_eq!(
-            runner().ok("a {b: index((c: d, e: f, g: h), e f)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.index((c: d, e: f, g: h), e f)}\n"),
             "a {\
          \n  b: 2;\
          \n}\n"
@@ -76,7 +85,8 @@ mod found {
     #[test]
     fn multiple() {
         assert_eq!(
-            runner().ok("a {b: index(a b c a b c, b)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.index(a b c a b c, b)}\n"),
             "a {\
          \n  b: 2;\
          \n}\n"
@@ -85,7 +95,8 @@ mod found {
     #[test]
     fn non_list() {
         assert_eq!(
-            runner().ok("a {b: index(c, c)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.index(c, c)}\n"),
             "a {\
          \n  b: 1;\
          \n}\n"
@@ -94,7 +105,8 @@ mod found {
     #[test]
     fn sass_equality() {
         assert_eq!(
-            runner().ok("a {b: index(1px 1in 1cm, 96px)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.index(1px 1in 1cm, 96px)}\n"),
             "a {\
          \n  b: 2;\
          \n}\n"
@@ -103,7 +115,8 @@ mod found {
     #[test]
     fn single() {
         assert_eq!(
-            runner().ok("a {b: index([c], c)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.index([c], c)}\n"),
             "a {\
          \n  b: 1;\
          \n}\n"
@@ -113,7 +126,8 @@ mod found {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: index($list: c d e, $value: d)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.index($list: c d e, $value: d)}\n"),
         "a {\
          \n  b: 2;\
          \n}\n"
@@ -126,7 +140,9 @@ mod not_found {
     #[test]
     fn empty() {
         assert_eq!(
-            runner().ok("a {b: inspect(index((), c))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(list.index((), c))}\n"),
             "a {\
          \n  b: null;\
          \n}\n"
@@ -139,8 +155,10 @@ mod not_found {
         #[test]
         fn empty() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: inspect(index($empty-map, e))}\n"),
+                runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\
+             \na {b: meta.inspect(list.index(utils.$empty-map, e))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -149,7 +167,9 @@ mod not_found {
         #[test]
         fn non_empty() {
             assert_eq!(
-                runner().ok("a {b: inspect(index((c: d, e: f, g: h), e))}\n"),
+                runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(list.index((c: d, e: f, g: h), e))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -159,7 +179,9 @@ mod not_found {
     #[test]
     fn non_empty() {
         assert_eq!(
-            runner().ok("a {b: inspect(index(c d e, f))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(list.index(c d e, f))}\n"),
             "a {\
          \n  b: null;\
          \n}\n"
@@ -168,7 +190,9 @@ mod not_found {
     #[test]
     fn non_list() {
         assert_eq!(
-            runner().ok("a {b: inspect(index(c, d))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(list.index(c, d))}\n"),
             "a {\
          \n  b: null;\
          \n}\n"

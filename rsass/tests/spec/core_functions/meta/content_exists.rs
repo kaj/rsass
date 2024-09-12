@@ -12,9 +12,10 @@ mod controls {
     #[test]
     fn test_false() {
         assert_eq!(
-            runner().ok("// Regression test for sass/libsass#2842\
+            runner().ok("@use \"sass:meta\";\
+             \n// Regression test for sass/libsass#2842\
              \n@mixin test-content-exists() {\
-             \n  @if content-exists() {\
+             \n  @if meta.content-exists() {\
              \n    @content;\
              \n  }\
              \n  @else {\
@@ -32,9 +33,10 @@ mod controls {
     #[test]
     fn test_true() {
         assert_eq!(
-            runner().ok("// Regression test for sass/libsass#2842\
+            runner().ok("@use \"sass:meta\";\
+             \n// Regression test for sass/libsass#2842\
              \n@mixin test-content-exists() {\
-             \n  @if content-exists() {\
+             \n  @if meta.content-exists() {\
              \n    @content;\
              \n  }\
              \n  @else {\
@@ -61,21 +63,22 @@ mod error {
     fn in_content() {
         assert_eq!(
             runner().err(
-                "@mixin call-content {\
+                "@use \"sass:meta\";\
+             \n@mixin call-content {\
              \n  @content;\
              \n}\n\
              \n@include call-content {\
-             \n  a {b: content-exists()}\
+             \n  a {b: meta.content-exists()}\
              \n}\n"
             ),
             "Error: content-exists() may only be called within a mixin.\
          \n  ,\
-         \n6 |   a {b: content-exists()}\
-         \n  |         ^^^^^^^^^^^^^^^^\
+         \n7 |   a {b: meta.content-exists()}\
+         \n  |         ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 6:9  @content\
-         \n  input.scss 2:3  call-content()\
-         \n  input.scss 5:1  root stylesheet",
+         \n  input.scss 7:9  @content\
+         \n  input.scss 3:3  call-content()\
+         \n  input.scss 6:1  root stylesheet",
         );
     }
     #[test]
@@ -83,8 +86,9 @@ mod error {
     fn in_function_called_by_mixin() {
         assert_eq!(
             runner().err(
-                "@function call-content-exists() {\
-             \n  @return content-exists();\
+                "@use \"sass:meta\";\
+             \n@function call-content-exists() {\
+             \n  @return meta.content-exists();\
              \n}\n\
              \n@mixin call-function {\
              \n  a {b: call-content-exists()};\
@@ -93,24 +97,27 @@ mod error {
             ),
             "Error: content-exists() may only be called within a mixin.\
          \n  ,\
-         \n2 |   @return content-exists();\
-         \n  |           ^^^^^^^^^^^^^^^^\
+         \n3 |   @return meta.content-exists();\
+         \n  |           ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:11  call-content-exists()\
-         \n  input.scss 6:9   call-function()\
-         \n  input.scss 9:1   root stylesheet",
+         \n  input.scss 3:11  call-content-exists()\
+         \n  input.scss 7:9   call-function()\
+         \n  input.scss 10:1  root stylesheet",
         );
     }
     #[test]
     fn outside_mixin() {
         assert_eq!(
-            runner().err("a {b: content-exists()}\n"),
+            runner().err(
+                "@use \"sass:meta\";\
+             \na {b: meta.content-exists()}\n"
+            ),
             "Error: content-exists() may only be called within a mixin.\
          \n  ,\
-         \n1 | a {b: content-exists()}\
-         \n  |       ^^^^^^^^^^^^^^^^\
+         \n2 | a {b: meta.content-exists()}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -118,22 +125,23 @@ mod error {
     fn too_many_args() {
         assert_eq!(
             runner().err(
-                "@mixin a {\
-             \n  b {c: content-exists(1)}\
+                "@use \"sass:meta\";\
+             \n@mixin a {\
+             \n  b {c: meta.content-exists(1)}\
              \n}\
              \n@include a;\n"
             ),
             "Error: Only 0 arguments allowed, but 1 was passed.\
          \n  ,--> input.scss\
-         \n2 |   b {c: content-exists(1)}\
-         \n  |         ^^^^^^^^^^^^^^^^^ invocation\
+         \n3 |   b {c: meta.content-exists(1)}\
+         \n  |         ^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:meta\
          \n1 | @function content-exists() {\
          \n  |           ================ declaration\
          \n  \'\
-         \n  input.scss 2:9  a()\
-         \n  input.scss 4:1  root stylesheet",
+         \n  input.scss 3:9  a()\
+         \n  input.scss 5:1  root stylesheet",
         );
     }
 }
@@ -144,11 +152,12 @@ mod test_false {
     #[test]
     fn through_content() {
         assert_eq!(
-            runner().ok("@mixin call-content {\
+            runner().ok("@use \"sass:meta\";\
+             \n@mixin call-content {\
              \n  @content;\
              \n}\n\
              \n@mixin print-content-exists {\
-             \n  a {b: content-exists()}\
+             \n  a {b: meta.content-exists()}\
              \n}\n\
              \n@include call-content {\
              \n  @include print-content-exists;\
@@ -161,8 +170,9 @@ mod test_false {
     #[test]
     fn top_level() {
         assert_eq!(
-            runner().ok("@mixin a {\
-             \n  b {c: content-exists()}\
+            runner().ok("@use \"sass:meta\";\
+             \n@mixin a {\
+             \n  b {c: meta.content-exists()}\
              \n}\
              \n@include a;\n"),
             "b {\
@@ -178,8 +188,9 @@ mod test_true {
     #[test]
     fn empty() {
         assert_eq!(
-            runner().ok("@mixin a {\
-             \n  b {c: content-exists()}\
+            runner().ok("@use \"sass:meta\";\
+             \n@mixin a {\
+             \n  b {c: meta.content-exists()}\
              \n  @content;\
              \n}\
              \n@include a {}\n"),
@@ -191,8 +202,9 @@ mod test_true {
     #[test]
     fn non_empty() {
         assert_eq!(
-            runner().ok("@mixin a {\
-             \n  b {c: content-exists()}\
+            runner().ok("@use \"sass:meta\";\
+             \n@mixin a {\
+             \n  b {c: meta.content-exists()}\
              \n  @content;\
              \n}\
              \n@include a {\

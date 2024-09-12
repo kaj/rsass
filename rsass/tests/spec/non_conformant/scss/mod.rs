@@ -175,8 +175,6 @@ mod nested_rules_with_declarations;
 
 mod nested_rules_with_fancy_selectors;
 
-mod newlines_in_selectors;
-
 mod no_namespace_properties_without_space;
 
 mod null;

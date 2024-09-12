@@ -23,6 +23,172 @@ fn runner() -> crate::TestRunner {
         .mock_file("nested_import/with_user_use/used.scss", "// nothing\n")
 }
 
+mod comment {
+    #[allow(unused)]
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("comment")
+    }
+
+    mod after_colon {
+        #[allow(unused)]
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("after_colon")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn loud() {
+            let runner = runner().with_cwd("loud");
+            assert_eq!(runner.ok("@at-root (without: /**/ media) {}\n"), "");
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn silent() {
+            let runner = runner().with_cwd("silent");
+            assert_eq!(
+                runner.ok("@at-root (without: //\
+             \n  media) {}\n"),
+                ""
+            );
+        }
+    }
+    mod after_open_paren {
+        #[allow(unused)]
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("after_open_paren")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn loud() {
+            let runner = runner().with_cwd("loud");
+            assert_eq!(runner.ok("@at-root (/**/ without: media) {}\n"), "");
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn silent() {
+            let runner = runner().with_cwd("silent");
+            assert_eq!(
+                runner.ok("@at-root (//\
+             \n  without: media) {}\n"),
+                ""
+            );
+        }
+    }
+    mod after_query {
+        #[allow(unused)]
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("after_query")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn loud() {
+            let runner = runner().with_cwd("loud");
+            assert_eq!(runner.ok("@at-root (without: media) /**/ {}\n"), "");
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn silent() {
+            let runner = runner().with_cwd("silent");
+            assert_eq!(
+                runner.ok("@at-root (without: media) //\
+             \n  {}\n"),
+                ""
+            );
+        }
+    }
+    mod before_close_paren {
+        #[allow(unused)]
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("before_close_paren")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn loud() {
+            let runner = runner().with_cwd("loud");
+            assert_eq!(runner.ok("@at-root (without: media /**/) {}\n"), "");
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn silent() {
+            let runner = runner().with_cwd("silent");
+            assert_eq!(
+                runner.ok("@at-root (without: media //\
+             \n  ) {}\n"),
+                ""
+            );
+        }
+    }
+    mod before_colon {
+        #[allow(unused)]
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("before_colon")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn loud() {
+            let runner = runner().with_cwd("loud");
+            assert_eq!(runner.ok("@at-root (without /**/ : media) {}\n"), "");
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn silent() {
+            let runner = runner().with_cwd("silent");
+            assert_eq!(
+                runner.ok("@at-root (without //\
+             \n  : media) {}\n"),
+                ""
+            );
+        }
+    }
+    mod before_query {
+        #[allow(unused)]
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("before_query")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn loud() {
+            let runner = runner().with_cwd("loud");
+            assert_eq!(runner.ok("@at-root /**/ (without: media) {}\n"), "");
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn silent() {
+            let runner = runner().with_cwd("silent");
+            assert_eq!(
+                runner.ok("@at-root //\
+             \n  (without: media) {}\n"),
+                ""
+            );
+        }
+    }
+    mod no_query {
+        #[allow(unused)]
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("no_query")
+        }
+
+        #[test]
+        fn loud() {
+            let runner = runner().with_cwd("loud");
+            assert_eq!(runner.ok("@at-root /**/ {}\n"), "");
+        }
+        #[test]
+        fn silent() {
+            let runner = runner().with_cwd("silent");
+            assert_eq!(
+                runner.ok("@at-root //\
+             \n  {}\n"),
+                ""
+            );
+        }
+    }
+}
 mod keyframes {
     #[allow(unused)]
     fn runner() -> crate::TestRunner {
@@ -119,4 +285,17 @@ fn property_only() {
          \n  b: c;\
          \n}\n"
     );
+}
+mod sass {
+    #[allow(unused)]
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("sass")
+    }
+
+    mod empty {
+        #[allow(unused)]
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("empty")
+        }
+    }
 }

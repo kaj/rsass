@@ -185,8 +185,6 @@ mod t088_test_negation_unification;
 
 mod t089_test_negation_unification;
 
-mod t090_test_comma_extendee;
-
 mod t091_test_redundant_selector_elimination;
 
 mod t094_test_long_extendee_runs_unification;
@@ -426,8 +424,6 @@ mod t219_test_nested_double_extend_optimization;
 mod t220_test_extend_in_double_nested_media_query;
 
 mod t221_test_partially_failed_extend;
-
-mod t222_test_newline_near_combinator;
 
 mod t223_test_duplicated_selector_with_newlines;
 

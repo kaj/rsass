@@ -8,10 +8,11 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test_false() {
     assert_eq!(
-        runner().ok("$result: inspect(false);\
+        runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect(false);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
         "a {\
          \n  value: false;\
@@ -22,10 +23,11 @@ fn test_false() {
 #[test]
 fn test_true() {
     assert_eq!(
-        runner().ok("$result: inspect(true);\
+        runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect(true);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
         "a {\
          \n  value: true;\

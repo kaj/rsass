@@ -9,13 +9,16 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        runner().err("$id: inspect((a#b:c)...)"),
+        runner().err(
+            "@use \"sass:meta\";\n\
+             \n$id: meta.inspect((a#b:c)...)"
+        ),
         "Error: Variable keyword argument map must have string keys.\
-         \na #b is not a string in (a #b: c).\
+         \n(a #b) is not a string in (a #b: c).\
          \n  ,\
-         \n1 | $id: inspect((a#b:c)...)\
-         \n  |              ^^^^^^^\
+         \n3 | $id: meta.inspect((a#b:c)...)\
+         \n  |                   ^^^^^^^\
          \n  \'\
-         \n  input.scss 1:14  root stylesheet",
+         \n  input.scss 3:19  root stylesheet",
     );
 }

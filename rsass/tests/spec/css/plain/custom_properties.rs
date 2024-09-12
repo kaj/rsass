@@ -17,7 +17,7 @@ fn runner() -> crate::TestRunner {
 fn arbitrary_tokens() {
     let runner = runner().with_cwd("arbitrary_tokens");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  --b: `~@#$%^&*()_-+={[]}|?/><;\
          \n}\n"
@@ -27,7 +27,7 @@ fn arbitrary_tokens() {
 fn color() {
     let runner = runner().with_cwd("color");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  --b: #ff0000;\
          \n}\n"
@@ -37,7 +37,7 @@ fn color() {
 fn identifier() {
     let runner = runner().with_cwd("identifier");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  --b: c;\
          \n}\n"
@@ -47,7 +47,7 @@ fn identifier() {
 fn nested() {
     let runner = runner().with_cwd("nested");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  --b: {c: d};\
          \n}\n"

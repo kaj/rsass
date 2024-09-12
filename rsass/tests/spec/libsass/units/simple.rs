@@ -9,11 +9,12 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok("div {\
+        runner().ok("@use \"sass:math\";\
+             \ndiv {\
              \n  hey: ((5in + 3cm) * 10px * 100pt * 10fu / 2px / 2fu / 3pt);\
              \n  ho: (23in/2fu) > (23cm/2fu);\
-             \n  hoo: unit((23px/2fu/12emu/1.2gnu));\
-             \n  hee: unit((2in/3cm/4cm));\
+             \n  hoo: math.unit((23px/2fu/12emu/1.2gnu));\
+             \n  hee: math.unit((2in/3cm/4cm));\
              \n}"),
         "div {\
          \n  hey: 370866.1417322835pt;\

@@ -12,52 +12,62 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: ie-hex-str()}\n"),
+            runner().err(
+                "@use \"sass:color\";\
+             \na {b: color.ie-hex-str()}\n"
+            ),
             "Error: Missing argument $color.\
          \n  ,--> input.scss\
-         \n1 | a {b: ie-hex-str()}\
-         \n  |       ^^^^^^^^^^^^ invocation\
+         \n2 | a {b: color.ie-hex-str()}\
+         \n  |       ^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:color\
          \n1 | @function ie-hex-str($color) {\
          \n  |           ================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: ie-hex-str(red, blue)}\n"),
+            runner().err(
+                "@use \"sass:color\";\
+             \na {b: color.ie-hex-str(red, blue)}\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: ie-hex-str(red, blue)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: color.ie-hex-str(red, blue)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:color\
          \n1 | @function ie-hex-str($color) {\
          \n  |           ================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: ie-hex-str(c)}\n"),
+            runner().err(
+                "@use \"sass:color\";\
+             \na {b: color.ie-hex-str(c)}\n"
+            ),
             "Error: $color: c is not a color.\
          \n  ,\
-         \n1 | a {b: ie-hex-str(c)}\
-         \n  |       ^^^^^^^^^^^^^\
+         \n2 | a {b: color.ie-hex-str(c)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
 #[test]
 fn leading_zero() {
     assert_eq!(
-        runner().ok("a {b: ie-hex-str(rgba(#020304, 0.003))}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.ie-hex-str(rgba(#020304, 0.003))}\n"),
         "a {\
          \n  b: #01020304;\
          \n}\n"
@@ -66,7 +76,8 @@ fn leading_zero() {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: ie-hex-str($color: #daddee)}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.ie-hex-str($color: #daddee)}\n"),
         "a {\
          \n  b: #FFDADDEE;\
          \n}\n"
@@ -75,7 +86,8 @@ fn named() {
 #[test]
 fn opaque() {
     assert_eq!(
-        runner().ok("a {b: ie-hex-str(#daddee)}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.ie-hex-str(#daddee)}\n"),
         "a {\
          \n  b: #FFDADDEE;\
          \n}\n"
@@ -84,7 +96,8 @@ fn opaque() {
 #[test]
 fn translucent() {
     assert_eq!(
-        runner().ok("a {b: ie-hex-str(rgba(#daddee, 0.3))}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.ie-hex-str(rgba(#daddee, 0.3))}\n"),
         "a {\
          \n  b: #4DDADDEE;\
          \n}\n"
@@ -93,7 +106,8 @@ fn translucent() {
 #[test]
 fn transparent() {
     assert_eq!(
-        runner().ok("a {b: ie-hex-str(rgba(turquoise, 0))}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.ie-hex-str(rgba(turquoise, 0))}\n"),
         "a {\
          \n  b: #0040E0D0;\
          \n}\n"
@@ -102,7 +116,9 @@ fn transparent() {
 #[test]
 fn test_type() {
     assert_eq!(
-        runner().ok("a {b: type-of(ie-hex-str(#daddee))}\n"),
+        runner().ok("@use \"sass:color\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.type-of(color.ie-hex-str(#daddee))}\n"),
         "a {\
          \n  b: string;\
          \n}\n"

@@ -9,18 +9,19 @@ fn runner() -> crate::TestRunner {
 fn test() {
     let runner = runner().set_precision(10);
     assert_eq!(
-        runner.ok("a {\
+        runner.ok("@use \"sass:color\";\
+             \na {\
              \n  four-digit: #AbCd;\
              \n  eight-digit: #aBcDeF12;\n\
              \n  // Verify that the color channels are set correctly.\
-             \n  four-digit-red: red(#abcd);\
-             \n  four-digit-green: green(#abcd);\
-             \n  four-digit-blue: blue(#abcd);\
-             \n  four-digit-alpha: alpha(#abcd);\n\
-             \n  eight-digit-red: red(#ABCDEF12);\
-             \n  eight-digit-green: green(#ABCDEF12);\
-             \n  eight-digit-blue: blue(#ABCDEF12);\
-             \n  eight-digit-alpha: alpha(#ABCDEF12);\
+             \n  four-digit-red: color.red(#abcd);\
+             \n  four-digit-green: color.green(#abcd);\
+             \n  four-digit-blue: color.blue(#abcd);\
+             \n  four-digit-alpha: color.alpha(#abcd);\n\
+             \n  eight-digit-red: color.red(#ABCDEF12);\
+             \n  eight-digit-green: color.green(#ABCDEF12);\
+             \n  eight-digit-blue: color.blue(#ABCDEF12);\
+             \n  eight-digit-alpha: color.alpha(#ABCDEF12);\
              \n}\n"),
         "a {\
          \n  four-digit: rgba(170, 187, 204, 0.8666666667);\

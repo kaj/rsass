@@ -9,13 +9,14 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$foo: 3;\
+            "@use \"sass:list\";\
+             \n$foo: 3;\
              \n$bar: 4;\
              \n// Media features are special-cased to allow raw script without interpolation.\
              \n@media only screen and (max-width: $foo) and (min-width: $bar) {x {y: z}}\n\
              \n// Not just variables, but full script\
              \n$vals: 1 2 3;\
-             \n@media screen and (max-width: 1 + 2) and (min-width: 5 + 6 + nth($vals, 2)) {x {y: z}}\n\n"
+             \n@media screen and (max-width: 1 + 2) and (min-width: 5 + 6 + list.nth($vals, 2)) {x {y: z}}\n\n"
         ),
         "@media only screen and (max-width: 3) and (min-width: 4) {\
          \n  x {\

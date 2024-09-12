@@ -169,7 +169,6 @@ fn max_safe_integer() {
     );
 }
 #[test]
-#[ignore = "Requires too much precision, last digit may or may not be right."]
 fn min_number() {
     assert_eq!(
         runner().ok(

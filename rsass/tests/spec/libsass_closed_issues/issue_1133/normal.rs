@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function foo($map) {\
+        runner().ok("@use \"sass:meta\";\
+             \n@function foo($map) {\
              \n    @return $map;\
              \n}\n\
              \na {\
@@ -18,7 +19,7 @@ fn test() {
              \n    }\
              \n}\n\
              \nb {\
-             \n    $map: call(\"foo\", (this: is, my: map));\
+             \n    $map: meta.call(\"foo\", (this: is, my: map));\
              \n    @each $k, $v in $map {\
              \n        #{$k}: $v;\
              \n    }\

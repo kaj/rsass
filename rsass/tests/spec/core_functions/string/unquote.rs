@@ -9,10 +9,11 @@ fn runner() -> crate::TestRunner {
 fn empty() {
     assert_eq!(
         runner().ok(
-            "$result: unquote(\"\");\
+            "@use \"sass:string\";\
+             \n$result: string.unquote(\"\");\
              \na {\
              \n  result: $result; // This will not be emitted because the contents is empty.\
-             \n  length: str-length($result);\
+             \n  length: string.length($result);\
              \n  same: $result == \"\";\
              \n}\n"
         ),
@@ -29,55 +30,65 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: unquote()}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.unquote()}\n"
+            ),
             "Error: Missing argument $string.\
          \n  ,--> input.scss\
-         \n1 | a {b: unquote()}\
-         \n  |       ^^^^^^^^^ invocation\
+         \n2 | a {b: string.unquote()}\
+         \n  |       ^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:string\
          \n1 | @function unquote($string) {\
          \n  |           ================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: unquote(c, d)}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.unquote(c, d)}\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: unquote(c, d)}\
-         \n  |       ^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: string.unquote(c, d)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:string\
          \n1 | @function unquote($string) {\
          \n  |           ================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: unquote(1)}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.unquote(1)}\n"
+            ),
             "Error: $string: 1 is not a string.\
          \n  ,\
-         \n1 | a {b: unquote(1)}\
-         \n  |       ^^^^^^^^^^\
+         \n2 | a {b: string.unquote(1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
 #[test]
 fn escaped_backslash() {
     assert_eq!(
-        runner().ok("$result: unquote(\"\\\\0 \");\
+        runner().ok("@use \"sass:string\";\
+             \n$result: string.unquote(\"\\\\0 \");\
              \na {\
              \n  result: $result;\
-             \n  length: str-length($result);\
+             \n  length: string.length($result);\
              \n  same-as-argument: $result == \"\\\\0 \";\
              \n  same-as-literal: $result == \\0 ;\
              \n}\n"),
@@ -97,13 +108,14 @@ mod escaped_quotes {
     fn quoted() {
         assert_eq!(
         runner().ok(
-            "// Unquoting a quoted string returns an unquoted string with the same code\
+            "@use \"sass:string\";\
+             \n// Unquoting a quoted string returns an unquoted string with the same code\
              \n// points. Code points such as quotes that need to be escaped in the original\
              \n// don\'t need escaping in the output.\
-             \n$result: unquote(\"\\\"c\\\"\");\
+             \n$result: string.unquote(\"\\\"c\\\"\");\
              \na {\
              \n  result: $result;\
-             \n  length: str-length($result);\
+             \n  length: string.length($result);\
              \n  same: $result == \"\\\"c\\\"\";\
              \n}\n"
         ),
@@ -118,12 +130,13 @@ mod escaped_quotes {
     fn unquoted() {
         assert_eq!(
         runner().ok(
-            "// Unquoting an unquoted string returns it exactly as-is, leaving escapes\
+            "@use \"sass:string\";\
+             \n// Unquoting an unquoted string returns it exactly as-is, leaving escapes\
              \n// totally unchanged (whether they\'re quotes or not).\
-             \n$result: unquote(\\\"c\\\");\
+             \n$result: string.unquote(\\\"c\\\");\
              \na {\
              \n  result: $result;\
-             \n  length: str-length($result);\
+             \n  length: string.length($result);\
              \n  same: $result == \\\"c\\\";\
              \n}\n"
         ),
@@ -139,14 +152,15 @@ mod escaped_quotes {
 fn meaningful_css_characters() {
     assert_eq!(
         runner().ok(
-            "// Unquoted strings aren\'t required to be valid CSS identifiers, and the\
+            "@use \"sass:string\";\
+             \n// Unquoted strings aren\'t required to be valid CSS identifiers, and the\
              \n// `unquote()` function does *not* escape characters that aren\'t valid\
              \n// identifier characters. This allows it to be used as an escape hatch to\
              \n// produce CSS that Sass doesn\'t otherwise support.\
-             \n$result: unquote(\"b; c {d: e\");\
+             \n$result: string.unquote(\"b; c {d: e\");\
              \na {\
              \n  result: $result;\
-             \n  length: str-length($result);\
+             \n  length: string.length($result);\
              \n  same: $result == \"b; c {d: e\";\
              \n}\n"
         ),
@@ -160,7 +174,8 @@ fn meaningful_css_characters() {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: unquote($string: c)}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.unquote($string: c)}\n"),
         "a {\
          \n  b: c;\
          \n}\n"
@@ -169,7 +184,8 @@ fn named() {
 #[test]
 fn quoted() {
     assert_eq!(
-        runner().ok("a {b: unquote(\"c\")}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.unquote(\"c\")}\n"),
         "a {\
          \n  b: c;\
          \n}\n"
@@ -178,7 +194,8 @@ fn quoted() {
 #[test]
 fn unquoted() {
     assert_eq!(
-        runner().ok("a {b: unquote(c)}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.unquote(c)}\n"),
         "a {\
          \n  b: c;\
          \n}\n"

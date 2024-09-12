@@ -12,10 +12,11 @@ mod bracketed {
     #[test]
     fn comma() {
         assert_eq!(
-            runner().ok("$result: inspect([1,]);\
+            runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect([1,]);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
             "a {\
          \n  value: [1,];\
@@ -26,10 +27,11 @@ mod bracketed {
     #[test]
     fn undecided() {
         assert_eq!(
-            runner().ok("$result: inspect([1]);\
+            runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect([1]);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
             "a {\
          \n  value: [1];\
@@ -41,10 +43,11 @@ mod bracketed {
 #[test]
 fn comma() {
     assert_eq!(
-        runner().ok("$result: inspect((1,));\
+        runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect((1,));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
         "a {\
          \n  value: (1,);\
@@ -55,10 +58,12 @@ fn comma() {
 #[test]
 fn slash() {
     assert_eq!(
-        runner().ok("$result: inspect(append((), 1, slash));\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n$result: meta.inspect(list.append((), 1, slash));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
         "a {\
          \n  value: (1/);\
@@ -69,10 +74,12 @@ fn slash() {
 #[test]
 fn space() {
     assert_eq!(
-        runner().ok("$result: inspect(append((), 1, space));\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n$result: meta.inspect(list.append((), 1, space));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
         "a {\
          \n  value: 1;\

@@ -16,8 +16,8 @@ mod conflict {
         #[test]
         fn alone() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c.d\", \".d\", \"e\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c.d\", \".d\", \"e\")}\n"),
                 "a {\
          \n  b: c.d;\
          \n}\n"
@@ -26,8 +26,8 @@ mod conflict {
         #[test]
         fn with_class() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c.d\", \".d\", \"e.f\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c.d\", \".d\", \"e.f\")}\n"),
                 "a {\
          \n  b: c.d;\
          \n}\n"
@@ -37,7 +37,8 @@ mod conflict {
     #[test]
     fn id() {
         assert_eq!(
-            runner().ok("a {b: selector-extend(\"#c.d\", \".d\", \"#e\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"#c.d\", \".d\", \"#e\")}\n"),
             "a {\
          \n  b: #c.d;\
          \n}\n"
@@ -46,9 +47,8 @@ mod conflict {
     #[test]
     fn next_sibling() {
         assert_eq!(
-            runner().ok(
-                "a {b: selector-extend(\"c + .d\", \".d\", \"e + .f\")}\n"
-            ),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c + .d\", \".d\", \"e + .f\")}\n"),
             "a {\
          \n  b: c + .d;\
          \n}\n"
@@ -57,9 +57,8 @@ mod conflict {
     #[test]
     fn parent() {
         assert_eq!(
-            runner().ok(
-                "a {b: selector-extend(\"c > .d\", \".d\", \"e > .f\")}\n"
-            ),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c > .d\", \".d\", \"e > .f\")}\n"),
             "a {\
          \n  b: c > .d;\
          \n}\n"
@@ -73,21 +72,19 @@ mod conflict {
         #[ignore] // wrong result
         fn class_syntax() {
             assert_eq!(
-        runner().ok(
-            "a {b: selector-extend(\":before.c\", \".c\", \":after\")}\n"
-        ),
-        "a {\
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":before.c\", \".c\", \":after\")}\n"),
+                "a {\
          \n  b: :before.c;\
          \n}\n"
-    );
+            );
         }
         #[test]
         #[ignore] // wrong result
         fn unknown() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\"::c.d\", \".d\", \"::e\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"::c.d\", \".d\", \"::e\")}\n"),
                 "a {\
          \n  b: ::c.d;\
          \n}\n"
@@ -102,8 +99,8 @@ mod conflict {
         #[ignore] // wrong result
         fn default_and_empty() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"*.c\", \".c\", \"|*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"*.c\", \".c\", \"|*\")}\n"),
                 "a {\
          \n  b: *.c;\
          \n}\n"
@@ -113,8 +110,8 @@ mod conflict {
         #[ignore] // wrong result
         fn default_and_namespace() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"*.c\", \".c\", \"d|*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"*.c\", \".c\", \"d|*\")}\n"),
                 "a {\
          \n  b: *.c;\
          \n}\n"
@@ -123,8 +120,8 @@ mod conflict {
         #[test]
         fn empty_and_default() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"|*.c\", \".c\", \"*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"|*.c\", \".c\", \"*\")}\n"),
                 "a {\
          \n  b: |*.c;\
          \n}\n"
@@ -133,9 +130,8 @@ mod conflict {
         #[test]
         fn empty_and_namespace() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\"|*.c\", \".c\", \"d|*\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"|*.c\", \".c\", \"d|*\")}\n"),
                 "a {\
          \n  b: |*.c;\
          \n}\n"
@@ -144,8 +140,8 @@ mod conflict {
         #[test]
         fn namespace_and_default() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c|*.d\", \".d\", \"*\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c|*.d\", \".d\", \"*\")}\n"),
                 "a {\
          \n  b: c|*.d;\
          \n}\n"
@@ -154,9 +150,8 @@ mod conflict {
         #[test]
         fn namespace_and_empty() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\"c|*.d\", \".d\", \"|*\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c|*.d\", \".d\", \"|*\")}\n"),
                 "a {\
          \n  b: c|*.d;\
          \n}\n"
@@ -165,9 +160,8 @@ mod conflict {
         #[test]
         fn namespace_and_namespace() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-extend(\"c|*.d\", \".d\", \"e|*\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c|*.d\", \".d\", \"e|*\")}\n"),
                 "a {\
          \n  b: c|*.d;\
          \n}\n"
@@ -178,7 +172,8 @@ mod conflict {
 #[test]
 fn missing() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\"c\", \"d\", \"e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c\", \"d\", \"e\")}\n"),
         "a {\
          \n  b: c;\
          \n}\n"
@@ -195,8 +190,8 @@ mod unification {
         #[test]
         fn ancestor() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c\", \"c\", \"d c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c\", \"c\", \"d c\")}\n"),
                 "a {\
          \n  b: c;\
          \n}\n"
@@ -205,8 +200,8 @@ mod unification {
         #[test]
         fn next_sibling() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c\", \"c\", \"d + c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c\", \"c\", \"d + c\")}\n"),
                 "a {\
          \n  b: c;\
          \n}\n"
@@ -215,8 +210,8 @@ mod unification {
         #[test]
         fn parent() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c\", \"c\", \"d > c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c\", \"c\", \"d > c\")}\n"),
                 "a {\
          \n  b: c;\
          \n}\n"
@@ -225,8 +220,8 @@ mod unification {
         #[test]
         fn sibling() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c\", \"c\", \"d ~ c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c\", \"c\", \"d ~ c\")}\n"),
                 "a {\
          \n  b: c;\
          \n}\n"
@@ -235,8 +230,8 @@ mod unification {
         #[test]
         fn simple() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c\", \"c\", \"c.d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c\", \"c\", \"c.d\")}\n"),
                 "a {\
          \n  b: c;\
          \n}\n"
@@ -246,7 +241,8 @@ mod unification {
     #[test]
     fn identical_to_extendee() {
         assert_eq!(
-            runner().ok("a {b: selector-extend(\"c.d\", \".d\", \".d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c.d\", \".d\", \".d\")}\n"),
             "a {\
          \n  b: c.d;\
          \n}\n"
@@ -255,7 +251,8 @@ mod unification {
     #[test]
     fn identical_to_selector() {
         assert_eq!(
-            runner().ok("a {b: selector-extend(\"c.d\", \".d\", \"c.d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c.d\", \".d\", \"c.d\")}\n"),
             "a {\
          \n  b: c.d;\
          \n}\n"
@@ -269,8 +266,9 @@ mod unification {
         #[ignore] // wrong result
         fn test_where() {
             assert_eq!(
-                runner().ok("a {\
-             \n  b: selector-extend(\":where(.x)\", \".x\", \".x .y\");\
+                runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.extend(\":where(.x)\", \".x\", \".x .y\");\
              \n}\n"),
                 "a {\
          \n  b: :where(.x, .x .y);\
@@ -286,20 +284,20 @@ mod unification {
         #[ignore] // wrong result
         fn is() {
             assert_eq!(
-        runner().ok(
-            "a {b: selector-extend(\".c:is(d)\", \":is(d)\", \"d.e\")}\n"
-        ),
-        "a {\
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c:is(d)\", \":is(d)\", \"d.e\")}\n"),
+                "a {\
          \n  b: .c:is(d);\
          \n}\n"
-    );
+            );
         }
         #[test]
         #[ignore] // wrong result
         fn matches() {
             assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\".c:matches(d)\", \":matches(d)\", \"d.e\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\".c:matches(d)\", \":matches(d)\", \"d.e\")}\n"
         ),
         "a {\
          \n  b: .c:matches(d);\
@@ -311,7 +309,8 @@ mod unification {
         fn test_where() {
             assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\".c:where(d)\", \":where(d)\", \"d.e\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\".c:where(d)\", \":where(d)\", \"d.e\")}\n"
         ),
         "a {\
          \n  b: .c:where(d);\

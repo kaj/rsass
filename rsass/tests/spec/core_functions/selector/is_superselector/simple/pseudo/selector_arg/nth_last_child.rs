@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 fn bare_sub() {
     assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":nth-last-child(n+1 of c d, e f, g h)\", \"c d, e f, g h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":nth-last-child(n+1 of c d, e f, g h)\", \"c d, e f, g h\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -21,7 +22,8 @@ fn bare_sub() {
 fn bare_super() {
     assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\"c\", \":nth-last-child(n+1 of c)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \":nth-last-child(n+1 of c)\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -31,8 +33,9 @@ fn bare_super() {
 #[test]
 fn different_arg() {
     assert_eq!(
-        runner().ok("a {\
-             \n  b: is-superselector(\
+        runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.is-superselector(\
              \n      \":nth-last-child(n+1 of c)\",\
              \n      \":nth-last-child(n+2 of c)\");\
              \n}\n"),
@@ -48,8 +51,9 @@ mod prefix {
     #[test]
     fn subset() {
         assert_eq!(
-            runner().ok("a {\
-             \n  b: is-superselector(\
+            runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.is-superselector(\
              \n      \":-pfx-nth-last-child(n+1 of c d.i, e j f)\",\
              \n      \":-pfx-nth-last-child(n+1 of c d, e f, g h)\");\
              \n}\n"),
@@ -61,8 +65,9 @@ mod prefix {
     #[test]
     fn superset() {
         assert_eq!(
-            runner().ok("a {\
-             \n  b: is-superselector(\
+            runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.is-superselector(\
              \n      \":-pfx-nth-last-child(n+1 of c d, e f, g h)\",\
              \n      \":-pfx-nth-last-child(n+1 of c d.i, e j f)\");\
              \n}\n"),
@@ -75,8 +80,9 @@ mod prefix {
 #[test]
 fn subset() {
     assert_eq!(
-        runner().ok("a {\
-             \n  b: is-superselector(\
+        runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.is-superselector(\
              \n      \":nth-last-child(n+1 of c d.i, e j f)\",\
              \n      \":nth-last-child(n+1 of c d, e f, g h)\");\
              \n}\n"),
@@ -88,8 +94,9 @@ fn subset() {
 #[test]
 fn superset() {
     assert_eq!(
-        runner().ok("a {\
-             \n  b: is-superselector(\
+        runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.is-superselector(\
              \n      \":nth-last-child(n+1 of c d, e f, g h)\",\
              \n      \":nth-last-child(n+1 of c d.i, e j f)\");\
              \n}\n"),

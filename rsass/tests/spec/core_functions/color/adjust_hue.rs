@@ -15,11 +15,12 @@ fn above_max() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn alpha() {
     assert_eq!(
         runner().ok("a {b: adjust-hue(rgba(red, 0.1), 359)}\n"),
         "a {\
-         \n  b: rgba(255, 0, 4, 0.1);\
+         \n  b: rgba(255, 0, 4.25, 0.1);\
          \n}\n"
     );
 }
@@ -27,6 +28,21 @@ mod error {
     #[allow(unused)]
     use super::runner;
 
+    #[test]
+    #[ignore] // wrong error
+    fn non_legacy() {
+        assert_eq!(
+        runner().err(
+            "a {b: adjust-hue(lch(0% 0 0deg), 10deg)}\n"
+        ),
+        "Error: adjust-hue() is only supported for legacy colors. Please use color.adjust() instead with an explicit $space argument.\
+         \n  ,\
+         \n1 | a {b: adjust-hue(lch(0% 0 0deg), 10deg)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet",
+    );
+    }
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -90,29 +106,32 @@ mod error {
     }
 }
 #[test]
+#[ignore] // wrong result
 fn fraction() {
     assert_eq!(
         runner().ok("a {b: adjust-hue(red, 0.5)}\n"),
         "a {\
-         \n  b: #ff0200;\
+         \n  b: rgb(255, 2.125, 0);\
          \n}\n"
     );
 }
 #[test]
+#[ignore] // wrong result
 fn max() {
     assert_eq!(
         runner().ok("a {b: adjust-hue(red, 359)}\n"),
         "a {\
-         \n  b: #ff0004;\
+         \n  b: rgb(255, 0, 4.25);\
          \n}\n"
     );
 }
 #[test]
+#[ignore] // wrong result
 fn middle() {
     assert_eq!(
         runner().ok("a {b: adjust-hue(red, 123)}\n"),
         "a {\
-         \n  b: #00ff0d;\
+         \n  b: rgb(0, 255, 12.75);\
          \n}\n"
     );
 }
@@ -126,11 +145,12 @@ fn min() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok("a {b: adjust-hue($color: red, $degrees: 123)}\n"),
         "a {\
-         \n  b: #00ff0d;\
+         \n  b: rgb(0, 255, 12.75);\
          \n}\n"
     );
 }
@@ -148,11 +168,12 @@ mod units {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn angle() {
         assert_eq!(
             runner().ok("a {b: adjust-hue(red, 60rad)}\n"),
             "a {\
-         \n  b: #00b4ff;\
+         \n  b: rgb(0, 179.576224164, 255);\
          \n}\n"
         );
     }

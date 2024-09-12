@@ -48,6 +48,21 @@ mod error {
         }
     }
     #[test]
+    #[ignore] // wrong error
+    fn non_legacy() {
+        assert_eq!(
+        runner().err(
+            "a {b: darken(color(srgb 1 1 1), 10%)}\n"
+        ),
+        "Error: darken() is only supported for legacy colors. Please use color.adjust() instead with an explicit $space argument.\
+         \n  ,\
+         \n1 | a {b: darken(color(srgb 1 1 1), 10%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet",
+    );
+    }
+    #[test]
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: darken(red)}\n"),
@@ -110,11 +125,12 @@ mod error {
     }
 }
 #[test]
+#[ignore] // wrong result
 fn fraction() {
     assert_eq!(
         runner().ok("a {b: darken(red, 0.5%)}\n"),
         "a {\
-         \n  b: #fc0000;\
+         \n  b: rgb(252.45, 0, 0);\
          \n}\n"
     );
 }
@@ -137,11 +153,12 @@ fn max_remaining() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn middle() {
     assert_eq!(
         runner().ok("a {b: darken(red, 14%)}\n"),
         "a {\
-         \n  b: #b80000;\
+         \n  b: rgb(183.6, 0, 0);\
          \n}\n"
     );
 }
@@ -155,11 +172,12 @@ fn min() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok("a {b: darken($color: red, $amount: 14%)}\n"),
         "a {\
-         \n  b: #b80000;\
+         \n  b: rgb(183.6, 0, 0);\
          \n}\n"
     );
 }

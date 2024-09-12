@@ -10,7 +10,8 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            ":not(.foo) {\r\
+            "@use \"sass:selector\";\
+             \n:not(.foo) {\r\
              \n  content: test;\r\
              \n}\r\
              \n.bar, .baz {\r\
@@ -18,7 +19,7 @@ fn test() {
              \n}\r\
              \n\r\
              \ntest {\r\
-             \n  content: selector-extend(\":not(.foo)\", \".foo\", \".bar\");\r\
+             \n  content: selector.extend(\":not(.foo)\", \".foo\", \".bar\");\r\
              \n}"
         ),
         ":not(.foo):not(.bar):not(.baz) {\

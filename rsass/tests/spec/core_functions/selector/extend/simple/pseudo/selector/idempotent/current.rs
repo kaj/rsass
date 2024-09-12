@@ -10,7 +10,8 @@ fn runner() -> crate::TestRunner {
 fn current_in_extender() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":current(.c)\", \".c\", \":current(.d, .e)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":current(.c)\", \".c\", \":current(.d, .e)\")}\n"
         ),
         "a {\
          \n  b: :current(.c, .d, .e);\
@@ -22,7 +23,8 @@ fn current_in_extender() {
 fn list() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":current(.c)\", \".c\", \".d, .e\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":current(.c)\", \".c\", \".d, .e\")}\n"
         ),
         "a {\
          \n  b: :current(.c, .d, .e);\
@@ -33,8 +35,8 @@ fn list() {
 #[ignore] // wrong result
 fn simple() {
     assert_eq!(
-        runner()
-            .ok("a {b: selector-extend(\":current(.c)\", \".c\", \".d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":current(.c)\", \".c\", \".d\")}\n"),
         "a {\
          \n  b: :current(.c, .d);\
          \n}\n"

@@ -8,8 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function foo($args...) {\
-             \n  @return adjust-color($args...);\
+        runner().ok("@use \"sass:color\";\
+             \n@function foo($args...) {\
+             \n  @return color.adjust($args...);\
              \n}\n\
              \n.foo {val: foo(#102030, $blue: 5)}\n"),
         ".foo {\

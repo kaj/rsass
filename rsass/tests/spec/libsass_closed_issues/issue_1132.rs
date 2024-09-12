@@ -8,9 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("foo {\
+        runner().ok("@use \"sass:color\";\
+             \nfoo {\
              \n  @for $i from 0 through 360 {\
-             \n    i#{$i}: hue(hsl($i, 10%, 20%));\
+             \n    i#{$i}: color.hue(hsl($i, 10%, 20%));\
              \n  }\
              \n}\n"),
         "foo {\

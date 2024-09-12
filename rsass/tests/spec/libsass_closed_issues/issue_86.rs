@@ -8,15 +8,20 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(".color-functions {\r\
+        runner().ok(
+            "@use \"sass:color\";\
+             \n@use \"sass:math\";\
+             \n@use \"sass:meta\";\
+             \n.color-functions {\r\
              \n    $color: red;\r\
-             \n    hue: hue($color);\r\
-             \n    hue-type: type-of(hue($color));\r\
-             \n    hue-unit: unit(hue($color));\r\
-             \n    hue-comparable: comparable(hue($color), hue($color));\r\
-             \n\ttest-1: comparable(lightness(red), 1%);\r\
-             \n\ttest-2: comparable(saturation(red), 1%);\r\
-             \n}"),
+             \n    hue: color.hue($color);\r\
+             \n    hue-type: meta.type-of(color.hue($color));\r\
+             \n    hue-unit: math.unit(color.hue($color));\r\
+             \n    hue-comparable: math.compatible(color.hue($color), color.hue($color));\r\
+             \n\ttest-1: math.compatible(color.lightness(red), 1%);\r\
+             \n\ttest-2: math.compatible(color.saturation(red), 1%);\r\
+             \n}"
+        ),
         ".color-functions {\
          \n  hue: 0deg;\
          \n  hue-type: number;\

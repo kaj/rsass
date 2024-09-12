@@ -6,15 +6,3 @@ fn runner() -> crate::TestRunner {
 }
 
 mod color;
-
-mod general;
-
-mod map;
-
-mod math;
-
-mod meta;
-
-mod selector;
-
-mod string;

@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn alone() {
     assert_eq!(
-        runner().ok("a {b: selector-nest(\"c\", \"&\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \"&\")}\n"),
         "a {\
          \n  b: c;\
          \n}\n"
@@ -21,7 +22,8 @@ mod complex {
     #[test]
     fn complex_parent() {
         assert_eq!(
-            runner().ok("a {b: selector-nest(\"c d\", \"e &.f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c d\", \"e &.f\")}\n"),
             "a {\
          \n  b: e c d.f;\
          \n}\n"
@@ -30,7 +32,8 @@ mod complex {
     #[test]
     fn simple_parent() {
         assert_eq!(
-            runner().ok("a {b: selector-nest(\"c\", \"d &.e\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \"d &.e\")}\n"),
             "a {\
          \n  b: d c.e;\
          \n}\n"
@@ -40,7 +43,8 @@ mod complex {
 #[test]
 fn compound() {
     assert_eq!(
-        runner().ok("a {b: selector-nest(\"c\", \"&.d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \"&.d\")}\n"),
         "a {\
          \n  b: c.d;\
          \n}\n"
@@ -49,7 +53,8 @@ fn compound() {
 #[test]
 fn in_one_complex() {
     assert_eq!(
-        runner().ok("a {b: selector-nest(\"c\", \"&.d, e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \"&.d, e\")}\n"),
         "a {\
          \n  b: c.d, c e;\
          \n}\n"
@@ -58,7 +63,8 @@ fn in_one_complex() {
 #[test]
 fn multiple() {
     assert_eq!(
-        runner().ok("a {b: selector-nest(\"c\", \"&.d &.e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \"&.d &.e\")}\n"),
         "a {\
          \n  b: c.d c.e;\
          \n}\n"
@@ -75,7 +81,8 @@ mod selector_pseudo {
         #[test]
         fn is() {
             assert_eq!(
-                runner().ok("a {b: selector-nest(\"c d\", \":is(&)\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c d\", \":is(&)\")}\n"),
                 "a {\
          \n  b: :is(c d);\
          \n}\n"
@@ -84,8 +91,8 @@ mod selector_pseudo {
         #[test]
         fn matches() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-nest(\"c d\", \":matches(&)\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c d\", \":matches(&)\")}\n"),
                 "a {\
          \n  b: :matches(c d);\
          \n}\n"
@@ -94,7 +101,8 @@ mod selector_pseudo {
         #[test]
         fn test_where() {
             assert_eq!(
-                runner().ok("a {b: selector-nest(\"c d\", \":where(&)\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c d\", \":where(&)\")}\n"),
                 "a {\
          \n  b: :where(c d);\
          \n}\n"
@@ -108,7 +116,8 @@ mod selector_pseudo {
         #[test]
         fn is() {
             assert_eq!(
-                runner().ok("a {b: selector-nest(\"c\", \":is(&)\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \":is(&)\")}\n"),
                 "a {\
          \n  b: :is(c);\
          \n}\n"
@@ -117,7 +126,8 @@ mod selector_pseudo {
         #[test]
         fn matches() {
             assert_eq!(
-                runner().ok("a {b: selector-nest(\"c\", \":matches(&)\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \":matches(&)\")}\n"),
                 "a {\
          \n  b: :matches(c);\
          \n}\n"
@@ -126,7 +136,8 @@ mod selector_pseudo {
         #[test]
         fn test_where() {
             assert_eq!(
-                runner().ok("a {b: selector-nest(\"c\", \":where(&)\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \":where(&)\")}\n"),
                 "a {\
          \n  b: :where(c);\
          \n}\n"
@@ -137,7 +148,8 @@ mod selector_pseudo {
 #[test]
 fn suffix() {
     assert_eq!(
-        runner().ok("a {b: selector-nest(\"c\", \"&d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", \"&d\")}\n"),
         "a {\
          \n  b: cd;\
          \n}\n"

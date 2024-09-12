@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn all_match() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\".c.d\", \".c, .d\", \".e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c.d\", \".c, .d\", \".e\")}\n"),
         "a {\
          \n  b: .c.d, .e;\
          \n}\n"
@@ -20,7 +21,8 @@ fn all_match() {
 fn different_matches() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\".c.d, .c .e, .d .f\", \".c, .d\", \".g\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\".c.d, .c .e, .d .f\", \".c, .d\", \".g\")}\n"
         ),
         "a {\
          \n  b: .c.d, .g, .c .e, .g .e, .d .f, .g .f;\
@@ -30,7 +32,8 @@ fn different_matches() {
 #[test]
 fn one_matches() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\".c\", \".c, .d\", \".e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c\", \".c, .d\", \".e\")}\n"),
         "a {\
          \n  b: .c, .e;\
          \n}\n"

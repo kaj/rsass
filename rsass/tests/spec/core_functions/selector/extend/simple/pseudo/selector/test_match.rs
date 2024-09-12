@@ -12,8 +12,9 @@ mod prefixed {
     #[test]
     fn equal() {
         assert_eq!(
-            runner().ok("a {\
-             \n  b: selector-extend(\
+            runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.extend(\
              \n      \":nth-child(2n + 1 of c d.e, f g)\",\
              \n      \":nth-child(2n + 1 of c d.e, f g)\",\
              \n      \"h\");\
@@ -30,8 +31,9 @@ mod prefixed {
         #[test]
         fn argument() {
             assert_eq!(
-                runner().ok("a {\
-             \n  b: selector-extend(\
+                runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.extend(\
              \n      \":nth-child(2n + 1 of c d.e, f g)\",\
              \n      \":nth-child(2n + 1 of d, g)\",\
              \n      \"h\");\
@@ -45,7 +47,8 @@ mod prefixed {
         fn has_argument() {
             assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":nth-child(2n + 1 of c d.e, f g)\", \":nth-child\", \"h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":nth-child(2n + 1 of c d.e, f g)\", \":nth-child\", \"h\")}\n"
         ),
         "a {\
          \n  b: :nth-child(2n+1 of c d.e, f g);\
@@ -55,8 +58,9 @@ mod prefixed {
         #[test]
         fn name() {
             assert_eq!(
-                runner().ok("a {\
-             \n  b: selector-extend(\
+                runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.extend(\
              \n      \":nth-child(2n + 1 of c d.e, f g)\",\
              \n      \":nth-last-child(2n + 1 of c d.e, f g)\",\
              \n      \"h\");\
@@ -69,8 +73,9 @@ mod prefixed {
         #[test]
         fn prefix() {
             assert_eq!(
-                runner().ok("a {\
-             \n  b: selector-extend(\
+                runner().ok("@use \"sass:selector\";\
+             \na {\
+             \n  b: selector.extend(\
              \n      \":nth-child(2n + 1 of c d.e, f g)\",\
              \n      \":nth-child(2n of c d.e, f g)\",\
              \n      \"h\");\
@@ -94,7 +99,8 @@ mod unprefixed {
         fn equal() {
             assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\"::slotted(c.d, e.f)\", \"::slotted(c.d, e.f)\", \"g\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\"::slotted(c.d, e.f)\", \"::slotted(c.d, e.f)\", \"g\")}\n"
         ),
         "a {\
          \n  b: ::slotted(c.d, e.f), g;\
@@ -109,7 +115,8 @@ mod unprefixed {
             fn argument() {
                 assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\"::slotted(c.d, e.f)\", \"::slotted(d, g)\", \"g\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\"::slotted(c.d, e.f)\", \"::slotted(d, g)\", \"g\")}\n"
         ),
         "a {\
          \n  b: ::slotted(c.d, e.f);\
@@ -120,7 +127,8 @@ mod unprefixed {
             fn has_argument() {
                 assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\"::slotted(c.d, e.f)\", \"::slotted\", \"g\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\"::slotted(c.d, e.f)\", \"::slotted\", \"g\")}\n"
         ),
         "a {\
          \n  b: ::slotted(c.d, e.f);\
@@ -131,7 +139,8 @@ mod unprefixed {
             fn name() {
                 assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\"::slotted(c.d, e.f)\", \"::-pfx-slotted(c.d, e.f)\", \"g\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\"::slotted(c.d, e.f)\", \"::-pfx-slotted(c.d, e.f)\", \"g\")}\n"
         ),
         "a {\
          \n  b: ::slotted(c.d, e.f);\
@@ -152,7 +161,8 @@ mod unprefixed {
             fn equal() {
                 assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":is(c d.e, f g)\", \":is(c d.e, f g)\", \"h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":is(c d.e, f g)\", \":is(c d.e, f g)\", \"h\")}\n"
         ),
         "a {\
          \n  b: :is(c d.e, f g), h;\
@@ -167,7 +177,8 @@ mod unprefixed {
                 fn argument() {
                     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":is(c d.e, f g)\", \":is(d, g)\", \"h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":is(c d.e, f g)\", \":is(d, g)\", \"h\")}\n"
         ),
         "a {\
          \n  b: :is(c d.e, f g);\
@@ -177,19 +188,21 @@ mod unprefixed {
                 #[test]
                 fn has_argument() {
                     assert_eq!(
-        runner().ok(
-            "a {b: selector-extend(\":is(c d.e, f g)\", \":is\", \"h\")}\n"
-        ),
-        "a {\
+                        runner().ok(
+                            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":is(c d.e, f g)\", \":is\", \"h\")}\n"
+                        ),
+                        "a {\
          \n  b: :is(c d.e, f g);\
          \n}\n"
-    );
+                    );
                 }
                 #[test]
                 fn name() {
                     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":is(c d.e, f g)\", \":-pfx-is(c d.e, f g)\", \"h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":is(c d.e, f g)\", \":-pfx-is(c d.e, f g)\", \"h\")}\n"
         ),
         "a {\
          \n  b: :is(c d.e, f g);\
@@ -211,7 +224,8 @@ mod unprefixed {
             fn equal() {
                 assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":matches(c d.e, f g)\", \":matches(c d.e, f g)\", \"h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":matches(c d.e, f g)\", \":matches(c d.e, f g)\", \"h\")}\n"
         ),
         "a {\
          \n  b: :matches(c d.e, f g), h;\
@@ -226,7 +240,8 @@ mod unprefixed {
                 fn argument() {
                     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":matches(c d.e, f g)\", \":matches(d, g)\", \"h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":matches(c d.e, f g)\", \":matches(d, g)\", \"h\")}\n"
         ),
         "a {\
          \n  b: :matches(c d.e, f g);\
@@ -237,7 +252,8 @@ mod unprefixed {
                 fn has_argument() {
                     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":matches(c d.e, f g)\", \":matches\", \"h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":matches(c d.e, f g)\", \":matches\", \"h\")}\n"
         ),
         "a {\
          \n  b: :matches(c d.e, f g);\
@@ -248,7 +264,8 @@ mod unprefixed {
                 fn name() {
                     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":matches(c d.e, f g)\", \":-pfx-matches(c d.e, f g)\", \"h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":matches(c d.e, f g)\", \":-pfx-matches(c d.e, f g)\", \"h\")}\n"
         ),
         "a {\
          \n  b: :matches(c d.e, f g);\
@@ -270,7 +287,8 @@ mod unprefixed {
             fn equal() {
                 assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":where(c d.e, f g)\", \":where(c d.e, f g)\", \"h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":where(c d.e, f g)\", \":where(c d.e, f g)\", \"h\")}\n"
         ),
         "a {\
          \n  b: :where(c d.e, f g), h;\
@@ -285,7 +303,8 @@ mod unprefixed {
                 fn argument() {
                     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":where(c d.e, f g)\", \":where(d, g)\", \"h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":where(c d.e, f g)\", \":where(d, g)\", \"h\")}\n"
         ),
         "a {\
          \n  b: :where(c d.e, f g);\
@@ -296,7 +315,8 @@ mod unprefixed {
                 fn has_argument() {
                     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":where(c d.e, f g)\", \":where\", \"h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":where(c d.e, f g)\", \":where\", \"h\")}\n"
         ),
         "a {\
          \n  b: :where(c d.e, f g);\
@@ -307,7 +327,8 @@ mod unprefixed {
                 fn name() {
                     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":where(c d.e, f g)\", \":-pfx-where(c d.e, f g)\", \"h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":where(c d.e, f g)\", \":-pfx-where(c d.e, f g)\", \"h\")}\n"
         ),
         "a {\
          \n  b: :where(c d.e, f g);\

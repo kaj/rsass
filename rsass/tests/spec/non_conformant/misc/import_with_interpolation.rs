@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$family: unquote(\"Droid+Sans\");\
+            "@use \"sass:string\";\
+             \n$family: string.unquote(\"Droid+Sans\");\
              \n@import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\n"
         ),
         "@import url(\"http://fonts.googleapis.com/css?family=Droid+Sans\");\n"

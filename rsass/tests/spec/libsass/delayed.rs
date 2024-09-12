@@ -8,17 +8,18 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$x: a 3/4 b;\
+        runner().ok("@use \"sass:list\";\
+             \n$x: a 3/4 b;\
              \n$y: hey;\n\
              \n@function foo() {\
              \n  @return 3/4;\
              \n}\n\
              \ndiv {\
              \n  hoo: 3/4;\
-             \n  goo: nth($x, 2);\
-             \n  foo: 15 / nth($x, 2);\
-             \n  foo: .25 + nth($x, 2);\
-             \n  coo: 2/3 / nth($x, 2);\
+             \n  goo: list.nth($x, 2);\
+             \n  foo: 15 / list.nth($x, 2);\
+             \n  foo: .25 + list.nth($x, 2);\
+             \n  coo: 2/3 / list.nth($x, 2);\
              \n  bar: $y and true;\
              \n  bar: false and true;\
              \n  bar: (false) and true;\
@@ -27,7 +28,7 @@ fn test() {
              \n  }\
              \n  bloo: foo();\
              \n  @warn 2/3;\
-             \n  blix: \"hey #{nth($x, 2)} ho\";\
+             \n  blix: \"hey #{list.nth($x, 2)} ho\";\
              \n}\n\
              \n@media screen and (hux: 3/4) {\
              \n  div {\
@@ -36,7 +37,7 @@ fn test() {
              \n}\n\
              \n@warn \"blah blah\";\n\
              \ndiv {\
-             \n  blah: \"ho #{nth($x, 2) } ho\";\
+             \n  blah: \"ho #{list.nth($x, 2) } ho\";\
              \n}\n\
              \nspan {\
              \n  fludge: (true and 3/4);\

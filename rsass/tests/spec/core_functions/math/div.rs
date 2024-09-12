@@ -55,11 +55,12 @@ mod non_numeric {
     #[test]
     fn denominator() {
         assert_eq!(
-            runner().ok("@use \"sass:math\";\
+            runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:math\";\
              \na {\
              \n  $result: math.div(6, b);\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
             "a {\
          \n  value: 6/b;\
@@ -70,11 +71,12 @@ mod non_numeric {
     #[test]
     fn numerator() {
         assert_eq!(
-            runner().ok("@use \"sass:math\";\
+            runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:math\";\
              \na {\
              \n  $result: math.div(b, 3);\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
             "a {\
          \n  value: b/3;\

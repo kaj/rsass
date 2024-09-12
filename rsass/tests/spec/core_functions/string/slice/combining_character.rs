@@ -9,11 +9,12 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "// Sass does *not* treat strings as sequences of glyphs, so this string which\
+            "@use \"sass:string\";\
+             \n// Sass does *not* treat strings as sequences of glyphs, so this string which\
              \n// contains \"c\" followed by a combining umlaut should be considered two separate\
              \n// characters even though it\'s rendered as only one and only the \"d\" should be\
              \n// sliced out.\
-             \na {b: str-slice(\"cd\\0308e\", 2, 2)}\n"
+             \na {b: string.slice(\"cd\\0308e\", 2, 2)}\n"
         ),
         "a {\
          \n  b: \"d\";\

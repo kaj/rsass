@@ -12,7 +12,10 @@ mod selector1 {
     #[test]
     fn invalid() {
         assert_eq!(
-            runner().err("a {b: selector-unify(\"[c\", \"d\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.unify(\"[c\", \"d\")}\n"
+            ),
             "Error: $selector1: expected more input.\
          \n  ,\
          \n1 | [c\
@@ -20,16 +23,19 @@ mod selector1 {
          \n  \'\
          \n  - 1:3  root stylesheet\
          \n  ,\
-         \n1 | a {b: selector-unify(\"[c\", \"d\")}\
+         \n2 | a {b: selector.unify(\"[c\", \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn parent() {
         assert_eq!(
-            runner().err("a {b: selector-unify(\"&\", \"c\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.unify(\"&\", \"c\")}\n"
+            ),
             "Error: $selector1: Parent selectors aren\'t allowed here.\
          \n  ,\
          \n1 | &\
@@ -37,25 +43,26 @@ mod selector1 {
          \n  \'\
          \n  - 1:1  root stylesheet\
          \n  ,\
-         \n1 | a {b: selector-unify(\"&\", \"c\")}\
+         \n2 | a {b: selector.unify(\"&\", \"c\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
         runner().err(
-            "a {b: selector-unify(1, \"c\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.unify(1, \"c\")}\n"
         ),
         "Error: $selector1: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
-         \n1 | a {b: selector-unify(1, \"c\")}\
+         \n2 | a {b: selector.unify(1, \"c\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
 }
@@ -66,7 +73,10 @@ mod selector2 {
     #[test]
     fn invalid() {
         assert_eq!(
-            runner().err("a {b: selector-unify(\"c\", \"[d\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.unify(\"c\", \"[d\")}\n"
+            ),
             "Error: $selector2: expected more input.\
          \n  ,\
          \n1 | [d\
@@ -74,16 +84,19 @@ mod selector2 {
          \n  \'\
          \n  - 1:3  root stylesheet\
          \n  ,\
-         \n1 | a {b: selector-unify(\"c\", \"[d\")}\
+         \n2 | a {b: selector.unify(\"c\", \"[d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn parent() {
         assert_eq!(
-            runner().err("a {b: selector-unify(\"c\", \"&\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.unify(\"c\", \"&\")}\n"
+            ),
             "Error: $selector2: Parent selectors aren\'t allowed here.\
          \n  ,\
          \n1 | &\
@@ -91,25 +104,41 @@ mod selector2 {
          \n  \'\
          \n  - 1:1  root stylesheet\
          \n  ,\
-         \n1 | a {b: selector-unify(\"c\", \"&\")}\
+         \n2 | a {b: selector.unify(\"c\", \"&\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
         runner().err(
-            "a {b: selector-unify(\"c\", 1)}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.unify(\"c\", 1)}\n"
         ),
         "Error: $selector2: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
-         \n1 | a {b: selector-unify(\"c\", 1)}\
+         \n2 | a {b: selector.unify(\"c\", 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
+}
+#[test]
+fn wrong_name() {
+    assert_eq!(
+        runner().err(
+            "@use \"sass:selector\";\
+             \na {b: selector.selector-unify(\".c\", \".d\")}\n"
+        ),
+        "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: selector.selector-unify(\".c\", \".d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+    );
 }

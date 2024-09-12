@@ -9,7 +9,7 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err(
-            "@use \'sass:color\';\
+            "@use \"sass:color\";\
              \na {b: color.hwb()}\n"
         ),
         "Error: Missing argument $channels.\

@@ -11,7 +11,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok("@import \"plain\";\n\
+        runner().ok("@use \"plain\";\n\
              \na {@extend b}\n"),
         "b, a {\
          \n  c: d;\

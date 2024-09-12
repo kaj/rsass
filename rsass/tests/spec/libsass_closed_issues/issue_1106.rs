@@ -9,25 +9,26 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err(
-            "@function foo() { @return null; }\
+            "@use \"sass:string\";\
+             \n@function foo() { @return null; }\
              \n$foo: null;\
              \na {\
              \n    foo: bar;\
              \n    variable: $foo;\
              \n    function: foo();\
-             \n    unquote: unquote($foo);\
+             \n    unquote: string.unquote($foo);\
              \n}\n\
              \nb {\
              \n    variable: $foo;\
              \n    function: foo();\
-             \n    unquote: unquote($foo);\
+             \n    unquote: string.unquote($foo);\
              \n}\n"
         ),
         "Error: $string: null is not a string.\
          \n  ,\
-         \n7 |     unquote: unquote($foo);\
-         \n  |              ^^^^^^^^^^^^^\
+         \n8 |     unquote: string.unquote($foo);\
+         \n  |              ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 7:14  root stylesheet",
+         \n  input.scss 8:14  root stylesheet",
     );
 }

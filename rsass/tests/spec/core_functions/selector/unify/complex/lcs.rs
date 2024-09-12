@@ -14,7 +14,8 @@ mod non_contiguous {
     fn different_positions() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-unify(\".s1-1 .c .d .s1-2 .e .s1-3\", \".c .s2-1 .d .e .s2-2 .s2-3\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.unify(\".s1-1 .c .d .s1-2 .e .s1-3\", \".c .s2-1 .d .e .s2-2 .s2-3\")}\n"
         ),
         "a {\
          \n  b: .s1-1 .c .s2-1 .d .s1-2 .e .s2-2 .s1-3.s2-3;\
@@ -26,7 +27,8 @@ mod non_contiguous {
     fn same_positions() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-unify(\".s1-1 .c .d .s1-2 .e .s1-3\", \".s2-1 .c .d .s2-2 .e .s2-3\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.unify(\".s1-1 .c .d .s1-2 .e .s1-3\", \".s2-1 .c .d .s2-2 .e .s2-3\")}\n"
         ),
         "a {\
          \n  b: .s1-1 .s2-1 .c .d .s1-2 .s2-2 .e .s1-3.s2-3, .s2-1 .s1-1 .c .d .s1-2 .s2-2 .e .s1-3.s2-3, .s1-1 .s2-1 .c .d .s2-2 .s1-2 .e .s1-3.s2-3, .s2-1 .s1-1 .c .d .s2-2 .s1-2 .e .s1-3.s2-3;\
@@ -39,9 +41,10 @@ mod non_contiguous {
 fn three_versus_two() {
     assert_eq!(
         runner().ok(
-            "// The longest common subsequence is `.c .d .e`, which is longer than `.f g`, so\
+            "@use \"sass:selector\";\
+             \n// The longest common subsequence is `.c .d .e`, which is longer than `.f g`, so\
              \n// `.c .d .e` gets unified while `.f .g` gets duplicated.\
-             \na {b: selector-unify(\".c .d .e .f .g .s1\", \".f .g .c .d .e .s2\")}\n"
+             \na {b: selector.unify(\".c .d .e .f .g .s1\", \".f .g .c .d .e .s2\")}\n"
         ),
         "a {\
          \n  b: .f .g .c .d .e .f .g .s1.s2;\
@@ -53,9 +56,10 @@ fn three_versus_two() {
 fn two_versus_one() {
     assert_eq!(
         runner().ok(
-            "// The longest common subsequence is `.c .d`, which is longer than `.e`, so `.c\
+            "@use \"sass:selector\";\
+             \n// The longest common subsequence is `.c .d`, which is longer than `.e`, so `.c\
              \n// .d` gets unified while `.e` gets duplicated.\
-             \na {b: selector-unify(\".c .d .e .s1\", \".e .c .d .s2\")}\n"
+             \na {b: selector.unify(\".c .d .e .s1\", \".e .c .d .s2\")}\n"
         ),
         "a {\
          \n  b: .e .c .d .e .s1.s2;\

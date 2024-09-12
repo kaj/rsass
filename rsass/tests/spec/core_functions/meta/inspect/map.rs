@@ -16,10 +16,11 @@ mod list {
         #[test]
         fn comma() {
             assert_eq!(
-                runner().ok("$result: inspect(((1, 2): 3, (4, 5): 6));\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect(((1, 2): 3, (4, 5): 6));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: ((1, 2): 3, (4, 5): 6);\
@@ -30,10 +31,11 @@ mod list {
         #[test]
         fn space() {
             assert_eq!(
-                runner().ok("$result: inspect((1 2: 3, 4 5: 6));\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect((1 2: 3, 4 5: 6));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: (1 2: 3, 4 5: 6);\
@@ -49,10 +51,11 @@ mod list {
         #[test]
         fn comma() {
             assert_eq!(
-                runner().ok("$result: inspect((1: (2, 3), 4: (5, 6)));\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect((1: (2, 3), 4: (5, 6)));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: (1: (2, 3), 4: (5, 6));\
@@ -63,10 +66,11 @@ mod list {
         #[test]
         fn space() {
             assert_eq!(
-                runner().ok("$result: inspect((1: 2 3, 4: 5 6));\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect((1: 2 3, 4: 5 6));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: (1: 2 3, 4: 5 6);\
@@ -79,10 +83,11 @@ mod list {
 #[test]
 fn number() {
     assert_eq!(
-        runner().ok("$result: inspect((1: 2, 3: 4));\
+        runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect((1: 2, 3: 4));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
         "a {\
          \n  value: (1: 2, 3: 4);\

@@ -12,17 +12,20 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: map-get(1)}\n"),
+            runner().err(
+                "@use \"sass:map\";\
+             \na {b: map.get(1)}\n"
+            ),
             "Error: Missing argument $key.\
          \n  ,--> input.scss\
-         \n1 | a {b: map-get(1)}\
+         \n2 | a {b: map.get(1)}\
          \n  |       ^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:map\
          \n1 | @function get($map, $key, $keys...) {\
          \n  |           ========================= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     mod test_type {
@@ -32,15 +35,33 @@ mod error {
         #[test]
         fn map() {
             assert_eq!(
-                runner().err("a {b: map-get(1, 2)}\n"),
+                runner().err(
+                    "@use \"sass:map\";\
+             \na {b: map.get(1, 2)}\n"
+                ),
                 "Error: $map: 1 is not a map.\
          \n  ,\
-         \n1 | a {b: map-get(1, 2)}\
+         \n2 | a {b: map.get(1, 2)}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
+    }
+    #[test]
+    fn wrong_name() {
+        assert_eq!(
+            runner().err(
+                "@use \"sass:map\";\
+             \na {b: map.map-get((c: d), c)}\n"
+            ),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: map.map-get((c: d), c)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+        );
     }
 }
 mod found {
@@ -50,7 +71,8 @@ mod found {
     #[test]
     fn first() {
         assert_eq!(
-            runner().ok("a {b: map-get((1: 2, 3: 4, 5: 6), 1)}\n"),
+            runner().ok("@use \"sass:map\";\
+             \na {b: map.get((1: 2, 3: 4, 5: 6), 1)}\n"),
             "a {\
          \n  b: 2;\
          \n}\n"
@@ -59,7 +81,8 @@ mod found {
     #[test]
     fn last() {
         assert_eq!(
-            runner().ok("a {b: map-get((1: 2, 3: 4, 5: 6), 5)}\n"),
+            runner().ok("@use \"sass:map\";\
+             \na {b: map.get((1: 2, 3: 4, 5: 6), 5)}\n"),
             "a {\
          \n  b: 6;\
          \n}\n"
@@ -68,7 +91,8 @@ mod found {
     #[test]
     fn middle() {
         assert_eq!(
-            runner().ok("a {b: map-get((1: 2, 3: 4, 5: 6), 3)}\n"),
+            runner().ok("@use \"sass:map\";\
+             \na {b: map.get((1: 2, 3: 4, 5: 6), 3)}\n"),
             "a {\
          \n  b: 4;\
          \n}\n"
@@ -77,7 +101,8 @@ mod found {
     #[test]
     fn single() {
         assert_eq!(
-            runner().ok("a {b: map-get((c: d), c)}\n"),
+            runner().ok("@use \"sass:map\";\
+             \na {b: map.get((c: d), c)}\n"),
             "a {\
          \n  b: d;\
          \n}\n"
@@ -87,7 +112,8 @@ mod found {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: map-get($map: (c: d), $key: c)}\n"),
+        runner().ok("@use \"sass:map\";\
+             \na {b: map.get($map: (c: d), $key: c)}\n"),
         "a {\
          \n  b: d;\
          \n}\n"
@@ -104,7 +130,8 @@ mod nested {
         #[test]
         fn full_path() {
             assert_eq!(
-                runner().ok("a {b: map-get((c: (d: (e: f))), c, d, e)}\n"),
+                runner().ok("@use \"sass:map\";\
+             \na {b: map.get((c: (d: (e: f))), c, d, e)}\n"),
                 "a {\
          \n  b: f;\
          \n}\n"
@@ -113,8 +140,9 @@ mod nested {
         #[test]
         fn partial_path() {
             assert_eq!(
-                runner()
-                    .ok("a {b: inspect(map-get((c: (d: (e: f))), c, d))}\n"),
+                runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.get((c: (d: (e: f))), c, d))}\n"),
                 "a {\
          \n  b: (e: f);\
          \n}\n"
@@ -128,9 +156,9 @@ mod nested {
         #[test]
         fn deep() {
             assert_eq!(
-                runner().ok(
-                    "a {b: inspect(map-get((c: (d: (e: f))), c, d, g))}\n"
-                ),
+                runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.get((c: (d: (e: f))), c, d, g))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -139,9 +167,9 @@ mod nested {
         #[test]
         fn too_many_keys() {
             assert_eq!(
-                runner().ok(
-                    "a {b: inspect(map-get((c: (d: (e: f))), c, d, e, f))}\n"
-                ),
+                runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.get((c: (d: (e: f))), c, d, e, f))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -150,7 +178,9 @@ mod nested {
         #[test]
         fn top_level() {
             assert_eq!(
-                runner().ok("a {b: inspect(map-get((c: (d: (e: f))), d))}\n"),
+                runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.get((c: (d: (e: f))), d))}\n"),
                 "a {\
          \n  b: null;\
          \n}\n"
@@ -165,7 +195,9 @@ mod not_found {
     #[test]
     fn dash_sensitive() {
         assert_eq!(
-            runner().ok("a {b: inspect(map-get((c-d: e), c_d))}\n"),
+            runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.get((c-d: e), c_d))}\n"),
             "a {\
          \n  b: null;\
          \n}\n"
@@ -174,7 +206,9 @@ mod not_found {
     #[test]
     fn empty() {
         assert_eq!(
-            runner().ok("a {b: inspect(map-get((), 1))}\n"),
+            runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.get((), 1))}\n"),
             "a {\
          \n  b: null;\
          \n}\n"
@@ -183,7 +217,9 @@ mod not_found {
     #[test]
     fn non_empty() {
         assert_eq!(
-            runner().ok("a {b: inspect(map-get((c: d), d))}\n"),
+            runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.get((c: d), d))}\n"),
             "a {\
          \n  b: null;\
          \n}\n"

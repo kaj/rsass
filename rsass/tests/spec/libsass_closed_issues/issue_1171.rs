@@ -8,16 +8,17 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function foo($initial, $args...) {\
-             \n  $args: append($args, 3);\n\
+        runner().ok("@use \"sass:list\";\
+             \n@function foo($initial, $args...) {\
+             \n  $args: list.append($args, 3);\n\
              \n  @return bar($initial, $args...);\
              \n}\n\
              \n@function bar($args...) {\
-             \n  @return length($args);\
+             \n  @return list.length($args);\
              \n}\n\
              \n@function baz($initial, $args...) {\
-             \n  $args: append($args, 3);\n\
-             \n  @return nth($args, 1);\
+             \n  $args: list.append($args, 3);\n\
+             \n  @return list.nth($args, 1);\
              \n}\n\
              \n.test {\
              \n  foo: foo(1, 2);\

@@ -2,9 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
-        .with_cwd("normalize")
-        .mock_file("output-ruby-sass.css", "@charset \"UTF-8\";\n.normalize {\n  name-start-char: ax ax ax ax ax ax;\n  name-start-char-non-hex: xx;\n  name-start-char-non-ascii: ☃x ☃x ☃x;\n  name-char-in-middle: a-x a-x;\n  name-char-at-start: \\-x \\-x;\n  digit-in-middle: a1x a1x;\n  digit-at-start: \\31 x \\31 x;\n  non-printable: \\0 x \\1 x \\2 x \\3 x \\4 x \\5 x \\6 x \\7 x \\8 x \\b x \\e x \\f x \\10 x \\11 x \\12 x \\13 x \\14 x \\15 x \\16 x \\17 x \\18 x \\19 x \\1a x \\1b x \\1c x \\1d x \\1e x \\1f x \\7f x;\n  newline: \\a x \\c x \\d x;\n  tab: \\9 x \\9 x;\n  name-char-interpolation-beginning: \\-foo;\n  name-char-interpolation-middle: foo-bar;\n  name-char-interpolation-end: foo-;\n  raw-escaped-tab: \\\t;\n}\n\n@media screen\\9  {\n  x {\n    y: z;\n  }\n}\nselector\\9  {\n  x: y;\n}\n")
+    super::runner().with_cwd("normalize")
 }
 
 #[test]

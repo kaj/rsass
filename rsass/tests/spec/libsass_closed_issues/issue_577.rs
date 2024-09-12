@@ -8,10 +8,11 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function map-each($map) {\
+        runner().ok("@use \"sass:list\";\
+             \n@function map-each($map) {\
              \n  $values: ();\n\
              \n  @each $key, $value in $map {\
-             \n    $values: append($values, $value);\
+             \n    $values: list.append($values, $value);\
              \n  }\n\
              \n  @return $values;\
              \n}\n\

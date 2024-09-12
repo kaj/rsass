@@ -20,7 +20,8 @@ mod list {
             #[test]
             fn built_in() {
                 assert_eq!(
-                    runner().ok("c {d: join(1 2/3 4, ())}\n"),
+                    runner().ok("@use \"sass:list\";\
+             \nc {d: list.join(1 2/3 4, ())}\n"),
                     "c {\
          \n  d: 1 2/3 4;\
          \n}\n"

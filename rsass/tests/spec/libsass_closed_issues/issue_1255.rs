@@ -9,18 +9,21 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok("@function double($value) {\
+        runner().ok(
+            "@use \"sass:list\";\
+             \n@function double($value) {\
              \n  @return $value * 2;\
              \n}\n\
              \n@mixin dummy-bug($args...) {\
-             \n  @for $i from 1 through length($args) {\
-             \n    $args: set-nth($args, $i, double(nth($args, $i)));\
+             \n  @for $i from 1 through list.length($args) {\
+             \n    $args: list.set-nth($args, $i, double(list.nth($args, $i)));\
              \n  }\n\
              \n  content: $args;\
              \n}\n\
              \n.foo {\
              \n  @include dummy-bug(1, 2, 3, 4);\
-             \n}"),
+             \n}"
+        ),
         ".foo {\
          \n  content: 2, 4, 6, 8;\
          \n}\n"

@@ -9,8 +9,10 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "@mixin transition( $prefix_properties, $transitions... ) {\n\
-             \n    @if not str-index( inspect( $transitions ), \',\') {\
+            "@use \"sass:string\";\
+             \n@use \"sass:meta\";\n\
+             \n@mixin transition( $prefix_properties, $transitions... ) {\n\
+             \n    @if not string.index( meta.inspect( $transitions ), \',\') {\
              \n        $transitions: ( $transitions );\
              \n    }\n\
              \n    @each $prefix in -webkit-, -moz-, -ms-, -o-, \'\' {\n\

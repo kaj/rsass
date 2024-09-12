@@ -12,8 +12,8 @@ mod empty_map {
     #[test]
     fn same_as_empty_list() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: $empty-map == ()}\n"),
+            runner().ok("@use \"core_functions/list/utils\";\
+             \na {b: utils.$empty-map == ()}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -31,8 +31,8 @@ mod real_separator {
         #[test]
         fn comma() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: real-separator($empty-comma-list)}\n"),
+                runner().ok("@use \"core_functions/list/utils\";\
+             \na {b: utils.real-separator(utils.$empty-comma-list)}\n"),
                 "a {\
          \n  b: comma;\
          \n}\n"
@@ -41,8 +41,8 @@ mod real_separator {
         #[test]
         fn space() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: real-separator($empty-space-list)}\n"),
+                runner().ok("@use \"core_functions/list/utils\";\
+             \na {b: utils.real-separator(utils.$empty-space-list)}\n"),
                 "a {\
          \n  b: space;\
          \n}\n"
@@ -51,8 +51,8 @@ mod real_separator {
         #[test]
         fn undecided() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: real-separator(())}\n"),
+                runner().ok("@use \"core_functions/list/utils\";\
+             \na {b: utils.real-separator(())}\n"),
                 "a {\
          \n  b: undecided;\
          \n}\n"
@@ -66,8 +66,8 @@ mod real_separator {
         #[test]
         fn comma() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: real-separator((1, 2))}\n"),
+                runner().ok("@use \"core_functions/list/utils\";\
+             \na {b: utils.real-separator((1, 2))}\n"),
                 "a {\
          \n  b: comma;\
          \n}\n"
@@ -76,8 +76,8 @@ mod real_separator {
         #[test]
         fn space() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: real-separator(1 2)}\n"),
+                runner().ok("@use \"core_functions/list/utils\";\
+             \na {b: utils.real-separator(1 2)}\n"),
                 "a {\
          \n  b: space;\
          \n}\n"
@@ -91,8 +91,8 @@ mod real_separator {
         #[test]
         fn comma() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: real-separator((1,))}\n"),
+                runner().ok("@use \"core_functions/list/utils\";\
+             \na {b: utils.real-separator((1,))}\n"),
                 "a {\
          \n  b: comma;\
          \n}\n"
@@ -101,8 +101,8 @@ mod real_separator {
         #[test]
         fn undecided() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: real-separator([1])}\n"),
+                runner().ok("@use \"core_functions/list/utils\";\
+             \na {b: utils.real-separator([1])}\n"),
                 "a {\
          \n  b: undecided;\
          \n}\n"
@@ -121,8 +121,8 @@ mod with_separator {
         #[test]
         fn comma() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: with-separator(1 2, comma)}\n"),
+                runner().ok("@use \"core_functions/list/utils\";\
+             \na {b: utils.with-separator(1 2, comma)}\n"),
                 "a {\
          \n  b: 1, 2;\
          \n}\n"
@@ -131,8 +131,8 @@ mod with_separator {
         #[test]
         fn space() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: with-separator((1, 2), space)}\n"),
+                runner().ok("@use \"core_functions/list/utils\";\
+             \na {b: utils.with-separator((1, 2), space)}\n"),
                 "a {\
          \n  b: 1 2;\
          \n}\n"
@@ -146,22 +146,26 @@ mod with_separator {
         #[test]
         fn comma() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: real-separator(with-separator([1], comma))}\n"),
-                "a {\
+        runner().ok(
+            "@use \"core_functions/list/utils\";\
+             \na {b: utils.real-separator(utils.with-separator([1], comma))}\n"
+        ),
+        "a {\
          \n  b: comma;\
          \n}\n"
-            );
+    );
         }
         #[test]
         fn space() {
             assert_eq!(
-                runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: real-separator(with-separator((1,), space))}\n"),
-                "a {\
+        runner().ok(
+            "@use \"core_functions/list/utils\";\
+             \na {b: utils.real-separator(utils.with-separator((1,), space))}\n"
+        ),
+        "a {\
          \n  b: space;\
          \n}\n"
-            );
+    );
         }
     }
 }

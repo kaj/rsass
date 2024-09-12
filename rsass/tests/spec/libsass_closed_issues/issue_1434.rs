@@ -8,13 +8,14 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(".foo {\
-             \n    a: selector-nest(\'.foo\', \'.bar > .baz\');\
-             \n    b: selector-nest(\'.foo\', \'.bar ~ .baz\');\
-             \n    c: selector-nest(\'.foo\', \'.bar + .baz\');\
-             \n    d: selector-nest(\'.foo > .bar\', \'.baz\');\
-             \n    e: selector-nest(\'.foo ~ .bar\', \'.baz\');\
-             \n    f: selector-nest(\'.foo + .bar\', \'.baz\');\
+        runner().ok("@use \"sass:selector\";\
+             \n.foo {\
+             \n    a: selector.nest(\'.foo\', \'.bar > .baz\');\
+             \n    b: selector.nest(\'.foo\', \'.bar ~ .baz\');\
+             \n    c: selector.nest(\'.foo\', \'.bar + .baz\');\
+             \n    d: selector.nest(\'.foo > .bar\', \'.baz\');\
+             \n    e: selector.nest(\'.foo ~ .bar\', \'.baz\');\
+             \n    f: selector.nest(\'.foo + .bar\', \'.baz\');\
              \n}\n"),
         ".foo {\
          \n  a: .foo .bar > .baz;\

@@ -9,10 +9,11 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "@mixin import-google-fonts() {\r\
+            "@use \"sass:string\";\
+             \n@mixin import-google-fonts() {\r\
              \n  @import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\r\
              \n}\r\
-             \n$family: unquote(\"Droid+Sans\");\r\
+             \n$family: string.unquote(\"Droid+Sans\");\r\
              \n@include import-google-fonts();"
         ),
         "@import url(\"http://fonts.googleapis.com/css?family=Droid+Sans\");\n"

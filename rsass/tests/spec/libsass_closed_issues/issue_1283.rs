@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$map: map-merge((1 2: 3), (2 1: 3));\n\
+        runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\n\
+             \n$map: map.merge((1 2: 3), (2 1: 3));\n\
              \n.test {\
-             \n  test: inspect($map);\
+             \n  test: meta.inspect($map);\
              \n}\n"),
         ".test {\
          \n  test: (1 2: 3, 2 1: 3);\

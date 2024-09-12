@@ -8,8 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@mixin test($arglist...) {\
-             \n    $map: keywords($arglist);\
+        runner().ok("@use \"sass:meta\";\
+             \n@mixin test($arglist...) {\
+             \n    $map: meta.keywords($arglist);\
              \n    answer: if($map, \"Yep\", \"Nope\");\
              \n}\n\
              \nwith-keyword-args{\

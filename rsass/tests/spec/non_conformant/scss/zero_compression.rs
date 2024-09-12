@@ -8,14 +8,15 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$orig: 0.12em;\r\
-             \n$value: (0.12em);\r\
-             \n$score: (item-height: 0.12em);\r\
-             \nfoo {\r\
-             \n    tst-1: 0 -#{0.12em};\r\
-             \n    tst-2: 0 -#{$orig};\r\
-             \n    tst-3: 0 -#{$value};\r\
-             \n    tst-4: 0 -#{map-get($score, item-height)};\r\
+        runner().ok("@use \"sass:map\";\n\
+             \n$orig: 0.12em;\
+             \n$value: (0.12em);\
+             \n$score: (item-height: 0.12em);\
+             \nfoo {\
+             \n    tst-1: 0 -#{0.12em};\
+             \n    tst-2: 0 -#{$orig};\
+             \n    tst-3: 0 -#{$value};\
+             \n    tst-4: 0 -#{map.get($score, item-height)};\
              \n}"),
         "foo {\
          \n  tst-1: 0 -0.12em;\

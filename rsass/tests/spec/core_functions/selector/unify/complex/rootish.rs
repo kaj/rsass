@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn host() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\":host .c\", \".d .e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":host .c\", \".d .e\")}\n"),
         "a {\
          \n  b: :host .d .c.e;\
          \n}\n"
@@ -18,7 +19,8 @@ fn host() {
 fn host_context() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-unify(\":host-context(f g) .c\", \".d .e\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.unify(\":host-context(f g) .c\", \".d .e\")}\n"
         ),
         "a {\
          \n  b: :host-context(f g) .d .c.e;\
@@ -29,8 +31,8 @@ fn host_context() {
 #[ignore] // wrong result
 fn mixed() {
     assert_eq!(
-        runner()
-            .ok("a {b: selector-unify(\":root .c .d\", \":scope .e .f\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":root .c .d\", \":scope .e .f\")}\n"),
         "a {\
          \n  b: :scope:root .c .e .d.f, :scope:root .e .c .d.f;\
          \n}\n"
@@ -47,9 +49,8 @@ mod root {
         #[test]
         fn can_unify() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-unify(\".c:root .d\", \".e:root .f\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c:root .d\", \".e:root .f\")}\n"),
                 "a {\
          \n  b: .e.c:root .d.f;\
          \n}\n"
@@ -59,7 +60,9 @@ mod root {
         fn cant_unify() {
             assert_eq!(
         runner().ok(
-            "a {b: inspect(selector-unify(\"c:root .d\", \"e:root .f\"))}\n"
+            "@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"c:root .d\", \"e:root .f\"))}\n"
         ),
         "a {\
          \n  b: null;\
@@ -69,9 +72,8 @@ mod root {
         #[test]
         fn superselector() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-unify(\"c:root .d\", \":root .e\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"c:root .d\", \":root .e\")}\n"),
                 "a {\
          \n  b: c:root .d.e;\
          \n}\n"
@@ -89,9 +91,8 @@ mod root {
             #[test]
             fn three_layer() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: selector-unify(\":root .c .d\", \".e .f\")}\n"
-                    ),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":root .c .d\", \".e .f\")}\n"),
                     "a {\
          \n  b: :root .c .e .d.f, :root .e .c .d.f;\
          \n}\n"
@@ -100,9 +101,8 @@ mod root {
             #[test]
             fn two_layer() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: selector-unify(\":root .c\", \".d .e\")}\n"
-                    ),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":root .c\", \".d .e\")}\n"),
                     "a {\
          \n  b: :root .d .c.e;\
          \n}\n"
@@ -116,9 +116,8 @@ mod root {
             #[test]
             fn three_layer() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: selector-unify(\".c .d\", \":root .e .f\")}\n"
-                    ),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c .d\", \":root .e .f\")}\n"),
                     "a {\
          \n  b: :root .c .e .d.f, :root .e .c .d.f;\
          \n}\n"
@@ -127,9 +126,8 @@ mod root {
             #[test]
             fn two_layer() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: selector-unify(\".c .d\", \":root .e\")}\n"
-                    ),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c .d\", \":root .e\")}\n"),
                     "a {\
          \n  b: :root .c .d.e;\
          \n}\n"
@@ -141,7 +139,8 @@ mod root {
 #[test]
 fn scope() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\":scope .c\", \".d .e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\":scope .c\", \".d .e\")}\n"),
         "a {\
          \n  b: :scope .d .c.e;\
          \n}\n"

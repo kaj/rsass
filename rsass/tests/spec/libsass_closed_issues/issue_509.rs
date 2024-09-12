@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$foo: (\
+            "@use \"sass:map\";\
+             \n$foo: (\
              \n    (key1): (value-1-0),\
              \n    key2: value-2-0,\
              \n    (key6): (value-6-0),\
@@ -20,13 +21,13 @@ fn test() {
              \n    (key-8-0, key-8-1, key-8-2): (value-8-0, value-8-1, value-8-2),\
              \n);\n\
              \ndiv {\
-             \n    foo: map-get((foo: 1, bar: 2), foo);\
-             \n    foo: map-get((foo: 1, bar: 2), bar);\
-             \n    foo: map-get((foo: 1, bar: 2), baz);\
-             \n    foo: map-get((), foo);\
-             \n    foo: map-get($foo, (key-5-0: value-5-1));\
-             \n    foo: map-get($foo, (key2));\
-             \n    foo: map-get($foo, (key-3-0 key-3-1 key-3-2));\
+             \n    foo: map.get((foo: 1, bar: 2), foo);\
+             \n    foo: map.get((foo: 1, bar: 2), bar);\
+             \n    foo: map.get((foo: 1, bar: 2), baz);\
+             \n    foo: map.get((), foo);\
+             \n    foo: map.get($foo, (key-5-0: value-5-1));\
+             \n    foo: map.get($foo, (key2));\
+             \n    foo: map.get($foo, (key-3-0 key-3-1 key-3-2));\
              \n}\n"
         ),
         "div {\

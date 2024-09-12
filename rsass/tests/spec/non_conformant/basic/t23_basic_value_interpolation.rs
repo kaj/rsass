@@ -8,13 +8,14 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("div {\
+        runner().ok("@use \"sass:meta\";\
+             \ndiv {\
              \n  a: hello#{world};\
              \n  a: hello #{world};\
              \n  b: 12#{3};\
-             \n  b: type-of(12#{3});\
+             \n  b: meta.type-of(12#{3});\
              \n  b: #{12 + 111};\
-             \n  b: type-of(#{12 + 111});\
+             \n  b: meta.type-of(#{12 + 111});\
              \n}"),
         "div {\
          \n  a: helloworld;\

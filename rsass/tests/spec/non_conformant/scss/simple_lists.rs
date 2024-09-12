@@ -8,10 +8,11 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("div {\
+        runner().ok("@use \"sass:string\";\
+             \ndiv {\
              \n  hey: a, b, c, d;\
              \n  ho: a b c d;\
-             \n  ha: unquote(\"a, b, c, d\");\
+             \n  ha: string.unquote(\"a, b, c, d\");\
              \n}"),
         "div {\
          \n  hey: a, b, c, d;\

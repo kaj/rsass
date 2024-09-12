@@ -13,7 +13,7 @@ mod functions {
     fn length() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
-             \na {b: length(list.slash(c, d, e, f, g))}\n"),
+             \na {b: list.length(list.slash(c, d, e, f, g))}\n"),
             "a {\
          \n  b: 5;\
          \n}\n"
@@ -23,7 +23,7 @@ mod functions {
     fn nth() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
-             \na {b: nth(list.slash(c, d, e, f, g), 3)}\n"),
+             \na {b: list.nth(list.slash(c, d, e, f, g), 3)}\n"),
             "a {\
          \n  b: e;\
          \n}\n"
@@ -41,7 +41,7 @@ mod output {
             "@use \"sass:list\";\
              \n// CSS doesn\'t use slash-separated bracketed lists, but Sass supports them in\
              \n// case one day that changes.\
-             \na {b: join(c d, e f, $separator: slash, $bracketed: true)}\n"
+             \na {b: list.join(c d, e f, $separator: slash, $bracketed: true)}\n"
         ),
         "a {\
          \n  b: [c / d / e / f];\

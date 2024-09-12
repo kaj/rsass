@@ -8,13 +8,16 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$list: (\"a\", \"b\", \"c\");\n\
+        runner().ok(
+            "@use \"sass:list\";\
+             \n$list: (\"a\", \"b\", \"c\");\n\
              \ntest {\
-             \n    content: nth($list, -1);\
-             \n    content: nth($list, -2);\
-             \n    content: nth($list, -3);\
-             \n    content: nth($list, -1) == nth($list, length($list));\
-             \n}\n"),
+             \n    content: list.nth($list, -1);\
+             \n    content: list.nth($list, -2);\
+             \n    content: list.nth($list, -3);\
+             \n    content: list.nth($list, -1) == list.nth($list, list.length($list));\
+             \n}\n"
+        ),
         "test {\
          \n  content: \"c\";\
          \n  content: \"b\";\

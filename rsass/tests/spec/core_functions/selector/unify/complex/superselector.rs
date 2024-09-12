@@ -13,7 +13,8 @@ mod three_level {
     fn inner() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-unify(\".s1-1 .c.s1-2 .s1-3\", \".s2-1 .c .s2-2\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.unify(\".s1-1 .c.s1-2 .s1-3\", \".s2-1 .c .s2-2\")}\n"
         ),
         "a {\
          \n  b: .s1-1 .s2-1 .c.s1-2 .s1-3.s2-2, .s2-1 .s1-1 .c.s1-2 .s1-3.s2-2;\
@@ -25,7 +26,8 @@ mod three_level {
     fn outer() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-unify(\".c.s1-1 .s1-2 .s1-3\", \".c .s2-1 .s2-2\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.unify(\".c.s1-1 .s1-2 .s1-3\", \".c .s2-1 .s2-2\")}\n"
         ),
         "a {\
          \n  b: .c.s1-1 .s1-2 .s2-1 .s1-3.s2-2, .c.s1-1 .s2-1 .s1-2 .s1-3.s2-2;\
@@ -36,7 +38,8 @@ mod three_level {
 #[test]
 fn two_level() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\".c.s1-1 .s1-2\", \".c .s2\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c.s1-1 .s1-2\", \".c .s2\")}\n"),
         "a {\
          \n  b: .c.s1-1 .s1-2.s2;\
          \n}\n"

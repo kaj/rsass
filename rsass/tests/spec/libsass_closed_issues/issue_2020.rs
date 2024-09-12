@@ -8,12 +8,14 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("form {\r\
-             \n  $selector: nth(&, 1);\r\
-             \n  sel: inspect($selector);\r\
-             \n  $selector: nth($selector, 1);\r\
-             \n  sel: inspect($selector);\r\
-             \n} "),
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\n\
+             \nform {\
+             \n  $selector: list.nth(&, 1);\
+             \n  sel: meta.inspect($selector);\
+             \n  $selector: list.nth($selector, 1);\
+             \n  sel: meta.inspect($selector);\
+             \n}"),
         "form {\
          \n  sel: form;\
          \n  sel: form;\

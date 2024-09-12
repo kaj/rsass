@@ -8,14 +8,17 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$character-code: f102;\n\
+        runner().ok(
+            "@use \"sass:string\";\
+             \n$character-code: f102;\n\
              \ntest {\n\
              \n  /* Expected: \"\\f102\" */\n\
              \n  /* Sass 3.4 */\
-             \n  content: unquote(\"\\\"\\\\#{$character-code}\\\"\");\n\
+             \n  content: string.unquote(\"\\\"\\\\#{$character-code}\\\"\");\n\
              \n  /* Sass 3.3 */\
-             \n  content: str-slice(\"\\x\", 1, 1) + $character-code;\n\
-             \n}"),
+             \n  content: string.slice(\"\\x\", 1, 1) + $character-code;\n\
+             \n}"
+        ),
         "test {\
          \n  /* Expected: \"\\f102\" */\
          \n  /* Sass 3.4 */\

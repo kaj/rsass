@@ -9,10 +9,11 @@ fn runner() -> crate::TestRunner {
 fn combining_character() {
     assert_eq!(
         runner().ok(
-            "// Sass does *not* treat strings as sequences of glyphs, so this string which\
+            "@use \"sass:string\";\
+             \n// Sass does *not* treat strings as sequences of glyphs, so this string which\
              \n// contains \"c\" followed by a combining umlaut should be considered two separate\
              \n// characters even though it\'s rendered as only one.\
-             \na {b: str-length(\"c\\0308\")}\n"
+             \na {b: string.length(\"c\\0308\")}\n"
         ),
         "a {\
          \n  b: 2;\
@@ -23,9 +24,10 @@ fn combining_character() {
 fn double_width_character() {
     assert_eq!(
         runner().ok(
-            "// Sass treats strings as sequences of Unicode codepoint; it doesn\'t care if a\
+            "@use \"sass:string\";\
+             \n// Sass treats strings as sequences of Unicode codepoint; it doesn\'t care if a\
              \n// character is represented as two UTF-16 code units.\
-             \na {b: str-length(\"👭\")}\n"
+             \na {b: string.length(\"👭\")}\n"
         ),
         "a {\
          \n  b: 1;\
@@ -35,7 +37,8 @@ fn double_width_character() {
 #[test]
 fn empty() {
     assert_eq!(
-        runner().ok("a {b: str-length(\"\")}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.length(\"\")}\n"),
         "a {\
          \n  b: 0;\
          \n}\n"
@@ -48,52 +51,77 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: str-length()}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.length()}\n"
+            ),
             "Error: Missing argument $string.\
          \n  ,--> input.scss\
-         \n1 | a {b: str-length()}\
-         \n  |       ^^^^^^^^^^^^ invocation\
+         \n2 | a {b: string.length()}\
+         \n  |       ^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:string\
          \n1 | @function length($string) {\
          \n  |           =============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: str-length(c, d)}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.length(c, d)}\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: str-length(c, d)}\
-         \n  |       ^^^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: string.length(c, d)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:string\
          \n1 | @function length($string) {\
          \n  |           =============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: str-length(1)}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.length(1)}\n"
+            ),
             "Error: $string: 1 is not a string.\
          \n  ,\
-         \n1 | a {b: str-length(1)}\
-         \n  |       ^^^^^^^^^^^^^\
+         \n2 | a {b: string.length(1)}\
+         \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
+        );
+    }
+    #[test]
+    fn wrong_name() {
+        assert_eq!(
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.str-length(\"c\")}\n"
+            ),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: string.str-length(\"c\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
 #[test]
 fn multiple_characters() {
     assert_eq!(
-        runner().ok("a {b: str-length(\"fblthp abatement\")}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.length(\"fblthp abatement\")}\n"),
         "a {\
          \n  b: 16;\
          \n}\n"
@@ -102,7 +130,8 @@ fn multiple_characters() {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: str-length($string: \"c\")}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.length($string: \"c\")}\n"),
         "a {\
          \n  b: 1;\
          \n}\n"
@@ -111,7 +140,8 @@ fn named() {
 #[test]
 fn one_character() {
     assert_eq!(
-        runner().ok("a {b: str-length(\"c\")}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.length(\"c\")}\n"),
         "a {\
          \n  b: 1;\
          \n}\n"
@@ -121,9 +151,10 @@ fn one_character() {
 fn private_use_character() {
     assert_eq!(
         runner().ok(
-            "// Dart Sass emits private-use characters as escapes in expanded mode, but it\
+            "@use \"sass:string\";\
+             \n// Dart Sass emits private-use characters as escapes in expanded mode, but it\
              \n// should stil treat them as single characters for the purpose of functions.\
-             \na {b: str-length(\"\\E000\")}\n"
+             \na {b: string.length(\"\\E000\")}\n"
         ),
         "a {\
          \n  b: 1;\
@@ -133,7 +164,8 @@ fn private_use_character() {
 #[test]
 fn unquoted() {
     assert_eq!(
-        runner().ok("a {b: str-length(loofamonster)}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.length(loofamonster)}\n"),
         "a {\
          \n  b: 12;\
          \n}\n"

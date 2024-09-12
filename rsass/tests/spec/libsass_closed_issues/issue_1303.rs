@@ -8,8 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(".simple {\
-             \n  a: selector-replace(\'foo.bar\', \'foo\', \'foo[baz]\');\
+        runner().ok("@use \"sass:selector\";\
+             \n.simple {\
+             \n  a: selector.replace(\'foo.bar\', \'foo\', \'foo[baz]\');\
              \n}\n"),
         ".simple {\
          \n  a: foo.bar[baz];\

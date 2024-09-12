@@ -8,8 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(".foo {\
-             \n    content: call(\'unquote\', \'foo\', ()...);\
+        runner().ok("@use \"sass:meta\";\
+             \n.foo {\
+             \n    content: meta.call(\'unquote\', \'foo\', ()...);\
              \n}\n"),
         ".foo {\
          \n  content: foo;\

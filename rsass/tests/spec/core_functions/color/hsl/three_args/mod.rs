@@ -5,9 +5,11 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("three_args")
 }
 
-mod clamped;
+mod bounds;
 
 mod named;
+
+mod out_of_gamut;
 
 mod special_functions;
 

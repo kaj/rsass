@@ -6,3 +6,5 @@ fn runner() -> crate::TestRunner {
 }
 
 mod alpha_hex;
+
+mod equality;

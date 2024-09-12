@@ -33,11 +33,12 @@ mod clamped {
         }
     }
     #[test]
+    #[ignore] // wrong result
     fn lightness() {
         assert_eq!(
             runner().ok("a {b: hsl(0 100% 9999% / 0.5)}\n"),
             "a {\
-         \n  b: hsla(0, 100%, 100%, 0.5);\
+         \n  b: hsla(0, 100%, 9999%, 0.5);\
          \n}\n"
         );
     }
@@ -100,6 +101,32 @@ mod in_gamut {
             runner().ok("a {b: hsl(180 60% 50% / 0)}\n"),
             "a {\
          \n  b: hsla(180, 60%, 50%, 0);\
+         \n}\n"
+        );
+    }
+}
+mod missing {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // wrong result
+    fn slash() {
+        assert_eq!(
+            runner().ok("a {b: hsl(180 60% 50% / none)}\n"),
+            "a {\
+         \n  b: hsl(180deg 60% 50% / none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn slash_list() {
+        assert_eq!(
+            runner().ok("@use \'sass:list\';\
+             \na {b: hsl(list.slash(180 60% 50%, none))}\n"),
+            "a {\
+         \n  b: hsl(180deg 60% 50% / none);\
          \n}\n"
         );
     }

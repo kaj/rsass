@@ -9,12 +9,13 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$x: 0;\
+            "@use \"sass:string\";\
+             \n$x: 0;\
              \n$if-false: whatever;\n\
              \ndiv {\
              \n  foo: if($if-true: hey, $if-false: ho, $condition: true);\
              \n  foo: if($if-true: hey, $if-false: ho, $condition: false);\
-             \n  foo: if($x != 0, if($x, true, false), unquote(\"x is zero\"));\
+             \n  foo: if($x != 0, if($x, true, false), string.unquote(\"x is zero\"));\
              \n  foo: if(false, 1/0, $if-false: $if-false);\
              \n}"
         ),

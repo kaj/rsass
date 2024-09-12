@@ -15,14 +15,14 @@ fn runner() -> crate::TestRunner {
 fn calc() {
     let runner = runner().with_cwd("calc");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   w: calc(#{1px} + 10%);\
          \n  |           ^^^^^^\
          \n  \'\
-         \n  plain.css 2:11  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:11  @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -30,14 +30,14 @@ fn calc() {
 fn identifier() {
     let runner = runner().with_cwd("identifier");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   w: x#{y}z;\
          \n  |       ^^^^\
          \n  \'\
-         \n  plain.css 2:7   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:7   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -45,14 +45,14 @@ fn identifier() {
 fn quoted_string() {
     let runner = runner().with_cwd("quoted_string");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   w: \"x#{y}z\";\
          \n  |        ^^^^\
          \n  \'\
-         \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:8   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -60,13 +60,13 @@ fn quoted_string() {
 fn standalone() {
     let runner = runner().with_cwd("standalone");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   w: #{x};\
          \n  |      ^^^^\
          \n  \'\
-         \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:6   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }

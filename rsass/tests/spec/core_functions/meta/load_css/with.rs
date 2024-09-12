@@ -41,7 +41,7 @@ fn runner() -> crate::TestRunner {
         .mock_file("through_import/transitive/_loaded.scss", "@import \"midstream\";\n")
         .mock_file("through_import/transitive/_midstream.scss", "@import \"upstream\";\n")
         .mock_file("through_import/transitive/_upstream.scss", "$a: original !default;\nb {c: $a}\n")
-        .mock_file("variable_exists/_other.scss", "$before-declaration: variable-exists(a);\n$a: original !default;\nb {\n  before-declaration: $before-declaration;\n  after-declaration: variable-exists(a);\n}\n")
+        .mock_file("variable_exists/_other.scss", "@use \"sass:meta\";\n$before-declaration: meta.variable-exists(a);\n$a: original !default;\nb {\n  before-declaration: $before-declaration;\n  after-declaration: meta.variable-exists(a);\n}\n")
 }
 
 mod core_module {

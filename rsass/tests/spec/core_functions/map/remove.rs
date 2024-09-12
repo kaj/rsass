@@ -12,30 +12,36 @@ mod error {
     #[test]
     fn positional_and_named() {
         assert_eq!(
-            runner().err("a {b: map-remove((c: d, e: f), c, $key: e)}\n"),
+            runner().err(
+                "@use \"sass:map\";\
+             \na {b: map.remove((c: d, e: f), c, $key: e)}\n"
+            ),
             "Error: Argument $key was passed both by position and by name.\
          \n  ,\
-         \n1 | a {b: map-remove((c: d, e: f), c, $key: e)}\
+         \n2 | a {b: map.remove((c: d, e: f), c, $key: e)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: map-remove()}\n"),
+            runner().err(
+                "@use \"sass:map\";\
+             \na {b: map.remove()}\n"
+            ),
             "Error: Missing argument $map.\
          \n  ,--> input.scss\
-         \n1 | a {b: map-remove()}\
+         \n2 | a {b: map.remove()}\
          \n  |       ^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,\
          \n1 | @function remove($map) {\
          \n  |           ============ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     mod test_type {
@@ -45,15 +51,33 @@ mod error {
         #[test]
         fn map() {
             assert_eq!(
-                runner().err("a {b: map-remove(1)}\n"),
+                runner().err(
+                    "@use \"sass:map\";\
+             \na {b: map.remove(1)}\n"
+                ),
                 "Error: $map: 1 is not a map.\
          \n  ,\
-         \n1 | a {b: map-remove(1)}\
+         \n2 | a {b: map.remove(1)}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
+    }
+    #[test]
+    fn wrong_name() {
+        assert_eq!(
+            runner().err(
+                "@use \"sass:map\";\
+             \na {b: map.map-remove((c: d), c)}\n"
+            ),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: map.map-remove((c: d), c)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+        );
     }
 }
 mod found {
@@ -63,8 +87,9 @@ mod found {
     #[test]
     fn first() {
         assert_eq!(
-            runner()
-                .ok("a {b: inspect(map-remove((1: 2, 3: 4, 5: 6), 1))}\n"),
+            runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.remove((1: 2, 3: 4, 5: 6), 1))}\n"),
             "a {\
          \n  b: (3: 4, 5: 6);\
          \n}\n"
@@ -73,8 +98,9 @@ mod found {
     #[test]
     fn last() {
         assert_eq!(
-            runner()
-                .ok("a {b: inspect(map-remove((1: 2, 3: 4, 5: 6), 5))}\n"),
+            runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.remove((1: 2, 3: 4, 5: 6), 5))}\n"),
             "a {\
          \n  b: (1: 2, 3: 4);\
          \n}\n"
@@ -83,8 +109,9 @@ mod found {
     #[test]
     fn middle() {
         assert_eq!(
-            runner()
-                .ok("a {b: inspect(map-remove((1: 2, 3: 4, 5: 6), 3))}\n"),
+            runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.remove((1: 2, 3: 4, 5: 6), 3))}\n"),
             "a {\
          \n  b: (1: 2, 5: 6);\
          \n}\n"
@@ -98,7 +125,9 @@ mod found {
         fn all() {
             assert_eq!(
         runner().ok(
-            "a {b: inspect(map-remove((1: 2, 3: 4, 5: 6, 7: 8, 9: 10), 1, 5, 9))}\n"
+            "@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.remove((1: 2, 3: 4, 5: 6, 7: 8, 9: 10), 1, 5, 9))}\n"
         ),
         "a {\
          \n  b: (3: 4, 7: 8);\
@@ -109,7 +138,9 @@ mod found {
         fn some() {
             assert_eq!(
         runner().ok(
-            "a {b: inspect(map-remove((1: 2, 3: 4, 5: 6, 7: 8), 1, 5, 9))}\n"
+            "@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.remove((1: 2, 3: 4, 5: 6, 7: 8), 1, 5, 9))}\n"
         ),
         "a {\
          \n  b: (3: 4, 7: 8);\
@@ -120,7 +151,9 @@ mod found {
     #[test]
     fn single() {
         assert_eq!(
-            runner().ok("a {b: inspect(map-remove((c: d), c))}\n"),
+            runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.remove((c: d), c))}\n"),
             "a {\
          \n  b: ();\
          \n}\n"
@@ -130,7 +163,9 @@ mod found {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: inspect(map-remove($map: (c: d), $key: c))}\n"),
+        runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.remove($map: (c: d), $key: c))}\n"),
         "a {\
          \n  b: ();\
          \n}\n"
@@ -143,7 +178,9 @@ mod not_found {
     #[test]
     fn empty() {
         assert_eq!(
-            runner().ok("a {b: inspect(map-remove((), 1))}\n"),
+            runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.remove((), 1))}\n"),
             "a {\
          \n  b: ();\
          \n}\n"
@@ -152,7 +189,9 @@ mod not_found {
     #[test]
     fn multiple() {
         assert_eq!(
-            runner().ok("a {b: inspect(map-remove((c: d), e, f, g))}\n"),
+            runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.remove((c: d), e, f, g))}\n"),
             "a {\
          \n  b: (c: d);\
          \n}\n"
@@ -161,7 +200,9 @@ mod not_found {
     #[test]
     fn no_keys() {
         assert_eq!(
-            runner().ok("a {b: inspect(map-remove((c: d)))}\n"),
+            runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.remove((c: d)))}\n"),
             "a {\
          \n  b: (c: d);\
          \n}\n"
@@ -170,7 +211,9 @@ mod not_found {
     #[test]
     fn non_empty() {
         assert_eq!(
-            runner().ok("a {b: inspect(map-remove((c: d), d))}\n"),
+            runner().ok("@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.inspect(map.remove((c: d), d))}\n"),
             "a {\
          \n  b: (c: d);\
          \n}\n"

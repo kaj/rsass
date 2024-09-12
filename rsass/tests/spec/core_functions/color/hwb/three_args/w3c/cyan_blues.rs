@@ -6,57 +6,58 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("@use \'../test-hue\' as *;\
              \n@include test-hue(210);\n"),
         "whiteness-0 {\
-         \n  blackness-0: #0080ff;\
+         \n  blackness-0: hsl(210, 100%, 50%);\
          \n  blackness-20: #0066cc;\
-         \n  blackness-40: #004d99;\
+         \n  blackness-40: hsl(210, 100%, 30%);\
          \n  blackness-60: #003366;\
-         \n  blackness-80: #001a33;\
+         \n  blackness-80: hsl(210, 100%, 10%);\
          \n  blackness-100: black;\
          \n}\
          \nwhiteness-20 {\
          \n  blackness-0: #3399ff;\
-         \n  blackness-20: #3380cc;\
+         \n  blackness-20: hsl(210, 60%, 50%);\
          \n  blackness-40: #336699;\
-         \n  blackness-60: #334d66;\
+         \n  blackness-60: hsl(210, 33.3333333333%, 30%);\
          \n  blackness-80: #333333;\
-         \n  blackness-100: #2b2b2b;\
+         \n  blackness-100: hsl(0, 0%, 16.6666666667%);\
          \n}\
          \nwhiteness-40 {\
-         \n  blackness-0: #66b3ff;\
+         \n  blackness-0: hsl(210, 100%, 70%);\
          \n  blackness-20: #6699cc;\
-         \n  blackness-40: #668099;\
+         \n  blackness-40: hsl(210, 20%, 50%);\
          \n  blackness-60: #666666;\
          \n  blackness-80: #555555;\
-         \n  blackness-100: #494949;\
+         \n  blackness-100: hsl(0, 0%, 28.5714285714%);\
          \n}\
          \nwhiteness-60 {\
          \n  blackness-0: #99ccff;\
-         \n  blackness-20: #99b3cc;\
+         \n  blackness-20: hsl(210, 33.3333333333%, 70%);\
          \n  blackness-40: #999999;\
-         \n  blackness-60: gray;\
-         \n  blackness-80: #6d6d6d;\
-         \n  blackness-100: #606060;\
+         \n  blackness-60: hsl(0, 0%, 50%);\
+         \n  blackness-80: hsl(0, 0%, 42.8571428571%);\
+         \n  blackness-100: hsl(0, 0%, 37.5%);\
          \n}\
          \nwhiteness-80 {\
-         \n  blackness-0: #cce6ff;\
+         \n  blackness-0: hsl(210, 100%, 90%);\
          \n  blackness-20: #cccccc;\
          \n  blackness-40: #aaaaaa;\
-         \n  blackness-60: #929292;\
-         \n  blackness-80: gray;\
-         \n  blackness-100: #717171;\
+         \n  blackness-60: hsl(0, 0%, 57.1428571429%);\
+         \n  blackness-80: hsl(0, 0%, 50%);\
+         \n  blackness-100: hsl(0, 0%, 44.4444444444%);\
          \n}\
          \nwhiteness-100 {\
          \n  blackness-0: white;\
-         \n  blackness-20: #d5d5d5;\
-         \n  blackness-40: #b6b6b6;\
-         \n  blackness-60: #9f9f9f;\
-         \n  blackness-80: #8e8e8e;\
-         \n  blackness-100: gray;\
+         \n  blackness-20: hsl(0, 0%, 83.3333333333%);\
+         \n  blackness-40: hsl(0, 0%, 71.4285714286%);\
+         \n  blackness-60: hsl(0, 0%, 62.5%);\
+         \n  blackness-80: hsl(0, 0%, 55.5555555556%);\
+         \n  blackness-100: hsl(0, 0%, 50%);\
          \n}\n"
     );
 }

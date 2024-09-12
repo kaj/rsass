@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn t0() {
     assert_eq!(
-        runner().ok("a {b: length(())}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.length(())}\n"),
         "a {\
          \n  b: 0;\
          \n}\n"
@@ -17,7 +18,8 @@ fn t0() {
 #[test]
 fn t1() {
     assert_eq!(
-        runner().ok("a {b: length(join((), 1))}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.length(list.join((), 1))}\n"),
         "a {\
          \n  b: 1;\
          \n}\n"
@@ -26,7 +28,8 @@ fn t1() {
 #[test]
 fn t2() {
     assert_eq!(
-        runner().ok("a {b: length(c d)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.length(c d)}\n"),
         "a {\
          \n  b: 2;\
          \n}\n"
@@ -39,40 +42,47 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: length()}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.length()}\n"
+            ),
             "Error: Missing argument $list.\
          \n  ,--> input.scss\
-         \n1 | a {b: length()}\
-         \n  |       ^^^^^^^^ invocation\
+         \n2 | a {b: list.length()}\
+         \n  |       ^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:list\
          \n1 | @function length($list) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: length(1, 2)}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.length(1, 2)}\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: length(1, 2)}\
-         \n  |       ^^^^^^^^^^^^ invocation\
+         \n2 | a {b: list.length(1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:list\
          \n1 | @function length($list) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
 #[test]
 fn many() {
     assert_eq!(
-        runner().ok("a {b: length((1, 2, 3, 4, 5))}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.length((1, 2, 3, 4, 5))}\n"),
         "a {\
          \n  b: 5;\
          \n}\n"
@@ -85,8 +95,9 @@ mod map {
     #[test]
     fn empty() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: length($empty-map)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"core_functions/list/utils\";\
+             \na {b: list.length(utils.$empty-map)}\n"),
             "a {\
          \n  b: 0;\
          \n}\n"
@@ -95,7 +106,8 @@ mod map {
     #[test]
     fn non_empty() {
         assert_eq!(
-            runner().ok("a {b: length((1: 2, 3: 4))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.length((1: 2, 3: 4))}\n"),
             "a {\
          \n  b: 2;\
          \n}\n"
@@ -105,7 +117,8 @@ mod map {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: length($list: 1 2 3)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.length($list: 1 2 3)}\n"),
         "a {\
          \n  b: 3;\
          \n}\n"
@@ -114,7 +127,8 @@ fn named() {
 #[test]
 fn non_list() {
     assert_eq!(
-        runner().ok("a {b: length(c)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.length(c)}\n"),
         "a {\
          \n  b: 1;\
          \n}\n"
@@ -123,8 +137,9 @@ fn non_list() {
 #[test]
 fn null_list_item() {
     assert_eq!(
-        runner().ok("// regression test for scssphp/scssphp#403\
-             \na {b: length((null))}\n"),
+        runner().ok("@use \"sass:list\";\
+             \n// regression test for scssphp/scssphp#403\
+             \na {b: list.length((null))}\n"),
         "a {\
          \n  b: 1;\
          \n}\n"

@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$continue_inner: true;\r\
+        runner().ok("@use \"sass:meta\";\
+             \n$continue_inner: true;\r\
              \n$continue_outer: true;\r\
              \n$root_default: initial;\r\
              \n$root_implicit: initial;\r\
@@ -41,31 +42,31 @@ fn test() {
              \n\r\
              \nresult {\r\
              \n  fn: fn();\r\
-             \n  @if variable-exists(continue_outer) {\r\
+             \n  @if meta.variable-exists(continue_outer) {\r\
              \n    continue_outer: $continue_outer;\r\
              \n  }\r\
-             \n  @if variable-exists(continue_inner) {\r\
+             \n  @if meta.variable-exists(continue_inner) {\r\
              \n    continue_inner: $continue_inner;\r\
              \n  }\r\
-             \n  @if variable-exists(check_implicit) {\r\
+             \n  @if meta.variable-exists(check_implicit) {\r\
              \n    check_implicit: $check_implicit;\r\
              \n  }\r\
-             \n  @if variable-exists(check_explicit) {\r\
+             \n  @if meta.variable-exists(check_explicit) {\r\
              \n    check_explicit: $check_explicit;\r\
              \n  }\r\
-             \n  @if variable-exists(check_default) {\r\
+             \n  @if meta.variable-exists(check_default) {\r\
              \n    check_default: $check_default;\r\
              \n  }\r\
              \n  root_default: $root_default;\r\
              \n  root_implicit: $root_implicit;\r\
              \n  root_explicit: $root_explicit;\r\
-             \n  @if variable-exists(local_default) {\r\
+             \n  @if meta.variable-exists(local_default) {\r\
              \n    local_default: $local_default;\r\
              \n  }\r\
-             \n  @if variable-exists(local_implicit) {\r\
+             \n  @if meta.variable-exists(local_implicit) {\r\
              \n    local_implicit: $local_implicit;\r\
              \n  }\r\
-             \n  @if variable-exists(local_explicit) {\r\
+             \n  @if meta.variable-exists(local_explicit) {\r\
              \n    local_explicit: $local_explicit;\r\
              \n  }\r\
              \n}\r\n"),

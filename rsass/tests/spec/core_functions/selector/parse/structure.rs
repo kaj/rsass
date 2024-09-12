@@ -16,7 +16,8 @@ mod decomposed {
         #[test]
         fn mixed() {
             assert_eq!(
-                runner().ok("a {b: selector-parse(c \"d\" e)}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(c \"d\" e)}\n"),
                 "a {\
          \n  b: c d e;\
          \n}\n"
@@ -25,7 +26,8 @@ mod decomposed {
         #[test]
         fn quoted() {
             assert_eq!(
-                runner().ok("a {b: selector-parse(\"c\" \"d\" \"e\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\"c\" \"d\" \"e\")}\n"),
                 "a {\
          \n  b: c d e;\
          \n}\n"
@@ -34,7 +36,8 @@ mod decomposed {
         #[test]
         fn unquoted() {
             assert_eq!(
-                runner().ok("a {b: selector-parse(c d e)}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(c d e)}\n"),
                 "a {\
          \n  b: c d e;\
          \n}\n"
@@ -48,7 +51,8 @@ mod decomposed {
         #[test]
         fn mixed() {
             assert_eq!(
-                runner().ok("a {b: selector-parse((c \"d\", e \"f\"))}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse((c \"d\", e \"f\"))}\n"),
                 "a {\
          \n  b: c d, e f;\
          \n}\n"
@@ -57,9 +61,8 @@ mod decomposed {
         #[test]
         fn quoted() {
             assert_eq!(
-                runner().ok(
-                    "a {b: selector-parse((\"c\" \"d\", \"e\" \"f\"))}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse((\"c\" \"d\", \"e\" \"f\"))}\n"),
                 "a {\
          \n  b: c d, e f;\
          \n}\n"
@@ -68,7 +71,8 @@ mod decomposed {
         #[test]
         fn unquoted() {
             assert_eq!(
-                runner().ok("a {b: selector-parse((c d, e f))}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse((c d, e f))}\n"),
                 "a {\
          \n  b: c d, e f;\
          \n}\n"
@@ -82,7 +86,8 @@ mod decomposed {
         #[test]
         fn mixed() {
             assert_eq!(
-                runner().ok("a {b: selector-parse(c \"d, e\" f)}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(c \"d, e\" f)}\n"),
                 "a {\
          \n  b: c d, e f;\
          \n}\n"
@@ -91,7 +96,8 @@ mod decomposed {
         #[test]
         fn quoted() {
             assert_eq!(
-                runner().ok("a {b: selector-parse(\"c\" \"d, e\" \"f\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\"c\" \"d, e\" \"f\")}\n"),
                 "a {\
          \n  b: c d, e f;\
          \n}\n"
@@ -100,7 +106,9 @@ mod decomposed {
         #[test]
         fn unquoted() {
             assert_eq!(
-                runner().ok("a {b: selector-parse(c unquote(\"d, e\") f)}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \n@use \"sass:string\";\
+             \na {b: selector.parse(c string.unquote(\"d, e\") f)}\n"),
                 "a {\
          \n  b: c d, e f;\
          \n}\n"
@@ -114,8 +122,9 @@ mod decomposed {
         #[test]
         fn mixed() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-parse((c d, unquote(\"e f\")))}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \n@use \"sass:string\";\
+             \na {b: selector.parse((c d, string.unquote(\"e f\")))}\n"),
                 "a {\
          \n  b: c d, e f;\
          \n}\n"
@@ -124,7 +133,8 @@ mod decomposed {
         #[test]
         fn quoted() {
             assert_eq!(
-                runner().ok("a {b: selector-parse((\"c d\", \"e f\"))}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse((\"c d\", \"e f\"))}\n"),
                 "a {\
          \n  b: c d, e f;\
          \n}\n"
@@ -134,7 +144,9 @@ mod decomposed {
         fn unquoted() {
             assert_eq!(
         runner().ok(
-            "a {b: selector-parse((unquote(\"c d\"), unquote(\"e f\")))}\n"
+            "@use \"sass:selector\";\
+             \n@use \"sass:string\";\
+             \na {b: selector.parse((string.unquote(\"c d\"), string.unquote(\"e f\")))}\n"
         ),
         "a {\
          \n  b: c d, e f;\
@@ -150,7 +162,8 @@ mod full_string {
     #[test]
     fn quoted() {
         assert_eq!(
-            runner().ok("a {b: selector-parse(\"c d, e f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\"c d, e f\")}\n"),
             "a {\
          \n  b: c d, e f;\
          \n}\n"
@@ -159,7 +172,9 @@ mod full_string {
     #[test]
     fn unquoted() {
         assert_eq!(
-            runner().ok("a {b: selector-parse(unquote(\"c d, e f\"))}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \n@use \"sass:string\";\
+             \na {b: selector.parse(string.unquote(\"c d, e f\"))}\n"),
             "a {\
          \n  b: c d, e f;\
          \n}\n"

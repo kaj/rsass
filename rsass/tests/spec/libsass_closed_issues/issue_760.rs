@@ -8,9 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("foo {\
-             \n  quoted: str-slice(\"abcd\", 1, 0);\
-             \n  unquoted: str-slice(abcd, 1, 0);\
+        runner().ok("@use \"sass:string\";\
+             \nfoo {\
+             \n  quoted: string.slice(\"abcd\", 1, 0);\
+             \n  unquoted: string.slice(abcd, 1, 0);\
              \n}\n"),
         "foo {\
          \n  quoted: \"\";\

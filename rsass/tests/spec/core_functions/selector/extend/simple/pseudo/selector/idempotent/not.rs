@@ -9,9 +9,8 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn complex() {
     assert_eq!(
-        runner().ok(
-            "a {b: selector-extend(\":not(.c .d)\", \".d\", \".e .f\")}\n"
-        ),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c .d)\", \".d\", \".e .f\")}\n"),
         "a {\
          \n  b: :not(.c .d):not(.c .e .f):not(.e .c .f);\
          \n}\n"
@@ -21,8 +20,8 @@ fn complex() {
 #[ignore] // wrong result
 fn component() {
     assert_eq!(
-        runner()
-            .ok("a {b: selector-extend(\":not(.c.d)\", \".c\", \".e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c.d)\", \".c\", \".e\")}\n"),
         "a {\
          \n  b: :not(.c.d):not(.d.e);\
          \n}\n"
@@ -37,7 +36,8 @@ mod is {
     fn in_compound() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":not(.c)\", \".c\", \".d:is(.e, .f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c)\", \".c\", \".d:is(.e, .f)\")}\n"
         ),
         "a {\
          \n  b: :not(.c):not(.d:is(.e, .f));\
@@ -49,7 +49,8 @@ mod is {
     fn list() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":not(.c)\", \".c\", \":is(.d, .e)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c)\", \".c\", \":is(.d, .e)\")}\n"
         ),
         "a {\
          \n  b: :not(.c):not(.d):not(.e);\
@@ -61,7 +62,8 @@ mod is {
     fn list_of_complex() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":not(.c)\", \".c\", \":is(.d .e, .f .g)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c)\", \".c\", \":is(.d .e, .f .g)\")}\n"
         ),
         "a {\
          \n  b: :not(.c):not(.d .e):not(.f .g);\
@@ -73,8 +75,8 @@ mod is {
 #[ignore] // wrong result
 fn list() {
     assert_eq!(
-        runner()
-            .ok("a {b: selector-extend(\":not(.c)\", \".c\", \".d, .e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c)\", \".c\", \".d, .e\")}\n"),
         "a {\
          \n  b: :not(.c):not(.d):not(.e);\
          \n}\n"
@@ -85,9 +87,10 @@ fn list() {
 fn list_in_not() {
     assert_eq!(
         runner().ok(
-            "// If the original :not() already contains a selector list, we add new selectors\
+            "@use \"sass:selector\";\
+             \n// If the original :not() already contains a selector list, we add new selectors\
              \n// to that list because there\'s no risk of breaking additional browsers.\
-             \na {b: selector-extend(\":not(.c, .d)\", \".c\", \".e\")}\n"
+             \na {b: selector.extend(\":not(.c, .d)\", \".c\", \".e\")}\n"
         ),
         "a {\
          \n  b: :not(.c, .e, .d);\
@@ -103,7 +106,8 @@ mod matches {
     fn in_compound() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":not(.c)\", \".c\", \".d:matches(.e, .f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c)\", \".c\", \".d:matches(.e, .f)\")}\n"
         ),
         "a {\
          \n  b: :not(.c):not(.d:matches(.e, .f));\
@@ -115,7 +119,8 @@ mod matches {
     fn list() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":not(.c)\", \".c\", \":matches(.d, .e)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c)\", \".c\", \":matches(.d, .e)\")}\n"
         ),
         "a {\
          \n  b: :not(.c):not(.d):not(.e);\
@@ -127,7 +132,8 @@ mod matches {
     fn list_of_complex() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":not(.c)\", \".c\", \":matches(.d .e, .f .g)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c)\", \".c\", \":matches(.d .e, .f .g)\")}\n"
         ),
         "a {\
          \n  b: :not(.c):not(.d .e):not(.f .g);\
@@ -139,11 +145,12 @@ mod matches {
 fn not_in_extender() {
     assert_eq!(
         runner().ok(
-            "// Ideally, this should emit `.d, :not(.c)`, but that would be the only\
+            "@use \"sass:selector\";\
+             \n// Ideally, this should emit `.d, :not(.c)`, but that would be the only\
              \n// situation where extending a pseudo selector could produce a full-on selector\
              \n// list. For the sake of simplicity of the `@extend` algorithm, we just ignore\
              \n// nested `:not()`s instead.\
-             \na {b: selector-extend(\":not(.c)\", \".c\", \":not(.d)\")}\n"
+             \na {b: selector.extend(\":not(.c)\", \".c\", \":not(.d)\")}\n"
         ),
         "a {\
          \n  b: :not(.c);\
@@ -154,7 +161,8 @@ fn not_in_extender() {
 #[ignore] // wrong result
 fn simple() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\":not(.c)\", \".c\", \".d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c)\", \".c\", \".d\")}\n"),
         "a {\
          \n  b: :not(.c):not(.d);\
          \n}\n"
@@ -169,7 +177,8 @@ mod test_where {
     fn in_compound() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":not(.c)\", \".c\", \".d:where(.e, .f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c)\", \".c\", \".d:where(.e, .f)\")}\n"
         ),
         "a {\
          \n  b: :not(.c):not(.d:where(.e, .f));\
@@ -181,7 +190,8 @@ mod test_where {
     fn list() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":not(.c)\", \".c\", \":where(.d, .e)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c)\", \".c\", \":where(.d, .e)\")}\n"
         ),
         "a {\
          \n  b: :not(.c):not(.d):not(.e);\
@@ -193,7 +203,8 @@ mod test_where {
     fn list_of_complex() {
         assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":not(.c)\", \".c\", \":where(.d .e, .f .g)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":not(.c)\", \".c\", \":where(.d .e, .f .g)\")}\n"
         ),
         "a {\
          \n  b: :not(.c):not(.d .e):not(.f .g);\

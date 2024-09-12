@@ -10,10 +10,11 @@ fn runner() -> crate::TestRunner {
 fn test() {
     let runner = runner().set_precision(4);
     assert_eq!(
-        runner.ok("test {\r\
-             \n  foo: 0.4999 round(0.4999);\r\
-             \n  bar: 0.49999 round(0.49999);\r\
-             \n  baz: 0.499999 round(0.499999);\r\
+        runner.ok("@use \"sass:math\";\
+             \ntest {\r\
+             \n  foo: 0.4999 math.round(0.4999);\r\
+             \n  bar: 0.49999 math.round(0.49999);\r\
+             \n  baz: 0.499999 math.round(0.499999);\r\
              \n}"),
         "test {\
          \n  foo: 0.4999 0;\

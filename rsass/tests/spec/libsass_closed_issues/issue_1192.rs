@@ -9,11 +9,12 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$keyword: foobar;\n\
+            "@use \"sass:meta\";\n\
+             \n$keyword: foobar;\n\
              \n@mixin test($arglist...){\
-             \n  $map: keywords($arglist);\
-             \n  /*#{inspect($map)}*/\
-             \n  /*#{inspect($arglist)}*/\
+             \n  $map: meta.keywords($arglist);\
+             \n  /*#{meta.inspect($map)}*/\
+             \n  /*#{meta.inspect($arglist)}*/\
              \n}\n\
              \n// Works\
              \n@include test(foo, bar, baz);\

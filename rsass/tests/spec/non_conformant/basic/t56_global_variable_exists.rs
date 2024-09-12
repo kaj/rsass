@@ -8,39 +8,40 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function exists($name) {\
-             \n  @return global-variable-exists($name);\
+        runner().ok("@use \"sass:meta\";\
+             \n@function exists($name) {\
+             \n  @return meta.global-variable-exists($name);\
              \n}\n\
              \n@function f() {\
              \n  $foo: hi;\
              \n  @return g();\
              \n}\n\
              \n@function g() {\
-             \n  @return global-variable-exists(foo);\
+             \n  @return meta.global-variable-exists(foo);\
              \n}\n\
              \n$z: hi;\n\
              \ndiv {\
-             \n  foo: global-variable-exists(x);    \
-             \n  foo: global-variable-exists(\"x\");    \
-             \n  foo: global-variable-exists(z);\
-             \n  foo: global-variable-exists(\"z\");    \n\
+             \n  foo: meta.global-variable-exists(x);    \
+             \n  foo: meta.global-variable-exists(\"x\");    \
+             \n  foo: meta.global-variable-exists(z);\
+             \n  foo: meta.global-variable-exists(\"z\");    \n\
              \n  span {\
              \n    $x: false;\n\
-             \n    foo: global-variable-exists(x);\
-             \n    foo: global-variable-exists(\"x\");    \
-             \n    foo: global-variable-exists(y);\
-             \n    foo: global-variable-exists(\"y\");    \n\
-             \n    foo: global-variable-exists(z);\
-             \n    foo: global-variable-exists(\"z\");    \n\
+             \n    foo: meta.global-variable-exists(x);\
+             \n    foo: meta.global-variable-exists(\"x\");    \
+             \n    foo: meta.global-variable-exists(y);\
+             \n    foo: meta.global-variable-exists(\"y\");    \n\
+             \n    foo: meta.global-variable-exists(z);\
+             \n    foo: meta.global-variable-exists(\"z\");    \n\
              \n    p {\
-             \n      foo: global-variable-exists(x);\
-             \n      foo: global-variable-exists(\"x\");    \
+             \n      foo: meta.global-variable-exists(x);\
+             \n      foo: meta.global-variable-exists(\"x\");    \
              \n      foo: exists(x);\
              \n      foo: exists(\"x\");    \
-             \n      foo: global-variable-exists(z);\
-             \n      foo: global-variable-exists(\"z\");    \
-             \n      foo: global-variable-exists(y);\
-             \n      foo: global-variable-exists(\"y\");    \
+             \n      foo: meta.global-variable-exists(z);\
+             \n      foo: meta.global-variable-exists(\"z\");    \
+             \n      foo: meta.global-variable-exists(y);\
+             \n      foo: meta.global-variable-exists(\"y\");    \
              \n      foo: f();\
              \n      $y: blah;\
              \n      //TODO: check for shadowing\

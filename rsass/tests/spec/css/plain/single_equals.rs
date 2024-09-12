@@ -11,7 +11,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@import \"plain\";\n"),
+        runner().ok("@use \"plain\";\n"),
         "a {\
          \n  single-equals: alpha(opacity=65);\
          \n}\n"

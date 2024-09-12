@@ -5,6 +5,63 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("propset")
 }
 
+mod comment {
+    #[allow(unused)]
+    use super::runner;
+
+    mod after_block {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // wrong result
+        fn loud() {
+            assert_eq!(
+                runner().ok("a {b: {c: d} /**/}\n"),
+                "a {\
+         \n  b-c: d; /**/\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn silent() {
+            assert_eq!(
+                runner().ok("a {\
+             \n  b: {c: d} //\
+             \n}\n"),
+                "a {\
+         \n  b-c: d;\
+         \n}\n"
+            );
+        }
+    }
+    mod before_block {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn loud() {
+            assert_eq!(
+                runner().ok("a {b: /**/ {c: d}}\n"),
+                "a {\
+         \n  b-c: d;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn silent() {
+            assert_eq!(
+                runner().ok("a {\
+             \n  b: //\
+             \n    {c: d}\
+             \n}\n"),
+                "a {\
+         \n  b-c: d;\
+         \n}\n"
+            );
+        }
+    }
+}
 #[test]
 fn complex() {
     assert_eq!(

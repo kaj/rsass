@@ -8,12 +8,13 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$m: (foo: 1px, null: 2px, false: 3px, true: 4px);\n\
+        runner().ok("@use \"sass:map\";\
+             \n$m: (foo: 1px, null: 2px, false: 3px, true: 4px);\n\
              \n@debug $m;\
-             \n@debug map-get($m, foo);\
-             \n@debug map-get($m, null);\
-             \n@debug map-get($m, false);\
-             \n@debug map-get($m, true);\n"),
+             \n@debug map.get($m, foo);\
+             \n@debug map.get($m, null);\
+             \n@debug map.get($m, false);\
+             \n@debug map.get($m, true);\n"),
         ""
     );
 }

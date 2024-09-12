@@ -14,20 +14,22 @@ mod clamped {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong result
         fn above() {
             assert_eq!(
                 runner().ok("a {b: hsl(0 100% 500%)}\n"),
                 "a {\
-         \n  b: hsl(0, 100%, 100%);\
+         \n  b: hsl(0, 100%, 500%);\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn below() {
             assert_eq!(
                 runner().ok("a {b: hsl(0 100% -100%)}\n"),
                 "a {\
-         \n  b: hsl(0, 100%, 0%);\
+         \n  b: hsl(0, 100%, -100%);\
          \n}\n"
             );
         }
@@ -36,15 +38,6 @@ mod clamped {
         #[allow(unused)]
         use super::runner;
 
-        #[test]
-        fn above() {
-            assert_eq!(
-                runner().ok("a {b: hsl(0 500% 50%)}\n"),
-                "a {\
-         \n  b: hsl(0, 100%, 50%);\
-         \n}\n"
-            );
-        }
         #[test]
         fn below() {
             assert_eq!(
@@ -93,6 +86,41 @@ mod in_gamut {
         );
     }
 }
+mod missing {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // unexepected error
+    fn hue() {
+        assert_eq!(
+            runner().ok("a {b: hsl(none 100% 50%)}\n"),
+            "a {\
+         \n  b: hsl(none 100% 50%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn lightness() {
+        assert_eq!(
+            runner().ok("a {b: hsl(0 100% none)}\n"),
+            "a {\
+         \n  b: hsl(0deg 100% none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn saturation() {
+        assert_eq!(
+            runner().ok("a {b: hsl(0 none 50%)}\n"),
+            "a {\
+         \n  b: hsl(0deg none 50%);\
+         \n}\n"
+        );
+    }
+}
 #[test]
 fn named() {
     assert_eq!(
@@ -101,6 +129,26 @@ fn named() {
          \n  b: hsl(0, 100%, 50%);\
          \n}\n"
     );
+}
+mod out_of_gamut {
+    #[allow(unused)]
+    use super::runner;
+
+    mod saturation {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // wrong result
+        fn above() {
+            assert_eq!(
+                runner().ok("a {b: hsl(0 500% 50%)}\n"),
+                "a {\
+         \n  b: hsl(0, 500%, 50%);\
+         \n}\n"
+            );
+        }
+    }
 }
 mod units {
     #[allow(unused)]

@@ -8,11 +8,13 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function foo($a, $should-be-empty...) {\
-             \n  @return length($should-be-empty);\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@function foo($a, $should-be-empty...) {\
+             \n  @return list.length($should-be-empty);\
              \n}\n\
              \n@function bar($args...) {\
-             \n  @return call(foo, $args...);\
+             \n  @return meta.call(foo, $args...);\
              \n}\n\
              \n@function args($args...) {\
              \n  @return $args;\

@@ -12,52 +12,62 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: ceil()}\n"),
+            runner().err(
+                "@use \"sass:math\";\
+             \na {b: math.ceil()}\n"
+            ),
             "Error: Missing argument $number.\
          \n  ,--> input.scss\
-         \n1 | a {b: ceil()}\
-         \n  |       ^^^^^^ invocation\
+         \n2 | a {b: math.ceil()}\
+         \n  |       ^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:math\
          \n1 | @function ceil($number) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: ceil(1, 2)}\n\n"),
+            runner().err(
+                "@use \"sass:math\";\
+             \na {b: math.ceil(1, 2)}\n\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: ceil(1, 2)}\
-         \n  |       ^^^^^^^^^^ invocation\
+         \n2 | a {b: math.ceil(1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:math\
          \n1 | @function ceil($number) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: ceil(c)}\n"),
+            runner().err(
+                "@use \"sass:math\";\
+             \na {b: math.ceil(c)}\n"
+            ),
             "Error: $number: c is not a number.\
          \n  ,\
-         \n1 | a {b: ceil(c)}\
-         \n  |       ^^^^^^^\
+         \n2 | a {b: math.ceil(c)}\
+         \n  |       ^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
 #[test]
 fn high() {
     assert_eq!(
-        runner().ok("a {b: ceil(2.9)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.ceil(2.9)}\n"),
         "a {\
          \n  b: 3;\
          \n}\n"
@@ -66,7 +76,8 @@ fn high() {
 #[test]
 fn integer() {
     assert_eq!(
-        runner().ok("a {b: ceil(1)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.ceil(1)}\n"),
         "a {\
          \n  b: 1;\
          \n}\n"
@@ -75,7 +86,8 @@ fn integer() {
 #[test]
 fn low() {
     assert_eq!(
-        runner().ok("a {b: ceil(6.000000000000001)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.ceil(6.000000000000001)}\n"),
         "a {\
          \n  b: 7;\
          \n}\n"
@@ -84,7 +96,8 @@ fn low() {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: ceil($number: 1.6)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.ceil($number: 1.6)}\n"),
         "a {\
          \n  b: 2;\
          \n}\n"
@@ -93,7 +106,8 @@ fn named() {
 #[test]
 fn negative() {
     assert_eq!(
-        runner().ok("a {b: ceil(-7.6)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.ceil(-7.6)}\n"),
         "a {\
          \n  b: -7;\
          \n}\n"
@@ -102,7 +116,8 @@ fn negative() {
 #[test]
 fn preserves_units() {
     assert_eq!(
-        runner().ok("a {b: ceil(7px / 4em) * 1em}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.ceil(7px / 4em) * 1em}\n"),
         "a {\
          \n  b: 2px;\
          \n}\n"

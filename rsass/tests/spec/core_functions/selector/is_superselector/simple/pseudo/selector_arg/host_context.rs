@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 fn bare_sub() {
     assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":host-context(c d, e f, g h)\", \"c d, e f, g h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":host-context(c d, e f, g h)\", \"c d, e f, g h\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -24,7 +25,8 @@ mod prefix {
     fn subset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":-pfx-host-context(c d.i, e j f)\", \":-pfx-host-context(c d, e f, g h)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":-pfx-host-context(c d.i, e j f)\", \":-pfx-host-context(c d, e f, g h)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -35,7 +37,8 @@ mod prefix {
     fn superset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":-pfx-host-context(c d, e f, g h)\", \":-pfx-host-context(c d.i, e j f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":-pfx-host-context(c d, e f, g h)\", \":-pfx-host-context(c d.i, e j f)\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -47,7 +50,8 @@ mod prefix {
 fn subset() {
     assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":host-context(c d.i, e j f)\", \":host-context(c d, e f, g h)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":host-context(c d.i, e j f)\", \":host-context(c d, e f, g h)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -58,7 +62,8 @@ fn subset() {
 fn superset() {
     assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":host-context(c d, e f, g h)\", \":host-context(c d.i, e j f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":host-context(c d, e f, g h)\", \":host-context(c d.i, e j f)\")}\n"
         ),
         "a {\
          \n  b: true;\

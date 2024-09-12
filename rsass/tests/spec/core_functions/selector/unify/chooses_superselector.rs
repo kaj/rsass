@@ -12,7 +12,8 @@ mod parent {
     #[test]
     fn selector1() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\"c d\", \"c.e .f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"c d\", \"c.e .f\")}\n"),
             "a {\
          \n  b: c.e d.f;\
          \n}\n"
@@ -21,7 +22,8 @@ mod parent {
     #[test]
     fn selector2() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\"c.e .f\", \"c d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"c.e .f\", \"c d\")}\n"),
             "a {\
          \n  b: c.e d.f;\
          \n}\n"
@@ -35,7 +37,8 @@ mod whole_selector {
     #[test]
     fn selector1() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\"c\", \"d c.e\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"c\", \"d c.e\")}\n"),
             "a {\
          \n  b: d c.e;\
          \n}\n"
@@ -44,7 +47,8 @@ mod whole_selector {
     #[test]
     fn selector2() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\"d c.e\", \"c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"d c.e\", \"c\")}\n"),
             "a {\
          \n  b: d c.e;\
          \n}\n"

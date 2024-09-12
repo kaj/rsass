@@ -8,25 +8,26 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$Selectors: ();\n\
+        runner().ok("@use \"sass:list\";\
+             \n$Selectors: ();\n\
              \n//////////////////////////////\
              \n// Add selectors of various depths and makeups\
              \n//////////////////////////////\
              \n.foo {\
-             \n  $Selectors: append($Selectors, &) !global;\
+             \n  $Selectors: list.append($Selectors, &) !global;\
              \n}\n\
              \n.bar a {\
-             \n  $Selectors: append($Selectors, &) !global;\
+             \n  $Selectors: list.append($Selectors, &) !global;\
              \n}\n\
              \n.bar,\
              \n.baz {\
-             \n  $Selectors: append($Selectors, &) !global;\
+             \n  $Selectors: list.append($Selectors, &) !global;\
              \n}\n\
              \n.qux {\
              \n  &.waldo {\
              \n    .where & {\
              \n      .final {\
-             \n        $Selectors: append($Selectors, &) !global;\
+             \n        $Selectors: list.append($Selectors, &) !global;\
              \n      }\
              \n    }\
              \n  }\
@@ -35,12 +36,12 @@ fn test() {
              \n// Display Results\
              \n//////////////////////////////\
              \n.result {\
-             \n  length: length($Selectors);\
+             \n  length: list.length($Selectors);\
              \n  content: $Selectors;\
-             \n  @for $i from 1 through length($Selectors) {\
+             \n  @for $i from 1 through list.length($Selectors) {\
              \n    index: $i;\
-             \n    length: length(nth($Selectors, $i));\
-             \n    content: nth($Selectors, $i);\
+             \n    length: list.length(list.nth($Selectors, $i));\
+             \n    content: list.nth($Selectors, $i);\
              \n  }\
              \n}"),
         ".result {\

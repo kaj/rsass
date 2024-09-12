@@ -56,8 +56,9 @@ mod found {
         fn first() {
             assert_eq!(
         runner().ok(
-            "@use \'sass:map\';\
-             \na {b: inspect(map.deep-remove((c: (d: e, f: g, h: i)), c, d))}\n"
+            "@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-remove((c: (d: e, f: g, h: i)), c, d))}\n"
         ),
         "a {\
          \n  b: (c: (f: g, h: i));\
@@ -68,8 +69,9 @@ mod found {
         fn last() {
             assert_eq!(
         runner().ok(
-            "@use \'sass:map\';\
-             \na {b: inspect(map.deep-remove((c: (d: e, f: g, h: i)), c, h))}\n"
+            "@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-remove((c: (d: e, f: g, h: i)), c, h))}\n"
         ),
         "a {\
          \n  b: (c: (d: e, f: g));\
@@ -80,8 +82,9 @@ mod found {
         fn middle() {
             assert_eq!(
         runner().ok(
-            "@use \'sass:map\';\
-             \na {b: inspect(map.deep-remove((c: (d: e, f: g, h: i)), c, f))}\n"
+            "@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-remove((c: (d: e, f: g, h: i)), c, f))}\n"
         ),
         "a {\
          \n  b: (c: (d: e, h: i));\
@@ -91,8 +94,9 @@ mod found {
         #[test]
         fn single() {
             assert_eq!(
-                runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-remove((c: (d: e)), c, d))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-remove((c: (d: e)), c, d))}\n"),
                 "a {\
          \n  b: (c: ());\
          \n}\n"
@@ -102,8 +106,9 @@ mod found {
     #[test]
     fn top_level() {
         assert_eq!(
-            runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-remove((c: d), c))}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-remove((c: d), c))}\n"),
             "a {\
          \n  b: ();\
          \n}\n"
@@ -117,8 +122,9 @@ mod not_found {
     #[test]
     fn empty() {
         assert_eq!(
-            runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-remove((), 1))}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-remove((), 1))}\n"),
             "a {\
          \n  b: ();\
          \n}\n"
@@ -127,20 +133,22 @@ mod not_found {
     #[test]
     fn extra_keys() {
         assert_eq!(
-            runner().ok(
-                "@use \'sass:map\';\
-             \na {b: inspect(map.deep-remove((c: (d: e)), c, d, e, f, g))}\n"
-            ),
-            "a {\
+        runner().ok(
+            "@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-remove((c: (d: e)), c, d, e, f, g))}\n"
+        ),
+        "a {\
          \n  b: (c: (d: e));\
          \n}\n"
-        );
+    );
     }
     #[test]
     fn nested() {
         assert_eq!(
-            runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-remove((c: (d: e)), c, e))}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-remove((c: (d: e)), c, e))}\n"),
             "a {\
          \n  b: (c: (d: e));\
          \n}\n"
@@ -149,8 +157,9 @@ mod not_found {
     #[test]
     fn not_a_map() {
         assert_eq!(
-            runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-remove((c: (d: e)), c, d, e))}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-remove((c: (d: e)), c, d, e))}\n"),
             "a {\
          \n  b: (c: (d: e));\
          \n}\n"
@@ -159,8 +168,9 @@ mod not_found {
     #[test]
     fn top_level() {
         assert_eq!(
-            runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-remove((c: d), d))}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-remove((c: d), d))}\n"),
             "a {\
          \n  b: (c: d);\
          \n}\n"

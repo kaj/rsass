@@ -8,58 +8,59 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function exists($name) {\
-             \n  @return function-exists($name);\
+        runner().ok("@use \"sass:meta\";\
+             \n@function exists($name) {\
+             \n  @return meta.function-exists($name);\
              \n}\n\
              \n@function f() {\
              \n  $foo: hi;\
              \n  @return g();\
              \n}\n\
              \n@function g() {\
-             \n  @return function-exists(foo);\
+             \n  @return meta.function-exists(foo);\
              \n}\n\
              \n@function h() {\
-             \n  @return function-exists(lighten);\
+             \n  @return meta.function-exists(lighten);\
              \n}\n\
              \ndiv {\
-             \n  foo: function-exists(lighten); \
-             \n  foo: function-exists(\"lighten\"); \
-             \n  foo: function-exists(exists);\
-             \n  foo: function-exists(\"exists\"); \
-             \n  foo: function-exists(f);\
-             \n  foo: function-exists(\"f\"); \
-             \n  foo: function-exists(g);\
-             \n  foo: function-exists(\"g\"); \
-             \n  foo: function-exists(nope);\
-             \n  foo: function-exists(\"nope\"); \
+             \n  foo: meta.function-exists(lighten); \
+             \n  foo: meta.function-exists(\"lighten\"); \
+             \n  foo: meta.function-exists(exists);\
+             \n  foo: meta.function-exists(\"exists\"); \
+             \n  foo: meta.function-exists(f);\
+             \n  foo: meta.function-exists(\"f\"); \
+             \n  foo: meta.function-exists(g);\
+             \n  foo: meta.function-exists(\"g\"); \
+             \n  foo: meta.function-exists(nope);\
+             \n  foo: meta.function-exists(\"nope\"); \
              \n  foo: g();\
              \n  foo: f();\
              \n  foo: h();\n\n\
              \n  span {\
-             \n    foo: function-exists(lighten); \
-             \n    foo: function-exists(\"lighten\"); \
-             \n    foo: function-exists(exists);\
-             \n    foo: function-exists(\"exists\"); \
-             \n    foo: function-exists(f);\
-             \n    foo: function-exists(\"f\"); \
-             \n    foo: function-exists(g);\
-             \n    foo: function-exists(\"g\"); \
-             \n    foo: function-exists(nope);\
-             \n    foo: function-exists(\"nope\"); \
+             \n    foo: meta.function-exists(lighten); \
+             \n    foo: meta.function-exists(\"lighten\"); \
+             \n    foo: meta.function-exists(exists);\
+             \n    foo: meta.function-exists(\"exists\"); \
+             \n    foo: meta.function-exists(f);\
+             \n    foo: meta.function-exists(\"f\"); \
+             \n    foo: meta.function-exists(g);\
+             \n    foo: meta.function-exists(\"g\"); \
+             \n    foo: meta.function-exists(nope);\
+             \n    foo: meta.function-exists(\"nope\"); \
              \n    foo: g();\
              \n    foo: f();\
              \n    foo: h();\
              \n    p {\
-             \n      foo: function-exists(lighten); \
-             \n      foo: function-exists(\"lighten\"); \
-             \n      foo: function-exists(exists);\
-             \n      foo: function-exists(\"exists\"); \
-             \n      foo: function-exists(f);\
-             \n      foo: function-exists(\"f\"); \
-             \n      foo: function-exists(g);\
-             \n      foo: function-exists(\"g\"); \
-             \n      foo: function-exists(nope);\
-             \n      foo: function-exists(\"nope\"); \
+             \n      foo: meta.function-exists(lighten); \
+             \n      foo: meta.function-exists(\"lighten\"); \
+             \n      foo: meta.function-exists(exists);\
+             \n      foo: meta.function-exists(\"exists\"); \
+             \n      foo: meta.function-exists(f);\
+             \n      foo: meta.function-exists(\"f\"); \
+             \n      foo: meta.function-exists(g);\
+             \n      foo: meta.function-exists(\"g\"); \
+             \n      foo: meta.function-exists(nope);\
+             \n      foo: meta.function-exists(\"nope\"); \
              \n      foo: g();\
              \n      foo: f();\
              \n      foo: h();\

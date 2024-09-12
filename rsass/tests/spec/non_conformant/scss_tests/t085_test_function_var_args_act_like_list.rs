@@ -8,8 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function foo($a, $b...) {\
-             \n  @return \"a: #{length($b)}, b: #{nth($b, 2)}\";\
+        runner().ok("@use \"sass:list\";\
+             \n@function foo($a, $b...) {\
+             \n  @return \"a: #{list.length($b)}, b: #{list.nth($b, 2)}\";\
              \n}\n\
              \n.foo {val: foo(1, 2, 3, 4)}\n"),
         ".foo {\

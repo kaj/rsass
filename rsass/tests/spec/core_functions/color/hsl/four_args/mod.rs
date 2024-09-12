@@ -7,8 +7,8 @@ fn runner() -> crate::TestRunner {
 
 mod alpha;
 
-mod clamped;
-
 mod in_gamut;
+
+mod out_of_gamut;
 
 mod special_functions;

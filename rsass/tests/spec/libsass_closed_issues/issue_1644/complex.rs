@@ -10,7 +10,8 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err(
-            "$tablet-portrait:                 768px;\
+            "@use \"sass:map\";\
+             \n$tablet-portrait:                 768px;\
              \n$tablet-landscape:                980px;\
              \n$desk-normal:                     1120px;\
              \n$desk-big:                        1280px;\
@@ -33,7 +34,7 @@ fn test() {
              \n    }\
              \n  }\
              \n}\n\
-             \n@each $name in map-keys($grid-breakpoints-immobile) {\
+             \n@each $name in map.keys($grid-breakpoints-immobile) {\
              \n  @include grid-media-query($name, $grid-breakpoints-immobile) {\
              \n    body.immobile & {\
              \n      margin-bottom: 0;\
@@ -43,11 +44,11 @@ fn test() {
         ),
         "Error: Top-level selectors may not contain the parent selector \"&\".\
          \n   ,\
-         \n30 |     body.immobile & {\
+         \n31 |     body.immobile & {\
          \n   |                   ^\
          \n   \'\
-         \n  input.scss 30:19  @content\
-         \n  input.scss 22:9   grid-media-query()\
-         \n  input.scss 29:3   root stylesheet",
+         \n  input.scss 31:19  @content\
+         \n  input.scss 23:9   grid-media-query()\
+         \n  input.scss 30:3   root stylesheet",
     );
 }

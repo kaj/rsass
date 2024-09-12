@@ -16,7 +16,8 @@ mod format {
         #[test]
         fn initial() {
             assert_eq!(
-                runner().ok("a {b: selector-nest((c, d e), \"f\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest((c, d e), \"f\")}\n"),
                 "a {\
          \n  b: c f, d e f;\
          \n}\n"
@@ -25,7 +26,8 @@ mod format {
         #[test]
         fn later() {
             assert_eq!(
-                runner().ok("a {b: selector-nest(\"c\", (d, e f))}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"c\", (d, e f))}\n"),
                 "a {\
          \n  b: c d, c e f;\
          \n}\n"

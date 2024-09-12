@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn sub() {
     assert_eq!(
-        runner().ok("a {b: is-superselector(\"c\", \"d + ~ c\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"d + ~ c\")}\n"),
         "a {\
          \n  b: false;\
          \n}\n"
@@ -18,7 +19,8 @@ fn sub() {
 #[test]
 fn test_super() {
     assert_eq!(
-        runner().ok("a {b: is-superselector(\"> c\", \"c\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"> c\", \"c\")}\n"),
         "a {\
          \n  b: false;\
          \n}\n"

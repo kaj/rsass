@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(".a-#{quote(\'\' + b)} {\
+        runner().ok("@use \"sass:string\";\
+             \n.a-#{string.quote(\'\' + b)} {\
              \n  c: d;\
              \n}\n\
              \n.a-#{\'\' + b} {\

@@ -6,18 +6,20 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong error
 fn test() {
     assert_eq!(
         runner().err(
-            "foo {\r\
-             \n  test: change-color(red, $red: 0.5, $hue: 0.2);\r\
+            "@use \"sass:color\";\
+             \nfoo {\r\
+             \n  test: color.change(red, $red: 0.5, $hue: 0.2);\r\
              \n}"
         ),
-        "Error: RGB parameters may not be passed along with HSL parameters.\
+        "Error: $hue: Color space rgb doesn\'t have a channel with this name.\
          \n  ,\
-         \n2 |   test: change-color(red, $red: 0.5, $hue: 0.2);\
+         \n3 |   test: color.change(red, $red: 0.5, $hue: 0.2);\
          \n  |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:9  root stylesheet",
+         \n  input.scss 3:9  root stylesheet",
     );
 }

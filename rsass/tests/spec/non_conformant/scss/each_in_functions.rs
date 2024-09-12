@@ -9,12 +9,14 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$GLOBAL: global;\n\
+            "@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n$GLOBAL: global;\n\
              \n@function foo($g1, $g2, $g3) {\
              \n  @each $value in $g1, $g2, $g3 {\
              \n    $GLOBAL: $GLOBAL each $value !global;\
-             \n    $GLOBAL: $GLOBAL type1 type-of(nth($value, 1)) !global;\
-             \n    $GLOBAL: $GLOBAL type2 type-of(nth($value, 2)) !global;\
+             \n    $GLOBAL: $GLOBAL type1 meta.type-of(list.nth($value, 1)) !global;\
+             \n    $GLOBAL: $GLOBAL type2 meta.type-of(list.nth($value, 2)) !global;\
              \n  }\
              \n  @each $value in (foo: foo, bar: bar) {\
              \n    $GLOBAL: $GLOBAL map $value !global;\
@@ -25,7 +27,7 @@ fn test() {
              \n  a: foo(50% 50%, cover circle, red blue);\
              \n  b: $GLOBAL;\
              \n  $colors: red green blue;\
-             \n  c: a, b, type-of(nth($colors, 2)), d;\
+             \n  c: a, b, meta.type-of(list.nth($colors, 2)), d;\
              \n}\n"
         ),
         "div {\

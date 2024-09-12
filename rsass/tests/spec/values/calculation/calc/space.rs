@@ -76,7 +76,8 @@ mod variable {
     #[test]
     fn after() {
         assert_eq!(
-            runner().ok("$c: unquote(\"+ 2\");\
+            runner().ok("@use \"sass:string\";\
+             \n$c: string.unquote(\"+ 2\");\
              \na {b: calc(1 $c)}\n"),
             "a {\
          \n  b: calc(1 + 2);\
@@ -86,7 +87,8 @@ mod variable {
     #[test]
     fn before() {
         assert_eq!(
-            runner().ok("$c: unquote(\"1 +\");\
+            runner().ok("@use \"sass:string\";\
+             \n$c: string.unquote(\"1 +\");\
              \na {b: calc($c 2)}\n"),
             "a {\
          \n  b: calc(1 + 2);\
@@ -96,7 +98,8 @@ mod variable {
     #[test]
     fn between() {
         assert_eq!(
-            runner().ok("$c: unquote(\"+ 2 +\");\
+            runner().ok("@use \"sass:string\";\
+             \n$c: string.unquote(\"+ 2 +\");\
              \na {b: calc(1 $c 3)}\n"),
             "a {\
          \n  b: calc(1 + 2 + 3);\

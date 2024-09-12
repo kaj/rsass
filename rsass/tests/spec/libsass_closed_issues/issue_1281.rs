@@ -8,13 +8,14 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$quoted: \"green\";\
+        runner().ok("@use \"sass:meta\";\
+             \n$quoted: \"green\";\
              \n$unquoted: green;\n\
              \n.test {\
-             \n  string: type-of($quoted);\
-             \n  color: type-of($unquoted);\
-             \n  string: type-of(\"green\");\
-             \n  color: type-of(green);\
+             \n  string: meta.type-of($quoted);\
+             \n  color: meta.type-of($unquoted);\
+             \n  string: meta.type-of(\"green\");\
+             \n  color: meta.type-of(green);\
              \n}\n"),
         ".test {\
          \n  string: string;\

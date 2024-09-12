@@ -16,10 +16,11 @@ mod bracketed {
         #[test]
         fn bracketed() {
             assert_eq!(
-                runner().ok("$result: inspect([[1, 2], [3, 4]]);\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect([[1, 2], [3, 4]]);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: [[1, 2], [3, 4]];\
@@ -30,10 +31,11 @@ mod bracketed {
         #[test]
         fn unbracketed() {
             assert_eq!(
-                runner().ok("$result: inspect(((1, 2), (3, 4)));\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect(((1, 2), (3, 4)));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: (1, 2), (3, 4);\
@@ -50,10 +52,12 @@ mod bracketed {
         fn bracketed() {
             assert_eq!(
         runner().ok(
-            "$result: inspect(join([[1, 2], [3, 4]], (), $separator: slash));\
+            "@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n$result: meta.inspect(list.join([[1, 2], [3, 4]], (), $separator: slash));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"
         ),
         "a {\
@@ -65,11 +69,12 @@ mod bracketed {
         #[test]
         fn unbracketed() {
             assert_eq!(
-                runner().ok("@use \"sass:list\";\
-             \n$result: inspect(list.slash([1, 2], [3, 4]));\
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:list\";\
+             \n$result: meta.inspect(list.slash([1, 2], [3, 4]));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: [1, 2] / [3, 4];\
@@ -85,10 +90,11 @@ mod bracketed {
         #[test]
         fn bracketed() {
             assert_eq!(
-                runner().ok("$result: inspect([[1, 2] [3, 4]]);\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect([[1, 2] [3, 4]]);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: [[1, 2] [3, 4]];\
@@ -99,10 +105,11 @@ mod bracketed {
         #[test]
         fn unbracketed() {
             assert_eq!(
-                runner().ok("$result: inspect([1, 2] [3, 4]);\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect([1, 2] [3, 4]);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: [1, 2] [3, 4];\
@@ -123,10 +130,11 @@ mod comma {
         #[test]
         fn bracketed() {
             assert_eq!(
-                runner().ok("$result: inspect([(1, 2), (3, 4)]);\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect([(1, 2), (3, 4)]);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: [(1, 2), (3, 4)];\
@@ -137,10 +145,11 @@ mod comma {
         #[test]
         fn unbracketed() {
             assert_eq!(
-                runner().ok("$result: inspect(((1, 2), (3, 4)));\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect(((1, 2), (3, 4)));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: (1, 2), (3, 4);\
@@ -157,10 +166,12 @@ mod comma {
         fn bracketed() {
             assert_eq!(
         runner().ok(
-            "$result: inspect(join([(1, 2), (3, 4)], (), $separator: slash));\
+            "@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n$result: meta.inspect(list.join([(1, 2), (3, 4)], (), $separator: slash));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"
         ),
         "a {\
@@ -172,11 +183,12 @@ mod comma {
         #[test]
         fn unbracketed() {
             assert_eq!(
-                runner().ok("@use \"sass:list\";\
-             \n$result: inspect(list.slash((1, 2), (3, 4)));\
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:list\";\
+             \n$result: meta.inspect(list.slash((1, 2), (3, 4)));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: (1, 2) / (3, 4);\
@@ -192,10 +204,11 @@ mod comma {
         #[test]
         fn bracketed() {
             assert_eq!(
-                runner().ok("$result: inspect([(1, 2) (3, 4)]);\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect([(1, 2) (3, 4)]);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: [(1, 2) (3, 4)];\
@@ -206,10 +219,11 @@ mod comma {
         #[test]
         fn unbracketed() {
             assert_eq!(
-                runner().ok("$result: inspect((1, 2) (3, 4));\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect((1, 2) (3, 4));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: (1, 2) (3, 4);\
@@ -230,10 +244,11 @@ mod empty {
         #[test]
         fn bracketed() {
             assert_eq!(
-                runner().ok("$result: inspect([(), ()]);\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect([(), ()]);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: [(), ()];\
@@ -244,10 +259,11 @@ mod empty {
         #[test]
         fn unbracketed() {
             assert_eq!(
-                runner().ok("$result: inspect(((), ()));\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect(((), ()));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: (), ();\
@@ -264,10 +280,12 @@ mod empty {
         fn bracketed() {
             assert_eq!(
         runner().ok(
-            "$result: inspect(join([(), ()], (), $separator: slash));\
+            "@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n$result: meta.inspect(list.join([(), ()], (), $separator: slash));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"
         ),
         "a {\
@@ -279,11 +297,12 @@ mod empty {
         #[test]
         fn unbracketed() {
             assert_eq!(
-                runner().ok("@use \"sass:list\";\
-             \n$result: inspect(list.slash((), ()));\
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:list\";\
+             \n$result: meta.inspect(list.slash((), ()));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: () / ();\
@@ -299,10 +318,11 @@ mod empty {
         #[test]
         fn bracketed() {
             assert_eq!(
-                runner().ok("$result: inspect([() ()]);\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect([() ()]);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: [() ()];\
@@ -313,10 +333,11 @@ mod empty {
         #[test]
         fn unbracketed() {
             assert_eq!(
-                runner().ok("$result: inspect(() ());\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect(() ());\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: () ();\
@@ -333,7 +354,8 @@ mod empty_bracketed {
     #[test]
     fn bracketed() {
         assert_eq!(
-            runner().ok("a {b: inspect([[] []])}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \na {b: meta.inspect([[] []])}\n"),
             "a {\
          \n  b: [[] []];\
          \n}\n"
@@ -342,7 +364,8 @@ mod empty_bracketed {
     #[test]
     fn unbracketed() {
         assert_eq!(
-            runner().ok("a {b: inspect(([] []))}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \na {b: meta.inspect(([] []))}\n"),
             "a {\
          \n  b: [] [];\
          \n}\n"
@@ -360,10 +383,11 @@ mod space {
         #[test]
         fn bracketed() {
             assert_eq!(
-                runner().ok("$result: inspect([1 2, 3 4]);\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect([1 2, 3 4]);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: [1 2, 3 4];\
@@ -374,10 +398,11 @@ mod space {
         #[test]
         fn unbracketed() {
             assert_eq!(
-                runner().ok("$result: inspect((1 2, 3 4));\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect((1 2, 3 4));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: 1 2, 3 4;\
@@ -394,10 +419,12 @@ mod space {
         fn bracketed() {
             assert_eq!(
         runner().ok(
-            "$result: inspect(join([1 2, 3 4], (), $separator: slash));\
+            "@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n$result: meta.inspect(list.join([1 2, 3 4], (), $separator: slash));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"
         ),
         "a {\
@@ -409,11 +436,12 @@ mod space {
         #[test]
         fn unbracketed() {
             assert_eq!(
-                runner().ok("@use \"sass:list\";\
-             \n$result: inspect(list.slash(1 2, 3 4));\
+                runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:list\";\
+             \n$result: meta.inspect(list.slash(1 2, 3 4));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: 1 2 / 3 4;\
@@ -429,10 +457,11 @@ mod space {
         #[test]
         fn bracketed() {
             assert_eq!(
-                runner().ok("$result: inspect([(1 2) (3 4)]);\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect([(1 2) (3 4)]);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: [(1 2) (3 4)];\
@@ -443,10 +472,11 @@ mod space {
         #[test]
         fn unbracketed() {
             assert_eq!(
-                runner().ok("$result: inspect((1 2) (3 4));\
+                runner().ok("@use \"sass:meta\";\
+             \n$result: meta.inspect((1 2) (3 4));\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
+             \n  type: meta.type-of($result);\
              \n}\n"),
                 "a {\
          \n  value: (1 2) (3 4);\

@@ -6,13 +6,18 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok("$map: (\"lightness\": 10%, \"saturation\": 10%);\
-             \n$base: call(get-function(\'scale-color\'), #dedede, $map...);\
-             \ntest { color: $base; }\n"),
+        runner().ok(
+            "@use \"sass:color\";\
+             \n@use \"sass:meta\";\
+             \n$map: (\"lightness\": 10%, \"saturation\": 10%);\
+             \n$base: meta.call(meta.get-function(\'scale\', $module: \'color\'), #dedede, $map...);\
+             \ntest { color: $base; }\n"
+        ),
         "test {\
-         \n  color: #e4dede;\
+         \n  color: rgb(228.27, 222.33, 222.33);\
          \n}\n"
     );
 }

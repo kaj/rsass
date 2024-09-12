@@ -9,7 +9,7 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err(
-            "@use \'sass:color\';\
+            "@use \"sass:color\";\
              \na {b: color.hwb(#123, 0.5)}\n"
         ),
         "Error: Only 1 argument allowed, but 2 were passed.\

@@ -12,7 +12,8 @@ mod t1 {
     #[test]
     fn of_1() {
         assert_eq!(
-            runner().ok("a {b: nth(join((), c), 1)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.nth(list.join((), c), 1)}\n"),
             "a {\
          \n  b: c;\
          \n}\n"
@@ -21,7 +22,8 @@ mod t1 {
     #[test]
     fn of_2() {
         assert_eq!(
-            runner().ok("a {b: nth(c d, 1)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.nth(c d, 1)}\n"),
             "a {\
          \n  b: c;\
          \n}\n"
@@ -35,7 +37,8 @@ mod t2 {
     #[test]
     fn of_2() {
         assert_eq!(
-            runner().ok("a {b: nth(c d, 2)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.nth(c d, 2)}\n"),
             "a {\
          \n  b: d;\
          \n}\n"
@@ -44,7 +47,8 @@ mod t2 {
     #[test]
     fn of_4() {
         assert_eq!(
-            runner().ok("a {b: nth(c d e f, 2)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.nth(c d e f, 2)}\n"),
             "a {\
          \n  b: d;\
          \n}\n"
@@ -54,7 +58,8 @@ mod t2 {
 #[test]
 fn bracketed() {
     assert_eq!(
-        runner().ok("a {b: nth([c, d], 2)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.nth([c, d], 2)}\n"),
         "a {\
          \n  b: d;\
          \n}\n"
@@ -71,89 +76,108 @@ mod error {
         #[test]
         fn t0() {
             assert_eq!(
-                runner().err("a {b: nth(c d, 0)}\n"),
+                runner().err(
+                    "@use \"sass:list\";\
+             \na {b: list.nth(c d, 0)}\n"
+                ),
                 "Error: $n: List index may not be 0.\
          \n  ,\
-         \n1 | a {b: nth(c d, 0)}\
-         \n  |       ^^^^^^^^^^^\
+         \n2 | a {b: list.nth(c d, 0)}\
+         \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
         fn too_high() {
             assert_eq!(
-                runner().err("a {b: nth(c d, 3)}\n"),
+                runner().err(
+                    "@use \"sass:list\";\
+             \na {b: list.nth(c d, 3)}\n"
+                ),
                 "Error: $n: Invalid index 3 for a list with 2 elements.\
          \n  ,\
-         \n1 | a {b: nth(c d, 3)}\
-         \n  |       ^^^^^^^^^^^\
+         \n2 | a {b: list.nth(c d, 3)}\
+         \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
         fn too_low() {
             assert_eq!(
-                runner().err("a {b: nth(c d, -3)}\n"),
+                runner().err(
+                    "@use \"sass:list\";\
+             \na {b: list.nth(c d, -3)}\n"
+                ),
                 "Error: $n: Invalid index -3 for a list with 2 elements.\
          \n  ,\
-         \n1 | a {b: nth(c d, -3)}\
-         \n  |       ^^^^^^^^^^^^\
+         \n2 | a {b: list.nth(c d, -3)}\
+         \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: nth(c d)}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.nth(c d)}\n"
+            ),
             "Error: Missing argument $n.\
          \n  ,--> input.scss\
-         \n1 | a {b: nth(c d)}\
-         \n  |       ^^^^^^^^ invocation\
+         \n2 | a {b: list.nth(c d)}\
+         \n  |       ^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:list\
          \n1 | @function nth($list, $n) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: nth(c d, 1, 2)}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.nth(c d, 1, 2)}\n"
+            ),
             "Error: Only 2 arguments allowed, but 3 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: nth(c d, 1, 2)}\
-         \n  |       ^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: list.nth(c d, 1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:list\
          \n1 | @function nth($list, $n) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: nth(c d, e)}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.nth(c d, e)}\n"
+            ),
             "Error: $n: e is not a number.\
          \n  ,\
-         \n1 | a {b: nth(c d, e)}\
-         \n  |       ^^^^^^^^^^^\
+         \n2 | a {b: list.nth(c d, e)}\
+         \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
 #[test]
 fn map() {
     assert_eq!(
-        runner().ok("a {b: nth((c: d, e: f, g: h), 2)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.nth((c: d, e: f, g: h), 2)}\n"),
         "a {\
          \n  b: e f;\
          \n}\n"
@@ -162,7 +186,8 @@ fn map() {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: nth($list: c d, $n: 1)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.nth($list: c d, $n: 1)}\n"),
         "a {\
          \n  b: c;\
          \n}\n"
@@ -179,7 +204,8 @@ mod negative {
         #[test]
         fn of_1() {
             assert_eq!(
-                runner().ok("a {b: nth(join((), c), -1)}\n"),
+                runner().ok("@use \"sass:list\";\
+             \na {b: list.nth(list.join((), c), -1)}\n"),
                 "a {\
          \n  b: c;\
          \n}\n"
@@ -188,7 +214,8 @@ mod negative {
         #[test]
         fn of_2() {
             assert_eq!(
-                runner().ok("a {b: nth(c d, -1)}\n"),
+                runner().ok("@use \"sass:list\";\
+             \na {b: list.nth(c d, -1)}\n"),
                 "a {\
          \n  b: d;\
          \n}\n"
@@ -202,7 +229,8 @@ mod negative {
         #[test]
         fn of_2() {
             assert_eq!(
-                runner().ok("a {b: nth(c d, -2)}\n"),
+                runner().ok("@use \"sass:list\";\
+             \na {b: list.nth(c d, -2)}\n"),
                 "a {\
          \n  b: c;\
          \n}\n"
@@ -211,7 +239,8 @@ mod negative {
         #[test]
         fn of_4() {
             assert_eq!(
-                runner().ok("a {b: nth(c d e f, -2)}\n"),
+                runner().ok("@use \"sass:list\";\
+             \na {b: list.nth(c d e f, -2)}\n"),
                 "a {\
          \n  b: e;\
          \n}\n"
@@ -222,7 +251,8 @@ mod negative {
 #[test]
 fn non_list() {
     assert_eq!(
-        runner().ok("a {b: nth(c, 1)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.nth(c, 1)}\n"),
         "a {\
          \n  b: c;\
          \n}\n"
@@ -232,7 +262,8 @@ fn non_list() {
 #[ignore] // unexepected error
 fn units() {
     assert_eq!(
-        runner().ok("a {b: nth(c d, 1px)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.nth(c d, 1px)}\n"),
         "a {\
          \n  b: c;\
          \n}\n"

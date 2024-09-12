@@ -47,11 +47,12 @@ fn chosen_prefix() {
     let runner = runner().with_cwd("chosen_prefix");
     assert_eq!(
         runner.ok(
-            "@use \"sass:color\" as a;\
-             \nb {c: call(get-function(\"red\", $module: \"a\"), #abcdef)}\n"
+            "@use \"sass:meta\";\
+             \n@use \"sass:math\" as a;\
+             \nb {c: meta.call(meta.get-function(\"round\", $module: \"a\"), 0.6)}\n"
         ),
         "b {\
-         \n  c: 171;\
+         \n  c: 1;\
          \n}\n"
     );
 }
@@ -60,11 +61,12 @@ fn defined() {
     let runner = runner().with_cwd("defined");
     assert_eq!(
         runner.ok(
-            "@use \"sass:color\";\
-             \na {b: call(get-function(\"red\", $module: \"color\"), #abcdef)}\n"
+            "@use \"sass:math\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.call(meta.get-function(\"round\", $module: \"math\"), 0.6)}\n"
         ),
         "a {\
-         \n  b: 171;\
+         \n  b: 1;\
          \n}\n"
     );
 }
@@ -73,11 +75,12 @@ fn named() {
     let runner = runner().with_cwd("named");
     assert_eq!(
         runner.ok(
-            "@use \"sass:color\";\
-             \na {b: call(get-function($name: \"red\", $module: \"color\"), #abcdef)}\n"
+            "@use \"sass:meta\";\
+             \n@use \"sass:math\";\
+             \na {b: meta.call(meta.get-function($name: \"round\", $module: \"math\"), 0.6)}\n"
         ),
         "a {\
-         \n  b: 171;\
+         \n  b: 1;\
          \n}\n"
     );
 }
@@ -91,9 +94,10 @@ mod through_forward {
     fn test_as() {
         let runner = runner().with_cwd("as");
         assert_eq!(
-            runner.ok("@use \"midstream\" as *;\
+            runner.ok("@use \"sass:meta\";\
+             \n@use \"midstream\" as *;\
              \na {\
-             \n  b: call(get-function(c-d));\
+             \n  b: meta.call(meta.get-function(c-d));\
              \n}\n"),
             "a {\
          \n  b: d;\
@@ -104,8 +108,9 @@ mod through_forward {
     fn bare() {
         let runner = runner().with_cwd("bare");
         assert_eq!(
-            runner.ok("@use \"midstream\" as *;\
-             \na {b: call(get-function(c))}\n"),
+            runner.ok("@use \"sass:meta\";\
+             \n@use \"midstream\" as *;\
+             \na {b: meta.call(meta.get-function(c))}\n"),
             "a {\
          \n  b: c;\
          \n}\n"
@@ -115,9 +120,10 @@ mod through_forward {
     fn hide() {
         let runner = runner().with_cwd("hide");
         assert_eq!(
-            runner.ok("@use \"midstream\" as *;\
+            runner.ok("@use \"sass:meta\";\
+             \n@use \"midstream\" as *;\
              \na {\
-             \n  b: call(get-function(d));\
+             \n  b: meta.call(meta.get-function(d));\
              \n}\n"),
             "a {\
          \n  b: d;\
@@ -128,9 +134,10 @@ mod through_forward {
     fn show() {
         let runner = runner().with_cwd("show");
         assert_eq!(
-            runner.ok("@use \"midstream\" as *;\
+            runner.ok("@use \"sass:meta\";\
+             \n@use \"midstream\" as *;\
              \na {\
-             \n  b: call(get-function(c));\
+             \n  b: meta.call(meta.get-function(c));\
              \n}\n"),
             "a {\
          \n  b: c;\
@@ -142,8 +149,9 @@ mod through_forward {
 fn through_use() {
     let runner = runner().with_cwd("through_use");
     assert_eq!(
-        runner.ok("@use \"other\" as *;\
-             \na {b: call(get-function(add-two), 10)}\n"),
+        runner.ok("@use \"sass:meta\";\
+             \n@use \"other\" as *;\
+             \na {b: meta.call(meta.get-function(add-two), 10)}\n"),
         "a {\
          \n  b: 12;\
          \n}\n"

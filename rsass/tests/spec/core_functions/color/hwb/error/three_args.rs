@@ -10,13 +10,14 @@ mod blackness {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err(
-                "@use \'sass:color\';\
+                "@use \"sass:color\";\
              \na {b: color.hwb(0, 100%, \"foo\")}\n"
             ),
-            "Error: $blackness: \"foo\" is not a number.\
+            "Error: Expected blackness channel to be a number, was \"foo\".\
          \n  ,\
          \n2 | a {b: color.hwb(0, 100%, \"foo\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -30,13 +31,14 @@ mod hue {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err(
-                "@use \'sass:color\';\
+                "@use \"sass:color\";\
              \na {b: color.hwb(\"foo\", 100%, 50%)}\n"
             ),
-            "Error: $hue: \"foo\" is not a number.\
+            "Error: Expected hue channel to be a number, was \"foo\".\
          \n  ,\
          \n2 | a {b: color.hwb(\"foo\", 100%, 50%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -50,13 +52,14 @@ mod whiteness {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err(
-                "@use \'sass:color\';\
+                "@use \"sass:color\";\
              \na {b: color.hwb(0, \"foo\", 50%)}\n"
             ),
-            "Error: $whiteness: \"foo\" is not a number.\
+            "Error: Expected whiteness channel to be a number, was \"foo\".\
          \n  ,\
          \n2 | a {b: color.hwb(0, \"foo\", 50%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\

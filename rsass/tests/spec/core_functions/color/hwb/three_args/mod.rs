@@ -5,6 +5,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("three_args")
 }
 
+mod bounds;
+
 mod named;
 
 mod units;

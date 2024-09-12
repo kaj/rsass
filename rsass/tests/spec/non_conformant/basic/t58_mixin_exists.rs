@@ -8,55 +8,56 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function exists($name) {\
-             \n  @return mixin-exists($name);\
+        runner().ok("@use \"sass:meta\";\
+             \n@function exists($name) {\
+             \n  @return meta.mixin-exists($name);\
              \n}\n\
              \n@function f() {\
              \n  $foo: hi;\
              \n  @return g();\
              \n}\n\
              \n@function g() {\
-             \n  @return mixin-exists(foo);\
+             \n  @return meta.mixin-exists(foo);\
              \n}\n\
              \n@function h() {\
-             \n  @return mixin-exists(lighten);\
+             \n  @return meta.mixin-exists(lighten);\
              \n}\n\
              \n@mixin red-text { color: red; }\
              \n@mixin blue-text { color: red; }\
              \n@mixin green-text { color: red; }\n\
              \ndiv {\
-             \n  foo: mixin-exists(red-text); \
-             \n  foo: mixin-exists(\"red-text\"); \
-             \n  foo: mixin-exists(blue-text); \
-             \n  foo: mixin-exists(\"blue-text\"); \
-             \n  foo: mixin-exists(green-text);   \
-             \n  foo: mixin-exists(\"green-text\"); \
-             \n  foo: mixin-exists(nope);\
-             \n  foo: mixin-exists(\"nope\");\
+             \n  foo: meta.mixin-exists(red-text); \
+             \n  foo: meta.mixin-exists(\"red-text\"); \
+             \n  foo: meta.mixin-exists(blue-text); \
+             \n  foo: meta.mixin-exists(\"blue-text\"); \
+             \n  foo: meta.mixin-exists(green-text);   \
+             \n  foo: meta.mixin-exists(\"green-text\"); \
+             \n  foo: meta.mixin-exists(nope);\
+             \n  foo: meta.mixin-exists(\"nope\");\
              \n  foo: g();\
              \n  foo: f();\
              \n  foo: h();\n\n\
              \n  span {\
-             \n    foo: mixin-exists(red-text); \
-             \n    foo: mixin-exists(\"red-text\"); \
-             \n    foo: mixin-exists(blue-text); \
-             \n    foo: mixin-exists(\"blue-text\"); \
-             \n    foo: mixin-exists(green-text);   \
-             \n    foo: mixin-exists(\"green-text\"); \
-             \n    foo: mixin-exists(nope);\
-             \n    foo: mixin-exists(\"nope\");\
+             \n    foo: meta.mixin-exists(red-text); \
+             \n    foo: meta.mixin-exists(\"red-text\"); \
+             \n    foo: meta.mixin-exists(blue-text); \
+             \n    foo: meta.mixin-exists(\"blue-text\"); \
+             \n    foo: meta.mixin-exists(green-text);   \
+             \n    foo: meta.mixin-exists(\"green-text\"); \
+             \n    foo: meta.mixin-exists(nope);\
+             \n    foo: meta.mixin-exists(\"nope\");\
              \n    foo: g();\
              \n    foo: f();\
              \n    foo: h();\
              \n    p {\
-             \n      foo: mixin-exists(red-text); \
-             \n      foo: mixin-exists(\"red-text\"); \
-             \n      foo: mixin-exists(blue-text); \
-             \n      foo: mixin-exists(\"blue-text\"); \
-             \n      foo: mixin-exists(green-text);   \
-             \n      foo: mixin-exists(\"green-text\"); \
-             \n      foo: mixin-exists(nope);\
-             \n      foo: mixin-exists(\"nope\");\
+             \n      foo: meta.mixin-exists(red-text); \
+             \n      foo: meta.mixin-exists(\"red-text\"); \
+             \n      foo: meta.mixin-exists(blue-text); \
+             \n      foo: meta.mixin-exists(\"blue-text\"); \
+             \n      foo: meta.mixin-exists(green-text);   \
+             \n      foo: meta.mixin-exists(\"green-text\"); \
+             \n      foo: meta.mixin-exists(nope);\
+             \n      foo: meta.mixin-exists(\"nope\");\
              \n      foo: g();\
              \n      foo: f();\
              \n      foo: h();\

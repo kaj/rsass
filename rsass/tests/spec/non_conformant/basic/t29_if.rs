@@ -8,28 +8,30 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$x: a, b, 1+2;\n\
-             \n@if type-of(nth($x, 3)) == number {\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n$x: a, b, 1+2;\n\
+             \n@if meta.type-of(list.nth($x, 3)) == number {\
              \n  div {\
              \n    background: gray;\
              \n  }\
              \n}\n\
-             \n@if type-of(nth($x, 2)) == number {\
+             \n@if meta.type-of(list.nth($x, 2)) == number {\
              \n  div {\
              \n    background: gray;\
              \n  }\
              \n}\
-             \n@else if type-of(nth($x, 2)) == string {\
+             \n@else if meta.type-of(list.nth($x, 2)) == string {\
              \n  div {\
              \n    background: blue;\
              \n  }\
              \n}\n\
-             \n@if type-of(nth($x, 2)) == number {\
+             \n@if meta.type-of(list.nth($x, 2)) == number {\
              \n  div {\
              \n    background: gray;\
              \n  }\
              \n}\
-             \n@else if type-of(nth($x, 2)) == color {\
+             \n@else if meta.type-of(list.nth($x, 2)) == color {\
              \n  div {\
              \n    background: blue;\
              \n  }\

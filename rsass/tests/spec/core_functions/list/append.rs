@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn auto() {
     assert_eq!(
-        runner().ok("a {b: append(c d, e, $separator: auto)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.append(c d, e, $separator: auto)}\n"),
         "a {\
          \n  b: c d e;\
          \n}\n"
@@ -17,7 +18,8 @@ fn auto() {
 #[test]
 fn bracketed() {
     assert_eq!(
-        runner().ok("a {b: append([], 1)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.append([], 1)}\n"),
         "a {\
          \n  b: [1];\
          \n}\n"
@@ -30,7 +32,8 @@ mod comma {
     #[test]
     fn default() {
         assert_eq!(
-            runner().ok("a {b: append((1, 2, 3), 4)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.append((1, 2, 3), 4)}\n"),
             "a {\
          \n  b: 1, 2, 3, 4;\
          \n}\n"
@@ -39,7 +42,8 @@ mod comma {
     #[test]
     fn overridden() {
         assert_eq!(
-            runner().ok("a {b: append(1 2 3, 4, $separator: comma)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.append(1 2 3, 4, $separator: comma)}\n"),
             "a {\
          \n  b: 1, 2, 3, 4;\
          \n}\n"
@@ -53,12 +57,14 @@ mod empty {
     #[test]
     fn comma() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: append($empty-comma-list, 1);\
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.append(utils.$empty-comma-list, 1);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
-             \n  separator: real-separator($result);\
+             \n  type: meta.type-of($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
             "a {\
          \n  value: 1;\
@@ -70,12 +76,14 @@ mod empty {
     #[test]
     fn space() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: append($empty-space-list, 1);\
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.append(utils.$empty-space-list, 1);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
-             \n  separator: real-separator($result);\
+             \n  type: meta.type-of($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
             "a {\
          \n  value: 1;\
@@ -87,12 +95,14 @@ mod empty {
     #[test]
     fn undecided() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: append((), 1);\
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.append((), 1);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
-             \n  separator: real-separator($result);\
+             \n  type: meta.type-of($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
             "a {\
          \n  value: 1;\
@@ -109,33 +119,39 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: append(c)}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.append(c)}\n"
+            ),
             "Error: Missing argument $val.\
          \n  ,--> input.scss\
-         \n1 | a {b: append(c)}\
-         \n  |       ^^^^^^^^^ invocation\
+         \n2 | a {b: list.append(c)}\
+         \n  |       ^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:list\
          \n1 | @function append($list, $val, $separator: auto) {\
          \n  |           ===================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: append(c, d, comma, e)}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.append(c, d, comma, e)}\n"
+            ),
             "Error: Only 3 arguments allowed, but 4 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: append(c, d, comma, e)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: list.append(c, d, comma, e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:list\
          \n1 | @function append($list, $val, $separator: auto) {\
          \n  |           ===================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     mod test_type {
@@ -145,13 +161,16 @@ mod error {
         #[test]
         fn separator() {
             assert_eq!(
-                runner().err("a {b: append(c, d, $separator: 1)}\n"),
+                runner().err(
+                    "@use \"sass:list\";\
+             \na {b: list.append(c, d, $separator: 1)}\n"
+                ),
                 "Error: $separator: 1 is not a string.\
          \n  ,\
-         \n1 | a {b: append(c, d, $separator: 1)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: list.append(c, d, $separator: 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }
@@ -159,14 +178,15 @@ mod error {
     fn unknown_separator() {
         assert_eq!(
         runner().err(
-            "a {b: append(c, d, $separator: e)}\n"
+            "@use \"sass:list\";\
+             \na {b: list.append(c, d, $separator: e)}\n"
         ),
         "Error: $separator: Must be \"space\", \"comma\", \"slash\", or \"auto\".\
          \n  ,\
-         \n1 | a {b: append(c, d, $separator: e)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: list.append(c, d, $separator: e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
 }
@@ -177,12 +197,14 @@ mod map {
     #[test]
     fn empty() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\n\
-             \n$result: append($empty-map, 1);\
+            runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \n$result: list.append(utils.$empty-map, 1);\
              \na {\
              \n  value: $result;\
-             \n  type: type-of($result);\
-             \n  separator: real-separator($result);\
+             \n  type: meta.type-of($result);\
+             \n  separator: utils.real-separator($result);\
              \n}\n"),
             "a {\
          \n  value: 1;\
@@ -194,7 +216,8 @@ mod map {
     #[test]
     fn non_empty() {
         assert_eq!(
-            runner().ok("a {b: append((c: d, e: f), g)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.append((c: d, e: f), g)}\n"),
             "a {\
          \n  b: c d, e f, g;\
          \n}\n"
@@ -204,8 +227,8 @@ mod map {
 #[test]
 fn named() {
     assert_eq!(
-        runner()
-            .ok("a {b: append($list: c d, $val: e, $separator: comma)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.append($list: c d, $val: e, $separator: comma)}\n"),
         "a {\
          \n  b: c, d, e;\
          \n}\n"
@@ -214,7 +237,8 @@ fn named() {
 #[test]
 fn non_list() {
     assert_eq!(
-        runner().ok("a {b: append(c, d)}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.append(c, d)}\n"),
         "a {\
          \n  b: c d;\
          \n}\n"
@@ -227,7 +251,8 @@ mod single {
     #[test]
     fn comma() {
         assert_eq!(
-            runner().ok("a {b: append((1,), 2)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.append((1,), 2)}\n"),
             "a {\
          \n  b: 1, 2;\
          \n}\n"
@@ -236,8 +261,9 @@ mod single {
     #[test]
     fn space() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\
-             \na {b: append(with-separator(1, space), 2)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"core_functions/list/utils\";\
+             \na {b: list.append(utils.with-separator(1, space), 2)}\n"),
             "a {\
          \n  b: 1 2;\
          \n}\n"
@@ -246,7 +272,8 @@ mod single {
     #[test]
     fn undecided() {
         assert_eq!(
-            runner().ok("a {b: append(1, 2)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.append(1, 2)}\n"),
             "a {\
          \n  b: 1 2;\
          \n}\n"
@@ -261,7 +288,7 @@ mod slash {
     fn default() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
-             \na {b: append(list.slash(c, d), e)}\n"),
+             \na {b: list.append(list.slash(c, d), e)}\n"),
             "a {\
          \n  b: c / d / e;\
          \n}\n"
@@ -270,7 +297,8 @@ mod slash {
     #[test]
     fn overridden() {
         assert_eq!(
-            runner().ok("a {b: append(c d, e, $separator: slash)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.append(c d, e, $separator: slash)}\n"),
             "a {\
          \n  b: c / d / e;\
          \n}\n"
@@ -284,7 +312,8 @@ mod space {
     #[test]
     fn default() {
         assert_eq!(
-            runner().ok("a {b: append(1 2 3, 4)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.append(1 2 3, 4)}\n"),
             "a {\
          \n  b: 1 2 3 4;\
          \n}\n"
@@ -293,7 +322,8 @@ mod space {
     #[test]
     fn overridden() {
         assert_eq!(
-            runner().ok("a {b: append((1, 2, 3), 4, $separator: space)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.append((1, 2, 3), 4, $separator: space)}\n"),
             "a {\
          \n  b: 1 2 3 4;\
          \n}\n"

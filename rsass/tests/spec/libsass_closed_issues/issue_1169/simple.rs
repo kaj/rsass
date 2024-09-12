@@ -8,19 +8,18 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$map1: (\r\
-             \n   red: \'bar\',\r\
-             \n  \'red\': \'foo\',\r\
-             \n);\r\
-             \n\r\
-             \n$map2: (\r\
-             \n   red: \'bar\',\r\
-             \n  \'red\': #{red},\r\
-             \n);\r\
-             \n\r\
-             \n.foo {\r\
-             \n  content: inspect($map1);\r\
-             \n  content: inspect($map2);\r\
+        runner().ok("@use \"sass:meta\";\n\
+             \n$map1: (\
+             \n   red: \'bar\',\
+             \n  \'red\': \'foo\',\
+             \n);\n\
+             \n$map2: (\
+             \n   red: \'bar\',\
+             \n  \'red\': #{red},\
+             \n);\n\
+             \n.foo {\
+             \n  content: meta.inspect($map1);\
+             \n  content: meta.inspect($map2);\
              \n}"),
         ".foo {\
          \n  content: (red: \"bar\", \"red\": \"foo\");\

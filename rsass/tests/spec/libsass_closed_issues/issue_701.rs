@@ -8,19 +8,20 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(".test-1 {\
+        runner().ok("@use \"sass:meta\";\n\
+             \n.test-1 {\
              \n  content: null;\
-             \n  content: inspect(null);\
-             \n  content: inspect(false);\
-             \n  content: inspect(true);\
-             \n  content: inspect(42);\
-             \n  content: inspect(42.3);\
-             \n  content: inspect(42px);\
-             \n  content: inspect(\"string\");\
+             \n  content: meta.inspect(null);\
+             \n  content: meta.inspect(false);\
+             \n  content: meta.inspect(true);\
+             \n  content: meta.inspect(42);\
+             \n  content: meta.inspect(42.3);\
+             \n  content: meta.inspect(42px);\
+             \n  content: meta.inspect(\"string\");\
              \n  $list: 1, 2, 3;\
-             \n  content: inspect($list);\
+             \n  content: meta.inspect($list);\
              \n  $map: ( a: 1, b: 2, c: 3 );\
-             \n  content: inspect($map);\
+             \n  content: meta.inspect($map);\
              \n}\n"),
         ".test-1 {\
          \n  content: null;\

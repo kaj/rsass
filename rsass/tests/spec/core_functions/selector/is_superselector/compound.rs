@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn different_order() {
     assert_eq!(
-        runner().ok("a {b: is-superselector(\"c.e\", \"c:d.e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c.e\", \"c:d.e\")}\n"),
         "a {\
          \n  b: true;\
          \n}\n"
@@ -25,7 +26,8 @@ mod pseudo_element {
         #[test]
         fn in_1() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"c\", \"c::d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"c::d\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -34,7 +36,8 @@ mod pseudo_element {
         #[test]
         fn in_2() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"c::d\", \"c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c::d\", \"c\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -48,7 +51,8 @@ mod pseudo_element {
         #[test]
         fn after() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"c\", \"c:after\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"c:after\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -57,7 +61,8 @@ mod pseudo_element {
         #[test]
         fn before() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"c\", \"c:before\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"c:before\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -67,7 +72,8 @@ mod pseudo_element {
         fn first_letter() {
             assert_eq!(
                 runner().ok(
-                    "a {b: is-superselector(\"c\", \"c:first-letter\")}\n"
+                    "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"c:first-letter\")}\n"
                 ),
                 "a {\
          \n  b: false;\
@@ -77,8 +83,8 @@ mod pseudo_element {
         #[test]
         fn first_line() {
             assert_eq!(
-                runner()
-                    .ok("a {b: is-superselector(\"c\", \"c:first-line\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"c:first-line\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -89,7 +95,8 @@ mod pseudo_element {
     #[ignore] // wrong result
     fn different_order() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":e::d\", \"::d:e\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":e::d\", \"::d:e\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -98,7 +105,8 @@ mod pseudo_element {
     #[test]
     fn present() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"::d\", \"c::d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"::d\", \"c::d\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -107,7 +115,8 @@ mod pseudo_element {
     #[test]
     fn same_order() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"::d:e\", \"::d:e\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"::d:e\", \"::d:e\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -120,8 +129,8 @@ mod pseudo_element {
         #[test]
         fn after() {
             assert_eq!(
-                runner()
-                    .ok("a {b: is-superselector(\"::d:c\", \"::d:c:e\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"::d:c\", \"::d:c:e\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -130,8 +139,8 @@ mod pseudo_element {
         #[test]
         fn before() {
             assert_eq!(
-                runner()
-                    .ok("a {b: is-superselector(\".c::d\", \".c.e::d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\".c::d\", \".c.e::d\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -145,8 +154,8 @@ mod pseudo_element {
         #[test]
         fn after() {
             assert_eq!(
-                runner()
-                    .ok("a {b: is-superselector(\"::d:c:e\", \"::d:c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"::d:c:e\", \"::d:c\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -155,8 +164,8 @@ mod pseudo_element {
         #[test]
         fn before() {
             assert_eq!(
-                runner()
-                    .ok("a {b: is-superselector(\".c.e::d\", \".c::d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\".c.e::d\", \".c::d\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -167,7 +176,8 @@ mod pseudo_element {
 #[test]
 fn same_order() {
     assert_eq!(
-        runner().ok("a {b: is-superselector(\"c\", \"c.d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"c.d\")}\n"),
         "a {\
          \n  b: true;\
          \n}\n"
@@ -176,7 +186,8 @@ fn same_order() {
 #[test]
 fn superset() {
     assert_eq!(
-        runner().ok("a {b: is-superselector(\"c.d\", \"c\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c.d\", \"c\")}\n"),
         "a {\
          \n  b: false;\
          \n}\n"

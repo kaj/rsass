@@ -5,6 +5,100 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("function")
 }
 
+mod comment {
+    #[allow(unused)]
+    use super::runner;
+
+    mod function {
+        #[allow(unused)]
+        use super::runner;
+
+        mod after_args {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            #[ignore] // unexepected error
+            fn loud() {
+                assert_eq!(runner().ok("@function a() /**/ {}\n"), "");
+            }
+            #[test]
+            fn silent() {
+                assert_eq!(
+                    runner().ok("@function a() //\
+             \n  {}\n"),
+                    ""
+                );
+            }
+        }
+        mod before_name {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            #[ignore] // unexepected error
+            fn loud() {
+                assert_eq!(runner().ok("@function /**/ a() {}\n"), "");
+            }
+            #[test]
+            fn silent() {
+                assert_eq!(
+                    runner().ok("@function //\
+             \n  a() {}\n"),
+                    ""
+                );
+            }
+        }
+    }
+    mod test_return {
+        #[allow(unused)]
+        use super::runner;
+
+        mod after_value {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn loud() {
+                assert_eq!(
+                    runner().ok("@function a() {@return b /**/}\n"),
+                    ""
+                );
+            }
+            #[test]
+            fn silent() {
+                assert_eq!(
+                    runner().ok("@function a() {\
+             \n  @return b //\
+             \n}\n"),
+                    ""
+                );
+            }
+        }
+        mod before_value {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn loud() {
+                assert_eq!(
+                    runner().ok("@function a() {@return /**/ b}\n"),
+                    ""
+                );
+            }
+            #[test]
+            fn silent() {
+                assert_eq!(
+                    runner().ok("@function a() {\
+             \n  @return //\
+             \n    b\
+             \n}\n"),
+                    ""
+                );
+            }
+        }
+    }
+}
 #[test]
 #[ignore] // wrong result
 fn custom_ident_call() {

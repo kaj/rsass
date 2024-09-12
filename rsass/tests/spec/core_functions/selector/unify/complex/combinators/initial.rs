@@ -9,7 +9,9 @@ fn runner() -> crate::TestRunner {
 fn different() {
     assert_eq!(
         runner().ok(
-            "a {b: inspect(selector-unify(\"+ ~ > .c\", \"+ > ~ ~ .d\"))}\n"
+            "@use \"sass:meta\";\
+             \n@use \"sass:selector\";\
+             \na {b: meta.inspect(selector.unify(\"+ ~ > .c\", \"+ > ~ ~ .d\"))}\n"
         ),
         "a {\
          \n  b: null;\
@@ -23,7 +25,8 @@ mod only_one {
     #[test]
     fn selector1() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\"> .c\", \".d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"> .c\", \".d\")}\n"),
             "a {\
          \n  b: > .c.d;\
          \n}\n"
@@ -32,7 +35,8 @@ mod only_one {
     #[test]
     fn selector2() {
         assert_eq!(
-            runner().ok("a {b: selector-unify(\".c\", \"~ .d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c\", \"~ .d\")}\n"),
             "a {\
          \n  b: ~ .c.d;\
          \n}\n"
@@ -42,7 +46,8 @@ mod only_one {
 #[test]
 fn same() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\"+ .c\", \"+ .d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"+ .c\", \"+ .d\")}\n"),
         "a {\
          \n  b: + .c.d;\
          \n}\n"
@@ -55,18 +60,16 @@ mod supersequence {
     #[test]
     fn contiguous() {
         assert_eq!(
-            runner().ok(
-                "a {b: selector-unify(\"+ ~ > .c\", \"> + ~ > > .d\")}\n"
-            ),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"+ ~ > .c\", \"> + ~ > > .d\")}\n"),
             ""
         );
     }
     #[test]
     fn non_contiguous() {
         assert_eq!(
-            runner().ok(
-                "a {b: selector-unify(\"+ ~ > .c\", \"+ > ~ ~ > .d\")}\n"
-            ),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"+ ~ > .c\", \"+ > ~ ~ > .d\")}\n"),
             ""
         );
     }

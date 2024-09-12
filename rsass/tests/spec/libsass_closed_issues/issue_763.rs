@@ -8,14 +8,15 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("foo {\
-             \n  a: str-slice(\"abcd\", 1, 1);\
-             \n  b: str-slice(\'abcd\', 1, 1);\
-             \n  c: str-slice(abcd, 1, 1);\n\
-             \n  d: str-insert(\"abcd\", \"X\", 1);\
-             \n  e: str-insert(\"abcd\", \'X\', 1);\
-             \n  f: str-insert(\'abcd\', \"X\", 1);\
-             \n  g: str-insert(\'abcd\', \'X\', 1);\
+        runner().ok("@use \"sass:string\";\
+             \nfoo {\
+             \n  a: string.slice(\"abcd\", 1, 1);\
+             \n  b: string.slice(\'abcd\', 1, 1);\
+             \n  c: string.slice(abcd, 1, 1);\n\
+             \n  d: string.insert(\"abcd\", \"X\", 1);\
+             \n  e: string.insert(\"abcd\", \'X\', 1);\
+             \n  f: string.insert(\'abcd\', \"X\", 1);\
+             \n  g: string.insert(\'abcd\', \'X\', 1);\
              \n}\n"),
         "foo {\
          \n  a: \"a\";\

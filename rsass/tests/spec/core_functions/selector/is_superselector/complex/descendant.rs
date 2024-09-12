@@ -16,8 +16,8 @@ mod and_child {
         #[test]
         fn first() {
             assert_eq!(
-                runner()
-                    .ok("a {b: is-superselector(\"d c\", \"d > e > c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"d c\", \"d > e > c\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -26,8 +26,8 @@ mod and_child {
         #[test]
         fn neither() {
             assert_eq!(
-                runner()
-                    .ok("a {b: is-superselector(\"f c\", \"d > e > c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"f c\", \"d > e > c\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -36,8 +36,8 @@ mod and_child {
         #[test]
         fn second() {
             assert_eq!(
-                runner()
-                    .ok("a {b: is-superselector(\"e c\", \"d > e > c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"e c\", \"d > e > c\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -47,7 +47,8 @@ mod and_child {
     #[test]
     fn sub() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"d > c\", \"d c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"d > c\", \"d c\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -56,7 +57,8 @@ mod and_child {
     #[test]
     fn test_super() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"d c\", \"d > c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"d c\", \"d > c\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -74,9 +76,8 @@ mod multiple {
         #[test]
         fn child() {
             assert_eq!(
-                runner().ok(
-                    "a {b: is-superselector(\"a b c\", \"a x > b c\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"a b c\", \"a x > b c\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -85,8 +86,8 @@ mod multiple {
         #[test]
         fn descendant() {
             assert_eq!(
-                runner()
-                    .ok("a {b: is-superselector(\"a b c\", \"a x b c\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"a b c\", \"a x b c\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -95,9 +96,8 @@ mod multiple {
         #[test]
         fn following_sibling() {
             assert_eq!(
-                runner().ok(
-                    "a {b: is-superselector(\"a b c\", \"a x ~ b c\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"a b c\", \"a x ~ b c\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -106,9 +106,8 @@ mod multiple {
         #[test]
         fn next_sibling() {
             assert_eq!(
-                runner().ok(
-                    "a {b: is-superselector(\"a b c\", \"a x + b c\")}\n"
-                ),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"a b c\", \"a x + b c\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -118,7 +117,8 @@ mod multiple {
     #[test]
     fn in_sub() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"c\", \"d e c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"d e c\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -127,7 +127,8 @@ mod multiple {
     #[test]
     fn match_first() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"d c\", \"d e c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"d c\", \"d e c\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -136,7 +137,8 @@ mod multiple {
     #[test]
     fn match_neither() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"f c\", \"d e c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"f c\", \"d e c\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -145,7 +147,8 @@ mod multiple {
     #[test]
     fn match_second() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"e c\", \"d e c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"e c\", \"d e c\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -163,7 +166,8 @@ mod single {
         #[test]
         fn equal() {
             assert_eq!(
-                runner().ok("a {b: is-superselector(\"c d\", \"c d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c d\", \"c d\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -172,8 +176,8 @@ mod single {
         #[test]
         fn subset() {
             assert_eq!(
-                runner()
-                    .ok("a {b: is-superselector(\"c d\", \"c.e d.f\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c d\", \"c.e d.f\")}\n"),
                 "a {\
          \n  b: true;\
          \n}\n"
@@ -182,8 +186,8 @@ mod single {
         #[test]
         fn superset() {
             assert_eq!(
-                runner()
-                    .ok("a {b: is-superselector(\"c.e d.f\", \"c d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c.e d.f\", \"c d\")}\n"),
                 "a {\
          \n  b: false;\
          \n}\n"
@@ -193,7 +197,8 @@ mod single {
     #[test]
     fn in_sub() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"c\", \"d c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c\", \"d c\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -202,7 +207,8 @@ mod single {
     #[test]
     fn in_super() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\"c d\", \"d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\"c d\", \"d\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"

@@ -10,11 +10,14 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "@mixin ie-opacity($opacity) {\
-             \n  opacity: $opacity / 100;\
+            "@use \"sass:color\";\
+             \n@use \"sass:math\";\
+             \n@use \"sass:meta\";\n\
+             \n@mixin ie-opacity($opacity) {\
+             \n  opacity: math.div($opacity, 100);\
              \n  filter: alpha(opacity=$opacity);\
              \n  bilter: alpha(opacity=$opacity);\
-             \n  kilter: type-of(opacity=$opacity);\
+             \n  kilter: meta.type-of(opacity=$opacity);\
              \n  left: expression(document.body.clientWidth/2-oDiv.offsetWidth/2);\
              \n  flop: expression(document.body.clientHeight/2-oDiv.offsetHeight/2);\
              \n}\n\
@@ -25,10 +28,10 @@ fn test() {
              \n  something: blah(hux = mumble);\
              \n  blah: progid:something.something(flip=foobar, bang=#abc);\
              \n  blah: progid:bar.hux();\
-             \n  blah: type-of(hux = mumble);\
+             \n  blah: meta.type-of(hux = mumble);\
              \n  @include ie-opacity(.5);\
              \n  left: expression(document.body.clientWidth/4);\
-             \n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#{ie-hex-str($startColor)}\', endColorstr=\'#{ie-hex-str($endColor)}\', GradientType=1);\
+             \n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#{color.ie-hex-str($startColor)}\', endColorstr=\'#{color.ie-hex-str($endColor)}\', GradientType=1);\
              \n}\n\
              \n.parser {\
              \n    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=20);\

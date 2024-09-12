@@ -9,6 +9,8 @@ mod error;
 
 mod four_args;
 
+mod global;
+
 mod one_arg;
 
 mod three_args;

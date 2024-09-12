@@ -71,7 +71,7 @@ mod logic {
         fn mixed_case() {
             let runner = runner().with_cwd("mixed_case");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media (a) and (b) {\
          \n  x {\
          \n    y: z;\
@@ -83,7 +83,7 @@ mod logic {
         fn multiple() {
             let runner = runner().with_cwd("multiple");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media (a) and (b) and (c) and (d) {\
          \n  x {\
          \n    y: z;\
@@ -95,7 +95,7 @@ mod logic {
         fn no_whitespace_before() {
             let runner = runner().with_cwd("no_whitespace_before");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media (a) and (b) {\
          \n  x {\
          \n    y: z;\
@@ -107,7 +107,7 @@ mod logic {
         fn one() {
             let runner = runner().with_cwd("one");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media (a) and (b) {\
          \n  x {\
          \n    y: z;\
@@ -126,7 +126,7 @@ mod logic {
         fn after_type_and_modifier() {
             let runner = runner().with_cwd("after_type_and_modifier");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media only a and not (b) {\
          \n  x {\
          \n    y: z;\
@@ -138,7 +138,7 @@ mod logic {
         fn lowercase() {
             let runner = runner().with_cwd("lowercase");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media a and not (b) {\
          \n  x {\
          \n    y: z;\
@@ -151,7 +151,7 @@ mod logic {
         fn mixed_case() {
             let runner = runner().with_cwd("mixed_case");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media a and not (b) {\
          \n  x {\
          \n    y: z;\
@@ -170,7 +170,7 @@ mod logic {
         fn lowercase() {
             let runner = runner().with_cwd("lowercase");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media not (a) {\
          \n  x {\
          \n    y: z;\
@@ -183,7 +183,7 @@ mod logic {
         fn mixed_case() {
             let runner = runner().with_cwd("mixed_case");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media not (a) {\
          \n  x {\
          \n    y: z;\
@@ -202,7 +202,7 @@ mod logic {
         fn mixed_case() {
             let runner = runner().with_cwd("mixed_case");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media (a) or (b) {\
          \n  x {\
          \n    y: z;\
@@ -214,7 +214,7 @@ mod logic {
         fn multiple() {
             let runner = runner().with_cwd("multiple");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media (a) or (b) or (c) or (d) {\
          \n  x {\
          \n    y: z;\
@@ -226,7 +226,7 @@ mod logic {
         fn no_whitespace_before() {
             let runner = runner().with_cwd("no_whitespace_before");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media (a) or (b) {\
          \n  x {\
          \n    y: z;\
@@ -238,7 +238,7 @@ mod logic {
         fn one() {
             let runner = runner().with_cwd("one");
             assert_eq!(
-                runner.ok("@import \'plain\';\n"),
+                runner.ok("@use \'plain\';\n"),
                 "@media (a) or (b) {\
          \n  x {\
          \n    y: z;\

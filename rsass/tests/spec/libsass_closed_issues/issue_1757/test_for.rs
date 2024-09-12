@@ -8,20 +8,21 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(".test .nest {\
-             \n  length: length(&);\
-             \n  @for $i from 1 through length(&) {\
-             \n    $list: nth(&, $i);\
+        runner().ok("@use \"sass:list\";\
+             \n.test .nest {\
+             \n  length: list.length(&);\
+             \n  @for $i from 1 through list.length(&) {\
+             \n    $list: list.nth(&, $i);\
              \n    list: $list;\
-             \n    length: length($list);\
+             \n    length: list.length($list);\
              \n  }\
              \n}\n\
              \n.test, .other {\
-             \n  length: length(&);\
-             \n  @for $i from 1 through length(&) {\
-             \n    $list: nth(&, $i);\
+             \n  length: list.length(&);\
+             \n  @for $i from 1 through list.length(&) {\
+             \n    $list: list.nth(&, $i);\
              \n    list: $list;\
-             \n    length: length($list);\
+             \n    length: list.length($list);\
              \n  }\
              \n}\n"),
         ".test .nest {\

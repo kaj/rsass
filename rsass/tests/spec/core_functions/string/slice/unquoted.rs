@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("a {b: str-slice(cdefgh, 3, 5)}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(cdefgh, 3, 5)}\n"),
         "a {\
          \n  b: efg;\
          \n}\n"

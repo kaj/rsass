@@ -12,7 +12,8 @@ mod end {
     #[test]
     fn t0() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"\", 1, 0)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"\", 1, 0)}\n"),
             "a {\
          \n  b: \"\";\
          \n}\n"
@@ -21,7 +22,8 @@ mod end {
     #[test]
     fn t1() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"\", 1, 1)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"\", 1, 1)}\n"),
             "a {\
          \n  b: \"\";\
          \n}\n"
@@ -30,7 +32,8 @@ mod end {
     #[test]
     fn t2() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"\", 1, 2)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"\", 1, 2)}\n"),
             "a {\
          \n  b: \"\";\
          \n}\n"
@@ -44,7 +47,8 @@ mod start {
     #[test]
     fn t0() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"\", 0)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"\", 0)}\n"),
             "a {\
          \n  b: \"\";\
          \n}\n"
@@ -53,7 +57,8 @@ mod start {
     #[test]
     fn t1() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"\", 1)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"\", 1)}\n"),
             "a {\
          \n  b: \"\";\
          \n}\n"
@@ -62,7 +67,8 @@ mod start {
     #[test]
     fn t2() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"\", 2)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"\", 2)}\n"),
             "a {\
          \n  b: \"\";\
          \n}\n"
@@ -71,7 +77,8 @@ mod start {
     #[test]
     fn negative_1() {
         assert_eq!(
-            runner().ok("a {b: str-slice(\"\", -1)}\n"),
+            runner().ok("@use \"sass:string\";\
+             \na {b: string.slice(\"\", -1)}\n"),
             "a {\
          \n  b: \"\";\
          \n}\n"

@@ -9,8 +9,9 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok(".foo {\
-             \n  color: invert(red...);\
+        runner().ok("@use \"sass:color\";\
+             \n.foo {\
+             \n  color: color.invert(red...);\
              \n}"),
         ".foo {\
          \n  color: aqua;\

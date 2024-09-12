@@ -5,12 +5,4 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
-mod args;
-
-mod bounds;
-
-mod mixed_formats;
-
-mod test_type;
-
-mod units;
+mod missing_globals;

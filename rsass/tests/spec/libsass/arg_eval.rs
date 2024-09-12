@@ -8,7 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@function foo() {\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@function foo() {\
              \n  @return 1+2 3/4 5+6;\
              \n}\n\
              \n@mixin bar($x: 3/4) {\
@@ -16,10 +18,10 @@ fn test() {
              \n}\n\
              \ndiv {\
              \n  content: foobar(1+2 3/4 5+6, orange);\
-             \n  content: append(1+2 2/3 5+6, orange);\
+             \n  content: list.append(1+2 2/3 5+6, orange);\
              \n  content: 1+2 2/3 5+6;\
-             \n  content: type-of(2/3);\
-             \n  content: type-of(orange);\
+             \n  content: meta.type-of(2/3);\
+             \n  content: meta.type-of(orange);\
              \n  content: foo();\
              \n  @include bar();\
              \n}"),

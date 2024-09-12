@@ -8,10 +8,11 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("foo.bar.baz asd.qwe xyz, second {\r\
-             \n  length: length(&);\r\
-             \n  length: length(nth(&, 1));\r\
-             \n  length: length(nth(nth(&, 1), 1));\r\
+        runner().ok("@use \"sass:list\";\
+             \nfoo.bar.baz asd.qwe xyz, second {\r\
+             \n  length: list.length(&);\r\
+             \n  length: list.length(list.nth(&, 1));\r\
+             \n  length: list.length(list.nth(list.nth(&, 1), 1));\r\
              \n}"),
         "foo.bar.baz asd.qwe xyz, second {\
          \n  length: 2;\

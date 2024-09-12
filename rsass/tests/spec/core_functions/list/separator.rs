@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn bracketed() {
     assert_eq!(
-        runner().ok("a {b: list-separator([c, d])}\n"),
+        runner().ok("@use \"sass:list\";\
+             \na {b: list.separator([c, d])}\n"),
         "a {\
          \n  b: comma;\
          \n}\n"
@@ -21,7 +22,8 @@ mod empty {
     #[test]
     fn comma() {
         assert_eq!(
-            runner().ok("a {b: list-separator(join((), (), comma))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.separator(list.join((), (), comma))}\n"),
             "a {\
          \n  b: comma;\
          \n}\n"
@@ -30,8 +32,9 @@ mod empty {
     #[test]
     fn map() {
         assert_eq!(
-            runner().ok("@import \"core_functions/list/utils\";\n\
-             \na {b: list-separator($empty-map)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \n@use \"core_functions/list/utils\";\n\
+             \na {b: list.separator(utils.$empty-map)}\n"),
             "a {\
          \n  b: space;\
          \n}\n"
@@ -40,7 +43,8 @@ mod empty {
     #[test]
     fn space() {
         assert_eq!(
-            runner().ok("a {b: list-separator(())}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.separator(())}\n"),
             "a {\
          \n  b: space;\
          \n}\n"
@@ -54,33 +58,39 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: list-separator()}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.separator()}\n"
+            ),
             "Error: Missing argument $list.\
          \n  ,--> input.scss\
-         \n1 | a {b: list-separator()}\
+         \n2 | a {b: list.separator()}\
          \n  |       ^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:list\
          \n1 | @function separator($list) {\
          \n  |           ================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: list-separator(c, d)}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.separator(c, d)}\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: list-separator(c, d)}\
+         \n2 | a {b: list.separator(c, d)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:list\
          \n1 | @function separator($list) {\
          \n  |           ================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
@@ -91,7 +101,8 @@ mod multi {
     #[test]
     fn comma() {
         assert_eq!(
-            runner().ok("a {b: list-separator((1, 2, 3))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.separator((1, 2, 3))}\n"),
             "a {\
          \n  b: comma;\
          \n}\n"
@@ -100,7 +111,8 @@ mod multi {
     #[test]
     fn map() {
         assert_eq!(
-            runner().ok("a {b: list-separator((c: d, e: f, g: h))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.separator((c: d, e: f, g: h))}\n"),
             "a {\
          \n  b: comma;\
          \n}\n"
@@ -110,7 +122,7 @@ mod multi {
     fn slash() {
         assert_eq!(
             runner().ok("@use \'sass:list\';\
-             \na {b: list-separator(list.slash(1, 2, 3))}\n"),
+             \na {b: list.separator(list.slash(1, 2, 3))}\n"),
             "a {\
          \n  b: slash;\
          \n}\n"
@@ -119,7 +131,8 @@ mod multi {
     #[test]
     fn space() {
         assert_eq!(
-            runner().ok("a {b: list-separator(1 2 3)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.separator(1 2 3)}\n"),
             "a {\
          \n  b: space;\
          \n}\n"
@@ -133,7 +146,8 @@ mod single {
     #[test]
     fn comma() {
         assert_eq!(
-            runner().ok("a {b: list-separator((1,))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.separator((1,))}\n"),
             "a {\
          \n  b: comma;\
          \n}\n"
@@ -142,7 +156,8 @@ mod single {
     #[test]
     fn non_list() {
         assert_eq!(
-            runner().ok("a {b: list-separator(1)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.separator(1)}\n"),
             "a {\
          \n  b: space;\
          \n}\n"
@@ -151,9 +166,8 @@ mod single {
     #[test]
     fn slash() {
         assert_eq!(
-            runner().ok(
-                "a {b: list-separator(join(1, (), $separator: slash))}\n"
-            ),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.separator(list.join(1, (), $separator: slash))}\n"),
             "a {\
          \n  b: slash;\
          \n}\n"
@@ -162,7 +176,8 @@ mod single {
     #[test]
     fn space() {
         assert_eq!(
-            runner().ok("a {b: list-separator([1])}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.separator([1])}\n"),
             "a {\
          \n  b: space;\
          \n}\n"

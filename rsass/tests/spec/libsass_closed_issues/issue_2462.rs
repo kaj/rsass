@@ -6,13 +6,15 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok("b {\
-             \n    color: lighten(Crimson, 10%);\
+        runner().ok("@use \"sass:color\";\
+             \nb {\
+             \n    color: color.adjust(Crimson, $lightness: 10%);\
              \n}\n"),
         "b {\
-         \n  color: #ed365b;\
+         \n  color: rgb(236.75, 54.25, 90.75);\
          \n}\n"
     );
 }

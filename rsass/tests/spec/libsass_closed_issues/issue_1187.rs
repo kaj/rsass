@@ -10,7 +10,8 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err(
-            "$a: \'foo\';\
+            "@use \"sass:meta\";\n\
+             \n$a: \'foo\';\
              \n$b: \'foo\';\
              \n$map: (\
              \n  $a: 1,\
@@ -18,16 +19,16 @@ fn test() {
              \n);\n\
              \n.foo {\
              \n  content: $a == $b;\
-             \n  content: inspect($map);\
+             \n  content: meta.inspect($map);\
              \n}"
         ),
         "Error: Duplicate key.\
          \n  ,\
-         \n4 |   $a: 1,\
+         \n6 |   $a: 1,\
          \n  |   == first key\
-         \n5 |   $b: 2\
+         \n7 |   $b: 2\
          \n  |   ^^ second key\
          \n  \'\
-         \n  input.scss 5:3  root stylesheet",
+         \n  input.scss 7:3  root stylesheet",
     );
 }

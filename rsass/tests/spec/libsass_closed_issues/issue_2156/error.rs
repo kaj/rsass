@@ -8,12 +8,15 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().err("@error unquote(\"\\\"foo\\\" and \\\"bar\\\"\");\r\n"),
+        runner().err(
+            "@use \"sass:string\";\
+             \n@error string.unquote(\"\\\"foo\\\" and \\\"bar\\\"\");\n"
+        ),
         "Error: \"foo\" and \"bar\"\
          \n  ,\
-         \n1 | @error unquote(\"\\\"foo\\\" and \\\"bar\\\"\");\
-         \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | @error string.unquote(\"\\\"foo\\\" and \\\"bar\\\"\");\
+         \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:1  root stylesheet",
+         \n  input.scss 2:1  root stylesheet",
     );
 }

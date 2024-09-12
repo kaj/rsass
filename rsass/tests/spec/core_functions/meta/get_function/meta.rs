@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn inspect() {
     assert_eq!(
-        runner().ok("a {b: inspect(get-function(lighten))};\n"),
+        runner().ok("@use \"sass:meta\";\n\
+             \na {b: meta.inspect(meta.get-function(lighten))};\n"),
         "a {\
          \n  b: get-function(\"lighten\");\
          \n}\n"
@@ -17,7 +18,8 @@ fn inspect() {
 #[test]
 fn type_of() {
     assert_eq!(
-        runner().ok("a {b: type-of(get-function(lighten))};\n"),
+        runner().ok("@use \"sass:meta\";\n\
+             \na {b: meta.type-of(meta.get-function(lighten))};\n"),
         "a {\
          \n  b: function;\
          \n}\n"

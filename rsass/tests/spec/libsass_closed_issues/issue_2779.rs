@@ -8,7 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().err("@debug(selector-extend(\".a .b\", \"&b\", ndll));\n"),
+        runner().err(
+            "@use \"sass:selector\";\
+             \n@debug(selector.extend(\".a .b\", \"&b\", ndll));\n"
+        ),
         "Error: $extendee: Parent selectors aren\'t allowed here.\
          \n  ,\
          \n1 | &b\
@@ -16,9 +19,9 @@ fn test() {
          \n  \'\
          \n  - 1:1  root stylesheet\
          \n  ,\
-         \n1 | @debug(selector-extend(\".a .b\", \"&b\", ndll));\
+         \n2 | @debug(selector.extend(\".a .b\", \"&b\", ndll));\
          \n  |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:8  root stylesheet",
+         \n  input.scss 2:8  root stylesheet",
     );
 }

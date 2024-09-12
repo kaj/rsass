@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn equal() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\".c\", \".c\", \"e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c\", \".c\", \"e\")}\n"),
         "a {\
          \n  b: .c, e;\
          \n}\n"
@@ -17,7 +18,8 @@ fn equal() {
 #[test]
 fn unequal() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\".c\", \".d\", \"e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c\", \".d\", \"e\")}\n"),
         "a {\
          \n  b: .c;\
          \n}\n"

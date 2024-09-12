@@ -10,7 +10,8 @@ fn runner() -> crate::TestRunner {
 fn list() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":matches(.c)\", \".c\", \".d, .e\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":matches(.c)\", \".c\", \".d, .e\")}\n"
         ),
         "a {\
          \n  b: :matches(.c, .d, .e);\
@@ -22,7 +23,8 @@ fn list() {
 fn matches_in_extender() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":matches(.c)\", \".c\", \":matches(.d, .e)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":matches(.c)\", \".c\", \":matches(.d, .e)\")}\n"
         ),
         "a {\
          \n  b: :matches(.c, .d, .e);\
@@ -33,8 +35,8 @@ fn matches_in_extender() {
 #[ignore] // wrong result
 fn simple() {
     assert_eq!(
-        runner()
-            .ok("a {b: selector-extend(\":matches(.c)\", \".c\", \".d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":matches(.c)\", \".c\", \".d\")}\n"),
         "a {\
          \n  b: :matches(.c, .d);\
          \n}\n"

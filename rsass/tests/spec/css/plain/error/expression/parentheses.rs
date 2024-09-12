@@ -11,13 +11,13 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        runner().err("@import \'plain\'"),
+        runner().err("@use \'plain\'"),
         "Error: Parentheses aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: (y);\
          \n  |      ^^^\
          \n  \'\
-         \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:6   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }

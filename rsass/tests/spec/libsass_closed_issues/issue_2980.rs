@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "$config: (\
+            "@use \"sass:map\";\
+             \n$config: (\
              \n        phone: (\
              \n                break-point-width:0px,\
              \n                break-point-name: xs\
@@ -28,8 +29,8 @@ fn test() {
              \n        ),\
              \n);\n\
              \n@each $key, $map in $config {\
-             \n  $break-point-width: map_get($map, break-point-width);\
-             \n  $break-point-name: map_get($map, break-point-name);\
+             \n  $break-point-width: map.get($map, break-point-width);\
+             \n  $break-point-name: map.get($map, break-point-name);\
              \n  $infix: if($break-point-width == 0px, null, -$break-point-name);\
              \n      .foo#{$infix} {\
              \n        content: \'#{$break-point-name}\';\

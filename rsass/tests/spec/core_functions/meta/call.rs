@@ -13,7 +13,8 @@ mod args {
     fn named() {
         assert_eq!(
         runner().ok(
-            "a {b: call(get-function(\"rgb\"), $blue: 1, $green: 2, $red: 3)}\n"
+            "@use \"sass:meta\";\
+             \na {b: meta.call(meta.get-function(\"rgb\"), $blue: 1, $green: 2, $red: 3)}\n"
         ),
         "a {\
          \n  b: rgb(3, 2, 1);\
@@ -23,8 +24,9 @@ mod args {
     #[test]
     fn none() {
         assert_eq!(
-            runner().ok("@function a() {@return b}\
-             \nc {d: call(get-function(\"a\"))}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \n@function a() {@return b}\
+             \nc {d: meta.call(meta.get-function(\"a\"))}\n"),
             "c {\
          \n  d: b;\
          \n}\n"
@@ -33,7 +35,8 @@ mod args {
     #[test]
     fn positional() {
         assert_eq!(
-            runner().ok("a {b: call(get-function(\"rgb\"), 1, 2, 3)}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \na {b: meta.call(meta.get-function(\"rgb\"), 1, 2, 3)}\n"),
             "a {\
          \n  b: rgb(1, 2, 3);\
          \n}\n"
@@ -47,9 +50,10 @@ mod args {
         fn combined() {
             assert_eq!(
         runner().ok(
-            "$positional: 1 2;\
+            "@use \"sass:meta\";\
+             \n$positional: 1 2;\
              \n$named: (\"blue\": 3);\
-             \na {b: call(get-function(\"rgb\"), $positional..., $named...)}\n"
+             \na {b: meta.call(meta.get-function(\"rgb\"), $positional..., $named...)}\n"
         ),
         "a {\
          \n  b: rgb(1, 2, 3);\
@@ -59,9 +63,9 @@ mod args {
         #[test]
         fn named() {
             assert_eq!(
-                runner()
-                    .ok("$args: (\"green\": 1, \"blue\": 2, \"red\": 3);\
-             \na {b: call(get-function(\"rgb\"), $args...)}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n$args: (\"green\": 1, \"blue\": 2, \"red\": 3);\
+             \na {b: meta.call(meta.get-function(\"rgb\"), $args...)}\n"),
                 "a {\
          \n  b: rgb(3, 1, 2);\
          \n}\n"
@@ -70,8 +74,9 @@ mod args {
         #[test]
         fn positional() {
             assert_eq!(
-                runner().ok("$args: 1, 2, 3;\
-             \na {b: call(get-function(\"rgb\"), $args...)}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n$args: 1, 2, 3;\
+             \na {b: meta.call(meta.get-function(\"rgb\"), $args...)}\n"),
                 "a {\
          \n  b: rgb(1, 2, 3);\
          \n}\n"
@@ -87,57 +92,68 @@ mod error {
     fn if_args() {
         assert_eq!(
         runner().err(
-            "// The if() function has a special behavior to avoid evaluating the\
+            "@use \"sass:meta\";\
+             \n// The if() function has a special behavior to avoid evaluating the\
              \n// non-returned argument but that behavior does not propagate to call()\
              \n// itself when using call() to call if().\
-             \na {b: call(get-function(\"if\"), true, \"\", $undefined)}\n"
+             \na {b: meta.call(meta.get-function(\"if\"), true, \"\", $undefined)}\n"
         ),
         "Error: Undefined variable.\
          \n  ,\
-         \n4 | a {b: call(get-function(\"if\"), true, \"\", $undefined)}\
-         \n  |                                          ^^^^^^^^^^\
+         \n5 | a {b: meta.call(meta.get-function(\"if\"), true, \"\", $undefined)}\
+         \n  |                                                    ^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 4:42  root stylesheet",
+         \n  input.scss 5:52  root stylesheet",
     );
     }
     #[test]
+    #[ignore] // wrong error
     fn invalid_args() {
         assert_eq!(
-            runner().err("a {b: call(get-function(\"rgb\"), 1)}\n"),
-            "Error: Missing element $green.\
+        runner().err(
+            "@use \"sass:meta\";\
+             \na {b: meta.call(meta.get-function(\"rgb\"), 1)}\n"
+        ),
+        "Error: $channels: The rgb color space has 3 channels but 1 has 1.\
          \n  ,\
-         \n1 | a {b: call(get-function(\"rgb\"), 1)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n2 | a {b: meta.call(meta.get-function(\"rgb\"), 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
-        );
+         \n  input.scss 2:7  root stylesheet",
+    );
     }
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: call()}\n"),
+            runner().err(
+                "@use \"sass:meta\";\
+             \na {b: meta.call()}\n"
+            ),
             "Error: Missing argument $function.\
          \n  ,--> input.scss\
-         \n1 | a {b: call()}\
-         \n  |       ^^^^^^ invocation\
+         \n2 | a {b: meta.call()}\
+         \n  |       ^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:meta\
          \n1 | @function call($function, $args...) {\
          \n  |           ========================= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: call(1)}\n"),
+            runner().err(
+                "@use \"sass:meta\";\
+             \na {b: meta.call(1)}\n"
+            ),
             "Error: $function: 1 is not a function reference.\
          \n  ,\
-         \n1 | a {b: call(1)}\
-         \n  |       ^^^^^^^\
+         \n2 | a {b: meta.call(1)}\
+         \n  |       ^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
@@ -145,7 +161,8 @@ mod error {
 fn named() {
     assert_eq!(
         runner().ok(
-            "a {b: call($function: get-function(\"rgb\"), $red: 1, $green: 2, $blue: 3)}\n"
+            "@use \"sass:meta\";\
+             \na {b: meta.call($function: meta.get-function(\"rgb\"), $red: 1, $green: 2, $blue: 3)}\n"
         ),
         "a {\
          \n  b: rgb(1, 2, 3);\
@@ -159,7 +176,8 @@ mod string {
     #[test]
     fn built_in() {
         assert_eq!(
-            runner().ok("a {b: call(\"rgb\", 1, 2, 3)}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \na {b: meta.call(\"rgb\", 1, 2, 3)}\n"),
             "a {\
          \n  b: rgb(1, 2, 3);\
          \n}\n"
@@ -168,8 +186,9 @@ mod string {
     #[test]
     fn local() {
         assert_eq!(
-            runner().ok("@function a($arg) {@return $arg + 1}\
-             \na {b: call(\"a\", 1)}\n"),
+            runner().ok("@use \"sass:meta\";\
+             \n@function a($arg) {@return $arg + 1}\
+             \na {b: meta.call(\"a\", 1)}\n"),
             "a {\
          \n  b: 2;\
          \n}\n"

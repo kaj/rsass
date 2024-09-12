@@ -13,7 +13,8 @@ mod both {
     fn subset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":is(c d.i, e j f)\", \":is(c d, e f, g h)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":is(c d.i, e j f)\", \":is(c d, e f, g h)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -24,7 +25,8 @@ mod both {
     fn superset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":is(c d, e f, g h)\", \":is(c d.i, e j f)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":is(c d, e f, g h)\", \":is(c d.i, e j f)\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -39,7 +41,8 @@ mod complex {
     #[test]
     fn subset() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":is(c d e)\", \"c e\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":is(c d e)\", \"c e\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -49,7 +52,8 @@ mod complex {
     #[ignore] // wrong result
     fn superset() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":is(c e)\", \"c d e\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":is(c e)\", \"c d e\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -63,7 +67,8 @@ mod compound {
     #[test]
     fn subset() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":is(c.d.e)\", \"c e\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":is(c.d.e)\", \"c e\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -73,7 +78,8 @@ mod compound {
     #[ignore] // wrong result
     fn superset() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":is(c.e)\", \"c.d.e\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":is(c.e)\", \"c.d.e\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -88,7 +94,8 @@ mod list {
     fn subset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":is(c d, e f)\", \"c d, e f, g h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":is(c d, e f)\", \"c d, e f, g h\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -100,7 +107,8 @@ mod list {
     fn superset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":is(c d, e f, g h)\", \"c d, e f\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":is(c d, e f, g h)\", \"c d, e f\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -115,19 +123,21 @@ mod not_superselector_of {
     #[test]
     fn any() {
         assert_eq!(
-            runner().ok(
-                "a {b: is-superselector(\":is(c, d)\", \":any(c, d)\")}\n"
-            ),
-            "a {\
+        runner().ok(
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":is(c, d)\", \":any(c, d)\")}\n"
+        ),
+        "a {\
          \n  b: false;\
          \n}\n"
-        );
+    );
     }
     #[test]
     fn prefixed() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":is(c, d)\", \":-pfx-is(c, d)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":is(c, d)\", \":-pfx-is(c, d)\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -143,7 +153,8 @@ mod prefix {
     fn subset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":-pfx-is(c d.i, e j f)\", \"c d, e f, g h\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":-pfx-is(c d.i, e j f)\", \"c d, e f, g h\")}\n"
         ),
         "a {\
          \n  b: false;\
@@ -155,7 +166,8 @@ mod prefix {
     fn superset() {
         assert_eq!(
         runner().ok(
-            "a {b: is-superselector(\":-pfx-is(c d, e f, g h)\", \"c d.i, e j f\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":-pfx-is(c d, e f, g h)\", \"c d.i, e j f\")}\n"
         ),
         "a {\
          \n  b: true;\
@@ -171,7 +183,8 @@ mod simple {
     #[ignore] // wrong result
     fn equal() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":is(c)\", \"c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":is(c)\", \"c\")}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -180,7 +193,8 @@ mod simple {
     #[test]
     fn unequal() {
         assert_eq!(
-            runner().ok("a {b: is-superselector(\":is(c)\", \"d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.is-superselector(\":is(c)\", \"d\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"

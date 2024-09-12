@@ -13,8 +13,9 @@ mod deep {
     fn different_keys() {
         assert_eq!(
         runner().ok(
-            "@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge((c: (d: e, f: g)), (c: (1: 2, 3: 4))))}\n"
+            "@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge((c: (d: e, f: g)), (c: (1: 2, 3: 4))))}\n"
         ),
         "a {\
          \n  b: (c: (d: e, f: g, 1: 2, 3: 4));\
@@ -28,8 +29,9 @@ mod deep {
         #[test]
         fn first() {
             assert_eq!(
-                runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge((c: ()), (c: (d: e))))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge((c: ()), (c: (d: e))))}\n"),
                 "a {\
          \n  b: (c: (d: e));\
          \n}\n"
@@ -38,8 +40,9 @@ mod deep {
         #[test]
         fn second() {
             assert_eq!(
-                runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge((c: (d: e)), (c: ())))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge((c: (d: e)), (c: ())))}\n"),
                 "a {\
          \n  b: (c: (d: e));\
          \n}\n"
@@ -50,8 +53,9 @@ mod deep {
     fn multiple_layers() {
         assert_eq!(
         runner().ok(
-            "@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge((c: (d: (e: (f: g)))), (c: (d: (e: (1: 2))))))}\n"
+            "@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge((c: (d: (e: (f: g)))), (c: (d: (e: (1: 2))))))}\n"
         ),
         "a {\
          \n  b: (c: (d: (e: (f: g, 1: 2))));\
@@ -62,8 +66,9 @@ mod deep {
     fn overlapping_keys() {
         assert_eq!(
         runner().ok(
-            "@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge((c: (d: e, f: g, h: i)), (c: (j: 1, f: 2, k: 3))))}\n"
+            "@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge((c: (d: e, f: g, h: i)), (c: (j: 1, f: 2, k: 3))))}\n"
         ),
         "a {\
          \n  b: (c: (d: e, f: 2, h: i, j: 1, k: 3));\
@@ -74,8 +79,9 @@ mod deep {
     fn same_keys() {
         assert_eq!(
         runner().ok(
-            "@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge((c: (d: e, f: g)), (c: (d: 1, f: 2))))}\n"
+            "@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge((c: (d: e, f: g)), (c: (d: 1, f: 2))))}\n"
         ),
         "a {\
          \n  b: (c: (d: 1, f: 2));\
@@ -165,8 +171,9 @@ mod error {
 fn named() {
     assert_eq!(
         runner().ok(
-            "@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge($map1: (c: d), $map2: (1: 2)))}\n"
+            "@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge($map1: (c: d), $map2: (1: 2)))}\n"
         ),
         "a {\
          \n  b: (c: d, 1: 2);\
@@ -180,12 +187,15 @@ mod shallow {
     #[test]
     fn different_keys() {
         assert_eq!(
-            runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge((c: d, e: f), (1: 2, 3: 4)))}\n"),
-            "a {\
+        runner().ok(
+            "@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge((c: d, e: f), (1: 2, 3: 4)))}\n"
+        ),
+        "a {\
          \n  b: (c: d, e: f, 1: 2, 3: 4);\
          \n}\n"
-        );
+    );
     }
     mod empty {
         #[allow(unused)]
@@ -194,8 +204,9 @@ mod shallow {
         #[test]
         fn both() {
             assert_eq!(
-                runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge((), ()))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge((), ()))}\n"),
                 "a {\
          \n  b: ();\
          \n}\n"
@@ -204,8 +215,9 @@ mod shallow {
         #[test]
         fn first() {
             assert_eq!(
-                runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge((), (c: d, e: f)))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge((), (c: d, e: f)))}\n"),
                 "a {\
          \n  b: (c: d, e: f);\
          \n}\n"
@@ -214,8 +226,9 @@ mod shallow {
         #[test]
         fn second() {
             assert_eq!(
-                runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge((c: d, e: f), ()))}\n"),
+                runner().ok("@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge((c: d, e: f), ()))}\n"),
                 "a {\
          \n  b: (c: d, e: f);\
          \n}\n"
@@ -226,8 +239,9 @@ mod shallow {
     fn overlapping_keys() {
         assert_eq!(
         runner().ok(
-            "@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge((c: d, e: f, g: h), (i: 1, e: 2, j: 3)))}\n"
+            "@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge((c: d, e: f, g: h), (i: 1, e: 2, j: 3)))}\n"
         ),
         "a {\
          \n  b: (c: d, e: 2, g: h, i: 1, j: 3);\
@@ -237,11 +251,14 @@ mod shallow {
     #[test]
     fn same_keys() {
         assert_eq!(
-            runner().ok("@use \'sass:map\';\
-             \na {b: inspect(map.deep-merge((c: d, e: f), (c: 1, e: 2)))}\n"),
-            "a {\
+        runner().ok(
+            "@use \"sass:meta\";\
+             \n@use \'sass:map\';\
+             \na {b: meta.inspect(map.deep-merge((c: d, e: f), (c: 1, e: 2)))}\n"
+        ),
+        "a {\
          \n  b: (c: 1, e: 2);\
          \n}\n"
-        );
+    );
     }
 }

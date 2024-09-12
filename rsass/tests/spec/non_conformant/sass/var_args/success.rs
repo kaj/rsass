@@ -9,25 +9,27 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok("@mixin foo($x, $y, $zs...) {\
-             \n  grarh: type-of(false);\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n@mixin foo($x, $y, $zs...) {\
+             \n  grarh: meta.type-of(false);\
              \n  f: $zs;\
              \n  fa: $x, $y, $zs;\
              \n  fv: $zs;\
-             \n  ft: type-of($zs);\
-             \n  fj: join(1 2 3, $zs);\
-             \n  fjt: type-of(join(1 2 3, $zs));\
-             \n  fkt: type-of(join($zs, 1 2 3));\
-             \n  hoopla: length(a b c d e);\
-             \n  boopla: type-of(123+234);\
-             \n  koopla: type-of(length(a b c d));\
+             \n  ft: meta.type-of($zs);\
+             \n  fj: list.join(1 2 3, $zs);\
+             \n  fjt: meta.type-of(list.join(1 2 3, $zs));\
+             \n  fkt: meta.type-of(list.join($zs, 1 2 3));\
+             \n  hoopla: list.length(a b c d e);\
+             \n  boopla: meta.type-of(123+234);\
+             \n  koopla: meta.type-of(list.length(a b c d));\
              \n}\n\
              \n@mixin bar($x, $y, $z) {\
              \n  ba: $x, $y, $z;\
              \n  bv: $z;\
-             \n  bt: type-of($z);\
-             \n  bj: join(1 2 3, $z);\
-             \n  bjt: type-of(join(1 2 3, $z));\
+             \n  bt: meta.type-of($z);\
+             \n  bj: list.join(1 2 3, $z);\
+             \n  bjt: meta.type-of(list.join(1 2 3, $z));\
              \n}\n\
              \n$stuff: hey hoo ha;\n\
              \n@mixin mudge($x, $y, $zs...) {\
@@ -41,7 +43,7 @@ fn test() {
              \n  @include foo(a, b, c d e...);\
              \n  @include foo(a, c d e...);\
              \n  @include foo(a, $stuff...);\
-             \n  new: type-of(\"hello\");\
+             \n  new: meta.type-of(\"hello\");\
              \n}\n\
              \n@mixin bad($x, $y, $z) {\
              \n  first: $x;\
@@ -49,9 +51,9 @@ fn test() {
              \n  rest: $z;\
              \n}\n\
              \n@mixin foo($x, $y, $z) {\
-             \n  a: type-of(join($x, $y));\
-             \n  b: type-of($z);\
-             \n  c: type-of(length($x));\
+             \n  a: meta.type-of(list.join($x, $y));\
+             \n  b: meta.type-of($z);\
+             \n  c: meta.type-of(list.length($x));\
              \n}\n\
              \ndiv {\
              \n  @include foo(a b c, d e, false);\

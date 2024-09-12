@@ -8,8 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("div {\
-             \n  background-color: darken(red, 10%) \\9;\
+        runner().ok("@use \"sass:color\";\
+             \ndiv {\
+             \n  background-color: color.adjust(red, $lightness: -10%) \\9;\
              \n}"),
         "div {\
          \n  background-color: #cc0000 \\9 ;\

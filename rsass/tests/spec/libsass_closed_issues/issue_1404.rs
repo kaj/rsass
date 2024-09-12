@@ -9,10 +9,11 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok(".test {\r\
+        runner().ok("@use \"sass:meta\";\
+             \n.test {\r\
              \n    color: #aaabbb--1-2-a;\r\
-             \n    color: type-of(#aaabbb--1-2-a);\r\
-             \n    color: type-of(#aaabbb--1-2);\r\
+             \n    color: meta.type-of(#aaabbb--1-2-a);\r\
+             \n    color: meta.type-of(#aaabbb--1-2);\r\
              \n}"),
         ".test {\
          \n  color: #aaabbb--1-2-a;\

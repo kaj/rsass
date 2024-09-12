@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn and_universal() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\"c\", \"*\", \"d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c\", \"*\", \"d\")}\n"),
         "a {\
          \n  b: c;\
          \n}\n"
@@ -17,7 +18,8 @@ fn and_universal() {
 #[test]
 fn equal() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\"c\", \"c\", \"e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c\", \"c\", \"e\")}\n"),
         "a {\
          \n  b: c, e;\
          \n}\n"
@@ -34,8 +36,8 @@ mod namespace {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"|c\", \"|c\", \"d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"|c\", \"|c\", \"d\")}\n"),
                 "a {\
          \n  b: |c, d;\
          \n}\n"
@@ -44,8 +46,8 @@ mod namespace {
         #[test]
         fn and_explicit() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"|c\", \"d|c\", \"e\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"|c\", \"d|c\", \"e\")}\n"),
                 "a {\
          \n  b: |c;\
          \n}\n"
@@ -54,7 +56,8 @@ mod namespace {
         #[test]
         fn and_implicit() {
             assert_eq!(
-                runner().ok("a {b: selector-extend(\"|c\", \"c\", \"d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"|c\", \"c\", \"d\")}\n"),
                 "a {\
          \n  b: |c;\
          \n}\n"
@@ -63,8 +66,8 @@ mod namespace {
         #[test]
         fn and_universal() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"|c\", \"*|c\", \"d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"|c\", \"*|c\", \"d\")}\n"),
                 "a {\
          \n  b: |c;\
          \n}\n"
@@ -78,8 +81,8 @@ mod namespace {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c|d\", \"|d\", \"e\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c|d\", \"|d\", \"e\")}\n"),
                 "a {\
          \n  b: c|d;\
          \n}\n"
@@ -92,9 +95,8 @@ mod namespace {
             #[test]
             fn equal() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: selector-extend(\"c|d\", \"c|d\", \"e\")}\n"
-                    ),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c|d\", \"c|d\", \"e\")}\n"),
                     "a {\
          \n  b: c|d, e;\
          \n}\n"
@@ -103,9 +105,8 @@ mod namespace {
             #[test]
             fn unequal() {
                 assert_eq!(
-                    runner().ok(
-                        "a {b: selector-extend(\"c|d\", \"e|d\", \"e\")}\n"
-                    ),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c|d\", \"e|d\", \"e\")}\n"),
                     "a {\
          \n  b: c|d;\
          \n}\n"
@@ -115,8 +116,8 @@ mod namespace {
         #[test]
         fn and_implicit() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c|d\", \"d\", \"e\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c|d\", \"d\", \"e\")}\n"),
                 "a {\
          \n  b: c|d;\
          \n}\n"
@@ -125,8 +126,8 @@ mod namespace {
         #[test]
         fn and_universal() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"c|d\", \"*|d\", \"e\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c|d\", \"*|d\", \"e\")}\n"),
                 "a {\
          \n  b: c|d;\
          \n}\n"
@@ -140,8 +141,8 @@ mod namespace {
         #[test]
         fn and_empty() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"*|c\", \"|c\", \"d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"*|c\", \"|c\", \"d\")}\n"),
                 "a {\
          \n  b: *|c;\
          \n}\n"
@@ -150,8 +151,8 @@ mod namespace {
         #[test]
         fn and_explicit() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"*|c\", \"d|c\", \"d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"*|c\", \"d|c\", \"d\")}\n"),
                 "a {\
          \n  b: *|c;\
          \n}\n"
@@ -160,8 +161,8 @@ mod namespace {
         #[test]
         fn and_implicit() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"*|c\", \"c\", \"d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"*|c\", \"c\", \"d\")}\n"),
                 "a {\
          \n  b: *|c;\
          \n}\n"
@@ -170,8 +171,8 @@ mod namespace {
         #[test]
         fn and_universal() {
             assert_eq!(
-                runner()
-                    .ok("a {b: selector-extend(\"*|c\", \"*|c\", \"d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"*|c\", \"*|c\", \"d\")}\n"),
                 "a {\
          \n  b: *|c, d;\
          \n}\n"
@@ -182,7 +183,8 @@ mod namespace {
 #[test]
 fn unequal() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\"c\", \"d\", \"e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"c\", \"d\", \"e\")}\n"),
         "a {\
          \n  b: c;\
          \n}\n"

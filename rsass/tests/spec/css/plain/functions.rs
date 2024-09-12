@@ -28,7 +28,7 @@ fn runner() -> crate::TestRunner {
 fn alpha() {
     let runner = runner().with_cwd("alpha");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  b: alpha(0.1);\
          \n}\n"
@@ -49,7 +49,7 @@ fn defined_elsewhere() {
 fn empty_fallback_var() {
     let runner = runner().with_cwd("empty_fallback_var");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  b: var(--c, );\
          \n}\n"
@@ -72,14 +72,14 @@ mod error {
         fn empty_second_before_third() {
             let runner = runner().with_cwd("empty_second_before_third");
             assert_eq!(
-                runner.err("@import \"plain\";\n"),
+                runner.err("@use \"plain\";\n"),
                 "Error: Expected expression.\
          \n  ,\
          \n1 | a {b: var(--c, , d)}\
          \n  |                ^\
          \n  \'\
-         \n  plain.css 1:16  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:16  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
         #[test]
@@ -87,14 +87,14 @@ mod error {
         fn invalid_second_arg_syntax() {
             let runner = runner().with_cwd("invalid_second_arg_syntax");
             assert_eq!(
-                runner.err("@import \"plain\";\n"),
+                runner.err("@use \"plain\";\n"),
                 "Error: Expected expression.\
          \n  ,\
          \n1 | a {b: var(--c, {})}\
          \n  |                ^\
          \n  \'\
-         \n  plain.css 1:16  @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 1:16  @use\
+         \n  input.scss 1:1  root stylesheet",
             );
         }
     }
@@ -103,7 +103,7 @@ mod error {
 fn grayscale() {
     let runner = runner().with_cwd("grayscale");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  b: grayscale(0.1);\
          \n}\n"
@@ -113,7 +113,7 @@ fn grayscale() {
 fn hsl() {
     let runner = runner().with_cwd("hsl");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  b: hsl(0, 100%, 50%);\
          \n}\n"
@@ -123,7 +123,7 @@ fn hsl() {
 fn hsla() {
     let runner = runner().with_cwd("hsla");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  b: hsla(0, 100%, 50%, 0.5);\
          \n}\n"
@@ -133,7 +133,7 @@ fn hsla() {
 fn invert() {
     let runner = runner().with_cwd("invert");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  b: invert(0.1);\
          \n}\n"
@@ -143,7 +143,7 @@ fn invert() {
 fn rgb() {
     let runner = runner().with_cwd("rgb");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  b: rgb(10, 20, 30);\
          \n}\n"
@@ -153,7 +153,7 @@ fn rgb() {
 fn rgba() {
     let runner = runner().with_cwd("rgba");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  b: rgba(10, 20, 30, 0.5);\
          \n}\n"
@@ -163,7 +163,7 @@ fn rgba() {
 fn saturate() {
     let runner = runner().with_cwd("saturate");
     assert_eq!(
-        runner.ok("@import \"plain\";\n"),
+        runner.ok("@use \"plain\";\n"),
         "a {\
          \n  b: saturate(0.1);\
          \n}\n"

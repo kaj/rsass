@@ -22,7 +22,7 @@ fn test() {
         ),
         "@asdf .~@#$%^&*()_-+=[]|:<>,.?/;\
          \n@asdf \"f\'o\" \'b\"r\' url(baz) url(\"qux\");\
-         \n@asdf foo //\
+         \n@asdf foo \
          \n      bar;\
          \n@asdf foo /* bar */ baz;\n"
     );

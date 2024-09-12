@@ -12,52 +12,63 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: quote()}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.quote()}\n"
+            ),
             "Error: Missing argument $string.\
          \n  ,--> input.scss\
-         \n1 | a {b: quote()}\
-         \n  |       ^^^^^^^ invocation\
+         \n2 | a {b: string.quote()}\
+         \n  |       ^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:string\
          \n1 | @function quote($string) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: quote(c, d)}\n"),
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.quote(c, d)}\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: quote(c, d)}\
-         \n  |       ^^^^^^^^^^^ invocation\
+         \n2 | a {b: string.quote(c, d)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:string\
          \n1 | @function quote($string) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: quote((1, 2, 3))}\n"),
-            "Error: $string: 1, 2, 3 is not a string.\
+            runner().err(
+                "@use \"sass:string\";\
+             \na {b: string.quote((1, 2, 3))}\n"
+            ),
+            "Error: $string: (1, 2, 3) is not a string.\
          \n  ,\
-         \n1 | a {b: quote((1, 2, 3))}\
-         \n  |       ^^^^^^^^^^^^^^^^\
+         \n2 | a {b: string.quote((1, 2, 3))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
 #[test]
 fn escape() {
     assert_eq!(
-        runner().ok("a {b: quote(\\0)}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.quote(\\0)}\n"),
         "a {\
          \n  b: \"\\\\0 \";\
          \n}\n"
@@ -66,7 +77,8 @@ fn escape() {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: quote($string: c)}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.quote($string: c)}\n"),
         "a {\
          \n  b: \"c\";\
          \n}\n"
@@ -79,18 +91,22 @@ mod quote_unquoted_quote {
     #[test]
     fn double() {
         assert_eq!(
-            runner().ok("// See sass/libsass#2873\
-             \na {b: quote(unquote(\'\"\') + unquote(\"\'\"))}\n"),
-            "a {\
+        runner().ok(
+            "@use \"sass:string\";\
+             \n// See sass/libsass#2873\
+             \na {b: string.quote(string.unquote(\'\"\') + string.unquote(\"\'\"))}\n"
+        ),
+        "a {\
          \n  b: \"\\\"\'\";\
          \n}\n"
-        );
+    );
     }
     #[test]
     fn single() {
         assert_eq!(
-            runner().ok("// See sass/libsass#2873\
-             \na {b: quote(unquote(\'\"\'))}\n"),
+            runner().ok("@use \"sass:string\";\
+             \n// See sass/libsass#2873\
+             \na {b: string.quote(string.unquote(\'\"\'))}\n"),
             "a {\
          \n  b: \'\"\';\
          \n}\n"
@@ -100,7 +116,8 @@ mod quote_unquoted_quote {
 #[test]
 fn quoted_double() {
     assert_eq!(
-        runner().ok("a {b: quote(\"c\")}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.quote(\"c\")}\n"),
         "a {\
          \n  b: \"c\";\
          \n}\n"
@@ -109,7 +126,8 @@ fn quoted_double() {
 #[test]
 fn quoted_single() {
     assert_eq!(
-        runner().ok("a {b: quote(\'c\')}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.quote(\'c\')}\n"),
         "a {\
          \n  b: \"c\";\
          \n}\n"
@@ -118,7 +136,8 @@ fn quoted_single() {
 #[test]
 fn unquoted() {
     assert_eq!(
-        runner().ok("a {b: quote(c)}\n"),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.quote(c)}\n"),
         "a {\
          \n  b: \"c\";\
          \n}\n"

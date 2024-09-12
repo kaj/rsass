@@ -5,6 +5,41 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("warn")
 }
 
+mod comment {
+    #[allow(unused)]
+    use super::runner;
+
+    mod after_expression {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn loud() {
+            assert_eq!(runner().ok("@warn a /**/\n"), "");
+        }
+        #[test]
+        fn silent() {
+            assert_eq!(runner().ok("@warn a //\n"), "");
+        }
+    }
+    mod before_expression {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn loud() {
+            assert_eq!(runner().ok("@warn /**/ a\n"), "");
+        }
+        #[test]
+        fn silent() {
+            assert_eq!(
+                runner().ok("@warn //\
+             \n  a\n"),
+                ""
+            );
+        }
+    }
+}
 #[test]
 fn escaped() {
     assert_eq!(
@@ -18,8 +53,9 @@ fn escaped() {
 #[test]
 fn functions_in_stack() {
     assert_eq!(
-        runner().ok("@function issues-warning($a) {\
-             \n  @warn \"From function: #{inspect($a)}\";\
+        runner().ok("@use \"sass:meta\";\n\
+             \n@function issues-warning($a) {\
+             \n  @warn \"From function: #{meta.inspect($a)}\";\
              \n  @return $a;\
              \n}\n\
              \n@mixin calls-function-that-warns($a) {\

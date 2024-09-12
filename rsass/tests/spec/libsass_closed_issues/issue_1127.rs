@@ -8,9 +8,10 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$a: to-upper-case(\'abcd\');\
-             \n$b: to-upper-case(\"abcd\");\
-             \n$c: to-upper-case(abcd);\n\
+        runner().ok("@use \"sass:string\";\
+             \n$a: string.to-upper-case(\'abcd\');\
+             \n$b: string.to-upper-case(\"abcd\");\
+             \n$c: string.to-upper-case(abcd);\n\
              \nfoo {\
              \n    content: #{$a};\
              \n    content: #{$b};\
@@ -21,33 +22,33 @@ fn test() {
              \n    content: \"#{$a}\";\
              \n    content: \"#{$b}\";\
              \n    content: \"#{$c}\";\n\
-             \n    content: #{unquote($a)};\
-             \n    content: #{unquote($b)};\
-             \n    content: #{unquote($c)};\
-             \n    content: \'#{unquote($a)}\';\
-             \n    content: \'#{unquote($b)}\';\
-             \n    content: \'#{unquote($c)}\';\
-             \n    content: \"#{unquote($a)}\";\
-             \n    content: \"#{unquote($b)}\";\
-             \n    content: \"#{unquote($c)}\";\n\
-             \n    content: #{$a + unquote(\"efg\")};\
-             \n    content: #{$b + unquote(\"efg\")};\
-             \n    content: #{$c + unquote(\"efg\")};\
-             \n    content: \'#{$a + unquote(\"efg\")}\';\
-             \n    content: \'#{$b + unquote(\"efg\")}\';\
-             \n    content: \'#{$c + unquote(\"efg\")}\';\
-             \n    content: \"#{$a + unquote(\"efg\")}\";\
-             \n    content: \"#{$b + unquote(\"efg\")}\";\
-             \n    content: \"#{$c + unquote(\"efg\")}\";\n\
-             \n    content: #{$a + unquote(\"\")};\
-             \n    content: #{$b + unquote(\"\")};\
-             \n    content: #{$c + unquote(\"\")};\
-             \n    content: \'#{$a + unquote(\"\")}\';\
-             \n    content: \'#{$b + unquote(\"\")}\';\
-             \n    content: \'#{$c + unquote(\"\")}\';\
-             \n    content: \"#{$a + unquote(\"\")}\";\
-             \n    content: \"#{$b + unquote(\"\")}\";\
-             \n    content: \"#{$c + unquote(\"\")}\";\
+             \n    content: #{string.unquote($a)};\
+             \n    content: #{string.unquote($b)};\
+             \n    content: #{string.unquote($c)};\
+             \n    content: \'#{string.unquote($a)}\';\
+             \n    content: \'#{string.unquote($b)}\';\
+             \n    content: \'#{string.unquote($c)}\';\
+             \n    content: \"#{string.unquote($a)}\";\
+             \n    content: \"#{string.unquote($b)}\";\
+             \n    content: \"#{string.unquote($c)}\";\n\
+             \n    content: #{$a + string.unquote(\"efg\")};\
+             \n    content: #{$b + string.unquote(\"efg\")};\
+             \n    content: #{$c + string.unquote(\"efg\")};\
+             \n    content: \'#{$a + string.unquote(\"efg\")}\';\
+             \n    content: \'#{$b + string.unquote(\"efg\")}\';\
+             \n    content: \'#{$c + string.unquote(\"efg\")}\';\
+             \n    content: \"#{$a + string.unquote(\"efg\")}\";\
+             \n    content: \"#{$b + string.unquote(\"efg\")}\";\
+             \n    content: \"#{$c + string.unquote(\"efg\")}\";\n\
+             \n    content: #{$a + string.unquote(\"\")};\
+             \n    content: #{$b + string.unquote(\"\")};\
+             \n    content: #{$c + string.unquote(\"\")};\
+             \n    content: \'#{$a + string.unquote(\"\")}\';\
+             \n    content: \'#{$b + string.unquote(\"\")}\';\
+             \n    content: \'#{$c + string.unquote(\"\")}\';\
+             \n    content: \"#{$a + string.unquote(\"\")}\";\
+             \n    content: \"#{$b + string.unquote(\"\")}\";\
+             \n    content: \"#{$c + string.unquote(\"\")}\";\
              \n}\n"),
         "foo {\
          \n  content: ABCD;\

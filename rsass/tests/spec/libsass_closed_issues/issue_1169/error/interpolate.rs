@@ -10,22 +10,22 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err(
-            "$map: (\r\
-             \n  \'red\': \'bar\',\r\
-             \n  #{re}#{\'d\'}: \'baz\',\r\
-             \n);\r\
-             \n\r\
-             \n.foo {\r\
-             \n  content: inspect($map);\r\
+            "@use \"sass:meta\";\n\
+             \n$map: (\
+             \n  \'red\': \'bar\',\
+             \n  #{re}#{\'d\'}: \'baz\',\
+             \n);\n\
+             \n.foo {\
+             \n  content: meta.inspect($map);\
              \n}"
         ),
         "Error: Duplicate key.\
          \n  ,\
-         \n2 |   \'red\': \'bar\',\
+         \n4 |   \'red\': \'bar\',\
          \n  |   ===== first key\
-         \n3 |   #{re}#{\'d\'}: \'baz\',\
+         \n5 |   #{re}#{\'d\'}: \'baz\',\
          \n  |   ^^^^^^^^^^^ second key\
          \n  \'\
-         \n  input.scss 3:3  root stylesheet",
+         \n  input.scss 5:3  root stylesheet",
     );
 }

@@ -8,19 +8,21 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$map: (foo: \'b\', bar: c);\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:map\";\
+             \n$map: (foo: \'b\', bar: c);\
              \n$list: (\'d\', e);\n\
              \na {\
-             \n  #{map-get($map, foo)} & {\
+             \n  #{map.get($map, foo)} & {\
              \n      foo: bar;\
              \n  }\
-             \n  #{map-get($map, bar)} & {\
+             \n  #{map.get($map, bar)} & {\
              \n      foo: bar;\
              \n  }\n\
-             \n  #{nth($list, 1)} & {\
+             \n  #{list.nth($list, 1)} & {\
              \n      foo: bar;\
              \n  }\n\
-             \n  #{nth($list, 2)} & {\
+             \n  #{list.nth($list, 2)} & {\
              \n      foo: bar;\
              \n  }\
              \n}\n"),

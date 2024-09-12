@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 fn different_prefix_in_extender() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":-ms-matches(.c)\", \".c\", \":-moz-matches(.d, .e)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":-ms-matches(.c)\", \".c\", \":-moz-matches(.d, .e)\")}\n"
         ),
         "a {\
          \n  b: :-ms-matches(.c);\
@@ -21,7 +22,8 @@ fn different_prefix_in_extender() {
 fn list() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":-ms-matches(.c)\", \".c\", \".d, .e\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":-ms-matches(.c)\", \".c\", \".d, .e\")}\n"
         ),
         "a {\
          \n  b: :-ms-matches(.c, .d, .e);\
@@ -33,7 +35,8 @@ fn list() {
 fn same_prefix_in_extender() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":-ms-matches(.c)\", \".c\", \":-ms-matches(.d, .e)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":-ms-matches(.c)\", \".c\", \":-ms-matches(.d, .e)\")}\n"
         ),
         "a {\
          \n  b: :-ms-matches(.c, .d, .e);\
@@ -45,7 +48,8 @@ fn same_prefix_in_extender() {
 fn simple() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":-ms-matches(.c)\", \".c\", \".d\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":-ms-matches(.c)\", \".c\", \".d\")}\n"
         ),
         "a {\
          \n  b: :-ms-matches(.c, .d);\

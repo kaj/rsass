@@ -8,15 +8,16 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$foo: (\
+        runner().ok("@use \"sass:map\";\
+             \n$foo: (\
              \n    1: foo1 bar1,\
              \n    10: foo2 bar2,\
              \n    100: foo3 bar3,\
              \n);\n\
              \ndiv {\
-             \n    foo: map-get($foo, 1);\
-             \n    foo: map-get($foo, 10);\
-             \n    foo: map-get($foo, 100);\
+             \n    foo: map.get($foo, 1);\
+             \n    foo: map.get($foo, 10);\
+             \n    foo: map.get($foo, 100);\
              \n}\n"),
         "div {\
          \n  foo: foo1 bar1;\

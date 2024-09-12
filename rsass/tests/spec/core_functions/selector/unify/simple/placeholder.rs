@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn different() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\"%c\", \"%d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"%c\", \"%d\")}\n"),
         "a {\
          \n  b: %c%d;\
          \n}\n"
@@ -17,7 +18,8 @@ fn different() {
 #[test]
 fn same() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\"%c\", \"%c\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\"%c\", \"%c\")}\n"),
         "a {\
          \n  b: %c;\
          \n}\n"

@@ -8,12 +8,13 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("p {\
+        runner().ok("@use \"sass:string\";\
+             \np {\
              \n  color: rgb(255, 128, 0);\
              \n  color: red green blue;\
              \n  color: (red) (green) (blue);\
              \n  color: red + hux;\
-             \n  color: unquote(\"red\") + green;\
+             \n  color: string.unquote(\"red\") + green;\
              \n  foo: rgb(200, 150%, 170%);\
              \n}"),
         "p {\

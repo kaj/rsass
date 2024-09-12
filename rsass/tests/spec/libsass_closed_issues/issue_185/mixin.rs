@@ -10,19 +10,20 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "@function shift($list) {\
-             \n  @if length($list) == 1 { @return (); }\n\
+            "@use \"sass:list\";\
+             \n@function shift($list) {\
+             \n  @if list.length($list) == 1 { @return (); }\n\
              \n  $new: ();\
-             \n  @for $i from 2 through length($list) {\
-             \n    $new: append($new, nth($list, $i));\
+             \n  @for $i from 2 through list.length($list) {\
+             \n    $new: list.append($new, list.nth($list, $i));\
              \n  }\
              \n  @return $new;\
              \n}\n\
              \n@mixin media($medias...) {\
-             \n  @if length($medias) == 0 {\
+             \n  @if list.length($medias) == 0 {\
              \n    @content;\
              \n  } @else {\
-             \n    @media #{nth($medias, 1)} {\
+             \n    @media #{list.nth($medias, 1)} {\
              \n      @include media(shift($medias)...) {\
              \n        @content;\
              \n      }\

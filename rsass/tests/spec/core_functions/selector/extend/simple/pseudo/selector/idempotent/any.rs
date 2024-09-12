@@ -10,7 +10,8 @@ fn runner() -> crate::TestRunner {
 fn any_in_extender() {
     assert_eq!(
         runner().ok(
-            "a {b: selector-extend(\":any(.c)\", \".c\", \":any(.d, .e)\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.extend(\":any(.c)\", \".c\", \":any(.d, .e)\")}\n"
         ),
         "a {\
          \n  b: :any(.c, .d, .e);\
@@ -21,8 +22,8 @@ fn any_in_extender() {
 #[ignore] // wrong result
 fn list() {
     assert_eq!(
-        runner()
-            .ok("a {b: selector-extend(\":any(.c)\", \".c\", \".d, .e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":any(.c)\", \".c\", \".d, .e\")}\n"),
         "a {\
          \n  b: :any(.c, .d, .e);\
          \n}\n"
@@ -32,7 +33,8 @@ fn list() {
 #[ignore] // wrong result
 fn simple() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\":any(.c)\", \".c\", \".d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\":any(.c)\", \".c\", \".d\")}\n"),
         "a {\
          \n  b: :any(.c, .d);\
          \n}\n"

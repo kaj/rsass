@@ -9,9 +9,10 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok("@mixin foo($option: \'foo\') {\
+        runner().ok("@use \"sass:math\";\
+             \n@mixin foo($option: \'foo\') {\
              \n     // Create a unique, random placeholder to store styles\
-             \n    $placeholder : $option + random(9999);\n\
+             \n    $placeholder : $option + math.random(9999);\n\
              \n    // Store the styles in the placeholder\
              \n    @at-root %#{$placeholder} {\
              \n        content: \'foo\';\

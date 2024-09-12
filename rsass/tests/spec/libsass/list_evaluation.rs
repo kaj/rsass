@@ -8,12 +8,14 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("div {\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \ndiv {\
              \n  $things: red 2/3 blue;\
              \n  content: $things;\
-             \n  content: nth($things, 2);\
-             \n  content: type-of(nth($things, 2));\
-             \n  content: type-of(nth($things, 3));\
+             \n  content: list.nth($things, 2);\
+             \n  content: meta.type-of(list.nth($things, 2));\
+             \n  content: meta.type-of(list.nth($things, 3));\
              \n  /**** #{2+2} ****/\
              \n  content: (1 / 2 3 / 4) + (5/6 7/8);\
              \n  content: (1/2 3/4), (5/6 7/8);\

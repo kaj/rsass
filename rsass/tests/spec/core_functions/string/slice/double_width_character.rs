@@ -9,10 +9,11 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "// Sass treats strings as sequences of Unicode codepoint; it doesn\'t care if a\
+            "@use \"sass:string\";\
+             \n// Sass treats strings as sequences of Unicode codepoint; it doesn\'t care if a\
              \n// character is represented as two UTF-16 code units, so inserting a character\
              \n// at index 2 shouldn\'t break this emoji in two.\
-             \na {b: str-slice(\"c👭d\", 2, 2)}\n"
+             \na {b: string.slice(\"c👭d\", 2, 2)}\n"
         ),
         "@charset \"UTF-8\";\
          \na {\

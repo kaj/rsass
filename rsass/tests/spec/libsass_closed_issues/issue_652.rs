@@ -8,15 +8,16 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$map: (\
+        runner().ok("@use \"sass:map\";\
+             \n$map: (\
              \n    purple: foo,\
              \n    rgba(1,2,3,1): bar,\
              \n    #ffffff: baz,\
              \n);\n\
              \na {\
-             \n  name: map-get($map, purple) == foo;\
-             \n  func: map-get($map, rgba(1,2,3,1)) == bar;\
-             \n  hex: map-get($map, #ffffff) == baz;\
+             \n  name: map.get($map, purple) == foo;\
+             \n  func: map.get($map, rgba(1,2,3,1)) == bar;\
+             \n  hex: map.get($map, #ffffff) == baz;\
              \n}\n"),
         "a {\
          \n  name: true;\

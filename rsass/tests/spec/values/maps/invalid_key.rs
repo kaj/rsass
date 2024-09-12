@@ -9,12 +9,15 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        runner().err("$id: inspect((a,b:c)...)\n"),
+        runner().err(
+            "@use \"sass:meta\";\n\
+             \n$id: meta.inspect((a,b:c)...)\n"
+        ),
         "Error: expected \")\".\
          \n  ,\
-         \n1 | $id: inspect((a,b:c)...)\
-         \n  |                  ^\
+         \n3 | $id: meta.inspect((a,b:c)...)\
+         \n  |                       ^\
          \n  \'\
-         \n  input.scss 1:18  root stylesheet",
+         \n  input.scss 3:23  root stylesheet",
     );
 }

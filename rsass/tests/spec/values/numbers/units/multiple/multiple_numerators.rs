@@ -8,8 +8,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("a {\
-             \n  b: inspect(1px * 1rad);\
+        runner().ok("@use \"sass:meta\";\
+             \na {\
+             \n  b: meta.inspect(1px * 1rad);\
              \n}\n"),
         "a {\
          \n  b: calc(1px * 1rad);\

@@ -13,14 +13,14 @@ fn runner() -> crate::TestRunner {
 fn empty() {
     let runner = runner().with_cwd("empty");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Expected expression.\
          \n  ,\
          \n2 |   x: ();\
          \n  |       ^\
          \n  \'\
-         \n  plain.css 2:7   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:7   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }
 #[test]
@@ -28,13 +28,13 @@ fn empty() {
 fn empty_comma() {
     let runner = runner().with_cwd("empty_comma");
     assert_eq!(
-        runner.err("@import \'plain\'"),
+        runner.err("@use \'plain\'"),
         "Error: Expected expression.\
          \n  ,\
          \n2 |   x: (,);\
          \n  |       ^\
          \n  \'\
-         \n  plain.css 2:7   @import\
-         \n  input.scss 1:9  root stylesheet",
+         \n  plain.css 2:7   @use\
+         \n  input.scss 1:1  root stylesheet",
     );
 }

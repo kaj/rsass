@@ -8,13 +8,14 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$flow: left;\n\
+        runner().ok("@use \"sass:map\";\
+             \n$flow: left;\n\
              \n$map: (\
              \n  margin-#{$flow}: 3em,\
              \n  foo: bar,\
              \n);\n\
              \n.test {\
-             \n  margin-left: map-get($map, margin-left);\
+             \n  margin-left: map.get($map, margin-left);\
              \n}\n"),
         ".test {\
          \n  margin-left: 3em;\

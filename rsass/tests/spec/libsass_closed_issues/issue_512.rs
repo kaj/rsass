@@ -8,10 +8,12 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$list: a b c;\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:meta\";\
+             \n$list: a b c;\
              \n.css {\
-             \n  debug: index($list, a);\n\
-             \n  @if type-of(index($list, 2)) == \"null\" {\
+             \n  debug: list.index($list, a);\n\
+             \n  @if meta.type-of(list.index($list, 2)) == \"null\" {\
              \n    debug: foo;\
              \n  }\
              \n}\n"),

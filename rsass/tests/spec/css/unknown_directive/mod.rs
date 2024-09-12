@@ -5,6 +5,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("unknown_directive")
 }
 
+mod comment;
+
 mod error;
 
 mod name_interpolation;

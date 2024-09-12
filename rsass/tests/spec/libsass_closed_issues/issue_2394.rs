@@ -9,8 +9,10 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().ok(
-            "@mixin brokenTest($color: red, $variableArguments...) {\r\
-             \n  $width: map-get(keywords($variableArguments), width);\r\
+            "@use \"sass:map\";\
+             \n@use \"sass:meta\";\
+             \n@mixin brokenTest($color: red, $variableArguments...) {\r\
+             \n  $width: map.get(meta.keywords($variableArguments), width);\r\
              \n  a {\r\
              \n    width: $width;\r\
              \n    color: $color;\r\
@@ -18,8 +20,8 @@ fn test() {
              \n}\r\
              \n\r\
              \n@mixin workingTest($variableArguments...) {\r\
-             \n  $width: map-get(keywords($variableArguments), width);\r\
-             \n  $color: map-get(keywords($variableArguments), color);\r\
+             \n  $width: map.get(meta.keywords($variableArguments), width);\r\
+             \n  $color: map.get(meta.keywords($variableArguments), color);\r\
              \n  a {\r\
              \n    width: $width;\r\
              \n    color: $color;\r\

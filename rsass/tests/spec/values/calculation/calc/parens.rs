@@ -87,7 +87,8 @@ mod var {
 #[test]
 fn variable() {
     assert_eq!(
-        runner().ok("$c: unquote(\"1 + 2\");\
+        runner().ok("@use \"sass:string\";\
+             \n$c: string.unquote(\"1 + 2\");\
              \na {b: calc(($c))}\n"),
         "a {\
          \n  b: calc((1 + 2));\

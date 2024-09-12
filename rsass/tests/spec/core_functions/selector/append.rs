@@ -12,7 +12,8 @@ mod classes {
     #[test]
     fn double() {
         assert_eq!(
-            runner().ok("a {b: selector-append(\".c, .d\", \".e, .f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(\".c, .d\", \".e, .f\")}\n"),
             "a {\
          \n  b: .c.e, .c.f, .d.e, .d.f;\
          \n}\n"
@@ -21,7 +22,8 @@ mod classes {
     #[test]
     fn single() {
         assert_eq!(
-            runner().ok("a {b: selector-append(\".c\", \".d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(\".c\", \".d\")}\n"),
             "a {\
          \n  b: .c.d;\
          \n}\n"
@@ -35,7 +37,8 @@ mod combinator {
     #[test]
     fn final_trailing() {
         assert_eq!(
-            runner().ok("a {b: selector-append(\"c\", \"d ~\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(\"c\", \"d ~\")}\n"),
             "a {\
          \n  b: cd ~;\
          \n}\n"
@@ -44,7 +47,8 @@ mod combinator {
     #[test]
     fn initial_leading() {
         assert_eq!(
-            runner().ok("a {b: selector-append(\"> c\", \"d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(\"> c\", \"d\")}\n"),
             "a {\
          \n  b: > cd;\
          \n}\n"
@@ -57,7 +61,8 @@ mod combinator {
         #[test]
         fn final_trailing() {
             assert_eq!(
-                runner().ok("a {b: selector-append(\"c\", \"d + >\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(\"c\", \"d + >\")}\n"),
                 "a {\
          \n  b: cd + >;\
          \n}\n"
@@ -66,7 +71,8 @@ mod combinator {
         #[test]
         fn initial_leading() {
             assert_eq!(
-                runner().ok("a {b: selector-append(\"~ ~ c\", \"d\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(\"~ ~ c\", \"d\")}\n"),
                 "a {\
          \n  b: ~ ~ cd;\
          \n}\n"
@@ -75,7 +81,8 @@ mod combinator {
         #[test]
         fn middle() {
             assert_eq!(
-                runner().ok("a {b: selector-append(\"c > > d\", \"e\")}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(\"c > > d\", \"e\")}\n"),
                 "a {\
          \n  b: c > > de;\
          \n}\n"
@@ -94,26 +101,31 @@ mod error {
         #[test]
         fn leading() {
             assert_eq!(
-                runner().err("a {b: selector-append(\".c\", \"> .d\")}\n"),
+                runner().err(
+                    "@use \"sass:selector\";\
+             \na {b: selector.append(\".c\", \"> .d\")}\n"
+                ),
                 "Error: Can\'t append > .d to .c.\
          \n  ,\
-         \n1 | a {b: selector-append(\".c\", \"> .d\")}\
+         \n2 | a {b: selector.append(\".c\", \"> .d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
         fn only() {
             assert_eq!(
-                runner()
-                    .err("a {b: selector-append(\".c\", \">\", \".d\")}\n"),
+                runner().err(
+                    "@use \"sass:selector\";\
+             \na {b: selector.append(\".c\", \">\", \".d\")}\n"
+                ),
                 "Error: Can\'t append > to .c.\
          \n  ,\
-         \n1 | a {b: selector-append(\".c\", \">\", \".d\")}\
+         \n2 | a {b: selector.append(\".c\", \">\", \".d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -121,7 +133,8 @@ mod error {
         fn trailing() {
             assert_eq!(
         runner().err(
-            "a {b: selector-append(\".c ~\", \".d\")}\n"
+            "@use \"sass:selector\";\
+             \na {b: selector.append(\".c ~\", \".d\")}\n"
         ),
         "Error: Selector \".c ~\" can\'t be used as a parent in a compound selector.\
          \n  ,\
@@ -129,7 +142,7 @@ mod error {
          \n  | ^^^^ outer selector\
          \n  \'\
          \n  ,--> input.scss\
-         \n1 | a {b: selector-append(\".c ~\", \".d\")}\
+         \n2 | a {b: selector.append(\".c ~\", \".d\")}\
          \n  |       ============================= parent selector\
          \n  \'\
          \n  - 1:1  root stylesheet",
@@ -139,7 +152,10 @@ mod error {
     #[test]
     fn invalid() {
         assert_eq!(
-            runner().err("a {b: selector-append(\"[c\", \"d\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.append(\"[c\", \"d\")}\n"
+            ),
             "Error: expected more input.\
          \n  ,\
          \n1 | [c\
@@ -147,28 +163,34 @@ mod error {
          \n  \'\
          \n  - 1:3  root stylesheet\
          \n  ,\
-         \n1 | a {b: selector-append(\"[c\", \"d\")}\
+         \n2 | a {b: selector.append(\"[c\", \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn namespace() {
         assert_eq!(
-            runner().err("a {b: selector-append(\"c\", \"|d\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.append(\"c\", \"|d\")}\n"
+            ),
             "Error: Can\'t append |d to c.\
          \n  ,\
-         \n1 | a {b: selector-append(\"c\", \"|d\")}\
+         \n2 | a {b: selector.append(\"c\", \"|d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn parent() {
         assert_eq!(
-            runner().err("a {b: selector-append(\".c\", \"&\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.append(\".c\", \"&\")}\n"
+            ),
             "Error: Parent selectors aren\'t allowed here.\
          \n  ,\
          \n1 | &\
@@ -176,47 +198,71 @@ mod error {
          \n  \'\
          \n  - 1:1  root stylesheet\
          \n  ,\
-         \n1 | a {b: selector-append(\".c\", \"&\")}\
+         \n2 | a {b: selector.append(\".c\", \"&\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: selector-append()}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.append()}\n"
+            ),
             "Error: $selectors: At least one selector must be passed.\
          \n  ,\
-         \n1 | a {b: selector-append()}\
+         \n2 | a {b: selector.append()}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: selector-append(\"c\", 1)}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.append(\"c\", 1)}\n"
+            ),
             "Error: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
-         \n1 | a {b: selector-append(\"c\", 1)}\
+         \n2 | a {b: selector.append(\"c\", 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn universal() {
         assert_eq!(
-            runner().err("a {b: selector-append(\".c\", \"*\")}\n"),
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.append(\".c\", \"*\")}\n"
+            ),
             "Error: Can\'t append * to .c.\
          \n  ,\
-         \n1 | a {b: selector-append(\".c\", \"*\")}\
+         \n2 | a {b: selector.append(\".c\", \"*\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
+        );
+    }
+    #[test]
+    fn wrong_name() {
+        assert_eq!(
+            runner().err(
+                "@use \"sass:selector\";\
+             \na {b: selector.selector-append(c, d)}\n"
+            ),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: selector.selector-append(c, d)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
@@ -231,7 +277,8 @@ mod format {
         #[test]
         fn initial() {
             assert_eq!(
-                runner().ok("a {b: selector-append((c, d e), f)}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append((c, d e), f)}\n"),
                 "a {\
          \n  b: cf, d ef;\
          \n}\n"
@@ -240,7 +287,8 @@ mod format {
         #[test]
         fn later() {
             assert_eq!(
-                runner().ok("a {b: selector-append(c, (d, e f))}\n"),
+                runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(c, (d, e f))}\n"),
                 "a {\
          \n  b: cd, ce f;\
          \n}\n"
@@ -250,7 +298,8 @@ mod format {
     #[test]
     fn output() {
         assert_eq!(
-            runner().ok("$result: selector-append(\"c d, e f\", \"g\");\
+            runner().ok("@use \"sass:selector\";\
+             \n$result: selector.append(\"c d, e f\", \"g\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (\"c\" \"dg\", \"e\" \"fg\");\
@@ -265,7 +314,8 @@ mod format {
 #[test]
 fn many_args() {
     assert_eq!(
-        runner().ok("a {b: selector-append(\".c\", \".d\", \".e\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(\".c\", \".d\", \".e\")}\n"),
         "a {\
          \n  b: .c.d.e;\
          \n}\n"
@@ -274,7 +324,8 @@ fn many_args() {
 #[test]
 fn one_arg() {
     assert_eq!(
-        runner().ok("a {b: selector-append(\".c.d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(\".c.d\")}\n"),
         "a {\
          \n  b: .c.d;\
          \n}\n"
@@ -287,7 +338,8 @@ mod suffix {
     #[test]
     fn descendant() {
         assert_eq!(
-            runner().ok("a {b: selector-append(\"c d\", \"e f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(\"c d\", \"e f\")}\n"),
             "a {\
          \n  b: c de f;\
          \n}\n"
@@ -296,7 +348,8 @@ mod suffix {
     #[test]
     fn multiple() {
         assert_eq!(
-            runner().ok("a {b: selector-append(\".c, .d\", \"e, f\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(\".c, .d\", \"e, f\")}\n"),
             "a {\
          \n  b: .ce, .cf, .de, .df;\
          \n}\n"
@@ -305,7 +358,8 @@ mod suffix {
     #[test]
     fn single() {
         assert_eq!(
-            runner().ok("a {b: selector-append(\".c\", \"d\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.append(\".c\", \"d\")}\n"),
             "a {\
          \n  b: .cd;\
          \n}\n"

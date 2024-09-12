@@ -58,10 +58,12 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok(
-            "@import \"lib/_bourbon.scss\";\n\
+            "@use \"sass:color\";\
+             \n@import \"lib/_bourbon.scss\";\n\
              \nbox:hover {\
              \n  @include animation-name(scale, slide);\
              \n  @include animation-duration(2s);\
@@ -79,7 +81,7 @@ fn test() {
              \n  @include background-image(url(\"/images/a.png\"), linear-gradient(white 0, yellow 50%, transparent 50%));\n\
              \n  // Multiple linear-gradients - Demo\
              \n  @include background-image(linear-gradient(hsla(0, 100%, 100%, 0.25) 0%, hsla(0, 100%, 100%, 0.08) 50%, transparent 50%),\
-             \n                             linear-gradient(#4e7ba3, darken(#4e7ba4, 10%)));\n\
+             \n                             linear-gradient(#4e7ba3, color.adjust(#4e7ba4, $lightness: -10%)));\n\
              \n  // NOT SUPPORTED - Multiple image assets with shorthand notation\
              \n  @include background-image(url(\"/images/a.png\") center no-repeat, url(\"images/b.png\") left repeat);\
              \n}\n"
@@ -112,8 +114,8 @@ fn test() {
          \n  background-image: url(\"/images/a.png\"), url(\"images/b.png\");\
          \n  background-image: url(\"/images/a.png\"), -webkit-linear-gradient(white 0, yellow 50%, transparent 50%);\
          \n  background-image: url(\"/images/a.png\"), linear-gradient( white 0, yellow 50%, transparent 50%);\
-         \n  background-image: -webkit-linear-gradient(hsla(0, 100%, 100%, 0.25) 0%, hsla(0, 100%, 100%, 0.08) 50%, transparent 50%), -webkit-linear-gradient(#4e7ba3, #3e6181);\
-         \n  background-image: linear-gradient( hsla(0, 100%, 100%, 0.25) 0%, hsla(0, 100%, 100%, 0.08) 50%, transparent 50%), linear-gradient( #4e7ba3, #3e6181);\
+         \n  background-image: -webkit-linear-gradient(hsla(0, 100%, 100%, 0.25) 0%, hsla(0, 100%, 100%, 0.08) 50%, transparent 50%), -webkit-linear-gradient(#4e7ba3, rgb(61.5619834711, 97.0785123967, 129.4380165289));\
+         \n  background-image: linear-gradient( hsla(0, 100%, 100%, 0.25) 0%, hsla(0, 100%, 100%, 0.08) 50%, transparent 50%), linear-gradient( #4e7ba3, rgb(61.5619834711, 97.0785123967, 129.4380165289));\
          \n  background-image: -webkit-url(\"/images/a.png\")-gradient(center), -webkit-url(\"images/b.png\")-gradient(left);\
          \n  background-image: url(\"/images/a.png\")-gradient( center), url(\"images/b.png\")-gradient( left);\
          \n}\n"

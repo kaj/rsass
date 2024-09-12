@@ -12,7 +12,8 @@ mod complex {
     #[test]
     fn adjacent_sibling() {
         assert_eq!(
-            runner().ok("$result: selector-parse(\"b + c + d\");\
+            runner().ok("@use \"sass:selector\";\
+             \n$result: selector.parse(\"b + c + d\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (b \"+\" c \"+\" d,);\
@@ -30,7 +31,8 @@ mod complex {
         #[test]
         fn leading() {
             assert_eq!(
-                runner().ok("$result: selector-parse(\"> b\");\
+                runner().ok("@use \"sass:selector\";\
+             \n$result: selector.parse(\"> b\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (\">\" b,);\
@@ -48,7 +50,8 @@ mod complex {
             #[test]
             fn middle() {
                 assert_eq!(
-                    runner().ok("$result: selector-parse(\"b + ~ c\");\
+                    runner().ok("@use \"sass:selector\";\
+             \n$result: selector.parse(\"b + ~ c\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (b \"+\" \"~\" c,);\
@@ -62,7 +65,8 @@ mod complex {
             #[test]
             fn trailing() {
                 assert_eq!(
-                    runner().ok("$result: selector-parse(\"b ~~\");\
+                    runner().ok("@use \"sass:selector\";\
+             \n$result: selector.parse(\"b ~~\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (b \"~\" \"~\",);\
@@ -77,10 +81,12 @@ mod complex {
         #[test]
         fn only() {
             assert_eq!(
-                runner().ok("$result: selector-parse(\">\");\
+                runner().ok("@use \"sass:list\";\
+             \n@use \"sass:selector\";\
+             \n$result: selector.parse(\">\");\
              \na {\
              \n  result: $result;\
-             \n  structure: $result == (append((), \">\"),);\
+             \n  structure: $result == (list.append((), \">\"),);\
              \n}\n"),
                 "a {\
          \n  result: >;\
@@ -91,7 +97,8 @@ mod complex {
         #[test]
         fn trailing() {
             assert_eq!(
-                runner().ok("$result: selector-parse(\"b +\");\
+                runner().ok("@use \"sass:selector\";\
+             \n$result: selector.parse(\"b +\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (b \"+\",);\
@@ -106,7 +113,8 @@ mod complex {
     #[test]
     fn child() {
         assert_eq!(
-            runner().ok("$result: selector-parse(\"b > c > d\");\
+            runner().ok("@use \"sass:selector\";\
+             \n$result: selector.parse(\"b > c > d\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (b \">\" c \">\" d,);\
@@ -120,7 +128,8 @@ mod complex {
     #[test]
     fn descendant() {
         assert_eq!(
-            runner().ok("$result: selector-parse(\"b c d\");\
+            runner().ok("@use \"sass:selector\";\
+             \n$result: selector.parse(\"b c d\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (b c d,);\
@@ -134,7 +143,8 @@ mod complex {
     #[test]
     fn sibling() {
         assert_eq!(
-            runner().ok("$result: selector-parse(\"b ~ c ~ d\");\
+            runner().ok("@use \"sass:selector\";\
+             \n$result: selector.parse(\"b ~ c ~ d\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (b \"~\" c \"~\" d,);\
@@ -149,10 +159,12 @@ mod complex {
 #[test]
 fn compound() {
     assert_eq!(
-        runner().ok("$result: selector-parse(\"b.c:d\");\
+        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:selector\";\
+             \n$result: selector.parse(\"b.c:d\");\
              \na {\
              \n  result: $result;\
-             \n  structure: $result == (append((), \"b.c:d\"),);\
+             \n  structure: $result == (list.append((), \"b.c:d\"),);\
              \n}\n"),
         "a {\
          \n  result: b.c:d;\
@@ -163,7 +175,8 @@ fn compound() {
 #[test]
 fn list() {
     assert_eq!(
-        runner().ok("$result: selector-parse(\"b c, d e, f g\");\
+        runner().ok("@use \"sass:selector\";\
+             \n$result: selector.parse(\"b c, d e, f g\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (b c, d e, f g);\
@@ -181,7 +194,8 @@ mod simple {
     #[test]
     fn attribute() {
         assert_eq!(
-            runner().ok("a {b: selector-parse(\"[c^=d]\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\"[c^=d]\")}\n"),
             "a {\
          \n  b: [c^=d];\
          \n}\n"
@@ -190,7 +204,8 @@ mod simple {
     #[test]
     fn class() {
         assert_eq!(
-            runner().ok("a {b: selector-parse(\".c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\".c\")}\n"),
             "a {\
          \n  b: .c;\
          \n}\n"
@@ -199,7 +214,8 @@ mod simple {
     #[test]
     fn id() {
         assert_eq!(
-            runner().ok("a {b: selector-parse(\"#c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\"#c\")}\n"),
             "a {\
          \n  b: #c;\
          \n}\n"
@@ -208,7 +224,8 @@ mod simple {
     #[test]
     fn placeholder() {
         assert_eq!(
-            runner().ok("a {b: selector-parse(\"%c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\"%c\")}\n"),
             "a {\
          \n  b: %c;\
          \n}\n"
@@ -225,7 +242,8 @@ mod simple {
             #[test]
             fn arg() {
                 assert_eq!(
-                    runner().ok("a {b: selector-parse(\":c(@#$)\")}\n"),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\":c(@#$)\")}\n"),
                     "a {\
          \n  b: :c(@#$);\
          \n}\n"
@@ -235,10 +253,12 @@ mod simple {
             fn combined_arg() {
                 assert_eq!(
         runner().ok(
-            "$result: selector-parse(\":nth-child(2n+1 of b, c)\");\
+            "@use \"sass:list\";\
+             \n@use \"sass:selector\";\
+             \n$result: selector.parse(\":nth-child(2n+1 of b, c)\");\
              \na {\
              \n  result: $result;\
-             \n  structure: $result == (append((), \":nth-child(2n+1 of b, c)\"),);\
+             \n  structure: $result == (list.append((), \":nth-child(2n+1 of b, c)\"),);\
              \n}\n"
         ),
         "a {\
@@ -250,7 +270,8 @@ mod simple {
             #[test]
             fn no_arg() {
                 assert_eq!(
-                    runner().ok("a {b: selector-parse(\":c\")}\n"),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\":c\")}\n"),
                     "a {\
          \n  b: :c;\
          \n}\n"
@@ -263,13 +284,13 @@ mod simple {
                 #[test]
                 fn is() {
                     assert_eq!(
-                        runner().ok(
-                            "$result: selector-parse(\":is(b, c)\");\
+                        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:selector\";\
+             \n$result: selector.parse(\":is(b, c)\");\
              \na {\
              \n  result: $result;\
-             \n  structure: $result == (append((), \":is(b, c)\"),);\
-             \n}\n"
-                        ),
+             \n  structure: $result == (list.append((), \":is(b, c)\"),);\
+             \n}\n"),
                         "a {\
          \n  result: :is(b, c);\
          \n  structure: true;\
@@ -279,29 +300,31 @@ mod simple {
                 #[test]
                 fn matches() {
                     assert_eq!(
-                        runner().ok(
-                            "$result: selector-parse(\":matches(b, c)\");\
+        runner().ok(
+            "@use \"sass:list\";\
+             \n@use \"sass:selector\";\
+             \n$result: selector.parse(\":matches(b, c)\");\
              \na {\
              \n  result: $result;\
-             \n  structure: $result == (append((), \":matches(b, c)\"),);\
+             \n  structure: $result == (list.append((), \":matches(b, c)\"),);\
              \n}\n"
-                        ),
-                        "a {\
+        ),
+        "a {\
          \n  result: :matches(b, c);\
          \n  structure: true;\
          \n}\n"
-                    );
+    );
                 }
                 #[test]
                 fn test_where() {
                     assert_eq!(
-                        runner().ok(
-                            "$result: selector-parse(\":where(b, c)\");\
+                        runner().ok("@use \"sass:list\";\
+             \n@use \"sass:selector\";\
+             \n$result: selector.parse(\":where(b, c)\");\
              \na {\
              \n  result: $result;\
-             \n  structure: $result == (append((), \":where(b, c)\"),);\
-             \n}\n"
-                        ),
+             \n  structure: $result == (list.append((), \":where(b, c)\"),);\
+             \n}\n"),
                         "a {\
          \n  result: :where(b, c);\
          \n  structure: true;\
@@ -317,7 +340,8 @@ mod simple {
             #[test]
             fn arg() {
                 assert_eq!(
-                    runner().ok("a {b: selector-parse(\"::c(@#$)\")}\n"),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\"::c(@#$)\")}\n"),
                     "a {\
          \n  b: ::c(@#$);\
          \n}\n"
@@ -326,7 +350,8 @@ mod simple {
             #[test]
             fn no_arg() {
                 assert_eq!(
-                    runner().ok("a {b: selector-parse(\"::c\")}\n"),
+                    runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\"::c\")}\n"),
                     "a {\
          \n  b: ::c;\
          \n}\n"
@@ -335,25 +360,28 @@ mod simple {
             #[test]
             fn selector_arg() {
                 assert_eq!(
-                    runner().ok(
-                        "$result: selector-parse(\"::slotted(b, c)\");\
+        runner().ok(
+            "@use \"sass:list\";\
+             \n@use \"sass:selector\";\
+             \n$result: selector.parse(\"::slotted(b, c)\");\
              \na {\
              \n  result: $result;\
-             \n  structure: $result == (append((), \"::slotted(b, c)\"),);\
+             \n  structure: $result == (list.append((), \"::slotted(b, c)\"),);\
              \n}\n"
-                    ),
-                    "a {\
+        ),
+        "a {\
          \n  result: ::slotted(b, c);\
          \n  structure: true;\
          \n}\n"
-                );
+    );
             }
         }
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().ok("a {b: selector-parse(\"c\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\"c\")}\n"),
             "a {\
          \n  b: c;\
          \n}\n"
@@ -362,7 +390,8 @@ mod simple {
     #[test]
     fn universal() {
         assert_eq!(
-            runner().ok("a {b: selector-parse(\"*\")}\n"),
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.parse(\"*\")}\n"),
             "a {\
          \n  b: *;\
          \n}\n"

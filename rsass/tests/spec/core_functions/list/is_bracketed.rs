@@ -12,7 +12,8 @@ mod bracketed {
     #[test]
     fn empty() {
         assert_eq!(
-            runner().ok("a {b: is-bracketed([])}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.is-bracketed([])}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -21,7 +22,8 @@ mod bracketed {
     #[test]
     fn multi() {
         assert_eq!(
-            runner().ok("a {b: is-bracketed([1, 2, 3])}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.is-bracketed([1, 2, 3])}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -30,7 +32,8 @@ mod bracketed {
     #[test]
     fn single() {
         assert_eq!(
-            runner().ok("a {b: is-bracketed([1])}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.is-bracketed([1])}\n"),
             "a {\
          \n  b: true;\
          \n}\n"
@@ -44,33 +47,39 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: is-bracketed()}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.is-bracketed()}\n"
+            ),
             "Error: Missing argument $list.\
          \n  ,--> input.scss\
-         \n1 | a {b: is-bracketed()}\
-         \n  |       ^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: list.is-bracketed()}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:list\
          \n1 | @function is-bracketed($list) {\
          \n  |           =================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: is-bracketed(a b, c d)}\n"),
+            runner().err(
+                "@use \"sass:list\";\
+             \na {b: list.is-bracketed(a b, c d)}\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: is-bracketed(a b, c d)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n2 | a {b: list.is-bracketed(a b, c d)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:list\
          \n1 | @function is-bracketed($list) {\
          \n  |           =================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
@@ -81,7 +90,8 @@ mod unbracketed {
     #[test]
     fn empty() {
         assert_eq!(
-            runner().ok("a {b: is-bracketed(())}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.is-bracketed(())}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -90,7 +100,8 @@ mod unbracketed {
     #[test]
     fn map() {
         assert_eq!(
-            runner().ok("a {b: is-bracketed((c: d, e: f, g: h))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.is-bracketed((c: d, e: f, g: h))}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -99,7 +110,8 @@ mod unbracketed {
     #[test]
     fn multi() {
         assert_eq!(
-            runner().ok("a {b: is-bracketed(1 2 3)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.is-bracketed(1 2 3)}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -108,7 +120,8 @@ mod unbracketed {
     #[test]
     fn non_list() {
         assert_eq!(
-            runner().ok("a {b: is-bracketed(1)}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.is-bracketed(1)}\n"),
             "a {\
          \n  b: false;\
          \n}\n"
@@ -117,7 +130,8 @@ mod unbracketed {
     #[test]
     fn single() {
         assert_eq!(
-            runner().ok("a {b: is-bracketed((1,))}\n"),
+            runner().ok("@use \"sass:list\";\
+             \na {b: list.is-bracketed((1,))}\n"),
             "a {\
          \n  b: false;\
          \n}\n"

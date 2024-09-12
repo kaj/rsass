@@ -12,20 +12,21 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err(
-            "@mixin import-google-fonts() {\r\
+            "@use \"sass:string\";\
+             \n@mixin import-google-fonts() {\r\
              \n  @import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\r\
              \n}\r\
              \nfoo {\r\
-             \n  $family: unquote(\"Droid+Sans\");\r\
+             \n  $family: string.unquote(\"Droid+Sans\");\r\
              \n  @include import-google-fonts();\r\
              \n}"
         ),
         "Error: Undefined variable.\
          \n  ,\
-         \n2 |   @import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\
+         \n3 |   @import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\
          \n  |                                                         ^^^^^^^\
          \n  \'\
-         \n  input.scss 2:57  import-google-fonts()\
-         \n  input.scss 6:3   root stylesheet",
+         \n  input.scss 3:57  import-google-fonts()\
+         \n  input.scss 7:3   root stylesheet",
     );
 }

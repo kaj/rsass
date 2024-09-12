@@ -8,13 +8,13 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$map: (\r\
-             \n  red: \'bar\',\r\
-             \n  #{red}: \'baz\',\r\
-             \n);\r\
-             \n\r\
-             \n.foo {\r\
-             \n  content: inspect($map);\r\
+        runner().ok("@use \"sass:meta\";\n\
+             \n$map: (\
+             \n  red: \'bar\',\
+             \n  #{red}: \'baz\',\
+             \n);\n\
+             \n.foo {\
+             \n  content: meta.inspect($map);\
              \n}"),
         ".foo {\
          \n  content: (red: \"bar\", red: \"baz\");\

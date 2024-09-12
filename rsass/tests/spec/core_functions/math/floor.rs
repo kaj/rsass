@@ -12,52 +12,62 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: floor()}\n"),
+            runner().err(
+                "@use \"sass:math\";\
+             \na {b: math.floor()}\n"
+            ),
             "Error: Missing argument $number.\
          \n  ,--> input.scss\
-         \n1 | a {b: floor()}\
-         \n  |       ^^^^^^^ invocation\
+         \n2 | a {b: math.floor()}\
+         \n  |       ^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:math\
          \n1 | @function floor($number) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-            runner().err("a {b: floor(1, 2)}\n\n"),
+            runner().err(
+                "@use \"sass:math\";\
+             \na {b: math.floor(1, 2)}\n\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
-         \n1 | a {b: floor(1, 2)}\
-         \n  |       ^^^^^^^^^^^ invocation\
+         \n2 | a {b: math.floor(1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
          \n  ,--> sass:math\
          \n1 | @function floor($number) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: floor(c)}\n"),
+            runner().err(
+                "@use \"sass:math\";\
+             \na {b: math.floor(c)}\n"
+            ),
             "Error: $number: c is not a number.\
          \n  ,\
-         \n1 | a {b: floor(c)}\
-         \n  |       ^^^^^^^^\
+         \n2 | a {b: math.floor(c)}\
+         \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
 #[test]
 fn high() {
     assert_eq!(
-        runner().ok("a {b: floor(2.999999999999999)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.floor(2.999999999999999)}\n"),
         "a {\
          \n  b: 2;\
          \n}\n"
@@ -66,7 +76,8 @@ fn high() {
 #[test]
 fn integer() {
     assert_eq!(
-        runner().ok("a {b: floor(1)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.floor(1)}\n"),
         "a {\
          \n  b: 1;\
          \n}\n"
@@ -75,7 +86,8 @@ fn integer() {
 #[test]
 fn low() {
     assert_eq!(
-        runner().ok("a {b: floor(6.1)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.floor(6.1)}\n"),
         "a {\
          \n  b: 6;\
          \n}\n"
@@ -84,7 +96,8 @@ fn low() {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: floor($number: 1.6)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.floor($number: 1.6)}\n"),
         "a {\
          \n  b: 1;\
          \n}\n"
@@ -93,7 +106,8 @@ fn named() {
 #[test]
 fn negative() {
     assert_eq!(
-        runner().ok("a {b: floor(-7.2)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.floor(-7.2)}\n"),
         "a {\
          \n  b: -8;\
          \n}\n"
@@ -102,7 +116,8 @@ fn negative() {
 #[test]
 fn preserves_units() {
     assert_eq!(
-        runner().ok("a {b: floor(7px / 4em) * 1em}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.floor(7px / 4em) * 1em}\n"),
         "a {\
          \n  b: 1px;\
          \n}\n"

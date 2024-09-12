@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn three_level() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\".c .d .e\", \".f .g .h\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c .d .e\", \".f .g .h\")}\n"),
         "a {\
          \n  b: .c .d .f .g .e.h, .f .g .c .d .e.h;\
          \n}\n"
@@ -18,7 +19,8 @@ fn three_level() {
 #[test]
 fn two_level() {
     assert_eq!(
-        runner().ok("a {b: selector-unify(\".c .d\", \".e .f\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.unify(\".c .d\", \".e .f\")}\n"),
         "a {\
          \n  b: .c .e .d.f, .e .c .d.f;\
          \n}\n"

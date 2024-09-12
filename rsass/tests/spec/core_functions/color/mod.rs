@@ -5,6 +5,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("color")
 }
 
+mod adjust;
+
 mod adjust_color;
 
 mod adjust_hue;
@@ -15,7 +17,11 @@ mod blackness;
 
 mod blue;
 
-mod change_color;
+mod change;
+
+mod channel;
+
+mod color;
 
 mod complement;
 
@@ -43,11 +49,27 @@ mod ie_hex_str;
 
 mod invert;
 
+mod is_in_gamut;
+
+mod is_legacy;
+
+mod is_missing;
+
+mod is_powerless;
+
+mod lab;
+
+mod lch;
+
 mod lighten;
 
 mod lightness;
 
 mod mix;
+
+mod oklab;
+
+mod oklch;
 
 mod red;
 
@@ -55,10 +77,18 @@ mod rgb;
 
 mod rgba;
 
+mod same;
+
 mod saturate;
 
 mod saturation;
 
-mod scale_color;
+mod scale;
+
+mod space;
+
+mod to_gamut;
+
+mod to_space;
 
 mod whiteness;

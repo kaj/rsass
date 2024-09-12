@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn extender() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\".c\", \".c\", \">\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\".c\", \".c\", \">\")}\n"),
         "a {\
          \n  b: .c, >;\
          \n}\n"
@@ -18,7 +19,8 @@ fn extender() {
 #[test]
 fn selector() {
     assert_eq!(
-        runner().ok("a {b: selector-extend(\"+\", \".c\", \".d\")}\n"),
+        runner().ok("@use \"sass:selector\";\
+             \na {b: selector.extend(\"+\", \".c\", \".d\")}\n"),
         "a {\
          \n  b: +;\
          \n}\n"

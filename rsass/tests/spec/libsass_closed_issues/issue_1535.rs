@@ -9,8 +9,9 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok("foo {\
-             \n    test: type-of(1--em);\
+        runner().ok("@use \"sass:meta\";\
+             \nfoo {\
+             \n    test: meta.type-of(1--em);\
              \n    test: (1--em-2--em);\
              \n    test: (1--em- 2--em);\
              \n    test: (1--em -2--em);\

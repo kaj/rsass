@@ -17,6 +17,11 @@ project adheres to
   Most of the api to those types are private.
   Some will probably be made public after some stabilization period.
 
+### Other changes:
+
+* Updated sass-spec test suite to 2024-09-13.
+
+
 ## Release 0.28.10
 
 Released 2024-05-19.

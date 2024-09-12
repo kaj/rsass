@@ -1,0 +1,290 @@
+//! Tests auto-converted from "sass-spec/spec/css/style_rule.hrx"
+
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("style_rule")
+}
+
+mod comment {
+    #[allow(unused)]
+    use super::runner;
+
+    mod after_selector {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn loud() {
+            assert_eq!(
+                runner().ok("a /**/ {b: c}\n"),
+                "a {\
+         \n  b: c;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn silent() {
+            assert_eq!(
+                runner().ok("a //\
+             \n  {b: c}\n"),
+                "a {\
+         \n  b: c;\
+         \n}\n"
+            );
+        }
+    }
+}
+mod declaration {
+    #[allow(unused)]
+    use super::runner;
+
+    mod comment {
+        #[allow(unused)]
+        use super::runner;
+
+        mod after_colon {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn loud() {
+                assert_eq!(
+                    runner().ok("a {b: /**/ c}\n"),
+                    "a {\
+         \n  b: c;\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn silent() {
+                assert_eq!(
+                    runner().ok("a {b: //\
+             \n  c}\n"),
+                    "a {\
+         \n  b: c;\
+         \n}\n"
+                );
+            }
+        }
+        mod after_value {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn loud() {
+                assert_eq!(
+                    runner().ok("a {b: c /**/}\n"),
+                    "a {\
+         \n  b: c;\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn silent() {
+                assert_eq!(
+                    runner().ok("a {b: c //\
+             \n  }\n"),
+                    "a {\
+         \n  b: c;\
+         \n}\n"
+                );
+            }
+        }
+        mod before_colon {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn loud() {
+                assert_eq!(
+                    runner().ok("a {b /**/ : c}\n"),
+                    "a {\
+         \n  b: c;\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn silent() {
+                assert_eq!(
+                    runner().ok("a {b //\
+             \n  : c}\n"),
+                    "a {\
+         \n  b: c;\
+         \n}\n"
+                );
+            }
+        }
+    }
+    mod interleaved {
+        #[allow(unused)]
+        use super::runner;
+
+        mod after_style_rule {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            #[ignore] // unexepected error
+            fn extended_child() {
+                assert_eq!(
+                    runner().ok(".a {\
+             \n  .b {c: d}\
+             \n  e: f;\
+             \n}\n\
+             \n:where(.g) {@extend .b}\n"),
+                    ".a {\
+         \n  e: f;\
+         \n}\
+         \n.a .b, .a :where(.g) {\
+         \n  c: d;\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn extended_parent() {
+                assert_eq!(
+                    runner().ok(".a {\
+             \n  .b {c: d}\
+             \n  e: f;\
+             \n}\n\
+             \n:where(.g) {@extend .a}\n"),
+                    ".a, :where(.g) {\
+         \n  e: f;\
+         \n}\
+         \n.a .b, :where(.g) .b {\
+         \n  c: d;\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn higher_specificity() {
+                assert_eq!(
+                    runner().ok(".a {\
+             \n  .b {c: d}\
+             \n  e: f;\
+             \n}\n"),
+                    ".a {\
+         \n  e: f;\
+         \n}\
+         \n.a .b {\
+         \n  c: d;\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn mixed_specificity_child() {
+                assert_eq!(
+                    runner().ok(".a {\
+             \n  .b, :where(.b) {c: d}\
+             \n  e: f;\
+             \n}\n"),
+                    ".a {\
+         \n  e: f;\
+         \n}\
+         \n.a .b, .a :where(.b) {\
+         \n  c: d;\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn mixed_specificity_parent() {
+                assert_eq!(
+                    runner().ok(".a, :where(.a) {\
+             \n  .b {c: d}\
+             \n  e: f;\
+             \n}\n"),
+                    ".a, :where(.a) {\
+         \n  e: f;\
+         \n}\
+         \n.a .b, :where(.a) .b {\
+         \n  c: d;\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn same_specificity() {
+                assert_eq!(
+                    runner().ok(".a {\
+             \n  :where(.b) {c: d}\
+             \n  e: f;\
+             \n}\n"),
+                    ".a {\
+         \n  e: f;\
+         \n}\
+         \n.a :where(.b) {\
+         \n  c: d;\
+         \n}\n"
+                );
+            }
+        }
+        #[test]
+        fn around_style_rule() {
+            assert_eq!(
+                runner().ok(".a {\
+             \n  b: c;\
+             \n  .d {e: f}\
+             \n  g: h;\
+             \n}\n"),
+                ".a {\
+         \n  b: c;\
+         \n  g: h;\
+         \n}\
+         \n.a .d {\
+         \n  e: f;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn before_style_rule() {
+            assert_eq!(
+                runner().ok(".a {\
+             \n  b: c;\
+             \n  .d {e: f}\
+             \n}\n"),
+                ".a {\
+         \n  b: c;\
+         \n}\
+         \n.a .d {\
+         \n  e: f;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn in_at_rule() {
+            assert_eq!(
+                runner().ok("@a {\
+             \n  .b {\
+             \n    .c {d: e}\
+             \n    f: g;\
+             \n  }\
+             \n}\n"),
+                "@a {\
+         \n  .b {\
+         \n    f: g;\
+         \n  }\
+         \n  .b .c {\
+         \n    d: e;\
+         \n  }\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn in_bubbled_rule() {
+            assert_eq!(
+                runner().ok(".a {\
+             \n  .b {c: d}\
+             \n  @e {f: g}\
+             \n}\n"),
+                ".a .b {\
+         \n  c: d;\
+         \n}\
+         \n@e {\
+         \n  .a {\
+         \n    f: g;\
+         \n  }\
+         \n}\n"
+            );
+        }
+    }
+}

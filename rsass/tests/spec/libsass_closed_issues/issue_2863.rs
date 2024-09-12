@@ -8,15 +8,16 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("$squoted: \"\'dquoted\'\";\
+        runner().ok("@use \"sass:string\";\
+             \n$squoted: \"\'dquoted\'\";\
              \n$dquoted: \"\\\"squoted\\\"\";\n\
              \ntest {\
-             \n    str-slice-single: str-slice( $squoted, 1, 2 );\
-             \n    str-slice-double: str-slice( $dquoted, 1, 2 );\
-             \n    str-index-single: str-index( $squoted, \"q\" );\
-             \n    str-index-double: str-index( $dquoted, \"q\" );\
-             \n    str-insert-single: str-insert( $squoted, \"p\", 2 );\
-             \n    str-insert-double: str-insert( $dquoted, \"p\", 2 );\
+             \n    str-slice-single: string.slice( $squoted, 1, 2 );\
+             \n    str-slice-double: string.slice( $dquoted, 1, 2 );\
+             \n    str-index-single: string.index( $squoted, \"q\" );\
+             \n    str-index-double: string.index( $dquoted, \"q\" );\
+             \n    str-insert-single: string.insert( $squoted, \"p\", 2 );\
+             \n    str-insert-double: string.insert( $dquoted, \"p\", 2 );\
              \n}\n"),
         "test {\
          \n  str-slice-single: \"\'d\";\
