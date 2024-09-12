@@ -1,5 +1,5 @@
 use super::{unnamed, CheckedArg, FunctionMap};
-use crate::css::{CssSelectorSet, LogicalSelector, Value};
+use crate::css::{CssSelectorSet, Selector, Value};
 use crate::value::ListSeparator;
 use crate::Scope;
 
@@ -14,7 +14,7 @@ pub fn create_module() -> Scope {
         let mut s = unnamed(s.get_va::<CssSelectorSet>(name!(selectors)))?
             .into_iter();
         if let Some(base) = s.next() {
-            Ok(s.try_fold(base, |base, s| base.append(s))?.into())
+            Ok(s.try_fold(base, |base, s| base.append(&s))?.into())
         } else {
             Err("At least one selector must be passed.")
                 .named(name!(selectors))
@@ -47,7 +47,7 @@ pub fn create_module() -> Scope {
         Ok(selector.replace(&original, &replacement)?.into())
     });
     def!(f, simple_selectors(selector), |s| {
-        let selector: LogicalSelector = s.get(name!(selector))?;
+        let selector: Selector = s.get(name!(selector))?;
         let result = selector
             .simple_selectors()?
             .into_iter()
@@ -58,7 +58,7 @@ pub fn create_module() -> Scope {
     def!(f, unify(selector1, selector2), |s| {
         let a: CssSelectorSet = s.get(name!(selector1))?;
         let b: CssSelectorSet = s.get(name!(selector2))?;
-        Ok(a.unify(b).into())
+        Ok(a.unify(&b).into())
     });
 
     f

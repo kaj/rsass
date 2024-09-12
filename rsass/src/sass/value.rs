@@ -185,7 +185,9 @@ impl Value {
                     (op, v) => css::Value::UnaryOp(*op, Box::new(v)),
                 }
             }
-            Self::HereSelector => scope.get_selectors().real().into(),
+            Self::HereSelector => {
+                scope.get_selectors().get_backref().clone().into()
+            }
             Self::UnicodeRange(s) => css::Value::UnicodeRange(s.clone()),
         })
     }

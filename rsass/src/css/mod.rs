@@ -19,11 +19,13 @@ pub use self::comment::Comment;
 pub use self::item::{Import, Item};
 pub use self::mediarule::{MediaArgs, MediaRule};
 pub use self::rule::{BodyItem, CustomProperty, Property, Rule};
-pub use self::selectors::{BadSelector, Selector, SelectorPart, Selectors};
+pub use self::selectors::{BadSelector, Selector, SelectorSet};
 pub use self::string::CssString;
 pub use self::value::{InvalidCss, Value, ValueMap, ValueToMapError};
 
-pub(crate) use self::selectors::{
-    CssSelectorSet, LogicalSelector, SelectorCtx,
-};
+pub(crate) use self::selectors::{CssSelectorSet, SelectorCtx};
 pub(crate) use self::util::{is_calc_name, is_function_name, is_not, IsNot};
+
+pub(crate) mod parser {
+    pub(crate) use super::selectors::parser::selector_set;
+}

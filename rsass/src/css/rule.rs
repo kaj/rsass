@@ -1,20 +1,22 @@
-use super::{AtRule, Comment, CssString, Import, Selectors, Value};
+use super::{
+    selectors::Opt, AtRule, Comment, CssString, Import, SelectorSet, Value,
+};
 use crate::output::CssBuf;
-use std::io::{self, Write};
+use std::io;
 
 /// A css rule.
 ///
-/// A rule binds [`Selectors`] to a body of [`BodyItem`]s (mainly
+/// A rule binds a [`SelectorSet`] to a body of [`BodyItem`]s (mainly
 /// properties with [`Value`]s).
 #[derive(Clone, Debug)]
 pub struct Rule {
-    pub(crate) selectors: Selectors,
+    pub(crate) selectors: SelectorSet,
     pub(crate) body: Vec<BodyItem>,
 }
 
 impl Rule {
     /// Create a new Rule.
-    pub fn new(selectors: Selectors) -> Self {
+    pub fn new(selectors: SelectorSet) -> Self {
         Self {
             selectors,
             body: Vec::new(),
@@ -28,19 +30,23 @@ impl Rule {
     /// Write this rule to a css output buffer.
     pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
         if !self.body.is_empty() {
-            if let Some(selectors) = self.selectors.no_placeholder() {
-                buf.do_indent_no_nl();
-                if buf.format().is_compressed() {
-                    write!(buf, "{selectors:#}")?;
-                } else {
-                    write!(buf, "{selectors}")?;
-                }
-                buf.start_block();
-                for item in &self.body {
-                    item.write(buf)?;
-                }
-                buf.end_block();
+            let s = self.selectors.no_placeholder();
+            if matches!(s, Opt::None) {
+                return Ok(());
             }
+            buf.do_indent_no_nl();
+            let p = buf.len();
+            if let Opt::Some(s) = s {
+                s.write_to(buf);
+            }
+            if buf.len() == p {
+                buf.add_str("*");
+            }
+            buf.start_block();
+            for item in &self.body {
+                item.write(buf)?;
+            }
+            buf.end_block();
         }
         Ok(())
     }

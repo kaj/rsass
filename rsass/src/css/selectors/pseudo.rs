@@ -1,4 +1,5 @@
-use super::{selectorset::SelectorSet, CssSelectorSet};
+use super::{CssSelectorSet, Opt, SelectorSet};
+use crate::output::CssBuf;
 
 /// A pseudo-class or a css2 pseudo-element (:foo)
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -12,6 +13,36 @@ pub(crate) struct Pseudo {
 }
 
 impl Pseudo {
+    pub(crate) fn no_placeholder(&self) -> Opt<Self> {
+        let arg = match &self.arg {
+            Arg::Selector(s) => {
+                match (s.no_placeholder(), self.name_in(&["not"])) {
+                    (Opt::Some(t), _) => {
+                        if self.name_in(&["is"]) {
+                            match t.no_leading_combinator() {
+                                Opt::Some(t) => Arg::Selector(t),
+                                Opt::Any => return Opt::Any,
+                                Opt::None => return Opt::None,
+                            }
+                        } else {
+                            Arg::Selector(t)
+                        }
+                    }
+                    (Opt::Any, false) | (Opt::None, true) => return Opt::Any,
+                    (Opt::None, false) | (Opt::Any, true) => {
+                        return Opt::None
+                    }
+                }
+            }
+            arg => arg.clone(),
+        };
+        Opt::Some(Self {
+            arg,
+            name: self.name.clone(),
+            element: self.element,
+        })
+    }
+
     pub(crate) fn is_superselector(&self, b: &Self) -> bool {
         if self.is_element() != b.is_element() || self.name != b.name {
             return false;
@@ -79,12 +110,12 @@ impl Pseudo {
         self
     }
 
-    pub(super) fn write_to_buf(&self, buf: &mut String) {
-        buf.push(':');
+    pub(super) fn write_to(&self, buf: &mut CssBuf) {
+        buf.add_char(':');
         if self.element {
-            buf.push(':');
+            buf.add_char(':');
         }
-        buf.push_str(&self.name);
+        buf.add_str(&self.name);
         // Note: This is an ugly workaround for lack of proper support
         // for "nth" type of pseudoclass arguments.
         if self.name_in(&[
@@ -93,11 +124,13 @@ impl Pseudo {
             "nth-last-of-type",
             "nth-of-type",
         ]) {
-            let mut t = String::new();
-            self.arg.write_to_buf(&mut t);
-            buf.push_str(&t.replacen(" + ", "+", 1));
+            let mut t = CssBuf::new(buf.format());
+            self.arg.write_to(&mut t);
+            buf.add_str(
+                &String::from_utf8_lossy(&t.take()).replacen(" + ", "+", 1),
+            );
         } else {
-            self.arg.write_to_buf(buf);
+            self.arg.write_to(buf);
         }
     }
     fn name_in(&self, names: &[&str]) -> bool {
@@ -148,25 +181,25 @@ impl Arg {
             _ => false,
         }
     }
-    pub(super) fn write_to_buf(&self, buf: &mut String) {
+    pub(super) fn write_to(&self, buf: &mut CssBuf) {
         match self {
             Self::Selector(s) => {
-                buf.push('(');
-                s.write_to_buf(buf);
-                buf.push(')');
+                buf.add_char('(');
+                s.write_to(buf);
+                buf.add_char(')');
             }
             Self::Other(a) => {
-                buf.push('(');
-                buf.push_str(a);
-                buf.push(')');
+                buf.add_char('(');
+                buf.add_str(a);
+                buf.add_char(')');
             }
             Self::None => (),
         }
     }
 }
 
-pub(crate) mod parser {
-    use super::super::selectorset::parser::selector_set;
+pub(super) mod parser {
+    use super::super::parser::selector_set;
     use super::{Arg, Pseudo};
     use crate::parser::css::strings::{
         css_string_nohash, custom_value_inner,

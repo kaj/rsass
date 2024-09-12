@@ -179,6 +179,6 @@ fn ext_arg_as_string(input: Span) -> PResult<String> {
 
 fn spaced<'a>(
     the_tag: &'static str,
-) -> impl FnMut(Span<'a>) -> PResult<Span<'a>> {
+) -> impl FnMut(Span<'a>) -> PResult<'a, Span<'a>> {
     delimited(opt_spacelike, tag(the_tag), opt_spacelike)
 }

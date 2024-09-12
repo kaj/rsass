@@ -202,12 +202,12 @@ fn handle_item(
             }
         }
         Item::AtRoot(ref selectors, ref body) => {
-            let selectors = selectors
-                .eval(scope.clone())?
-                .with_backref(scope.get_selectors().one());
-            let subscope = ScopeRef::sub_selectors(scope, selectors.clone());
+            let selectors = selectors.eval(scope.clone())?;
+            let ctx = scope.get_selectors().at_root(selectors);
+            let selectors = ctx.real();
+            let subscope = ScopeRef::sub_selectors(scope, ctx);
             if !selectors.is_root() {
-                let mut rule = dest.start_rule(selectors.real()).no_pos()?;
+                let mut rule = dest.start_rule(selectors).no_pos()?;
                 handle_body(body, &mut rule, subscope, file_context)?;
             } else {
                 handle_body(body, dest, subscope, file_context)?;
@@ -358,10 +358,10 @@ fn handle_item(
 
         Item::Rule(ref selectors, ref body) => {
             check_body(body, BodyContext::Rule)?;
-            let selectors = SelectorCtx::from(selectors.eval(scope.clone())?)
-                .inside(scope.get_selectors());
-            let mut dest = dest.start_rule(selectors.real()).no_pos()?;
-            let scope = ScopeRef::sub_selectors(scope, selectors);
+            let selectors = selectors.eval(scope.clone())?;
+            let selectors = scope.get_selectors().nest(selectors);
+            let mut dest = dest.start_rule(selectors.clone()).no_pos()?;
+            let scope = ScopeRef::sub_selectors(scope, selectors.into());
             handle_body(body, &mut dest, scope, file_context)?;
         }
         Item::Property(ref name, ref value, ref pos) => {

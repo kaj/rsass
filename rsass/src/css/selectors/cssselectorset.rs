@@ -1,7 +1,8 @@
-use super::selectorset::SelectorSet;
-use super::{BadSelector, BadSelector0};
+use super::error::BadSelector0;
+use super::{BadSelector, SelectorSet};
 use crate::css::Value;
 use crate::error::Invalid;
+use crate::output::CssBuf;
 use crate::parser::{input_span, ParseError};
 use crate::sass::CallError;
 use crate::value::ListSeparator;
@@ -12,11 +13,22 @@ use nom::Finish;
 /// The practical difference is that a `CssSelectorset` is guaranteed
 /// not to contain backrefs (`&`), which may be present in a
 /// `Selectorset`.
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct CssSelectorSet {
     pub(super) s: SelectorSet,
 }
 
 impl CssSelectorSet {
+    pub(crate) fn root() -> Self {
+        Self {
+            s: SelectorSet::root(),
+        }
+    }
+    /// Return true if this is a root (empty) selector.
+    pub fn is_root(&self) -> bool {
+        self.s.is_root()
+    }
+
     pub fn parse_value(value: Value) -> Result<Self, BadSelector> {
         fn join(value: &Value) -> Result<String, BadSelector0> {
             if let Value::List(vs, Some(ListSeparator::Comma), false) = value
@@ -50,10 +62,9 @@ impl CssSelectorSet {
         let selector = join(&value).map_err(|e| e.ctx(value))?;
         let span = input_span(selector);
 
-        let (rest, value) =
-            super::selectorset::parser::selector_set(span.borrow())
-                .finish()
-                .map_err(ParseError::from)?;
+        let (rest, value) = super::parser::selector_set(span.borrow())
+            .finish()
+            .map_err(ParseError::from)?;
         if rest.fragment().is_empty() {
             value.try_into()
         } else {
@@ -65,7 +76,7 @@ impl CssSelectorSet {
         self.s.is_superselector(&sub.s)
     }
 
-    pub(crate) fn append(self, ext: Self) -> Result<Self, CallError> {
+    pub(crate) fn append(self, ext: &Self) -> Result<Self, CallError> {
         Ok(Self {
             s: SelectorSet {
                 s: self
@@ -90,6 +101,8 @@ impl CssSelectorSet {
         self.s.extend(&extendee.s, &extender.s).map(|s| Self { s })
     }
 
+    /// Nest `other` selectors inside this as though they were nested
+    /// within one another in the stylesheet.
     pub(crate) fn nest(&self, other: SelectorSet) -> Self {
         let mut parts = other
             .s
@@ -131,7 +144,7 @@ impl CssSelectorSet {
             .map(|s| Self { s })
     }
 
-    pub(crate) fn unify(self, other: Self) -> Self {
+    pub(crate) fn unify(self, other: &Self) -> Self {
         Self {
             s: SelectorSet {
                 s: self
@@ -148,6 +161,16 @@ impl CssSelectorSet {
                     .collect(),
             },
         }
+    }
+
+    pub fn write_to(&self, buf: &mut CssBuf) {
+        self.s.write_to(buf);
+    }
+}
+
+impl From<CssSelectorSet> for SelectorSet {
+    fn from(value: CssSelectorSet) -> Self {
+        value.s
     }
 }
 

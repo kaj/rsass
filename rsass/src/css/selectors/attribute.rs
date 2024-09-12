@@ -1,6 +1,6 @@
-use crate::css::CssString;
+use crate::{css::CssString, output::CssBuf};
 
-/// A logical attribute selector.
+/// An attribute selector.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Attribute {
     /// The attribute name
@@ -21,20 +21,21 @@ impl Attribute {
             && self.modifier == b.modifier
     }
 
-    pub(super) fn write_to_buf(&self, buf: &mut String) {
-        use std::fmt::Write;
-        buf.push('[');
-        write!(buf, "{}{}{}", self.name, self.op, self.val).unwrap();
+    pub(super) fn write_to(&self, buf: &mut CssBuf) {
+        buf.add_char('[');
+        buf.add_str(&self.name);
+        buf.add_str(&self.op);
+        buf.add_str(&self.val.to_string());
         if let Some(m) = self.modifier {
-            buf.push(' ');
-            buf.push(m);
+            buf.add_char(' ');
+            buf.add_char(m);
         }
-        buf.push(']');
+        buf.add_char(']');
     }
 }
 
-pub(crate) mod parser {
-    use super::super::logical::parser::name_opt_ns;
+pub(super) mod parser {
+    use super::super::parser::name_opt_ns;
     use super::Attribute;
     use crate::parser::css::strings::css_string_any;
     use crate::parser::util::term_opt_space;

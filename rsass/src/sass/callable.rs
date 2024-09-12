@@ -57,7 +57,13 @@ impl Closure {
     /// This is used when the callable is a scss function.
     pub fn eval_value(&self, call: Call) -> Result<Value, CallError> {
         Ok(self
-            .eval_args(self.scope.clone(), call.args)?
+            .eval_args(
+                ScopeRef::sub_selectors(
+                    self.scope.clone(),
+                    call.scope.get_selectors().clone(),
+                ),
+                call.args,
+            )?
             .eval_body(&self.body.body)
             .map_err(|e| match e {
                 Error::Invalid(err, _pos) => CallError::Invalid(err),

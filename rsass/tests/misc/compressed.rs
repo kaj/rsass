@@ -146,8 +146,8 @@ fn t10_classes_and_ids() {
             d #id, f ~ g.other + h, > i#grar {\n    bloo: bloo;\n    \
             blee: blee;\n  }\n}",
         "a+b,.class{blah:blah;bleh:bleh}\
-         a+b d #id,a+b f ~ g.other+h,a+b>i#grar,.class d #id,\
-         .class f ~ g.other+h,.class>i#grar{bloo:bloo;blee:blee}\n",
+         a+b d #id,a+b f~g.other+h,a+b>i#grar,.class d #id,\
+         .class f~g.other+h,.class>i#grar{bloo:bloo;blee:blee}\n",
     )
 }
 

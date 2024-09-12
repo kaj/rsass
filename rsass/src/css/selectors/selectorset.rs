@@ -1,18 +1,39 @@
-use super::{logical::Selector, BadSelector, BadSelector0, CssSelectorSet};
+use super::error::BadSelector0;
+use super::{BadSelector, CssSelectorSet, Opt, Selector};
+use crate::css::Value;
+use crate::output::CssBuf;
 use crate::parser::input_span;
 use crate::value::ListSeparator;
-use crate::ParseError;
-use crate::{css::Value, Invalid};
+use crate::{Invalid, ParseError};
 
 /// A set of selectors.
 /// This is the normal top-level selector, which can be a single
 /// [`Selector`] or a comma-separated list (set) of such selectors.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct SelectorSet {
-    pub(super) s: Vec<Selector>,
+pub struct SelectorSet {
+    pub(crate) s: Vec<Selector>,
 }
 
 impl SelectorSet {
+    pub(crate) fn root() -> Self {
+        Self {
+            s: vec![Selector::default()],
+        }
+    }
+    /// Return true if this is a root (empty) selector.
+    pub fn is_root(&self) -> bool {
+        self.s.len() == 1 && self.s[0] == Selector::default()
+    }
+
+    pub(crate) fn no_placeholder(&self) -> Opt<Self> {
+        let s = self.s.iter().map(Selector::no_placeholder);
+        Opt::collect_pos(s).map(|s| Self { s })
+    }
+    pub(crate) fn no_leading_combinator(&self) -> Opt<Self> {
+        let s = self.s.iter().map(Selector::no_leading_combinator);
+        Opt::collect_pos(s).map(|s| Self { s })
+    }
+
     pub(crate) fn extend(
         self,
         extendee: &Self,
@@ -60,34 +81,50 @@ impl SelectorSet {
         Ok(())
     }
 
-    pub(super) fn write_to_buf(&self, buf: &mut String) {
-        fn write_one(s: &Selector, buf: &mut String) {
-            buf.push_str(&s.clone().into_string_vec().join(" "));
-        }
+    /// Write this set of selectors to a formatted buffer.
+    pub fn write_to(&self, buf: &mut CssBuf) {
         if let Some((first, rest)) = self.s.split_first() {
-            write_one(first, buf);
+            first.write_to(buf);
             for one in rest {
-                buf.push_str(", "); // TODO: Only ',' is compressed!
-                write_one(one, buf);
+                buf.add_one(", ", ",");
+                one.write_to(buf);
             }
         }
     }
+
     pub(super) fn has_backref(&self) -> bool {
         self.s.iter().any(Selector::has_backref)
     }
     pub(super) fn resolve_ref(self, ctx: &CssSelectorSet) -> Self {
-        Self {
-            s: self
-                .s
-                .into_iter()
-                .flat_map(|o| o.resolve_ref(ctx))
-                .collect::<Vec<_>>(),
+        let mut resolved = self
+            .s
+            .into_iter()
+            .map(|s| s.resolve_ref(ctx).into_iter())
+            .collect::<Vec<_>>();
+        // Now put the resolved items in the correct order.
+        // We have [[a1, b1], [a2, b2]] but want [a1, a2, b1, b2]
+        let mut s = Vec::new();
+        loop {
+            let mut done = true;
+            for v in &mut resolved {
+                if let Some(next) = v.next() {
+                    s.push(next);
+                    done = false;
+                }
+            }
+            if done {
+                break;
+            }
         }
+        Self { s }
     }
 }
 
 impl From<SelectorSet> for Value {
     fn from(value: SelectorSet) -> Self {
+        if value.is_root() {
+            return Self::Null;
+        }
         let v = value.s.into_iter().map(Self::from).collect::<Vec<_>>();
         if v.is_empty() {
             Self::Null
@@ -129,7 +166,7 @@ fn value_to_selectors(v: &Value) -> Result<SelectorSet, BadSelector0> {
     }
 }
 
-pub(crate) mod parser {
+pub(super) mod parser {
     use super::SelectorSet;
     use crate::parser::{util::opt_spacelike, PResult, Span};
     use nom::bytes::complete::tag;
@@ -141,7 +178,7 @@ pub(crate) mod parser {
         map(
             separated_list1(
                 delimited(opt_spacelike, tag(","), opt_spacelike),
-                super::super::logical::parser::selector,
+                super::super::parser::selector,
             ),
             |s| SelectorSet { s },
         )(input)
