@@ -1,4 +1,5 @@
 #! /bin/sh
+set -euo pipefail
 #
 # How I run the sass-spec checker for rsass.
 #
@@ -11,8 +12,9 @@
 # Generate stats to update lib.rs docs and readme:
 #     ./check-spec stats
 #
-cd `dirname "$prog"`
+cd `dirname "$0"`
 
+update="no"
 case "$1" in
     "-u"|"--update")
 	update="yes"
@@ -31,10 +33,10 @@ fi
 IMPL=dart-sass
 check() {
     cargo build --release --bin rsass --features=unimplemented_args >&2 || exit 1
-    echo "About to test $1"
-    (cd sass-spec && \
-         npm install && \
-         npm run sass-spec -- --command '../target/release/rsass' --cmd-args='' --impl $IMPL -- $1)
+    echo "About to test ${1:-everything}"
+    (cd sass-spec; \
+         npm install; \
+         npm run sass-spec -- --command '../target/release/rsass' --cmd-args='' --impl $IMPL -- $*)
 }
 
 list_fails() {
