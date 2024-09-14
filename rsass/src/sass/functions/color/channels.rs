@@ -17,60 +17,54 @@ impl TryFrom<Value> for Channels {
         if is_special(&channels) {
             Ok(Self::Special(channels))
         } else if let Value::List(vec, sep, bracketed) = channels.clone() {
-            use crate::value::Operator::Div;
-            use Value::{BinOp, Numeric};
             if bracketed {
-                return Err(ChaError::Bracketed);
-            }
-            if sep == Some(ListSeparator::Comma) {
-                return Err(ChaError::BadSep);
-            }
-            if sep == Some(ListSeparator::Slash) {
-                match vec.as_slice() {
-                    [Value::List(inner, i_s, i_b), a] => {
-                        if *i_b {
-                            return Err(ChaError::Bracketed);
-                        }
-                        if i_s.unwrap_or_default() != ListSeparator::Space {
-                            return Err(ChaError::BadSep);
-                        }
-                        Ok(inner_channels(inner)?.map_or_else(
-                            || Self::Special(channels),
-                            |[c1, c2, c3]| {
-                                Self::Data([c1, c2, c3, a.clone()])
-                            },
-                        ))
-                    }
-                    [h, _a] => {
-                        if is_special(h) {
-                            Ok(Self::Special(channels))
-                        } else {
-                            Err(ChaError::Missing1)
-                        }
-                    }
-                    list => Err(ChaError::SlashBadNum(list.len())),
-                }
+                Err(ChaError::Bracketed)
             } else {
-                match vec.as_slice() {
-                    [r, g, BinOp(op)] if op.op() == Div => Ok(
-                        if let (b @ Numeric(..), a @ Numeric(..)) =
-                            (op.a(), op.b())
-                        {
-                            Self::Data([
+                use crate::value::Operator::Div;
+                match sep {
+                    Some(ListSeparator::Comma) => {
+                        return Err(ChaError::BadSep);
+                    }
+                    Some(ListSeparator::Slash) => match vec.as_slice() {
+                        [Value::List(inner, i_s, i_b), a] => {
+                            if *i_b {
+                                return Err(ChaError::Bracketed);
+                            }
+                            if i_s.unwrap_or_default() != ListSeparator::Space
+                            {
+                                return Err(ChaError::BadSep);
+                            }
+                            Ok(inner_channels(inner)?.map_or_else(
+                                || Self::Special(channels),
+                                |[c1, c2, c3]| {
+                                    Self::Data([c1, c2, c3, a.clone()])
+                                },
+                            ))
+                        }
+                        [h, _a] => {
+                            if is_special(h) {
+                                Ok(Self::Special(channels))
+                            } else {
+                                Err(ChaError::Missing1)
+                            }
+                        }
+                        list => Err(ChaError::SlashBadNum(list.len())),
+                    },
+                    _ => match vec.as_slice() {
+                        [r, g, Value::BinOp(op)] if op.op() == Div => {
+                            Ok(Self::Data([
                                 r.clone(),
                                 g.clone(),
-                                b.clone(),
-                                a.clone(),
-                            ])
-                        } else {
-                            Self::Special(channels)
-                        },
-                    ),
-                    other => Ok(inner_channels(other)?
-                        .map(|[c1, c2, c3]| {
-                            Self::Data([c1, c2, c3, Value::Null])
-                        })
-                        .unwrap_or_else(|| Self::Special(channels))),
+                                op.a().clone(),
+                                op.b().clone(),
+                            ]))
+                        }
+                        other => Ok(inner_channels(other)?
+                            .map(|[c1, c2, c3]| {
+                                Self::Data([c1, c2, c3, Value::Null])
+                            })
+                            .unwrap_or_else(|| Self::Special(channels))),
+                    },
                 }
             }
         } else {

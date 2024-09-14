@@ -110,7 +110,7 @@ mod missing {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn slash() {
         assert_eq!(
             runner().ok("a {b: hsl(180 60% 50% / none)}\n"),
