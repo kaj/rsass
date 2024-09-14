@@ -19,24 +19,14 @@ pub fn register(f: &mut Scope) {
         }
         let rgba: Color = s.get(name!(color))?;
         let mut args = s.get_map(name!(kwargs), CallArgs::from_value)?;
-        if !args.positional.is_empty() {
-            return Err(CallError::msg("Only one positional argument is allowed. \
-                                       All other arguments must be passed by name."));
-        }
+        no_more_positional(&args)?;
+        let a_adj = take_opt(&mut args, name!(alpha), check_alpha_pm)?;
+
         let red = take_opt(&mut args, name!(red), check_channel_pm)?;
         let gre = take_opt(&mut args, name!(green), check_channel_pm)?;
         let blu = take_opt(&mut args, name!(blue), check_channel_pm)?;
-        let hue = take_opt(&mut args, name!(hue), check_hue)?;
-        let sat = take_opt(&mut args, name!(saturation), check_pct_pm)?;
-        let lig = take_opt(&mut args, name!(lightness), check_pct_pm)?;
-        let bla = take_opt(&mut args, name!(blackness), check_pct_expl_pm)?;
-        let whi = take_opt(&mut args, name!(whiteness), check_pct_expl_pm)?;
-        let a_adj = take_opt(&mut args, name!(alpha), check_alpha_pm)?;
-        args.check_no_named().map_err(CallError::msg)?;
-
         if red.is_some() || gre.is_some() || blu.is_some() {
-            check_none(&[bla, whi], "RGB", "HWB")?;
-            check_none(&[hue, sat, lig], "RGB", "HSL")?;
+            no_more_in_space(&args, "rgb")?;
             let rgba = rgba.to_rgba();
             Ok(Rgba::new(
                 opt_add(rgba.red(), red),
@@ -46,26 +36,47 @@ pub fn register(f: &mut Scope) {
                 rgba.source(),
             )
             .into())
-        } else if bla.is_some() || whi.is_some() {
-            check_none(&[sat, lig], "HSL", "HWB")?;
-            let hwba = rgba.to_hwba();
-            Ok(Hwba::new(
-                opt_add(hwba.hue(), hue),
-                opt_add(hwba.whiteness(), whi),
-                opt_add(hwba.blackness(), bla),
-                opt_add(hwba.alpha(), a_adj),
-            )
-            .into())
         } else {
-            let hsla = rgba.to_hsla();
-            Ok(Hsla::new(
-                opt_add(hsla.hue(), hue),
-                opt_add(hsla.sat(), sat),
-                opt_add(hsla.lum(), lig),
-                opt_add(hsla.alpha(), a_adj),
-                hsla.hsla_format,
-            )
-            .into())
+            let hue = take_opt(&mut args, name!(hue), check_hue)?;
+            let sat = take_opt(&mut args, name!(saturation), check_pct)?;
+            let lig = take_opt(&mut args, name!(lightness), check_pct)?;
+            if sat.is_some() || lig.is_some() {
+                no_more_in_space(&args, "hsl")?;
+            }
+            let bla =
+                take_opt(&mut args, name!(blackness), check_pct_expl_pm)?;
+            let whi =
+                take_opt(&mut args, name!(whiteness), check_pct_expl_pm)?;
+            args.check_no_named().map_err(CallError::msg)?;
+            if bla.is_some() || whi.is_some() {
+                let hwba = rgba.to_hwba();
+                Ok(Hwba::new(
+                    opt_add(hwba.hue(), hue),
+                    opt_add(hwba.whiteness(), whi),
+                    opt_add(hwba.blackness(), bla),
+                    opt_add(hwba.alpha(), a_adj),
+                )
+                .into())
+            } else if hue.is_some() || sat.is_some() || lig.is_some() {
+                let hsla = rgba.to_hsla();
+                let sat = opt_add(hsla.sat(), sat);
+                let lum = opt_add(hsla.lum(), lig);
+                Ok(Hsla::new(
+                    opt_add(hsla.hue(), hue),
+                    sat,
+                    lum,
+                    opt_add(hsla.alpha(), a_adj),
+                    hsla.hsla_format
+                        || sat > one()
+                        || lum > one()
+                        || lum < zero(),
+                )
+                .into())
+            } else {
+                let mut rgba = rgba.clone();
+                rgba.set_alpha(opt_add(rgba.get_alpha(), a_adj));
+                Ok(rgba.into())
+            }
         }
     });
     def_va!(f, scale(color, kwargs), |s| {
@@ -85,10 +96,7 @@ pub fn register(f: &mut Scope) {
 
         let rgba: Color = s.get(name!(color))?;
         let mut args = s.get_map(name!(kwargs), CallArgs::from_value)?;
-        if !args.positional.is_empty() {
-            return Err(CallError::msg("Only one positional argument is allowed. \
-                                       All other arguments must be passed by name."));
-        }
+        no_more_positional(&args)?;
         let red = take_opt(&mut args, name!(red), check_pct_expl_pm)?;
         let gre = take_opt(&mut args, name!(green), check_pct_expl_pm)?;
         let blu = take_opt(&mut args, name!(blue), check_pct_expl_pm)?;
@@ -151,10 +159,7 @@ pub fn register(f: &mut Scope) {
     def_va!(f, change(color, kwargs), |s| {
         let rgba: Color = s.get(name!(color))?;
         let mut args = s.get_map(name!(kwargs), CallArgs::from_value)?;
-        if !args.positional.is_empty() {
-            return Err(CallError::msg("Only one positional argument is allowed. \
-                                       All other arguments must be passed by name."));
-        }
+        no_more_positional(&args)?;
         let red = take_opt(&mut args, name!(red), check_channel_range)?;
         let gre = take_opt(&mut args, name!(green), check_channel_range)?;
         let blu = take_opt(&mut args, name!(blue), check_channel_range)?;
@@ -256,6 +261,25 @@ fn check_none(
     }
 }
 
+fn no_more_positional(args: &CallArgs) -> Result<(), CallError> {
+    if !args.positional.is_empty() {
+        Err(CallError::msg(
+            "Only one positional argument is allowed. \
+             All other arguments must be passed by name.",
+        ))
+    } else {
+        Ok(())
+    }
+}
+
+fn no_more_in_space(args: &CallArgs, space: &str) -> Result<(), CallError> {
+    if let Some((name, _)) = args.named.iter().next() {
+        Err(CallError::msg(format!("${name}: Color space {space} doesn\'t have a channel with this name.")))
+    } else {
+        Ok(())
+    }
+}
+
 fn take_opt<T, F>(
     args: &mut CallArgs,
     name: Name,
@@ -267,13 +291,8 @@ where
     args.named.remove(&name).map(check).transpose().named(name)
 }
 
-fn check_pct_pm(v: Value) -> Result<Rational, String> {
-    let val = Numeric::try_from(v)?;
-    if val.value.abs() > 100.into() {
-        Err(expected_to(val, "be within -100% and 100%"))
-    } else {
-        Ok(val.as_ratio()? / 100)
-    }
+fn check_pct(v: Value) -> Result<Rational, String> {
+    Ok(Numeric::try_from(v)?.as_ratio()? / 100)
 }
 fn check_pct_expl_pm(v: Value) -> Result<Rational, String> {
     let val = Numeric::try_from(v)?;

@@ -141,7 +141,6 @@ mod lightness {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn above_max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -152,7 +151,6 @@ mod lightness {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn arg_above_max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -163,7 +161,6 @@ mod lightness {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn arg_below_min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -174,7 +171,6 @@ mod lightness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn below_min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -225,7 +221,6 @@ mod lightness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -273,7 +268,6 @@ mod saturation {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn above_max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -284,7 +278,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn arg_above_max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -295,7 +288,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn arg_below_min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -336,7 +328,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max_remaining() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

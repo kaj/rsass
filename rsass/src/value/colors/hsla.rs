@@ -24,8 +24,8 @@ impl Hsla {
     ) -> Self {
         Self {
             hue: deg_mod(hue),
-            sat: sat.clamp(zero(), one()),
-            lum: lum.clamp(zero(), one()),
+            sat: sat.max(zero()),
+            lum,
             alpha: alpha.clamp(zero(), one()),
             hsla_format,
         }
@@ -83,14 +83,16 @@ impl<'a> Display for Formatted<'a, Hsla> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         let hsla = self.value;
         let hue = Number::from(hsla.hue);
+        let sat = Number::from(hsla.sat * 100);
+        let lum = Number::from(hsla.lum * 100);
         let a = hsla.alpha;
         if a >= one() {
             write!(
                 out,
                 "hsl({}, {}%, {}%)",
                 hue.format(self.format),
-                hsla.sat * 100,
-                hsla.lum * 100
+                sat.format(self.format),
+                lum.format(self.format),
             )
         } else {
             let a = Number::from(a);
@@ -98,8 +100,8 @@ impl<'a> Display for Formatted<'a, Hsla> {
                 out,
                 "hsla({}, {}%, {}%, {})",
                 hue.format(self.format),
-                hsla.sat * 100,
-                hsla.lum * 100,
+                sat.format(self.format),
+                lum.format(self.format),
                 a.format(self.format)
             )
         }

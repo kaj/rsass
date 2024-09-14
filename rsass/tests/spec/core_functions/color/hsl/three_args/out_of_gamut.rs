@@ -10,7 +10,6 @@ mod saturation {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn above() {
         assert_eq!(
             runner().ok("a {b: hsl(0, 500%, 50%)}\n"),

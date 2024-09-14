@@ -9,7 +9,7 @@ use crate::output::Format;
 use crate::sass::{ArgsError, FormalArgs, Name};
 use crate::value::{Color, Hsla, Numeric, Rational, Unit};
 use crate::Scope;
-use num_traits::zero;
+use num_traits::{one, zero};
 
 pub fn register(f: &mut Scope) {
     def_va!(f, _hsl(kwargs), |s| do_hsla(&name!(hsl), s));
@@ -91,7 +91,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
                 let col = s.get::<Color>(name!(color))?;
                 let sat = s.get_map(name!(amount), check_amount)?;
                 let col = col.to_hsla();
-                let sat = col.sat() + sat;
+                let sat = (col.sat() + sat).clamp(zero(), one());
                 Ok(Hsla::new(col.hue(), sat, col.lum(), col.alpha(), false)
                     .into())
             }

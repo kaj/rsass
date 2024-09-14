@@ -33,7 +33,6 @@ mod clamped {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn lightness() {
         assert_eq!(
             runner().ok("a {b: hsl(0 100% 9999% / 0.5)}\n"),
