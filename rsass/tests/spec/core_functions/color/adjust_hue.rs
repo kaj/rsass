@@ -15,7 +15,6 @@ fn above_max() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn alpha() {
     assert_eq!(
         runner().ok("a {b: adjust-hue(rgba(red, 0.1), 359)}\n"),
@@ -106,7 +105,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn fraction() {
     assert_eq!(
         runner().ok("a {b: adjust-hue(red, 0.5)}\n"),
@@ -116,7 +114,6 @@ fn fraction() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn max() {
     assert_eq!(
         runner().ok("a {b: adjust-hue(red, 359)}\n"),
@@ -126,7 +123,6 @@ fn max() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn middle() {
     assert_eq!(
         runner().ok("a {b: adjust-hue(red, 123)}\n"),
@@ -145,7 +141,6 @@ fn min() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok("a {b: adjust-hue($color: red, $degrees: 123)}\n"),
@@ -168,7 +163,6 @@ mod units {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn angle() {
         assert_eq!(
             runner().ok("a {b: adjust-hue(red, 60rad)}\n"),

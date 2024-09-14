@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn alpha() {
     assert_eq!(
         runner().ok("a {b: desaturate(rgba(plum, 0.3), 100%)}\n"),
@@ -147,7 +146,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn max() {
     assert_eq!(
         runner().ok("a {b: desaturate(plum, 100%)}\n"),
@@ -157,7 +155,6 @@ fn max() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn max_remaining() {
     assert_eq!(
         runner().ok("a {b: desaturate(plum, 48%)}\n"),
@@ -167,7 +164,6 @@ fn max_remaining() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn middle() {
     assert_eq!(
         runner().ok("a {b: desaturate(plum, 14%)}\n"),
@@ -186,7 +182,6 @@ fn min() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok("a {b: desaturate($color: plum, $amount: 14%)}\n"),

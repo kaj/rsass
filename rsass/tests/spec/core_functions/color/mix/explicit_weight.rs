@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn even() {
     assert_eq!(
         runner().ok("a {b: mix(#91e16f, #0144bf, 50%)}\n"),
@@ -25,7 +24,6 @@ fn first() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn firstwards() {
     assert_eq!(
         runner().ok("a {b: mix(#91e16f, #0144bf, 92%)}\n"),
@@ -44,7 +42,6 @@ fn last() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn lastwards() {
     assert_eq!(
         runner().ok("a {b: mix(#91e16f, #0144bf, 43%)}\n"),

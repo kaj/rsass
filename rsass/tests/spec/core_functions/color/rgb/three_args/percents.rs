@@ -10,7 +10,6 @@ mod all {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn percent() {
         assert_eq!(
             runner().ok("a {b: rgb(7.1%, 20.4%, 33.9%)}\n"),
@@ -21,7 +20,6 @@ mod all {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn boundaries() {
     assert_eq!(
         runner().ok("a {b: rgb(0%, 100%, 50%)}\n"),
@@ -67,7 +65,6 @@ mod percent {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn green() {
         assert_eq!(
             runner().ok("a {b: rgb(190, 68%, 237)}\n"),
@@ -82,7 +79,6 @@ mod unitless {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn green() {
         assert_eq!(
             runner().ok("a {b: rgb(74.7%, 173, 93%)}\n"),

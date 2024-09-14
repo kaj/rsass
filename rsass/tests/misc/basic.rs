@@ -156,24 +156,6 @@ fn ti574_map_trailing_comma() {
     );
 }
 
-/// From `spec/core_functions/invert/weight-parameter`
-#[test]
-fn weight_parameter() {
-    init_logger();
-    assert_eq!(
-        rsass(
-            b".invert-with-weight {\n  zero-percent: invert(#edc, 0%);\n  \
-              ten-percent: invert(#edc, 10%);\n  \
-              keyword: invert(#edc, $weight: 10%);\n  \
-              one-hundred-percent: invert(#edc, 100%);\n}\n"
-        )
-        .unwrap(),
-        ".invert-with-weight {\n  zero-percent: #eeddcc;\n  \
-         ten-percent: #d8cabd;\n  keyword: #d8cabd;\n  \
-         one-hundred-percent: #112233;\n}\n"
-    );
-}
-
 /// From `spec/libsass-closed-issues/issue_1133/normal`
 #[test]
 fn each_binds_multiple() {

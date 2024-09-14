@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn average() {
     assert_eq!(
         runner()
@@ -30,7 +29,6 @@ fn identical() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn min_and_max() {
     assert_eq!(
         runner().ok(

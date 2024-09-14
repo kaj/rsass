@@ -15,7 +15,6 @@ fn with_calc() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn with_color() {
     assert_eq!(
         runner().ok("a {b: grayscale(red)}\n"),

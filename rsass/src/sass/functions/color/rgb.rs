@@ -243,11 +243,4 @@ mod test {
     fn test_low() {
         assert_eq!(do_evaluate(&[], b"rgb(-3, -2%, 0);"), "rgb(0, 0, 0)");
     }
-    #[test]
-    fn test_mid() {
-        assert_eq!(
-            do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);"),
-            "rgb(128, 128, 128)"
-        );
-    }
 }

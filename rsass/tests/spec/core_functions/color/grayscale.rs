@@ -132,7 +132,6 @@ mod legacy {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn alpha() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -143,7 +142,6 @@ mod legacy {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max_saturation() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -154,7 +152,6 @@ mod legacy {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn mid_saturation() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

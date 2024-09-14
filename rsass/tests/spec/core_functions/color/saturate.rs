@@ -270,7 +270,6 @@ mod two_args {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn middle() {
         assert_eq!(
             runner().ok("a {b: saturate(plum, 14%)}\n"),
@@ -289,7 +288,6 @@ mod two_args {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn named() {
         assert_eq!(
             runner().ok("a {b: saturate($color: plum, $amount: 14%)}\n"),
