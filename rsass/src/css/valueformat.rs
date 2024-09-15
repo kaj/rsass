@@ -19,11 +19,11 @@ impl<'a> Display for Formatted<'a, Value> {
                 write!(out, "get-function(\"{name}\")")
             }
             Value::Numeric(ref num, _) => num.format(self.format).fmt(out),
-            Value::Color(ref rgba, ref name) => {
+            Value::Color(ref col, ref name) => {
                 if let Some(ref name) = *name {
                     name.fmt(out)
                 } else {
-                    rgba.format(self.format).fmt(out)
+                    col.format(self.format).fmt(out)
                 }
             }
             Value::List(ref v, sep, brackets) => {

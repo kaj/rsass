@@ -55,6 +55,7 @@ pub fn create_module() -> Scope {
 pub fn expose(m: &Scope, global: &mut FunctionMap) {
     rgb::expose(m, global);
     hsl::expose(m, global);
+    hwb::expose(m, global);
     other::expose(m, global);
 }
 

@@ -1,6 +1,6 @@
 use crate::output::{Format, Formatted};
 use crate::value::{Number, Rational};
-use num_traits::{one, zero, Signed};
+use num_traits::{one, zero, One as _, Signed};
 use std::fmt::{self, Display};
 
 /// A color defined by hue, saturation, luminance, and alpha.
@@ -55,6 +55,18 @@ impl Hsla {
     pub fn set_alpha(&mut self, alpha: Rational) {
         self.alpha = alpha.clamp(zero(), one());
     }
+
+    pub(crate) fn invert(&self, weight: Rational) -> Self {
+        let one = Rational::one();
+        Self {
+            hue: deg_mod(self.hue + 180),
+            sat: self.sat,
+            lum: (one - self.lum) * weight + self.lum * (one - weight),
+            alpha: self.alpha,
+            hsla_format: self.hsla_format,
+        }
+    }
+
     pub(crate) fn reset_source(&mut self) {
         self.hsla_format = false;
     }

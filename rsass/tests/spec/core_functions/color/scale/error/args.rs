@@ -40,7 +40,6 @@ fn too_many() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn unknown() {
     assert_eq!(
         runner().err(

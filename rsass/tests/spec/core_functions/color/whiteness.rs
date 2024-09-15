@@ -80,7 +80,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn fraction() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -105,7 +104,6 @@ mod middle {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn half_blackness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -116,7 +114,6 @@ mod middle {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn high_blackness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -127,7 +124,6 @@ mod middle {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn zero_blackness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -149,7 +145,6 @@ fn min() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\

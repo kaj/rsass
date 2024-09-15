@@ -212,7 +212,7 @@ mod legacy {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn different() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -223,7 +223,6 @@ mod legacy {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn same() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\

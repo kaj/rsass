@@ -22,7 +22,6 @@ fn lch() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn legacy() {
     assert_eq!(
         runner().err(

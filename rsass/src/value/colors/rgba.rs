@@ -76,16 +76,10 @@ impl Rgba {
         self.alpha >= one()
     }
     /// If this color is equal to a named color, get the name.
-    ///
-    /// Each component is rounded to its byte value before lookup.
     pub fn name(&self) -> Option<&'static str> {
-        if self.is_opaque() {
-            let (r, g, b, _a) = self.try_bytes().ok()?;
-            let c = u32::from_be_bytes([0, r, g, b]);
-            LOOKUP.v2n.get(&c).copied()
-        } else {
-            None
-        }
+        self.try_bytes()
+            .map(|(r, g, b)| u32::from_be_bytes([0, r, g, b]))
+            .and_then(|c| LOOKUP.v2n.get(&c).copied())
     }
     /// If `name` is a known color name, get the corresponding rgba value.
     pub fn from_name(name: &str) -> Option<Self> {
@@ -119,6 +113,12 @@ impl Rgba {
             && self.green.is_zero()
             && self.blue.is_zero()
     }
+    pub(crate) fn is_integer(&self) -> bool {
+        self.red.is_integer()
+            && self.green.is_integer()
+            && self.blue.is_integer()
+            && self.is_opaque()
+    }
     /// Get a (r, g, b, a) byte-value tuple for this color.
     pub fn to_bytes(&self) -> (u8, u8, u8, u8) {
         fn byte(v: Rational) -> u8 {
@@ -127,8 +127,14 @@ impl Rgba {
         let a = self.alpha * 255;
         (byte(self.red), byte(self.green), byte(self.blue), byte(a))
     }
-    /// Get a (r, g, b, a) byte-value tuple for this color.
-    pub fn try_bytes(&self) -> Result<(u8, u8, u8, u8), &Self> {
+    /// Get a (r, g, b) byte-value tuple for this color.
+    ///
+    /// If the color is not opaque or not exactly equal to a byte
+    /// value, return None.
+    pub fn try_bytes(&self) -> Option<(u8, u8, u8)> {
+        if !self.is_opaque() {
+            return None;
+        }
         fn byte(v: Rational) -> Option<u8> {
             if v.is_integer() {
                 Some(v.round().to_integer() as u8)
@@ -136,13 +142,12 @@ impl Rgba {
                 None
             }
         }
-        let a = self.alpha * 255;
-        if let (Some(r), Some(g), Some(b), Some(a)) =
-            (byte(self.red), byte(self.green), byte(self.blue), byte(a))
+        if let (Some(r), Some(g), Some(b)) =
+            (byte(self.red), byte(self.green), byte(self.blue))
         {
-            Ok((r, g, b, a))
+            Some((r, g, b))
         } else {
-            Err(self)
+            None
         }
     }
     /// Get the red component.
@@ -169,6 +174,18 @@ impl Rgba {
     pub fn set_alpha(&mut self, alpha: Rational) {
         self.alpha = cap(alpha, &one());
     }
+
+    pub(crate) fn invert(&self, weight: Rational) -> Self {
+        let inv = |v: Rational| -(v - 255) * weight + v * -(weight - 1);
+        Rgba::new(
+            inv(self.red()),
+            inv(self.green()),
+            inv(self.blue()),
+            self.alpha(),
+            self.source(),
+        )
+    }
+
     /// Get the source type of this color.
     pub(crate) fn source(&self) -> RgbFormat {
         self.source
@@ -415,19 +432,28 @@ impl<'a> Display for Formatted<'a, Rgba> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         // The byte-version of alpha is not used here.
         let rgba = self.value;
-        if rgba.is_opaque() {
-            if let Ok((r, g, b, _a)) = rgba.try_bytes() {
-                // E.g. #ff00cc can be written #f0c in css.
-                // 0xff / 0x11 = 0xf.
-                let short = r % 0x11 == 0 && g % 0x11 == 0 && b % 0x11 == 0;
-                let hex_len = if short { 4 } else { 7 };
-                if self.format.is_compressed() {
-                    if let Some(name) = rgba.name() {
-                        if name.len() <= hex_len {
-                            return name.fmt(out);
-                        }
+        if let Some((r, g, b)) = rgba.try_bytes() {
+            // E.g. #ff00cc can be written #f0c in css.
+            // 0xff / 0x11 = 0xf.
+            let short = r % 0x11 == 0 && g % 0x11 == 0 && b % 0x11 == 0;
+            let hex_len = if short { 4 } else { 7 };
+            if self.format.is_compressed() {
+                if let Some(name) = rgba.name() {
+                    if name.len() <= hex_len {
+                        return name.fmt(out);
                     }
-                    if short {
+                }
+                if short {
+                    write!(out, "#{:x}{:x}{:x}", r / 0x11, g / 0x11, b / 0x11)
+                } else {
+                    write!(out, "#{r:02x}{g:02x}{b:02x}")
+                }
+            } else {
+                match rgba.source {
+                    RgbFormat::LongHex => {
+                        write!(out, "#{r:02x}{g:02x}{b:02x}")
+                    }
+                    RgbFormat::ShortHex => {
                         write!(
                             out,
                             "#{:x}{:x}{:x}",
@@ -435,36 +461,17 @@ impl<'a> Display for Formatted<'a, Rgba> {
                             g / 0x11,
                             b / 0x11
                         )
-                    } else {
+                    }
+                    RgbFormat::Name => {
+                        if let Some(name) = rgba.name() {
+                            return name.fmt(out);
+                        }
                         write!(out, "#{r:02x}{g:02x}{b:02x}")
                     }
-                } else {
-                    match rgba.source {
-                        RgbFormat::LongHex => {
-                            write!(out, "#{r:02x}{g:02x}{b:02x}")
-                        }
-                        RgbFormat::ShortHex => {
-                            write!(
-                                out,
-                                "#{:x}{:x}{:x}",
-                                r / 0x11,
-                                g / 0x11,
-                                b / 0x11
-                            )
-                        }
-                        RgbFormat::Name => {
-                            if let Some(name) = rgba.name() {
-                                return name.fmt(out);
-                            }
-                            write!(out, "#{r:02x}{g:02x}{b:02x}")
-                        }
-                        RgbFormat::Rgb => {
-                            write!(out, "rgb({r}, {g}, {b})")
-                        }
+                    RgbFormat::Rgb => {
+                        write!(out, "rgb({r}, {g}, {b})")
                     }
                 }
-            } else {
-                write_rgba(rgba, out, self.format)
             }
         } else if self.format.is_compressed() && rgba.all_zero() {
             write!(out, "transparent")

@@ -14,7 +14,6 @@ mod alpha {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn above() {
             assert_eq!(
                 runner().ok("a {b: hwb(0 30% 40% / 1.1)}\n"),
@@ -24,7 +23,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn below() {
             assert_eq!(
                 runner().ok("a {b: hwb(0 30% 40% / -0.1)}\n"),
@@ -39,7 +37,6 @@ mod alpha {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn named() {
             assert_eq!(
                 runner().ok("a {b: hwb($channels: 180 30% 40% / 0.4)}\n"),
@@ -49,7 +46,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn opaque() {
             assert_eq!(
                 runner().ok("a {b: hwb(180 30% 40% / 1)}\n"),
@@ -59,7 +55,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn parenthesized() {
             assert_eq!(
         runner().ok(
@@ -72,7 +67,6 @@ mod alpha {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn partial() {
             assert_eq!(
                 runner().ok("a {b: hwb(180 30% 40% / 0.5)}\n"),
@@ -82,7 +76,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn transparent() {
             assert_eq!(
                 runner().ok("a {b: hwb(180 30% 40% / 0)}\n"),
@@ -97,7 +90,7 @@ mod alpha {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn slash() {
             assert_eq!(
                 runner().ok("a {b: hwb(0 30% 40% / none)}\n"),
@@ -107,7 +100,7 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn slash_list() {
             assert_eq!(
                 runner().ok("@use \'sass:list\';\
@@ -124,7 +117,7 @@ mod missing {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn blackness() {
         assert_eq!(
             runner().ok("a {b: hwb(0 30% none)}\n"),
@@ -134,6 +127,7 @@ mod missing {
         );
     }
     #[test]
+    #[ignore] // unexepected error
     fn hue() {
         assert_eq!(
             runner().ok("a {b: hwb(none 30% 40%)}\n"),
@@ -143,7 +137,7 @@ mod missing {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn whiteness() {
         assert_eq!(
             runner().ok("a {b: hwb(0 none 40%)}\n"),
@@ -154,7 +148,6 @@ mod missing {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok("a {b: hwb($channels: 180 30% 40% / 0.4)}\n"),
@@ -164,7 +157,6 @@ fn named() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn no_alpha() {
     assert_eq!(
         runner().ok("a {b: hwb(180 30% 40%)}\n"),
@@ -233,7 +225,7 @@ mod relative_color {
             use super::runner;
 
             #[test]
-            #[ignore] // missing error
+            #[ignore] // wrong error
             fn alpha() {
                 assert_eq!(
         runner().err(
@@ -248,7 +240,7 @@ mod relative_color {
     );
             }
             #[test]
-            #[ignore] // missing error
+            #[ignore] // wrong error
             fn no_alpha() {
                 assert_eq!(
         runner().err(
@@ -268,7 +260,7 @@ mod relative_color {
             use super::runner;
 
             #[test]
-            #[ignore] // missing error
+            #[ignore] // wrong error
             fn alpha() {
                 assert_eq!(
         runner().err(
@@ -283,7 +275,7 @@ mod relative_color {
     );
             }
             #[test]
-            #[ignore] // missing error
+            #[ignore] // wrong error
             fn no_alpha() {
                 assert_eq!(
         runner().err(

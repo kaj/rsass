@@ -80,7 +80,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn fraction() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -105,7 +104,6 @@ mod middle {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn half_whiteness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -116,7 +114,6 @@ mod middle {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn high_whiteness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -127,7 +124,6 @@ mod middle {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn zero_whiteness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -149,7 +145,6 @@ fn min() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn named() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\

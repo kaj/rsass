@@ -14,61 +14,41 @@ pub enum Channels {
 impl TryFrom<Value> for Channels {
     type Error = ChaError;
     fn try_from(channels: Value) -> Result<Self, ChaError> {
-        if is_special(&channels) {
-            Ok(Self::Special(channels))
-        } else if let Value::List(vec, sep, bracketed) = channels.clone() {
-            if bracketed {
-                Err(ChaError::Bracketed)
-            } else {
-                use crate::value::Operator::Div;
-                match sep {
-                    Some(ListSeparator::Comma) => {
-                        return Err(ChaError::BadSep);
-                    }
-                    Some(ListSeparator::Slash) => match vec.as_slice() {
-                        [Value::List(inner, i_s, i_b), a] => {
-                            if *i_b {
-                                return Err(ChaError::Bracketed);
-                            }
-                            if i_s.unwrap_or_default() != ListSeparator::Space
-                            {
-                                return Err(ChaError::BadSep);
-                            }
-                            Ok(inner_channels(inner)?.map_or_else(
-                                || Self::Special(channels),
-                                |[c1, c2, c3]| {
-                                    Self::Data([c1, c2, c3, a.clone()])
-                                },
-                            ))
-                        }
-                        [h, _a] => {
-                            if is_special(h) {
-                                Ok(Self::Special(channels))
-                            } else {
-                                Err(ChaError::Missing1)
-                            }
-                        }
-                        list => Err(ChaError::SlashBadNum(list.len())),
-                    },
-                    _ => match vec.as_slice() {
-                        [r, g, Value::BinOp(op)] if op.op() == Div => {
-                            Ok(Self::Data([
-                                r.clone(),
-                                g.clone(),
-                                op.a().clone(),
-                                op.b().clone(),
-                            ]))
-                        }
-                        other => Ok(inner_channels(other)?
-                            .map(|[c1, c2, c3]| {
-                                Self::Data([c1, c2, c3, Value::Null])
-                            })
-                            .unwrap_or_else(|| Self::Special(channels))),
-                    },
-                }
+        use crate::value::Operator::Div;
+        match &channels {
+            c if is_special(c) => Ok(Self::Special(channels)),
+            Value::List(_, _, true) => Err(ChaError::Bracketed),
+            Value::List(_, Some(ListSeparator::Comma), _) => {
+                Err(ChaError::BadSep)
             }
-        } else {
-            Err(ChaError::Missing1)
+            Value::List(v, Some(ListSeparator::Slash), _) => match &v[..] {
+                [Value::List(_, _, true), _] => Err(ChaError::Bracketed),
+                [Value::List(_, Some(i_s), _), _]
+                    if *i_s != ListSeparator::Space =>
+                {
+                    Err(ChaError::BadSep)
+                }
+                [Value::List(inner, _, _), a] => Ok(inner_channels(inner)?
+                    .map(|[c1, c2, c3]| Self::Data([c1, c2, c3, a.clone()]))
+                    .unwrap_or_else(|| Self::Special(channels))),
+                [h, _a] if is_special(h) => Ok(Self::Special(channels)),
+                [_, _] => Err(ChaError::Missing1),
+                list => Err(ChaError::SlashBadNum(list.len())),
+            },
+            Value::List(vec, _, false) => match &vec[..] {
+                [r, g, Value::BinOp(op)] if op.op() == Div => {
+                    Ok(Self::Data([
+                        r.clone(),
+                        g.clone(),
+                        op.a().clone(),
+                        op.b().clone(),
+                    ]))
+                }
+                other => Ok(inner_channels(other)?
+                    .map(|[c1, c2, c3]| Self::Data([c1, c2, c3, Value::Null]))
+                    .unwrap_or_else(|| Self::Special(channels))),
+            },
+            _ => Err(ChaError::Missing1),
         }
     }
 }

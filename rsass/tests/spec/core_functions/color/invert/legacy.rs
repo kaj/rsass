@@ -30,7 +30,6 @@ mod no_space {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn hsl() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -41,7 +40,6 @@ mod no_space {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn hwb() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

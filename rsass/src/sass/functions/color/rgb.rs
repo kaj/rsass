@@ -59,7 +59,7 @@ pub fn register(f: &mut Scope) {
         match s.get(name!(color))? {
             Value::Color(col, _) => {
                 let w = s.get_map(name!(weight), check_pct_range)?;
-                Ok(do_invert(col, w))
+                Ok(col.invert(w).into())
             }
             col => {
                 let w = s.get_map(name!(weight), check_pct_range)?;
@@ -94,7 +94,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         match s.get(name!(color))? {
             Value::Color(col, _) => {
                 let w = s.get_map(name!(weight), check_pct_range)?;
-                Ok(do_invert(col, w))
+                Ok(col.invert(w).into())
             }
             col => {
                 let w = s.get_map(name!(weight), check_pct_range)?;
@@ -114,19 +114,6 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         let f = f.get_lfunction(&name);
         global.insert(name, f);
     }
-}
-
-fn do_invert(col: Color, w: Rational) -> Value {
-    let rgba = col.to_rgba();
-    let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
-    Rgba::new(
-        inv(rgba.red()),
-        inv(rgba.green()),
-        inv(rgba.blue()),
-        rgba.alpha(),
-        rgba.source(),
-    )
-    .into()
 }
 
 fn do_rgba(fn_name: &Name, s: &ResolvedArgs) -> Result<Value, CallError> {
