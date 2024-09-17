@@ -14,7 +14,6 @@ mod clamped {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn above() {
             assert_eq!(
                 runner().ok("a {b: hsl(0 100% 500%)}\n"),
@@ -24,7 +23,6 @@ mod clamped {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn below() {
             assert_eq!(
                 runner().ok("a {b: hsl(0 100% -100%)}\n"),
@@ -139,7 +137,6 @@ mod out_of_gamut {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn above() {
             assert_eq!(
                 runner().ok("a {b: hsl(0 500% 50%)}\n"),

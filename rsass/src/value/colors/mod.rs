@@ -25,6 +25,10 @@ pub enum Color {
 }
 
 impl Color {
+    pub(crate) fn is_rgb(&self) -> bool {
+        matches!(self, Self::Rgba(_))
+    }
+
     /// Get this color as a rgba value.
     ///
     /// If this color is a rgba value, return a borrow of it.
@@ -111,6 +115,13 @@ impl Color {
             .into(),
         }
     }
+    pub(crate) fn invert(&self, weight: Rational) -> Self {
+        match self {
+            Color::Rgba(rgba) => rgba.invert(weight).into(),
+            Color::Hsla(hsla) => hsla.invert(weight).into(),
+            Color::Hwba(hwba) => Rgba::from(hwba).invert(weight).into(),
+        }
+    }
     pub(crate) fn reset_source(&mut self) {
         match self {
             Self::Rgba(rgba) => rgba.reset_source(),
@@ -149,6 +160,9 @@ impl<'a> Display for Formatted<'a, Color> {
             Color::Rgba(rgba) => rgba.format(self.format).fmt(out),
             Color::Hsla(hsla) if hsla.hsla_format => {
                 hsla.format(self.format).fmt(out)
+            }
+            Color::Hwba(hwba) => {
+                Hsla::from(hwba).format(self.format).fmt(out)
             }
             any => any.to_rgba().format(self.format).fmt(out),
         }

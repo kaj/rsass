@@ -22,7 +22,6 @@ fn legacy_channel() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn legacy_space() {
     assert_eq!(
         runner().err(

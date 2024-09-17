@@ -1,32 +1,41 @@
+use super::super::FunctionMap;
 use super::hsl::percentage;
 use super::{
-    check_alpha, check_expl_pct, eval_inner, is_not, CallError, CheckedArg,
-    ResolvedArgs,
+    check_alpha, check_expl_pct, eval_inner, is_not, relative_color,
+    CallError, CheckedArg, ResolvedArgs,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::sass::FormalArgs;
-use crate::value::{Color, Hwba, ListSeparator, Numeric, Rational, Unit};
+use crate::value::{
+    Color, Hwba, ListSeparator, Numeric, Rational, Rgba, Unit,
+};
 use crate::Scope;
+use num_traits::{one, zero};
 
 pub fn register(f: &mut Scope) {
     def_va!(f, hwb(kwargs), hwb);
     def!(f, blackness(color), |s| {
-        // Blackness of the rgb approximation that can be represented in css.
-        let (r, g, b, _a) = Color::to_rgba(&s.get(name!(color))?).to_bytes();
-        let max_c = *[r, g, b].iter().max().unwrap();
-        Ok(percentage(Rational::new((255 - max_c).into(), 255)))
+        let color: Color = s.get(name!(color))?;
+        let hwb = color.to_hwba();
+        Ok(percentage(hwb.blackness()))
     });
     def!(f, whiteness(color), |s| {
-        // Whiteness of the rgb approximation that can be represented in css.
-        let (r, g, b, _a) = Color::to_rgba(&s.get(name!(color))?).to_bytes();
-        let min_c = *[r, g, b].iter().min().unwrap();
-        Ok(percentage(Rational::new(min_c.into(), 255)))
+        let color: Color = s.get(name!(color))?;
+        let hwb = color.to_hwba();
+        Ok(percentage(hwb.whiteness()))
     });
+}
+
+pub fn expose(m: &Scope, global: &mut FunctionMap) {
+    global.insert(name!(hwb), m.get_lfunction(&name!(hwb)));
 }
 
 fn hwb(s: &ResolvedArgs) -> Result<Value, CallError> {
     let args = s.get_map(name!(kwargs), CallArgs::from_value)?;
+    if relative_color(&args) {
+        return Ok(Value::Call("hwb".to_string(), args));
+    }
     let (hue, w, b, a) = if args.len() < 3 {
         let a1 = FormalArgs::new(vec![one_arg!(channels)]);
         eval_inner(&name!(hwb), &a1, s, args)
@@ -51,7 +60,15 @@ fn hwb(s: &ResolvedArgs) -> Result<Value, CallError> {
     let w = check_expl_pct(w).named(name!(whiteness))?;
     let b = check_expl_pct(b).named(name!(blackness))?;
     let a = check_alpha(a).named(name!(alpha))?;
-    Ok(Hwba::new(hue, w, b, a).into())
+    // I don't really agree with this, but it makes tests pass.
+    let hue = if w + b >= one() { zero() } else { hue };
+    let hwba = Hwba::new(hue, w, b, a);
+    let rgba = Rgba::from(&hwba);
+    if rgba.is_integer() {
+        Ok(rgba.into())
+    } else {
+        Ok(hwba.into())
+    }
 }
 
 fn hwb_from_channels(

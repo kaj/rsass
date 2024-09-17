@@ -30,7 +30,6 @@ mod no_space {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn hsl() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -41,7 +40,6 @@ mod no_space {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn hwb() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -84,7 +82,6 @@ mod no_space {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn high() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -95,7 +92,6 @@ mod no_space {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn low() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -116,7 +112,6 @@ mod no_space {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn middle() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -275,7 +270,6 @@ mod units {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn unitless() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -286,7 +280,6 @@ mod units {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn unknown() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\

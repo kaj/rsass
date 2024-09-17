@@ -32,7 +32,6 @@ mod calc {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn arg_3() {
             assert_eq!(
                 runner().ok("a {b: rgb(1 2 calc(1px + 1%) / 0.4)}\n"),
@@ -42,7 +41,6 @@ mod calc {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn arg_4() {
             assert_eq!(
                 runner().ok("a {b: rgb(1 2 3 / calc(1px + 1%))}\n"),
@@ -77,7 +75,6 @@ mod calc {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn arg_3() {
             assert_eq!(
                 runner().ok("@use \"sass:string\";\
@@ -88,7 +85,6 @@ mod calc {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn arg_4() {
             assert_eq!(
                 runner().ok("@use \"sass:string\";\
@@ -129,7 +125,6 @@ mod clamp {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn arg_3() {
             assert_eq!(
                 runner().ok("@use \"sass:string\";\
@@ -140,7 +135,6 @@ mod clamp {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn arg_4() {
             assert_eq!(
         runner().ok(
@@ -177,7 +171,6 @@ mod env {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn arg_3() {
         assert_eq!(
             runner().ok("a {b: rgb(1 2 env(--foo) / 0.4)}\n"),
@@ -187,7 +180,6 @@ mod env {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn arg_4() {
         assert_eq!(
             runner().ok("a {b: rgb(1 2 3 / env(--foo))}\n"),
@@ -226,7 +218,6 @@ mod max {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn arg_3() {
             assert_eq!(
                 runner().ok("@use \"sass:string\";\
@@ -237,7 +228,6 @@ mod max {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn arg_4() {
             assert_eq!(
                 runner().ok("@use \"sass:string\";\
@@ -278,7 +268,6 @@ mod min {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn arg_3() {
             assert_eq!(
                 runner().ok("@use \"sass:string\";\
@@ -289,7 +278,6 @@ mod min {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn arg_4() {
             assert_eq!(
                 runner().ok("@use \"sass:string\";\
@@ -359,7 +347,6 @@ mod var {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn arg_3() {
         assert_eq!(
             runner().ok("a {b: rgb(1 2 var(--foo) / 0.4)}\n"),
@@ -369,7 +356,6 @@ mod var {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn arg_4() {
         assert_eq!(
             runner().ok("a {b: rgb(1 2 3 / var(--foo))}\n"),

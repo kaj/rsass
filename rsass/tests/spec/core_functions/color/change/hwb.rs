@@ -66,7 +66,6 @@ mod blackness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -148,7 +147,6 @@ mod whiteness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

@@ -14,7 +14,6 @@ mod alpha {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn above() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -25,7 +24,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn below() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -41,7 +39,6 @@ mod alpha {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn named() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -52,7 +49,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn opaque() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -63,7 +59,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn parenthesized() {
             assert_eq!(
         runner().ok(
@@ -77,7 +72,6 @@ mod alpha {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn partial() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -88,7 +82,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn transparent() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -182,7 +175,6 @@ mod hue {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -193,7 +185,6 @@ fn named() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn no_alpha() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -263,7 +254,7 @@ mod relative_color {
             use super::runner;
 
             #[test]
-            #[ignore] // missing error
+            #[ignore] // wrong error
             fn alpha() {
                 assert_eq!(
         runner().err(
@@ -278,7 +269,7 @@ mod relative_color {
     );
             }
             #[test]
-            #[ignore] // missing error
+            #[ignore] // wrong error
             fn no_alpha() {
                 assert_eq!(
         runner().err(
@@ -298,7 +289,7 @@ mod relative_color {
             use super::runner;
 
             #[test]
-            #[ignore] // missing error
+            #[ignore] // wrong error
             fn alpha() {
                 assert_eq!(
         runner().err(
@@ -313,7 +304,7 @@ mod relative_color {
     );
             }
             #[test]
-            #[ignore] // missing error
+            #[ignore] // wrong error
             fn no_alpha() {
                 assert_eq!(
         runner().err(

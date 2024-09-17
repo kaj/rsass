@@ -24,7 +24,6 @@ mod mixed {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn firstwards() {
         assert_eq!(
             runner().ok(
@@ -36,7 +35,6 @@ mod mixed {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn lastwards() {
         assert_eq!(
             runner().ok(

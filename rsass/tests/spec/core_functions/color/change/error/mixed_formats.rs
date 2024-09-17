@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong error
 fn blue_and_lightness() {
     assert_eq!(
         runner().err(
@@ -22,7 +21,6 @@ fn blue_and_lightness() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn green_and_saturation() {
     assert_eq!(
         runner().err(
@@ -38,7 +36,6 @@ fn green_and_saturation() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn green_and_whiteness() {
     assert_eq!(
         runner().err(
@@ -54,7 +51,6 @@ fn green_and_whiteness() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn lightness_and_whiteness() {
     assert_eq!(
         runner().err(
@@ -70,7 +66,6 @@ fn lightness_and_whiteness() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn red_and_blackness() {
     assert_eq!(
         runner().err(
@@ -86,7 +81,6 @@ fn red_and_blackness() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn red_and_hue() {
     assert_eq!(
         runner().err(
@@ -102,7 +96,6 @@ fn red_and_hue() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn saturation_and_blackness() {
     assert_eq!(
         runner().err(

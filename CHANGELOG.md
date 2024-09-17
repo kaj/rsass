@@ -19,6 +19,8 @@ project adheres to
 
 ### Other changes:
 
+* Lots of color handling.
+  - Spec changes for traditional css colors (PR #198).
 * Updated sass-spec test suite to 2024-09-13.
 
 

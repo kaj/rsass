@@ -72,17 +72,14 @@ impl Rgba {
         }
     }
 
+    fn is_opaque(&self) -> bool {
+        self.alpha >= one()
+    }
     /// If this color is equal to a named color, get the name.
-    ///
-    /// Each component is rounded to its byte value before lookup.
     pub fn name(&self) -> Option<&'static str> {
-        if self.alpha >= Rational::one() {
-            let (r, g, b, _a) = self.to_bytes();
-            let c = u32::from_be_bytes([0, r, g, b]);
-            LOOKUP.v2n.get(&c).copied()
-        } else {
-            None
-        }
+        self.try_bytes()
+            .map(|(r, g, b)| u32::from_be_bytes([0, r, g, b]))
+            .and_then(|c| LOOKUP.v2n.get(&c).copied())
     }
     /// If `name` is a known color name, get the corresponding rgba value.
     pub fn from_name(name: &str) -> Option<Self> {
@@ -116,6 +113,12 @@ impl Rgba {
             && self.green.is_zero()
             && self.blue.is_zero()
     }
+    pub(crate) fn is_integer(&self) -> bool {
+        self.red.is_integer()
+            && self.green.is_integer()
+            && self.blue.is_integer()
+            && self.is_opaque()
+    }
     /// Get a (r, g, b, a) byte-value tuple for this color.
     pub fn to_bytes(&self) -> (u8, u8, u8, u8) {
         fn byte(v: Rational) -> u8 {
@@ -123,6 +126,29 @@ impl Rgba {
         }
         let a = self.alpha * 255;
         (byte(self.red), byte(self.green), byte(self.blue), byte(a))
+    }
+    /// Get a (r, g, b) byte-value tuple for this color.
+    ///
+    /// If the color is not opaque or not exactly equal to a byte
+    /// value, return None.
+    pub fn try_bytes(&self) -> Option<(u8, u8, u8)> {
+        if !self.is_opaque() {
+            return None;
+        }
+        fn byte(v: Rational) -> Option<u8> {
+            if v.is_integer() {
+                Some(v.round().to_integer() as u8)
+            } else {
+                None
+            }
+        }
+        if let (Some(r), Some(g), Some(b)) =
+            (byte(self.red), byte(self.green), byte(self.blue))
+        {
+            Some((r, g, b))
+        } else {
+            None
+        }
     }
     /// Get the red component.
     pub fn red(&self) -> Rational {
@@ -148,6 +174,18 @@ impl Rgba {
     pub fn set_alpha(&mut self, alpha: Rational) {
         self.alpha = cap(alpha, &one());
     }
+
+    pub(crate) fn invert(&self, weight: Rational) -> Self {
+        let inv = |v: Rational| -(v - 255) * weight + v * -(weight - 1);
+        Rgba::new(
+            inv(self.red()),
+            inv(self.green()),
+            inv(self.blue()),
+            self.alpha(),
+            self.source(),
+        )
+    }
+
     /// Get the source type of this color.
     pub(crate) fn source(&self) -> RgbFormat {
         self.source
@@ -394,9 +432,7 @@ impl<'a> Display for Formatted<'a, Rgba> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         // The byte-version of alpha is not used here.
         let rgba = self.value;
-        let (r, g, b, _a) = rgba.to_bytes();
-        let a = self.value.alpha;
-        if a >= Rational::one() {
+        if let Some((r, g, b)) = rgba.try_bytes() {
             // E.g. #ff00cc can be written #f0c in css.
             // 0xff / 0x11 = 0xf.
             let short = r % 0x11 == 0 && g % 0x11 == 0 && b % 0x11 == 0;
@@ -439,20 +475,36 @@ impl<'a> Display for Formatted<'a, Rgba> {
             }
         } else if self.format.is_compressed() && rgba.all_zero() {
             write!(out, "transparent")
-        } else if self.format.is_compressed() {
-            // Note: libsass does not use the format for the alpha like this.
-            let a = Number::from(a);
-            write!(out, "rgba({},{},{},{})", r, g, b, a.format(self.format))
         } else {
-            let a = Number::from(a);
-            write!(
-                out,
-                "rgba({}, {}, {}, {})",
-                r,
-                g,
-                b,
-                a.format(self.format)
-            )
+            write_rgba(rgba, out, self.format)
+        }
+    }
+}
+
+fn write_rgba(
+    rgba: &Rgba,
+    out: &mut fmt::Formatter,
+    format: Format,
+) -> fmt::Result {
+    let r = Number::from(rgba.red);
+    let g = Number::from(rgba.green);
+    let b = Number::from(rgba.blue);
+    let r = r.format(format);
+    let g = g.format(format);
+    let b = b.format(format);
+    if rgba.is_opaque() {
+        if format.is_compressed() {
+            write!(out, "rgb({r},{g},{b})")
+        } else {
+            write!(out, "rgb({r}, {g}, {b})")
+        }
+    } else {
+        let a = Number::from(rgba.alpha);
+        let a = a.format(format);
+        if format.is_compressed() {
+            write!(out, "rgba({r},{g},{b},{a})")
+        } else {
+            write!(out, "rgba({r}, {g}, {b}, {a})")
         }
     }
 }

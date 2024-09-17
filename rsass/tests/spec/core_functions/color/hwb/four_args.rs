@@ -72,7 +72,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn min() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -83,7 +82,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -94,7 +92,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn positive() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -130,7 +127,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn min() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -141,7 +137,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -152,7 +147,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn positive() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -306,7 +300,6 @@ mod hue {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok(

@@ -10,7 +10,6 @@ mod hue {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn deg() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -32,7 +31,6 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn rad() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

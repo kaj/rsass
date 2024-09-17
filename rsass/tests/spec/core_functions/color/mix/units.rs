@@ -10,7 +10,6 @@ mod weight {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn unitless() {
         assert_eq!(
             runner().ok("a {b: mix(#91e16f, #0144bf, 50)}\n"),
@@ -20,7 +19,6 @@ mod weight {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn unknown() {
         assert_eq!(
             runner().ok("a {b: mix(#91e16f, #0144bf, 50px)}\n"),

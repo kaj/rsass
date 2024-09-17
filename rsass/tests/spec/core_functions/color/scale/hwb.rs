@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn all() {
     assert_eq!(
         runner().ok(
@@ -19,7 +18,6 @@ fn all() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn alpha_arg() {
     assert_eq!(
         runner().ok(
@@ -32,7 +30,6 @@ fn alpha_arg() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn alpha_input() {
     assert_eq!(
         runner().ok(
@@ -49,7 +46,6 @@ mod blackness {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn high() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -60,7 +56,6 @@ mod blackness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn low() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -71,7 +66,6 @@ mod blackness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -103,7 +97,6 @@ mod blackness {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok(
@@ -120,7 +113,6 @@ mod whiteness {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn high() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -131,7 +123,6 @@ mod whiteness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn low() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -142,7 +133,6 @@ mod whiteness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

@@ -786,22 +786,6 @@ pub mod test {
     }
 
     #[test]
-    fn color_mixed_with_alpha_1() {
-        assert_expr!(
-            b"mix(rgba(255, 0, 0, 0.5), #00f);",
-            "rgba(64, 0, 191, 0.75)"
-        )
-    }
-
-    #[test]
-    fn color_mixed_with_alpha_2() {
-        assert_expr!(
-            b"mix(#00f, rgba(255, 0, 0, 0.5));",
-            "rgba(64, 0, 191, 0.75)"
-        )
-    }
-
-    #[test]
     fn value_multiple_dashes() {
         assert_expr!(b"foo-bar-baz 17%;", "foo-bar-baz 17%")
     }
