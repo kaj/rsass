@@ -14,7 +14,6 @@ mod alpha {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn nan() {
             assert_eq!(
                 runner().ok("a {b: hsl(0, 100%, 50%, calc(NaN))}\n"),
@@ -24,7 +23,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("a {b: hsl(0, 100%, 50%, calc(-infinity))}\n"),
@@ -34,7 +32,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("a {b: hsl(0, 100%, 50%, calc(infinity))}\n"),
@@ -77,7 +74,6 @@ mod hue {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn nan() {
             assert_eq!(
                 runner().ok("a {b: hsl(calc(NaN), 100%, 50%)}\n"),
@@ -87,7 +83,6 @@ mod hue {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("a {b: hsl(calc(-infinity), 100%, 50%)}\n"),
@@ -97,7 +92,6 @@ mod hue {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("a {b: hsl(calc(infinity), 100%, 50%)}\n"),
@@ -117,7 +111,6 @@ mod lightness {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn nan() {
             assert_eq!(
                 runner().ok("a {b: hsl(0, 100%, calc(NaN))}\n"),
@@ -127,7 +120,6 @@ mod lightness {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("a {b: hsl(0, 100%, calc(-infinity))}\n"),
@@ -137,7 +129,6 @@ mod lightness {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("a {b: hsl(0, 100%, calc(infinity))}\n"),
@@ -166,7 +157,6 @@ mod saturation {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn nan() {
             assert_eq!(
                 runner().ok("a {b: hsl(0, calc(NaN), 50%)}\n"),
@@ -176,7 +166,6 @@ mod saturation {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("a {b: hsl(0, calc(-infinity), 50%)}\n"),
@@ -186,7 +175,6 @@ mod saturation {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("a {b: hsl(0, calc(infinity), 50%)}\n"),

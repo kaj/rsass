@@ -7,9 +7,8 @@ use super::{
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::sass::{ArgsError, FormalArgs, Name};
-use crate::value::{Color, Hsla, Numeric, Rational, Unit};
+use crate::value::{Color, Hsla, Numeric, Unit};
 use crate::Scope;
-use num_traits::{one, zero};
 
 pub fn register(f: &mut Scope) {
     def_va!(f, _hsl(kwargs), |s| do_hsla(&name!(hsl), s));
@@ -32,10 +31,8 @@ pub fn register(f: &mut Scope) {
         Value::Color(col, _) => {
             let is_rgb = col.is_rgb();
             let col = col.to_hsla();
-            Ok(
-                Hsla::new(col.hue(), zero(), col.lum(), col.alpha(), !is_rgb)
-                    .into(),
-            )
+            Ok(Hsla::new(col.hue(), 0., col.lum(), col.alpha(), !is_rgb)
+                .into())
         }
         v @ Value::Numeric(..) => Ok(Value::call("grayscale", [v])),
         v => Err(is_not(&v, "a color")).named(name!(color)),
@@ -77,8 +74,10 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     def!(f, grayscale(color), |args| match args.get(name!(color))? {
         Value::Color(col, _) => {
             let col = col.to_hsla();
-            Ok(Hsla::new(col.hue(), zero(), col.lum(), col.alpha(), false)
-                .into())
+            Ok(
+                Hsla::new(col.hue(), 0., col.lum(), col.alpha(), false)
+                    .into(),
+            )
         }
         v => NumOrSpecial::try_from(v)
             .map_err(|e| is_not(e.value(), "a color"))
@@ -94,7 +93,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
                 let col = s.get::<Color>(name!(color))?;
                 let sat = s.get_map(name!(amount), check_amount)?;
                 let col = col.to_hsla();
-                let sat = (col.sat() + sat).clamp(zero(), one());
+                let sat = (col.sat() + sat).clamp(0., 1.);
                 Ok(Hsla::new(col.hue(), sat, col.lum(), col.alpha(), false)
                     .into())
             }
@@ -186,7 +185,7 @@ fn hsla_from_values(
     } else {
         Ok(Hsla::new(
             check_hue(h).named(name!(hue))?,
-            check_pct_opt(s).named(name!(saturation))?,
+            f64::max(0., check_pct_opt(s).named(name!(saturation))?),
             check_pct_opt(l).named(name!(lightness))?,
             check_alpha(a).named(name!(alpha))?,
             true, // ??
@@ -195,13 +194,13 @@ fn hsla_from_values(
     }
 }
 
-pub fn percentage(v: Rational) -> Value {
+pub fn percentage(v: f64) -> Value {
     Numeric::percentage(v).into()
 }
 
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
-fn check_pct_opt(v: Value) -> Result<Rational, String> {
+fn check_pct_opt(v: Value) -> Result<f64, String> {
     let v = Numeric::try_from(v)?;
     if !v.unit.is_percent() {
         // Note: The deprecation warning should include the parameter name
@@ -214,7 +213,7 @@ fn check_pct_opt(v: Value) -> Result<Rational, String> {
             v.unit
         );
     }
-    Ok(v.as_ratio()? / 100)
+    Ok(f64::from(v.value) / 100.)
 }
 
 #[test]

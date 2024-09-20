@@ -6,9 +6,8 @@ use super::{
 };
 use crate::css::{CallArgs, Value};
 use crate::sass::{ArgsError, FormalArgs, Name};
-use crate::value::{Color, Rational, RgbFormat, Rgba};
+use crate::value::{Color, RgbFormat, Rgba};
 use crate::Scope;
-use num_traits::{one, Zero};
 
 pub fn register(f: &mut Scope) {
     def_va!(f, _rgb(kwargs), |s| do_rgba(&name!(rgb), s));
@@ -31,26 +30,25 @@ pub fn register(f: &mut Scope) {
         let b: Color = s.get(name!(color2))?;
         let b = b.to_rgba();
         let w = s.get_map(name!(weight), check_pct_range)?;
-        let one: Rational = one();
 
         let w_a = {
             let wa = a.alpha() - b.alpha();
-            let w2 = w * 2 - 1;
-            let divis = w2 * wa + 1;
-            if divis.is_zero() {
+            let w2 = w * 2. - 1.;
+            let divis = w2 * wa + 1.;
+            if divis == 0. {
                 w
             } else {
-                (((w2 + wa) / divis) + 1) / 2
+                (((w2 + wa) / divis) + 1.) / 2.
             }
         };
-        let w_b = one - w_a;
+        let w_b = 1. - w_a;
 
         let m_c = |c_a, c_b| w_a * c_a + w_b * c_b;
         Ok(Rgba::new(
             m_c(a.red(), b.red()),
             m_c(a.green(), b.green()),
             m_c(a.blue(), b.blue()),
-            a.alpha() * w + b.alpha() * (one - w),
+            a.alpha() * w + b.alpha() * (1. - w),
             RgbFormat::Name,
         )
         .into())
@@ -63,7 +61,7 @@ pub fn register(f: &mut Scope) {
             }
             col => {
                 let w = s.get_map(name!(weight), check_pct_range)?;
-                if w == one() {
+                if w == 1. {
                     match col {
                         v @ Value::Numeric(..) => {
                             Ok(Value::call("invert", [v]))
@@ -98,7 +96,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
             }
             col => {
                 let w = s.get_map(name!(weight), check_pct_range)?;
-                if w == one() {
+                if w == 1. {
                     NumOrSpecial::try_from(col)
                         .map_err(|e| is_not(e.value(), "a color"))
                         .named(name!(color))

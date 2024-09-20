@@ -1,10 +1,8 @@
 //! Color names from <https://www.w3.org/TR/css3-color/>
 #![allow(clippy::unreadable_literal)]
-use super::Rational;
 use crate::output::{Format, Formatted};
 use crate::value::Number;
 use lazy_static::lazy_static;
-use num_traits::{one, zero, One, Signed, Zero};
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use std::fmt::{self, Display};
@@ -12,10 +10,10 @@ use std::fmt::{self, Display};
 /// A color defined by red, green, blue, and alpha components.
 #[derive(Clone, Debug)]
 pub struct Rgba {
-    red: Rational,
-    green: Rational,
-    blue: Rational,
-    alpha: Rational,
+    red: f64,
+    green: f64,
+    blue: f64,
+    alpha: f64,
     source: RgbFormat,
 }
 
@@ -34,46 +32,39 @@ pub enum RgbFormat {
 
 impl Rgba {
     /// Create a new rgba color.
-    pub fn new(
-        r: Rational,
-        g: Rational,
-        b: Rational,
-        a: Rational,
-        s: RgbFormat,
-    ) -> Self {
-        let ff = Rational::new(255, 1);
-        let one = Rational::one();
+    pub fn new(r: f64, g: f64, b: f64, a: f64, s: RgbFormat) -> Self {
+        let ff = 255.;
         Self {
-            red: cap(r, &ff),
-            green: cap(g, &ff),
-            blue: cap(b, &ff),
-            alpha: cap(a, &one),
+            red: cap(r, ff),
+            green: cap(g, ff),
+            blue: cap(b, ff),
+            alpha: cap(a, 1.),
             source: s,
         }
     }
     /// Create a color from rgb byte values.
     pub fn from_rgb(r: u8, g: u8, b: u8) -> Self {
         Self {
-            red: Rational::from_integer(r.into()),
-            green: Rational::from_integer(g.into()),
-            blue: Rational::from_integer(b.into()),
-            alpha: Rational::one(),
+            red: r.into(),
+            green: g.into(),
+            blue: b.into(),
+            alpha: 1.0,
             source: RgbFormat::LongHex,
         }
     }
     /// Create a color from rgba byte values.
     pub fn from_rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
         Self {
-            red: Rational::from_integer(r.into()),
-            green: Rational::from_integer(g.into()),
-            blue: Rational::from_integer(b.into()),
-            alpha: Rational::from_integer(a.into()) / 255,
+            red: r.into(),
+            green: g.into(),
+            blue: b.into(),
+            alpha: f64::from(a) / 255.,
             source: RgbFormat::LongHex,
         }
     }
 
     fn is_opaque(&self) -> bool {
-        self.alpha >= one()
+        self.alpha >= 1.
     }
     /// If this color is equal to a named color, get the name.
     pub fn name(&self) -> Option<&'static str> {
@@ -86,46 +77,37 @@ impl Rgba {
         let name = name.to_lowercase();
         let name: &str = &name;
         if name == "transparent" {
-            return Some(Self::new(
-                zero(),
-                zero(),
-                zero(),
-                zero(),
-                RgbFormat::Name,
-            ));
+            return Some(Self::new(0., 0., 0., 0., RgbFormat::Name));
         }
         LOOKUP.n2v.get(name).map(|n| {
             let [_, r, g, b] = n.to_be_bytes();
-            Self::new(
-                i64::from(r).into(),
-                i64::from(g).into(),
-                i64::from(b).into(),
-                one(),
-                RgbFormat::Name,
-            )
+            Self::new(r.into(), g.into(), b.into(), 1., RgbFormat::Name)
         })
     }
 
     /// Return true if all chanels are zero.
     pub fn all_zero(&self) -> bool {
-        self.alpha.is_zero()
-            && self.red.is_zero()
-            && self.green.is_zero()
-            && self.blue.is_zero()
+        self.alpha == 0.
+            && self.red == 0.
+            && self.green == 0.
+            && self.blue == 0.
     }
     pub(crate) fn is_integer(&self) -> bool {
-        self.red.is_integer()
-            && self.green.is_integer()
-            && self.blue.is_integer()
+        near_integer(self.red)
+            && near_integer(self.green)
+            && near_integer(self.blue)
             && self.is_opaque()
     }
     /// Get a (r, g, b, a) byte-value tuple for this color.
     pub fn to_bytes(&self) -> (u8, u8, u8, u8) {
-        fn byte(v: Rational) -> u8 {
-            v.round().to_integer() as u8
+        fn byte(v: f64) -> u8 {
+            v.round() as u8
         }
-        let a = self.alpha * 255;
-        (byte(self.red), byte(self.green), byte(self.blue), byte(a))
+        fn fb(v: f64) -> u8 {
+            v.round() as u8
+        }
+        let a = self.alpha * 255.;
+        (byte(self.red), byte(self.green), byte(self.blue), fb(a))
     }
     /// Get a (r, g, b) byte-value tuple for this color.
     ///
@@ -135,9 +117,9 @@ impl Rgba {
         if !self.is_opaque() {
             return None;
         }
-        fn byte(v: Rational) -> Option<u8> {
-            if v.is_integer() {
-                Some(v.round().to_integer() as u8)
+        fn byte(v: f64) -> Option<u8> {
+            if (v.round() - v).abs() < 1e-7 {
+                Some(v.round() as u8)
             } else {
                 None
             }
@@ -151,32 +133,32 @@ impl Rgba {
         }
     }
     /// Get the red component.
-    pub fn red(&self) -> Rational {
+    pub fn red(&self) -> f64 {
         self.red
     }
     /// Get the green component.
-    pub fn green(&self) -> Rational {
+    pub fn green(&self) -> f64 {
         self.green
     }
     /// Get the blue component.
-    pub fn blue(&self) -> Rational {
+    pub fn blue(&self) -> f64 {
         self.blue
     }
     /// Get the alpha value of this color.
     ///
     /// Zero is fully transparent, one is fully opaque.
-    pub fn alpha(&self) -> Rational {
+    pub fn alpha(&self) -> f64 {
         self.alpha
     }
     /// Set the alpha value of this color.
     ///
     /// Zero is fully transparent, one is fully opaque.
-    pub fn set_alpha(&mut self, alpha: Rational) {
-        self.alpha = cap(alpha, &one());
+    pub fn set_alpha(&mut self, alpha: f64) {
+        self.alpha = alpha.clamp(0., 1.);
     }
 
-    pub(crate) fn invert(&self, weight: Rational) -> Self {
-        let inv = |v: Rational| -(v - 255) * weight + v * -(weight - 1);
+    pub(crate) fn invert(&self, weight: f64) -> Self {
+        let inv = |v: f64| -(v - 255.) * weight + v * (1. - weight);
         Rgba::new(
             inv(self.red()),
             inv(self.green()),
@@ -216,10 +198,11 @@ impl Ord for Rgba {
     fn cmp(&self, other: &Self) -> Ordering {
         // ignores source!
         self.red
-            .cmp(&other.red)
-            .then_with(|| self.green.cmp(&other.green))
-            .then_with(|| self.blue.cmp(&other.blue))
-            .then_with(|| self.alpha.cmp(&other.alpha))
+            .partial_cmp(&other.red)
+            .unwrap()
+            .then_with(|| self.green.partial_cmp(&other.green).unwrap())
+            .then_with(|| self.blue.partial_cmp(&other.blue).unwrap())
+            .then_with(|| self.alpha.partial_cmp(&other.alpha).unwrap())
     }
 }
 impl PartialOrd for Rgba {
@@ -228,14 +211,8 @@ impl PartialOrd for Rgba {
     }
 }
 
-fn cap(n: Rational, max: &Rational) -> Rational {
-    if n > *max {
-        *max
-    } else if n.is_negative() {
-        Rational::zero()
-    } else {
-        n
-    }
+fn cap(n: f64, max: f64) -> f64 {
+    f64::min(f64::max(0., n), max)
 }
 
 #[test]
@@ -507,4 +484,8 @@ fn write_rgba(
             write!(out, "rgba({r}, {g}, {b}, {a})")
         }
     }
+}
+
+fn near_integer(v: f64) -> bool {
+    (v - v.round()).abs() < 1e-7
 }

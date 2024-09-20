@@ -1,16 +1,15 @@
 use super::{
     check_alpha_pm, check_alpha_range, check_channel_pm, check_channel_range,
-    check_expl_pct, check_hue, expected_to, CallError, CheckedArg,
-    FunctionMap, Name,
+    check_expl_pct, check_hue, check_pct, check_pct_range, expected_to,
+    CallError, CheckedArg, FunctionMap, Name,
 };
 use crate::css::{CallArgs, Value};
-use crate::value::{Color, Hsla, Hwba, Numeric, Rational, RgbFormat, Rgba};
+use crate::value::{Color, Hsla, Hwba, Numeric, RgbFormat, Rgba};
 use crate::Scope;
-use num_traits::{one, zero, Signed};
 
 pub fn register(f: &mut Scope) {
     def_va!(f, adjust(color, kwargs), |s| {
-        fn opt_add(a: Rational, b: Option<Rational>) -> Rational {
+        fn opt_add(a: f64, b: Option<f64>) -> f64 {
             if let Some(b) = b {
                 a + b
             } else {
@@ -66,10 +65,7 @@ pub fn register(f: &mut Scope) {
                     sat,
                     lum,
                     opt_add(hsla.alpha(), a_adj),
-                    hsla.hsla_format
-                        || sat > one()
-                        || lum > one()
-                        || lum < zero(),
+                    hsla.hsla_format || sat > 1. || lum > 1. || lum < 0.,
                 )
                 .into())
             } else {
@@ -80,19 +76,18 @@ pub fn register(f: &mut Scope) {
         }
     });
     def_va!(f, scale(color, kwargs), |s| {
-        let cmb = |orig: Rational, x: Option<Rational>, max: Rational| match x
-        {
+        let cmb = |orig: f64, x: Option<f64>, max: f64| match x {
             None => orig,
             Some(x) => {
-                if x.is_positive() {
+                if x.is_sign_positive() {
                     orig + (max - orig) * x
                 } else {
                     orig + orig * x
                 }
             }
         };
-        let one: Rational = one();
-        let ff = Rational::from_integer(255);
+        let one = 1.0;
+        let ff = 255.0;
 
         let color: Color = s.get(name!(color))?;
         let mut args = s.get_map(name!(kwargs), CallArgs::from_value)?;
@@ -188,9 +183,8 @@ pub fn register(f: &mut Scope) {
             return Ok(rgba.into());
         }
         let hue = take_opt(&mut args, name!(hue), check_hue)?;
-        let sat =
-            take_opt(&mut args, name!(saturation), check_pct_opt_range)?;
-        let lig = take_opt(&mut args, name!(lightness), check_pct_opt_range)?;
+        let sat = take_opt(&mut args, name!(saturation), check_pct_range)?;
+        let lig = take_opt(&mut args, name!(lightness), check_pct_range)?;
         if sat.is_some() || lig.is_some() {
             no_more_in_space(&args, "hsl")?;
         }
@@ -294,27 +288,15 @@ where
     args.named.remove(&name).map(check).transpose().named(name)
 }
 
-fn check_pct(v: Value) -> Result<Rational, String> {
-    Ok(Numeric::try_from(v)?.as_ratio()? / 100)
-}
-fn check_pct_expl_pm(v: Value) -> Result<Rational, String> {
+fn check_pct_expl_pm(v: Value) -> Result<f64, String> {
     let val = Numeric::try_from(v)?;
     if !val.unit.is_percent() {
         return Err(expected_to(val, "have unit \"%\""));
     }
-    if val.value.abs() > 100.into() {
+    if f64::from(val.value.abs()) > 100. {
         Err(expected_to(val, "be within -100% and 100%"))
     } else {
-        Ok(val.as_ratio()? / 100)
-    }
-}
-
-fn check_pct_opt_range(v: Value) -> Result<Rational, String> {
-    let val = Numeric::try_from(v)?;
-    if val.value < zero() || val.value > 100.into() {
-        Err(expected_to(val, "be within 0% and 100%"))
-    } else {
-        Ok(val.as_ratio()? / 100)
+        Ok(f64::from(val.value) / 100.)
     }
 }
 

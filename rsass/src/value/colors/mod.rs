@@ -7,14 +7,12 @@ mod rgba;
 pub use self::hsla::Hsla;
 pub use self::hwba::Hwba;
 pub use self::rgba::{RgbFormat, Rgba};
-use super::Rational;
 use crate::output::{Format, Formatted};
-use num_traits::{one, zero, One, Zero};
 use std::borrow::Cow;
 use std::fmt::{self, Display};
 
 /// A color in sass/css. May be a Rgba, Hsla, or Hwba value.
-#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Color {
     /// A rgba color, defined by red, green, blue and alpha components.
     Rgba(Rgba),
@@ -22,6 +20,27 @@ pub enum Color {
     Hsla(Hsla),
     /// A hwba color, defined by its hue, whiteness, blackness and alpha.
     Hwba(Hwba),
+}
+
+impl Eq for Color {}
+impl Ord for Color {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match (self, other) {
+            (Color::Hsla(a), Color::Hsla(b)) => a.partial_cmp(b).unwrap(),
+            (Color::Hsla(a), Color::Hwba(b)) => {
+                a.partial_cmp(&Hsla::from(b)).unwrap()
+            }
+            (Color::Hwba(a), Color::Hsla(b)) => {
+                Hsla::from(a).partial_cmp(b).unwrap()
+            }
+            (a, b) => a.to_rgba().cmp(&b.to_rgba()),
+        }
+    }
+}
+impl PartialOrd for Color {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl Color {
@@ -66,7 +85,7 @@ impl Color {
     /// Get the alpha channel of this color.
     ///
     /// The alpha channel is a rational value between 0 and 1.
-    pub fn get_alpha(&self) -> Rational {
+    pub fn get_alpha(&self) -> f64 {
         match self {
             Self::Rgba(rgba) => rgba.alpha(),
             Self::Hsla(hsla) => hsla.alpha(),
@@ -76,8 +95,8 @@ impl Color {
     /// Set the alpha channel of this color.
     ///
     /// The alpha channel is a rational value between 0 and 1.
-    pub fn set_alpha(&mut self, alpha: Rational) {
-        let alpha = alpha.clamp(zero(), one());
+    pub fn set_alpha(&mut self, alpha: f64) {
+        let alpha = alpha.clamp(0., 1.);
         match self {
             Self::Rgba(ref mut rgba) => rgba.set_alpha(alpha),
             Self::Hsla(ref mut hsla) => hsla.set_alpha(alpha),
@@ -85,7 +104,7 @@ impl Color {
         }
     }
     /// Rotate the hue of this color by a specific number of degrees.
-    pub fn rotate_hue(&self, val: Rational) -> Self {
+    pub fn rotate_hue(&self, val: f64) -> Self {
         match self {
             Self::Rgba(rgba) => {
                 let hsla = Hsla::from(rgba);
@@ -115,7 +134,7 @@ impl Color {
             .into(),
         }
     }
-    pub(crate) fn invert(&self, weight: Rational) -> Self {
+    pub(crate) fn invert(&self, weight: f64) -> Self {
         match self {
             Color::Rgba(rgba) => rgba.invert(weight).into(),
             Color::Hsla(hsla) => hsla.invert(weight).into(),
