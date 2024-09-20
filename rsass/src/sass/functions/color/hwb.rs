@@ -1,17 +1,14 @@
 use super::super::FunctionMap;
 use super::hsl::percentage;
 use super::{
-    check_alpha, check_expl_pct, eval_inner, is_not, relative_color,
+    check_alpha, check_expl_pct_norange, eval_inner, is_not, relative_color,
     CallError, CheckedArg, ResolvedArgs,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::sass::FormalArgs;
-use crate::value::{
-    Color, Hwba, ListSeparator, Numeric, Rational, Rgba, Unit,
-};
+use crate::value::{Color, Hwba, ListSeparator, Numeric, Rgba, Unit};
 use crate::Scope;
-use num_traits::{one, zero};
 
 pub fn register(f: &mut Scope) {
     def_va!(f, hwb(kwargs), hwb);
@@ -57,14 +54,14 @@ fn hwb(s: &ResolvedArgs) -> Result<Value, CallError> {
         })?
     };
     let hue = check_hue(hue).named(name!(hue))?;
-    let w = check_expl_pct(w).named(name!(whiteness))?;
-    let b = check_expl_pct(b).named(name!(blackness))?;
+    let w = check_expl_pct_norange(w).named(name!(whiteness))?;
+    let b = check_expl_pct_norange(b).named(name!(blackness))?;
     let a = check_alpha(a).named(name!(alpha))?;
     // I don't really agree with this, but it makes tests pass.
-    let hue = if w + b >= one() { zero() } else { hue };
+    let hue = if w + b >= 1. { 0. } else { hue };
     let hwba = Hwba::new(hue, w, b, a);
     let rgba = Rgba::from(&hwba);
-    if rgba.is_integer() {
+    if rgba.is_integer() && w >= 0. {
         Ok(rgba.into())
     } else {
         Ok(hwba.into())
@@ -129,10 +126,10 @@ fn badchannels(v: &Value) -> CallError {
     ))
 }
 
-fn check_hue(v: Value) -> Result<Rational, String> {
+fn check_hue(v: Value) -> Result<f64, String> {
     let vv = Numeric::try_from(v)?;
     if let Some(scaled) = vv.as_unit_def(Unit::Deg) {
-        Ok(scaled.as_ratio()?)
+        Ok(scaled.into())
     } else {
         Err(is_not(&vv, "an angle"))
     }

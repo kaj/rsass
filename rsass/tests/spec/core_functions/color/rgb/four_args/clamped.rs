@@ -32,7 +32,6 @@ mod alpha {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn nan() {
             assert_eq!(
                 runner().ok("a {b: rgb(0, 0, 0, calc(NaN))}\n"),
@@ -42,7 +41,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("a {b: rgb(0, 0, 0, calc(-infinity))}\n"),
@@ -52,7 +50,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("a {b: rgb(0, 0, 0, calc(infinity))}\n"),
@@ -72,7 +69,6 @@ mod blue {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn nan() {
             assert_eq!(
                 runner().ok("a {b: rgb(0, 0, calc(NaN), 0.5)}\n"),
@@ -82,7 +78,6 @@ mod blue {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("a {b: rgb(0, 0, calc(-infinity), 0.5)}\n"),
@@ -92,7 +87,6 @@ mod blue {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("a {b: rgb(0, 0, calc(infinity), 0.5)}\n"),
@@ -121,7 +115,6 @@ mod green {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn nan() {
             assert_eq!(
                 runner().ok("a {b: rgb(0, calc(NaN), 0, 0.5)}\n"),
@@ -131,7 +124,6 @@ mod green {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("a {b: rgb(0, calc(-infinity), 0, 0.5)}\n"),
@@ -141,7 +133,6 @@ mod green {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("a {b: rgb(0, calc(infinity), 0, 0.5)}\n"),
@@ -170,7 +161,6 @@ mod red {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn nan() {
             assert_eq!(
                 runner().ok("a {b: rgb(calc(NaN), 0, 0, 0.5)}\n"),
@@ -180,7 +170,6 @@ mod red {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("a {b: rgb(calc(-infinity), 0, 0, 0.5)}\n"),
@@ -190,7 +179,6 @@ mod red {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("a {b: rgb(calc(infinity), 0, 0, 0.5)}\n"),

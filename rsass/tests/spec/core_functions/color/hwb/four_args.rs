@@ -14,7 +14,6 @@ mod alpha {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn nan() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -25,7 +24,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -36,7 +34,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -174,7 +171,6 @@ mod blackness {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn above_max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -185,7 +181,6 @@ mod blackness {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn below_min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -200,7 +195,6 @@ mod blackness {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn nan() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -211,7 +205,6 @@ mod blackness {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -222,7 +215,6 @@ mod blackness {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -254,7 +246,7 @@ mod hue {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn nan() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -265,7 +257,7 @@ mod hue {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -276,7 +268,7 @@ mod hue {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -316,7 +308,6 @@ mod whiteness {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn above_max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -327,7 +318,6 @@ mod whiteness {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn below_min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -342,7 +332,6 @@ mod whiteness {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn nan() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -353,7 +342,6 @@ mod whiteness {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -364,7 +352,6 @@ mod whiteness {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\

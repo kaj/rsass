@@ -1,67 +1,66 @@
+use crate::css::Value;
 use crate::output::{Format, Formatted};
-use crate::value::{Number, Rational};
-use num_traits::{one, zero, One as _, Signed};
+use crate::value::{Number, Numeric};
 use std::fmt::{self, Display};
 
 /// A color defined by hue, saturation, luminance, and alpha.
-#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, PartialEq, PartialOrd)]
 pub struct Hsla {
-    hue: Rational,
-    sat: Rational,
-    lum: Rational,
-    alpha: Rational,
+    hue: f64,
+    sat: f64,
+    lum: f64,
+    alpha: f64,
     pub(crate) hsla_format: bool,
 }
 
 impl Hsla {
     /// Create a new hsla color.
     pub fn new(
-        hue: Rational,
-        sat: Rational,
-        lum: Rational,
-        alpha: Rational,
+        hue: f64,
+        sat: f64,
+        lum: f64,
+        alpha: f64,
         hsla_format: bool,
     ) -> Self {
         Self {
             hue: deg_mod(hue),
-            sat: sat.max(zero()),
+            sat: sat.clamp(0., f64::INFINITY),
             lum,
-            alpha: alpha.clamp(zero(), one()),
+            alpha: alpha.max(0.).min(1.),
             hsla_format,
         }
     }
 
     /// Get the hue of this color.
-    pub fn hue(&self) -> Rational {
+    pub fn hue(&self) -> f64 {
         self.hue
     }
     /// Get the saturation of this color.
-    pub fn sat(&self) -> Rational {
+    pub fn sat(&self) -> f64 {
         self.sat
     }
     /// Get the lumination of this color.
-    pub fn lum(&self) -> Rational {
+    pub fn lum(&self) -> f64 {
         self.lum
     }
     /// Get the alpha value of this color.
     ///
     /// Zero is fully transparent, one is fully opaque.
-    pub fn alpha(&self) -> Rational {
+    pub fn alpha(&self) -> f64 {
         self.alpha
     }
     /// Set the alpha value of this color.
     ///
     /// Zero is fully transparent, one is fully opaque.
-    pub fn set_alpha(&mut self, alpha: Rational) {
-        self.alpha = alpha.clamp(zero(), one());
+    pub fn set_alpha(&mut self, alpha: f64) {
+        self.alpha = alpha.clamp(0., 1.);
     }
 
-    pub(crate) fn invert(&self, weight: Rational) -> Self {
-        let one = Rational::one();
+    pub(crate) fn invert(&self, weight: f64) -> Self {
         Self {
-            hue: deg_mod(self.hue + 180),
+            hue: deg_mod(self.hue + 180.),
             sat: self.sat,
-            lum: (one - self.lum) * weight + self.lum * (one - weight),
+            lum: (1. - self.lum) * weight + self.lum * (1. - weight),
             alpha: self.alpha,
             hsla_format: self.hsla_format,
         }
@@ -81,10 +80,10 @@ impl Hsla {
 }
 
 /// Value is an angle in degrees, return same angle, but 0 <= value < 360.x
-fn deg_mod(value: Rational) -> Rational {
-    let turn = Rational::from_integer(360);
+fn deg_mod(value: f64) -> f64 {
+    let turn = 360.;
     let value = value % turn;
-    if value.is_negative() {
+    if value.is_sign_negative() {
         value + turn
     } else {
         value
@@ -94,26 +93,28 @@ fn deg_mod(value: Rational) -> Rational {
 impl<'a> Display for Formatted<'a, Hsla> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         let hsla = self.value;
-        let hue = Number::from(hsla.hue);
-        let sat = Number::from(hsla.sat * 100);
-        let lum = Number::from(hsla.lum * 100);
+        // Special: Don't round the hue to 360!
+        let hue = if hsla.hue + 1e-7 > 360. { 0. } else { hsla.hue };
+        let hue = Value::scalar(hue);
+        let sat = Value::from(Numeric::percentage(hsla.sat));
+        let lum = Value::from(Numeric::percentage(hsla.lum));
         let a = hsla.alpha;
-        if a >= one() {
+        if a >= 1. {
             write!(
                 out,
-                "hsl({}, {}%, {}%)",
-                hue.format(self.format),
-                sat.format(self.format),
-                lum.format(self.format),
+                "hsl({}, {}, {})",
+                hue.to_string(self.format),
+                sat.to_string(self.format),
+                lum.to_string(self.format),
             )
         } else {
             let a = Number::from(a);
             write!(
                 out,
-                "hsla({}, {}%, {}%, {})",
-                hue.format(self.format),
-                sat.format(self.format),
-                lum.format(self.format),
+                "hsla({}, {}, {}, {})",
+                hue.to_string(self.format),
+                sat.to_string(self.format),
+                lum.to_string(self.format),
                 a.format(self.format)
             )
         }

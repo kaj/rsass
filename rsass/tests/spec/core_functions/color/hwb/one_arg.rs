@@ -109,7 +109,6 @@ mod blackness {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn above_max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -120,7 +119,6 @@ mod blackness {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn below_min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -382,7 +380,6 @@ mod whiteness {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn above_max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -393,7 +390,6 @@ mod whiteness {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn below_min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
