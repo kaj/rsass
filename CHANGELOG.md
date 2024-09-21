@@ -22,6 +22,8 @@ project adheres to
 * Lots of color handling.
   - Spec changes for traditional css colors (PR #198).
   - Made all color channels f64 instead of Rational (PR #199).
+* Fixed a bug where `clamp(..)` was sometimes evaluated to a value
+  even though units wasn't comparable.
 * Updated sass-spec test suite to 2024-09-13.
 
 

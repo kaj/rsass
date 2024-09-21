@@ -6,7 +6,9 @@ use super::{
 use crate::css::{BinOp, CallArgs, CssString, InvalidCss, Value};
 use crate::output::Format;
 use crate::sass::Name;
-use crate::value::{CssDimensionSet, Numeric, Operator, Quotes, Unit};
+use crate::value::{
+    CssDimensionSet, Dimension, Numeric, Operator, Quotes, Unit,
+};
 use std::cmp::Ordering;
 use std::f64::consts::{E, PI};
 
@@ -345,6 +347,14 @@ fn known_dim(v: &Numeric) -> Option<CssDimensionSet> {
     let u = &v.unit;
     if u.is_known() && !u.is_percent() {
         Some(u.css_dimension())
+    } else {
+        None
+    }
+}
+fn known_dim_spec(v: &Numeric) -> Option<Vec<(Dimension, i8)>> {
+    let u = &v.unit;
+    if u.is_known() && !u.is_percent() {
+        Some(u.dimension())
     } else {
         None
     }

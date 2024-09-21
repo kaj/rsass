@@ -551,6 +551,36 @@ fn skip_placeholders() {
     );
 }
 
+#[test]
+fn clamp_same_unit() {
+    assert_eq!(
+        rsass(
+            b"h1 {\
+                \n  font-size: clamp(1em, 2em, 4em);\
+                \n}\n"
+        )
+        .unwrap(),
+        "h1 {\
+         \n  font-size: 2em;\
+         \n}\n",
+    );
+}
+
+#[test]
+fn clamp_bug() {
+    assert_eq!(
+        rsass(
+            b"h1 {\
+                \n  font-size: clamp(2.2em, 6vmin, 4em);\
+                \n}\n"
+        )
+        .unwrap(),
+        "h1 {\
+         \n  font-size: clamp(2.2em, 6vmin, 4em);\
+         \n}\n",
+    );
+}
+
 fn check_value(input: &str, expected: &str) {
     assert_eq!(
         String::from_utf8(

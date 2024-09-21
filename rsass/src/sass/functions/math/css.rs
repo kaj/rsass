@@ -1,7 +1,7 @@
 use super::{
     css_fn_arg, deg_value, diff_units_msg, expected_to, known_dim,
-    num2radians, CallError, CheckedArg, FunctionMap, NumOrSpecial,
-    ResolvedArgs,
+    known_dim_spec, num2radians, CallError, CheckedArg, FunctionMap,
+    NumOrSpecial, ResolvedArgs,
 };
 use crate::css::{self, BinOp, Value};
 use crate::sass::{ArgsError, Name};
@@ -186,7 +186,9 @@ pub fn global(global: &mut FunctionMap) {
                 } else if min_d.is_some() && max_d.is_some() && min_d != max_d
                 {
                     Err(CallError::incompatible_values(min, max))
-                } else if min_d == num_d && num_d == max_d {
+                } else if known_dim_spec(&min) == known_dim_spec(&number)
+                    && known_dim_spec(&number) == known_dim_spec(&max)
+                {
                     if number >= max {
                         number = max;
                     }
