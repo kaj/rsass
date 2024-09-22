@@ -197,17 +197,28 @@ impl Eq for Rgba {}
 impl Ord for Rgba {
     fn cmp(&self, other: &Self) -> Ordering {
         // ignores source!
-        self.red
-            .partial_cmp(&other.red)
-            .unwrap()
-            .then_with(|| self.green.partial_cmp(&other.green).unwrap())
-            .then_with(|| self.blue.partial_cmp(&other.blue).unwrap())
-            .then_with(|| self.alpha.partial_cmp(&other.alpha).unwrap())
+        cmp_chan(self.red, other.red)
+            .then_with(|| cmp_chan(self.green, other.green))
+            .then_with(|| cmp_chan(self.blue, other.blue))
+            .then_with(|| cmp_chan(self.alpha, other.alpha))
     }
 }
 impl PartialOrd for Rgba {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
+    }
+}
+
+fn cmp_chan(a: f64, b: f64) -> Ordering {
+    if (a - b).abs() < 1e-7 {
+        Ordering::Equal
+    } else {
+        match (a.is_nan(), b.is_nan()) {
+            (true, true) => Ordering::Equal,
+            (true, false) => Ordering::Less,
+            (false, true) => Ordering::Greater,
+            (false, false) => a.partial_cmp(&b).unwrap(),
+        }
     }
 }
 

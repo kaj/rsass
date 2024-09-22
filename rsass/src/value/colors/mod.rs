@@ -12,7 +12,7 @@ use std::borrow::Cow;
 use std::fmt::{self, Display};
 
 /// A color in sass/css. May be a Rgba, Hsla, or Hwba value.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub enum Color {
     /// A rgba color, defined by red, green, blue and alpha components.
     Rgba(Rgba),
@@ -23,6 +23,11 @@ pub enum Color {
 }
 
 impl Eq for Color {}
+impl PartialEq for Color {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other).is_eq()
+    }
+}
 impl Ord for Color {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (self, other) {

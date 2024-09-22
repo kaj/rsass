@@ -188,7 +188,6 @@ mod test_true {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn no_none() {
                 assert_eq!(
                     runner().ok(
