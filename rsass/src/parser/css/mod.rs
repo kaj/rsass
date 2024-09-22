@@ -3,11 +3,11 @@ mod rule;
 pub(crate) mod strings;
 mod values;
 
-use super::util::{opt_spacelike, spacelike};
 use super::{PResult, Span};
 use crate::css::{AtRule, Comment, Import, Item, MediaRule, Value};
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, tag_no_case};
+use nom::character::complete::{multispace0, multispace1};
 use nom::combinator::{
     all_consuming, into, map, map_res, not, opt, peek, recognize,
 };
@@ -145,4 +145,12 @@ pub fn comment2(input: Span) -> PResult<String> {
         ),
         tag("*/"),
     )(input)
+}
+
+pub fn spacelike(input: Span) -> PResult<()> {
+    map(multispace1, |_| ())(input)
+}
+
+pub fn opt_spacelike(input: Span) -> PResult<()> {
+    map(multispace0, |_| ())(input)
 }

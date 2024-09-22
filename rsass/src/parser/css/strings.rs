@@ -1,6 +1,6 @@
 use super::super::{input_to_str, input_to_string, PResult, Span};
+use super::opt_spacelike;
 use crate::css::CssString;
-use crate::parser::util::opt_spacelike;
 use crate::value::Quotes;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, take};

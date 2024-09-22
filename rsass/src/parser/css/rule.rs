@@ -1,5 +1,5 @@
-use super::super::util::opt_spacelike;
 use super::super::{PResult, Span};
+use super::opt_spacelike;
 use super::strings::custom_value;
 use super::{comment, import2, strings, values};
 use crate::css::parser::selector_set;

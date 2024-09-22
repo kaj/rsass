@@ -1,5 +1,5 @@
-use super::super::util::{ignore_comments, opt_spacelike, spacelike};
-use super::{strings, values, PResult, Span};
+use super::super::util::ignore_comments;
+use super::{opt_spacelike, spacelike, strings, values, PResult, Span};
 use crate::css::{MediaArgs, Value};
 use crate::value::{ListSeparator, Operator};
 use nom::branch::alt;
