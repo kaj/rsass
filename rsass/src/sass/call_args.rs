@@ -19,7 +19,7 @@ pub struct CallArgs {
 impl CallArgs {
     /// Create a new callargs from a vec of name-value pairs.
     ///
-    /// The names is none for positional arguments.
+    /// The names are `None` for positional arguments.
     pub fn new(
         v: Vec<(Option<Name>, Value)>,
         trailing_comma: bool,

@@ -3,12 +3,14 @@ use super::strings::{
     name, sass_string, sass_string_dq, sass_string_sq, special_url,
 };
 use super::util::{ignore_comments, opt_spacelike, semi_or_end};
-use super::value::space_list;
+use super::value::{identifier, space_list};
 use super::{media, position, PResult, Span};
 use crate::sass::{Expose, Item, Name, SassString, UseAs, Value};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
-use nom::combinator::{map, opt, value};
+use nom::character::complete::char;
+use nom::combinator::{cut, map, opt, value};
+use nom::error::context;
 use nom::multi::{separated_list0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use std::collections::BTreeSet;
@@ -43,12 +45,15 @@ pub fn use2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
     map(
         terminated(
             tuple((
-                terminated(quoted_sass_string, opt_spacelike),
+                context(
+                    "Expected string.",
+                    terminated(quoted_sass_string, ignore_comments),
+                ),
                 opt(preceded(
-                    terminated(tag("with"), opt_spacelike),
+                    terminated(tag("with"), ignore_comments),
                     with_arg,
                 )),
-                opt(preceded(terminated(tag("as"), opt_spacelike), as_arg)),
+                opt(preceded(terminated(tag("as"), ignore_comments), as_arg)),
                 position,
             )),
             semi_or_end,
@@ -65,24 +70,28 @@ pub fn use2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
 }
 
 pub fn forward2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
-    let (mut end, path) =
-        terminated(quoted_sass_string, opt_spacelike)(input)?;
+    let (mut end, path) = context(
+        "Expected string.",
+        terminated(quoted_sass_string, opt_spacelike),
+    )(input)?;
     let mut found_as = None;
     let mut expose = Expose::All;
     let mut found_with = None;
-    while let Ok((rest, arg)) = terminated(name, opt_spacelike)(end) {
+    while let Ok((rest, arg)) =
+        delimited(ignore_comments, name, ignore_comments)(end)
+    {
         end = match arg.as_ref() {
-            "as" if found_as.is_none() => {
-                let (i, a) = as_arg(rest)?;
+            "as" if found_as.is_none() && found_with.is_none() => {
+                let (i, a) = fwd_as_arg(rest)?;
                 found_as = Some(a);
                 i
             }
-            "hide" if expose == Expose::All => {
+            "hide" if expose == Expose::All && found_with.is_none() => {
                 let (i, (funs, vars)) = exposed_names(rest)?;
                 expose = Expose::Hide(funs, vars);
                 i
             }
-            "show" if expose == Expose::All => {
+            "show" if expose == Expose::All && found_with.is_none() => {
                 let (i, (funs, vars)) = exposed_names(rest)?;
                 expose = Expose::Show(funs, vars);
                 i
@@ -92,12 +101,7 @@ pub fn forward2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
                 found_with = Some(w);
                 i
             }
-            _ => {
-                return Err(nom::Err::Error(nom::error::Error::new(
-                    end,
-                    nom::error::ErrorKind::MapRes,
-                )));
-            }
+            _ => break,
         };
     }
     let (rest, ()) = semi_or_end(end)?;
@@ -119,7 +123,10 @@ fn exposed_names(input: Span) -> PResult<(BTreeSet<Name>, BTreeSet<Name>)> {
             terminated(tag(","), opt_spacelike),
             pair(
                 map(opt(tag("$")), |v| v.is_some()),
-                map(terminated(name, opt_spacelike), Name::from),
+                cut(context(
+                    "Expected variable, mixin, or function name",
+                    map(terminated(name, opt_spacelike), Name::from),
+                )),
             ),
         ),
         |items| {
@@ -146,24 +153,28 @@ fn as_arg(input: Span) -> PResult<UseAs> {
     )(input)
 }
 
+fn fwd_as_arg(input: Span) -> PResult<UseAs> {
+    map(terminated(identifier, char('*')), UseAs::Prefix)(input)
+}
+
 fn with_arg(input: Span) -> PResult<Vec<(Name, Value, bool)>> {
     delimited(
-        terminated(tag("("), opt_spacelike),
-        separated_list0(
+        terminated(char('('), ignore_comments),
+        separated_list1(
             comma,
             tuple((
                 delimited(
-                    tag("$"),
-                    map(name, Name::from),
-                    delimited(opt_spacelike, tag(":"), opt_spacelike),
+                    char('$'),
+                    map(identifier, Name::from),
+                    delimited(ignore_comments, char(':'), ignore_comments),
                 ),
-                terminated(space_list, opt_spacelike),
+                terminated(space_list, ignore_comments),
                 map(opt(terminated(tag("!default"), opt_spacelike)), |o| {
                     o.is_some()
                 }),
             )),
         ),
-        delimited(opt(comma), tag(")"), opt_spacelike),
+        delimited(opt(comma), char(')'), opt_spacelike),
     )(input)
 }
 
@@ -172,5 +183,5 @@ fn quoted_sass_string(input: Span) -> PResult<SassString> {
 }
 
 fn comma(input: Span) -> PResult<()> {
-    map(terminated(tag(","), ignore_comments), |_| ())(input)
+    delimited(ignore_comments, map(tag(","), |_| ()), ignore_comments)(input)
 }

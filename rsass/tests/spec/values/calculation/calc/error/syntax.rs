@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong error
 fn dollar() {
     assert_eq!(
         runner().err("a {b: calc($)}\n"),
@@ -61,7 +60,6 @@ mod interpolation {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn in_function_arg() {
         assert_eq!(
             runner().err("a {b: calc(c(~#{d}))}\n"),

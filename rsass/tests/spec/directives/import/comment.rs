@@ -32,7 +32,6 @@ mod after_url {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn loud() {
         assert_eq!(
             runner().ok("@import \"a.css\" /**/\n"),
@@ -52,7 +51,6 @@ mod before_comma {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn loud() {
         assert_eq!(
             runner().ok("@import \"a.css\" /**/, \"b.css\"\n"),
@@ -61,7 +59,6 @@ mod before_comma {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn silent() {
         assert_eq!(
             runner().ok("@import \"a.css\" //\
@@ -76,7 +73,6 @@ mod before_url {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn loud() {
         assert_eq!(
             runner().ok("@import /**/ \"a.css\"\n"),
@@ -105,7 +101,6 @@ mod modifier {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn loud() {
                 assert_eq!(
                     runner().ok("@import \"a.css\" b(c) /**/\n"),
@@ -189,7 +184,6 @@ mod modifier {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn loud() {
                 assert_eq!(
                     runner().ok("@import \"a.css\" b /**/\n"),

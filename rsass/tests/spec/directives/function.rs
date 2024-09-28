@@ -18,7 +18,6 @@ mod comment {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn loud() {
                 assert_eq!(runner().ok("@function a() /**/ {}\n"), "");
             }
@@ -36,7 +35,6 @@ mod comment {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn loud() {
                 assert_eq!(runner().ok("@function /**/ a() {}\n"), "");
             }
@@ -100,7 +98,6 @@ mod comment {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn custom_ident_call() {
     assert_eq!(
         runner().ok("@function __a() {@return 1}\
@@ -111,7 +108,6 @@ fn custom_ident_call() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn custom_ident_name() {
     assert_eq!(
         runner().ok("@function --a() {@return 1}\
@@ -150,7 +146,6 @@ mod vendor_like_underscore {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn middle() {
         assert_eq!(
             runner().ok("@function -moz_calc() {@return 1}\

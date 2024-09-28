@@ -38,7 +38,6 @@ fn non_identifier() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn unquoted() {
     assert_eq!(
         runner().err("@use foo;\n"),

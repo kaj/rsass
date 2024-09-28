@@ -51,7 +51,6 @@ mod interpolated_value {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn partial() {
         assert_eq!(
             runner().ok("@supports a(<#{1 + 1}>) {@c}\n"),

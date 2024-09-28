@@ -14,7 +14,6 @@ mod comment {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn loud() {
             assert_eq!(
                 runner().ok("@for $i from /**/ 1 through 10 {}\n"),
@@ -35,7 +34,6 @@ mod comment {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn loud() {
             assert_eq!(
                 runner().ok("@for $i from 1 through /**/ 10 {}\n"),
@@ -56,7 +54,6 @@ mod comment {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn loud() {
             assert_eq!(
                 runner().ok("@for $i from 1 through 10 /**/ {}\n"),
@@ -77,7 +74,6 @@ mod comment {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn loud() {
             assert_eq!(
                 runner().ok("@for $i /**/ from 1 through 10 {}\n"),
@@ -98,7 +94,6 @@ mod comment {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn loud() {
             assert_eq!(
                 runner().ok("@for $i from 1 /**/ through 10 {}\n"),
@@ -119,7 +114,6 @@ mod comment {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn loud() {
             assert_eq!(
                 runner().ok("@for /**/ $i from 1 through 10 {}\n"),

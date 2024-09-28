@@ -24,6 +24,9 @@ project adheres to
   - Made all color channels f64 instead of Rational (PR #199).
 * Fixed a bug where `clamp(..)` was sometimes evaluated to a value
   even though units wasn't comparable.
+* Improved parse error handling (PR #201, Issue #141).
+  Many parse errors now match the dart sass error message.
+  Also allow "loud" comments in more places.
 * Updated sass-spec test suite to 2024-09-20.
 
 

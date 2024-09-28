@@ -1,4 +1,6 @@
-use super::strings::{sass_string, sass_string_dq, sass_string_sq};
+use super::strings::{
+    sass_string, sass_string_allow_dash, sass_string_dq, sass_string_sq,
+};
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
 use super::{input_to_string, PResult, Span};
 use crate::sass::{Selector, SelectorPart, Selectors};
@@ -34,7 +36,9 @@ pub fn selector(input: Span) -> PResult<Selector> {
 fn selector_part(input: Span) -> PResult<SelectorPart> {
     alt((
         map(
-            tuple((opt(tag("%")), sass_string, opt(tag("%")))),
+            // A single dash is allowed as a selector, because the parsing
+            // of psedudo-element attributes don't handle expressions yet.
+            tuple((opt(tag("%")), sass_string_allow_dash, opt(tag("%")))),
             |(pre, mut s, post)| {
                 if pre.is_some() {
                     s.prepend("%");

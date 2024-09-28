@@ -104,7 +104,6 @@ mod test_as {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn asterisk() {
         assert_eq!(
             runner().err("@forward \"a\" as *;\n"),
@@ -117,7 +116,6 @@ mod test_as {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn invalid() {
         assert_eq!(
             runner().err("@forward \"a\" as 1-*;\n"),
@@ -130,7 +128,6 @@ mod test_as {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn no_star() {
         assert_eq!(
             runner().err("@forward \"a\" as foo;\n"),
@@ -143,7 +140,6 @@ mod test_as {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn nothing() {
         assert_eq!(
             runner().err("@forward \"a\" as;\n"),
@@ -157,7 +153,6 @@ mod test_as {
     }
 }
 #[test]
-#[ignore] // wrong error
 fn empty() {
     assert_eq!(
         runner().err("@forward;\n"),
@@ -174,7 +169,6 @@ mod hide {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn and_show() {
         assert_eq!(
             runner().err("@forward \"a\" hide b show c;\n"),
@@ -187,7 +181,6 @@ mod hide {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn empty_variable() {
         assert_eq!(
             runner().err("@forward \"a\" hide $;\n"),
@@ -200,7 +193,6 @@ mod hide {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn invalid() {
         assert_eq!(
             runner().err("@forward \"a\" hide 1;\n"),
@@ -213,7 +205,6 @@ mod hide {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn nothing() {
         assert_eq!(
             runner().err("@forward \"a\" hide;\n"),
@@ -226,7 +217,6 @@ mod hide {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn trailing_comma() {
         assert_eq!(
             runner().err("@forward \"a\" hide b,;\n"),
@@ -244,7 +234,6 @@ mod show {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn and_hide() {
         assert_eq!(
             runner().err("@forward \"a\" show b hide c;\n"),
@@ -257,7 +246,6 @@ mod show {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn empty_variable() {
         assert_eq!(
             runner().err("@forward \"a\" show $;\n"),
@@ -270,7 +258,6 @@ mod show {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn invalid() {
         assert_eq!(
             runner().err("@forward \"a\" show 1;\n"),
@@ -283,7 +270,6 @@ mod show {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn nothing() {
         assert_eq!(
             runner().err("@forward \"a\" show;\n"),
@@ -296,7 +282,6 @@ mod show {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn trailing_comma() {
         assert_eq!(
             runner().err("@forward \"a\" show b,;\n"),
@@ -314,7 +299,6 @@ mod url {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn unquoted() {
         assert_eq!(
             runner().err("@forward foo;\n"),
@@ -332,7 +316,6 @@ mod with {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn before_as() {
         assert_eq!(
             runner().err("@forward \"other\" with ($a: b) as c-*;\n"),
@@ -345,7 +328,6 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn before_hide() {
         assert_eq!(
             runner().err("@forward \"other\" with ($a: b) hide c;\n"),
@@ -358,7 +340,6 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn before_show() {
         assert_eq!(
             runner().err("@forward \"other\" with ($a: b) show c;\n"),
@@ -371,7 +352,6 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn empty() {
         assert_eq!(
             runner().err("@forward \"other\" with ();\n"),
@@ -384,7 +364,6 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn extra_comma() {
         assert_eq!(
             runner().err("@forward \"other\" with ($a: b,,);\n"),
@@ -397,7 +376,6 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn missing_keyword() {
         assert_eq!(
             runner().err("@forward \"other\" with (a);\n"),
@@ -410,7 +388,6 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn missing_value() {
         assert_eq!(
             runner().err("@forward \"other\" with ($a);\n"),
@@ -423,7 +400,6 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn namespace_variable() {
         assert_eq!(
             runner().err("@forward \"other\" with (a.$b: c);\n"),
@@ -436,7 +412,6 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn no_arguments() {
         assert_eq!(
             runner().err("@forward \"other\" with;\n"),
@@ -449,7 +424,6 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn space_after_dollar() {
         assert_eq!(
             runner().err("@forward \"other\" with ($ a: b);\n"),

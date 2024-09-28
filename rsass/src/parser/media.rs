@@ -4,7 +4,7 @@ use super::strings::{sass_string_dq, sass_string_sq};
 use super::util::{ignore_comments, opt_spacelike, semi_or_end};
 use super::value::{
     self, any_additive_expr, any_product, bracket_list, dictionary,
-    function_call_or_string, variable,
+    function_call_or_string_rulearg, variable,
 };
 use super::{body_block, list_or_single, PResult};
 use crate::sass::{BinOp, Item, Value};
@@ -53,7 +53,7 @@ pub fn args(input: Span) -> PResult<Value> {
                     bracket_list,
                     into(value::numeric),
                     variable,
-                    map(function_call_or_string, |s| match s {
+                    map(function_call_or_string_rulearg, |s| match s {
                         Value::Literal(s) => Value::Literal({
                             let lower = s
                                 .single_raw()

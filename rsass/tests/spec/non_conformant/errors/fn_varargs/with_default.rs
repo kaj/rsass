@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong error
 fn test() {
     assert_eq!(
         runner().err("@function test($param...:\"default\") {}"),

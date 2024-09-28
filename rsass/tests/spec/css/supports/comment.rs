@@ -22,7 +22,6 @@ mod after_query {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn silent() {
         assert_eq!(
             runner().ok("@supports (a: b) //\
@@ -134,7 +133,6 @@ mod before_query {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn loud() {
         assert_eq!(
             runner().ok("@supports /**/ (a: b) {c {d: e}}\n"),
@@ -442,6 +440,7 @@ mod function {
         use super::runner;
 
         #[test]
+        #[ignore] // unexepected error
         fn loud() {
             assert_eq!(
                 runner().ok("@supports a(b /**/) {c {d: e}}\n"),

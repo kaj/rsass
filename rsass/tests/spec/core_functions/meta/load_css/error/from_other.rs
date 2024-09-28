@@ -47,7 +47,6 @@ fn runtime() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn syntax() {
     let runner = runner().with_cwd("syntax");
     assert_eq!(

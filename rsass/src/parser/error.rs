@@ -1,6 +1,6 @@
 use super::{PResult, Span};
 use crate::input::SourcePos;
-use nom::Finish;
+use nom::{character::complete::one_of, error::VerboseErrorKind, Finish};
 use std::fmt;
 
 /// An error encountered when parsing sass.
@@ -44,12 +44,36 @@ impl ParseError {
     }
 }
 
-impl From<nom::error::Error<Span<'_>>> for ParseError {
-    fn from(err: nom::error::Error<Span>) -> Self {
-        Self::new(
-            format!("Parse error: {:?}", err.code),
-            err.input.up_to(&err.input).to_owned(),
-        )
+impl From<nom::error::VerboseError<Span<'_>>> for ParseError {
+    fn from(value: nom::error::VerboseError<Span<'_>>) -> Self {
+        let (msg, pos) = value
+            .errors
+            .iter()
+            .filter_map(|(pos, kind)| {
+                match kind {
+                    VerboseErrorKind::Context(ctx) => {
+                        Some((ctx.to_string(), pos))
+                    }
+                    VerboseErrorKind::Char(ch) => {
+                        Some((format!("expected {:?}.", ch.to_string()), pos))
+                    }
+                    VerboseErrorKind::Nom(_) => None, // Try the next one!
+                }
+            })
+            .next()
+            .or_else(|| {
+                value.errors.first().map(|(pos, kind)| {
+                    if pos.is_at_end() {
+                        ("expected more input.".to_string(), pos)
+                    } else if let PResult::Ok((_, b)) = one_of(")}]")(*pos) {
+                        (format!("unmatched \"{b}\"."), pos)
+                    } else {
+                        (format!("Parse error: {kind:?}"), pos)
+                    }
+                })
+            })
+            .unwrap();
+        Self::new(msg, pos.up_to(pos).to_owned())
     }
 }
 

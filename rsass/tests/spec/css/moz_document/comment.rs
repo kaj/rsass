@@ -18,7 +18,6 @@ mod after_arg {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn silent() {
         assert_eq!(
             runner().ok("@-moz-document url-prefix(a) //\
@@ -32,7 +31,6 @@ mod before_arg {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn loud() {
         assert_eq!(
             runner().ok("@-moz-document /**/ url-prefix(a) {}\n"),

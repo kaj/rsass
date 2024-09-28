@@ -10,7 +10,6 @@ mod function {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn definition() {
         assert_eq!(
             runner().err("@function namespace.member() {@return null}\n"),
@@ -86,7 +85,6 @@ mod mixin {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn definition() {
         assert_eq!(
             runner().err("@mixin namespace.member() {}\n"),
@@ -177,7 +175,6 @@ mod variable {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn no_member() {
         assert_eq!(
             runner().err("a {a: namespace.$}\n"),
@@ -190,7 +187,6 @@ mod variable {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn no_namespace() {
         assert_eq!(
             runner().err("a {a: $.member}\n"),

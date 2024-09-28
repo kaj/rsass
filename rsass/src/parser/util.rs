@@ -2,8 +2,8 @@ use super::{PResult, Span};
 use crate::sass::{SassString, StringPart};
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
-use nom::character::complete::multispace1;
-use nom::combinator::{all_consuming, map, map_res, not, opt, peek};
+use nom::character::complete::{char, multispace1};
+use nom::combinator::{eof, map, map_res, not, opt, peek};
 use nom::multi::{fold_many0, fold_many1, many0};
 use nom::sequence::{preceded, terminated};
 use std::str::from_utf8;
@@ -18,9 +18,13 @@ where
 }
 
 pub fn semi_or_end(input: Span) -> PResult<()> {
-    terminated(
+    preceded(
         opt_spacelike,
-        alt((tag(";"), all_consuming(tag("")), peek(tag("}")))),
+        alt((
+            map(terminated(ignore_comments, eof), |_| ()),
+            map(peek(char('}')), |_| ()),
+            map(char(';'), |_| ()),
+        )),
     )(input)
 }
 

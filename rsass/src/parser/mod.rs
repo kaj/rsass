@@ -26,7 +26,8 @@ use self::util::{
     spacelike,
 };
 use self::value::{
-    dictionary, function_call_or_string, single_value, value_expression,
+    dictionary, function_call_or_string_rulearg, single_value,
+    value_expression,
 };
 use crate::input::{SourceFile, SourceName, SourcePos};
 use crate::sass::parser::{variable_declaration2, variable_declaration_mod};
@@ -38,17 +39,18 @@ use crate::Error;
 use imports::{forward2, import2, use2};
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
-use nom::character::complete::one_of;
+use nom::character::complete::{char, one_of};
 use nom::combinator::{
-    all_consuming, into, map, map_res, opt, peek, value, verify,
+    all_consuming, into, map, map_res, not, opt, peek, value, verify,
 };
+use nom::error::{context, VerboseError};
 use nom::multi::{many0, many_till, separated_list0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::IResult;
 use std::str::{from_utf8, Utf8Error};
 
 /// A Parsing Result; ok gives a span for the rest of the data and a parsed T.
-pub(crate) type PResult<'a, T> = IResult<Span<'a>, T>;
+pub(crate) type PResult<'a, T> = IResult<Span<'a>, T, VerboseError<Span<'a>>>;
 
 pub(crate) fn code_span(value: &[u8]) -> SourcePos {
     SourceFile::scss_bytes(value, SourceName::root("(rsass)")).into()
@@ -130,7 +132,7 @@ fn body_item(input: Span) -> PResult<Item> {
         b";" => Ok((rest, Item::None)),
         b"@" => at_rule2(input),
         b"--" => {
-            let result = custom_property(rest);
+            let result = custom_property(input);
             if result.is_err() {
                 // Note use of `input` rather than `rest` here.
                 if let Ok((rest, rule)) = rule(input) {
@@ -170,12 +172,12 @@ fn mixin_call<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
     let (rest, n2) = opt(preceded(tag("."), name))(rest)?;
     let name = n2.map(|n2| format!("{n1}.{n2}")).unwrap_or(n1);
     let (rest, _) = opt_spacelike(rest)?;
-    let (rest0, args) = terminated(opt(call_args), opt_spacelike)(rest)?;
+    let (rest0, args) = terminated(opt(call_args), ignore_comments)(rest)?;
     let (rest, t) = alt((tag("using"), tag("{"), tag("")))(rest0)?;
     let (end, body) = match t.fragment() {
         b"using" => {
-            let (end, args) = preceded(opt_spacelike, formal_args)(rest)?;
-            let (rest, body) = preceded(opt_spacelike, body_block)(end)?;
+            let (end, args) = preceded(ignore_comments, formal_args)(rest)?;
+            let (rest, body) = preceded(ignore_comments, body_block)(end)?;
             let decl = rest0.up_to(&end).to_owned();
             (rest, Some(Callable::new(args, body, decl)))
         }
@@ -184,10 +186,7 @@ fn mixin_call<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
             let decl = rest0.up_to(&rest).to_owned();
             (rest, Some(Callable::no_args(body, decl)))
         }
-        _ => {
-            let (rest, _) = opt(tag(";"))(rest)?;
-            (rest, None)
-        }
+        _ => map(semi_or_end, |_| None)(rest)?,
     };
     let pos = start.up_to(&rest).to_owned();
     Ok((
@@ -198,8 +197,11 @@ fn mixin_call<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
 
 /// When we know that `input0` starts with an `@` sign.
 fn at_rule2(input0: Span) -> PResult<Item> {
-    let (input, name) =
-        delimited(tag("@"), sass_string, opt_spacelike)(input0)?;
+    let (input, name) = delimited(
+        tag("@"),
+        context("Expected identifier.", sass_string),
+        ignore_comments,
+    )(input0)?;
     match name.single_raw().unwrap_or("") {
         "at-root" => at_root2(input),
         "charset" => charset2(input),
@@ -213,11 +215,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
             Ok((rest, Item::Error(v, pos)))
         }
         "extend" => map(
-            delimited(
-                opt_spacelike,
-                selectors,
-                preceded(opt_spacelike, tag(";")),
-            ),
+            delimited(opt_spacelike, selectors, semi_or_end),
             Item::Extend,
         )(input),
         "for" => for_loop2(input),
@@ -300,11 +298,11 @@ fn unknown_rule_args(input: Span) -> PResult<Value> {
         preceded(tag(","), opt_spacelike),
         map(
             many0(preceded(
-                opt(ignore_space),
+                opt_spacelike,
                 alt((
                     terminated(
                         alt((
-                            function_call_or_string,
+                            function_call_or_string_rulearg,
                             dictionary,
                             map(
                                 delimited(tag("("), media::args, tag(")")),
@@ -313,10 +311,13 @@ fn unknown_rule_args(input: Span) -> PResult<Value> {
                             map(sass_string_dq, Value::Literal),
                             map(sass_string_sq, Value::Literal),
                         )),
-                        alt((
-                            value((), all_consuming(tag(""))),
-                            value((), peek(one_of(") \r\n\t{,;"))),
-                        )),
+                        terminated(
+                            alt((
+                                value((), all_consuming(tag(""))),
+                                value((), peek(one_of(") \r\n\t{,;/"))),
+                            )),
+                            opt_spacelike,
+                        ),
                     ),
                     map(map_res(is_not("\"'{};#"), input_to_str), |s| {
                         Value::Literal(s.trim_end().into())
@@ -355,8 +356,8 @@ fn if_statement2(input: Span) -> PResult<Item> {
     match word.as_ref().map(AsRef::as_ref) {
         Some("else") => {
             let (input2, else_body) = alt((
-                body_block,
                 map(if_statement_inner, |s| vec![s]),
+                body_block,
             ))(input2)?;
             Ok((input2, Item::IfStatement(cond, body, else_body)))
         }
@@ -385,17 +386,17 @@ fn each_loop2(input: Span) -> PResult<Item> {
 
 /// A for loop after the initial `@for`.
 fn for_loop2(input: Span) -> PResult<Item> {
-    let (input, name) = delimited(tag("$"), name, spacelike)(input)?;
+    let (input, name) = delimited(tag("$"), name, ignore_comments)(input)?;
     let (input, from) = delimited(
-        terminated(tag("from"), spacelike),
+        terminated(tag("from"), ignore_comments),
         single_value,
-        spacelike,
+        ignore_comments,
     )(input)?;
     let (input, inclusive) = terminated(
         alt((value(true, tag("through")), value(false, tag("to")))),
-        spacelike,
+        ignore_comments,
     )(input)?;
-    let (input, to) = terminated(single_value, opt_spacelike)(input)?;
+    let (input, to) = terminated(single_value, ignore_comments)(input)?;
     let (input, body) = body_block(input)?;
     Ok((
         input,
@@ -416,9 +417,11 @@ fn while_loop2(input: Span) -> PResult<Item> {
 }
 
 fn mixin_declaration2(input: Span) -> PResult<Item> {
-    let (rest, name) = terminated(name, opt_spacelike)(input)?;
-    let (rest, args) = opt(formal_args)(rest)?;
-    let (end, body) = preceded(opt_spacelike, body_block)(rest)?;
+    let (rest, (name, args)) = pair(
+        terminated(name, ignore_comments),
+        alt((value(None, peek(not(char('(')))), map(formal_args, Some))),
+    )(input)?;
+    let (end, body) = preceded(ignore_comments, body_block)(rest)?;
     let args = args.unwrap_or_else(FormalArgs::none);
     let decl = input.up_to(&rest).to_owned();
     Ok((
@@ -428,9 +431,9 @@ fn mixin_declaration2(input: Span) -> PResult<Item> {
 }
 
 fn function_declaration2(input: Span) -> PResult<Item> {
-    let (end, name) = terminated(name, opt_spacelike)(input)?;
+    let (end, name) = terminated(name, ignore_comments)(input)?;
     let (end, args) = formal_args(end)?;
-    let (rest, body) = preceded(opt_spacelike, body_block)(end)?;
+    let (rest, body) = preceded(ignore_comments, body_block)(end)?;
     let decl = input.up_to(&end).to_owned();
     Ok((
         rest,
@@ -439,29 +442,21 @@ fn function_declaration2(input: Span) -> PResult<Item> {
 }
 
 fn return_stmt2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
-    let (input, v) =
-        delimited(opt_spacelike, value_expression, opt_spacelike)(input)?;
+    let (input, v) = terminated(value_expression, ignore_comments)(input)?;
     let pos = start.up_to(&input).to_owned();
     let (input, _) = opt(tag(";"))(input)?;
     Ok((input, Item::Return(v, pos)))
 }
 
-/// The "rest" of an `@content` statement is just an optional terminator
 fn content_stmt2(input: Span) -> PResult<Item> {
-    let (rest, _) = opt_spacelike(input)?;
-    let (rest, args) = opt(call_args)(rest)?;
-    let (rest, _) = opt(tag(";"))(rest)?;
+    let (rest, args) = terminated(opt(call_args), opt(tag(";")))(input)?;
     let pos = input.up_to(&rest).to_owned();
     Ok((rest, Item::Content(args.unwrap_or_default(), pos)))
 }
 
 fn custom_property(input: Span) -> PResult<Item> {
-    let (rest, name) = terminated(opt(sass_string), tag(":"))(input)?;
-    let mut name = name.unwrap_or_else(|| SassString::from(""));
-    // The dashes was parsed before calling this method.
-    name.prepend("--");
-    let (rest, value) =
-        terminated(custom_value, alt((tag(";"), peek(tag("}")))))(rest)?;
+    let (rest, name) = terminated(sass_string, char(':'))(input)?;
+    let (rest, value) = terminated(custom_value, semi_or_end)(rest)?;
     Ok((rest, Item::CustomProperty(name, value)))
 }
 
@@ -474,26 +469,21 @@ fn property_or_namespace_rule(input: Span) -> PResult<Item> {
             }),
             sass_string,
         )),
-        delimited(ignore_comments, tag(":"), ignore_comments),
+        delimited(ignore_comments, char(':'), ignore_comments),
     )(input)?;
 
-    let (input, val) = opt(value_expression)(start_val)?;
-    let pos = start_val.up_to(&input).to_owned();
-    let (input, _) = opt_spacelike(input)?;
+    let (input, val) = alt((
+        map(peek(char('{')), |_| None),
+        map(context("Expected expression.", value_expression), Some),
+    ))(start_val)?;
 
-    let (input, next) = if val.is_some() {
-        alt((tag("{"), tag(";"), tag("")))(input)?
-    } else {
-        tag("{")(input)?
-    };
+    let pos = start_val.up_to(&input);
 
-    let (input, body) = if next.fragment() == b"{" {
-        map(body_block2, Some)(input)?
-    } else {
-        (input, None)
-    };
-    let (input, _) = opt_spacelike(input)?;
-    Ok((input, ns_or_prop_item(name, val, body, pos)))
+    let (input, body) = preceded(
+        ignore_comments,
+        alt((map(semi_or_end, |_| None), map(body_block, Some))),
+    )(input)?;
+    Ok((input, ns_or_prop_item(name, val, body, pos.to_owned())))
 }
 
 use crate::sass::SassString;
@@ -513,7 +503,7 @@ fn ns_or_prop_item(
 }
 
 fn body_block(input: Span) -> PResult<Vec<Item>> {
-    preceded(tag("{"), body_block2)(input)
+    preceded(char('{'), body_block2)(input)
 }
 
 fn body_block2(input: Span) -> PResult<Vec<Item>> {
