@@ -96,9 +96,10 @@ fn parse_css(data: &str) -> Result<String, String> {
         .with_format(Default::default())
         .transform(SourceFile::css_bytes(data, SourceName::root("-")))
         .map(|s| String::from_utf8_lossy(&s).to_string())
-        .map_err(|e| {
-            // The unescaped printed error is easier to read in case of error.
-            println!("{e}");
-            e.to_string()
+        .map_err(|e| format!("Error: {e}"))
+        // The unescaped printed error is easier to read in case of error.
+        .map_err(|msg| {
+            println!("{msg}");
+            msg
         })
 }

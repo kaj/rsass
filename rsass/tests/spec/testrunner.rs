@@ -112,26 +112,22 @@ impl TestRunner {
     }
     #[allow(unused)] // only used while executing tests
     pub fn ok(&self, input: &str) -> String {
-        match self.rsass(input) {
-            Ok(css) => String::from_utf8(css).unwrap().replace("\n\n", "\n"),
+        match self.run(input) {
+            Ok(css) => css,
             Err(err) => panic!("Unexpected error:\n{}\n", err),
         }
     }
     #[allow(unused)] // only used while executing tests
     pub fn err(&self, input: &str) -> String {
-        match self.rsass(input) {
-            Ok(css) => panic!(
-                "Unexpected result:\n{}\n",
-                String::from_utf8(css).unwrap()
-            ),
-            Err(err) => err.to_string(),
+        match self.run(input) {
+            Ok(css) => panic!("Unexpected result:\n{css}\n"),
+            Err(err) => err,
         }
     }
-    #[allow(unused)] // only used while building tests
     pub fn run(&self, input: &str) -> Result<String, String> {
         self.rsass(input)
             .map(|css| String::from_utf8(css).unwrap().replace("\n\n", "\n"))
-            .map_err(|err| err.to_string())
+            .map_err(|err| format!("Error: {err}"))
     }
 
     fn rsass(&self, input: &str) -> Result<Vec<u8>, Error> {

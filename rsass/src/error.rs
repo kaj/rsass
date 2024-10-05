@@ -14,6 +14,7 @@ use std::{fmt, io};
 /// E.g. [`CallError::called_from`][crate::sass::CallError::called_from]
 /// also takes a [`SourcePos`] and a function name, defining the call
 /// that went wrong.
+#[derive(Debug)]
 pub enum Error {
     /// Failed to load a file.
     Input(LoadError),
@@ -46,12 +47,6 @@ impl std::error::Error for Error {}
 
 impl fmt::Display for Error {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        write!(out, "Error: {self:?}")
-    }
-}
-
-impl fmt::Debug for Error {
-    fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
             Self::S(ref s) => write!(out, "{s}"),
             Self::Input(ref load) => load.fmt(out),

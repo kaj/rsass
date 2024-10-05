@@ -645,7 +645,7 @@ pub mod test {
     fn undefined_variable() {
         assert_eq!(
             do_evaluate_or_error(&[], b"$x;").err().unwrap().to_string(),
-            "Error: Undefined variable.\
+            "Undefined variable.\
              \n  ,\
              \n1 | $x;\
              \n  | ^^\

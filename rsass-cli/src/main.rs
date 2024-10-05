@@ -3,9 +3,16 @@ use rsass::output::{Format, Style};
 use rsass::{input, Error};
 use std::io::{stdout, Write};
 use std::path::PathBuf;
+use std::process::ExitCode;
 
-fn main() -> Result<(), Error> {
-    Args::parse().run()
+fn main() -> ExitCode {
+    match Args::parse().run() {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(err) => {
+            eprintln!("Error: {err}");
+            ExitCode::FAILURE
+        }
+    }
 }
 
 #[derive(Parser)]

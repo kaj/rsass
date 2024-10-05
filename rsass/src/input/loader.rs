@@ -45,6 +45,7 @@ pub trait Loader: Sized + std::fmt::Debug {
 
 /// An error loading a file.
 #[non_exhaustive]
+#[derive(Debug)]
 pub enum LoadError {
     /// Reading {0} failed: {1}
     Input(String, std::io::Error),
@@ -57,12 +58,6 @@ impl std::error::Error for LoadError {}
 
 impl fmt::Display for LoadError {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        write!(out, "Error: {self:?}")
-    }
-}
-
-impl fmt::Debug for LoadError {
-    fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Input(path, err) => {
                 write!(out, "Reading {path:?} failed: {err}")

@@ -16,6 +16,8 @@ project adheres to
   function in rsass 0.28 is now the only css selector implementation.
   Most of the api to those types are private.
   Some will probably be made public after some stabilization period.
+* The `Debug` trait for `Error` is now the standard derived impl,
+  to get the pretty output, use the `Display` trait.
 
 ### Other changes:
 
