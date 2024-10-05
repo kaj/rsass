@@ -59,7 +59,6 @@ mod comment {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn loud() {
                 assert_eq!(
                     runner().ok("@mixin a {}\
@@ -81,7 +80,6 @@ mod comment {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn loud() {
                 assert_eq!(
                     runner().ok("@mixin a {}\
@@ -103,7 +101,6 @@ mod comment {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn loud() {
                 assert_eq!(
                     runner().ok("@mixin a {@content}\
@@ -126,7 +123,6 @@ mod comment {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn loud() {
                 assert_eq!(
                     runner().ok("@mixin a {@content}\
@@ -149,7 +145,6 @@ mod comment {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn loud() {
                 assert_eq!(
                     runner().ok("@mixin a {@content}\
@@ -172,7 +167,6 @@ mod comment {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn loud() {
                 assert_eq!(
                     runner().ok("@mixin a {}\
@@ -195,7 +189,6 @@ mod comment {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn loud() {
                 assert_eq!(
                     runner().ok("@mixin a {@content}\
@@ -223,7 +216,6 @@ mod comment {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn loud() {
                 assert_eq!(runner().ok("@mixin a() /**/ {}\n"), "");
             }
@@ -241,7 +233,6 @@ mod comment {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn loud() {
                 assert_eq!(runner().ok("@mixin /**/ a {}\n"), "");
             }

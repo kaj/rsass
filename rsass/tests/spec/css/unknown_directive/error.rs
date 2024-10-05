@@ -86,7 +86,6 @@ mod interpolation {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn space_after_at() {
         assert_eq!(
         runner().err(
@@ -103,7 +102,6 @@ mod interpolation {
     }
 }
 #[test]
-#[ignore] // wrong error
 fn space_after_at() {
     assert_eq!(
         runner().err(

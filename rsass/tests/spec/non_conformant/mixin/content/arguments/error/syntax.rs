@@ -10,7 +10,6 @@ mod arglist {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn invalid() {
         assert_eq!(
             runner().err(
@@ -28,7 +27,6 @@ mod arglist {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn missing() {
         assert_eq!(
             runner().err(
@@ -46,7 +44,6 @@ mod arglist {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn missing_parens() {
         assert_eq!(
             runner().err(
@@ -65,7 +62,6 @@ mod arglist {
     }
 }
 #[test]
-#[ignore] // wrong error
 fn missing_block() {
     assert_eq!(
         runner().err(
@@ -83,7 +79,6 @@ fn missing_block() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn missing_using() {
     assert_eq!(
         runner().err(

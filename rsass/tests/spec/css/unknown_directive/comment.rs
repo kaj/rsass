@@ -18,7 +18,6 @@ mod children {
             assert_eq!(runner().ok("@a b /**/ {}\n"), "@a b /**/ {}\n");
         }
         #[test]
-        #[ignore] // wrong result
         fn silent() {
             assert_eq!(
                 runner().ok("@a b //\
@@ -32,7 +31,6 @@ mod children {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn loud() {
             assert_eq!(runner().ok("@a /**/ b {}\n"), "@a b {}\n");
         }
@@ -50,7 +48,6 @@ mod children {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn loud() {
             assert_eq!(runner().ok("@a /**/ {}\n"), "@a {}\n");
         }
@@ -77,7 +74,6 @@ mod no_children {
             assert_eq!(runner().ok("@a b /**/\n"), "@a b /**/;\n");
         }
         #[test]
-        #[ignore] // wrong result
         fn silent() {
             assert_eq!(runner().ok("@a b //\n"), "@a b;\n");
         }
@@ -87,7 +83,6 @@ mod no_children {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn loud() {
             assert_eq!(runner().ok("@a /**/ b\n"), "@a b;\n");
         }
@@ -105,7 +100,6 @@ mod no_children {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn loud() {
             assert_eq!(runner().ok("@a /**/\n"), "@a;\n");
         }

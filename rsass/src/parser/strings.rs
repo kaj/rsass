@@ -4,15 +4,22 @@ use crate::sass::{SassString, StringPart};
 use crate::value::Quotes;
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag, take};
-use nom::character::complete::{alphanumeric1, one_of};
+use nom::character::complete::{alphanumeric1, char, one_of};
 use nom::combinator::{
-    map, map_opt, map_res, not, opt, peek, recognize, value, verify,
+    cut, map, map_opt, map_res, not, opt, peek, recognize, value, verify,
 };
+use nom::error::context;
 use nom::multi::{fold_many0, fold_many1, many0, many1, many_m_n};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use std::str::from_utf8;
 
 pub fn sass_string(input: Span) -> PResult<SassString> {
+    verify(sass_string_allow_dash, |s| {
+        s.single_raw().map_or(true, |s| s != "-")
+    })(input)
+}
+
+pub fn sass_string_allow_dash(input: Span) -> PResult<SassString> {
     let (input, first) = alt((
         string_part_interpolation,
         map(unquoted_first_part, StringPart::Raw),
@@ -30,39 +37,27 @@ pub fn sass_string(input: Span) -> PResult<SassString> {
     )(input)?;
     Ok((input, SassString::new(parts, Quotes::None)))
 }
-pub fn var_name(input: Span) -> PResult<SassString> {
-    let (input, _) = tag("--")(input)?;
-    let (input, parts) = fold_many0(
-        alt((
-            string_part_interpolation,
-            map(unquoted_part, StringPart::Raw),
-        )),
-        || vec![StringPart::Raw("--".into())],
-        |mut acc, item| {
-            acc.push(item);
-            acc
-        },
-    )(input)?;
-    Ok((input, SassString::new(parts, Quotes::None)))
-}
 
 pub fn custom_value(input: Span) -> PResult<SassString> {
-    map(custom_value_inner, |mut parts| {
-        if let Some(StringPart::Raw(last)) = parts.last_mut() {
-            if last.ends_with('\n') {
-                last.pop();
-                last.push(' ');
+    map(
+        context("Expected token.", custom_value_inner),
+        |mut parts| {
+            if let Some(StringPart::Raw(last)) = parts.last_mut() {
+                if last.ends_with('\n') {
+                    last.pop();
+                    last.push(' ');
+                }
             }
-        }
-        SassString::new(parts, Quotes::None)
-    })(input)
+            SassString::new(parts, Quotes::None)
+        },
+    )(input)
 }
 pub fn custom_value_inner(input: Span) -> PResult<Vec<StringPart>> {
     fold_many1(
         alt((
-            |input| custom_value_paren("[", "]", input),
-            |input| custom_value_paren("{", "}", input),
-            |input| custom_value_paren("(", ")", input),
+            |input| custom_value_paren('[', ']', input),
+            |input| custom_value_paren('{', '}', input),
+            |input| custom_value_paren('(', ')', input),
             map(sass_string_dq, |mut s| {
                 s.prepend("\"");
                 s.append_str("\"");
@@ -91,14 +86,14 @@ pub fn custom_value_inner(input: Span) -> PResult<Vec<StringPart>> {
     )(input)
 }
 
-fn custom_value_paren<'a>(
-    start: &'static str,
-    end: &'static str,
-    input: Span<'a>,
-) -> PResult<'a, Vec<StringPart>> {
+fn custom_value_paren(
+    start: char,
+    end: char,
+    input: Span,
+) -> PResult<Vec<StringPart>> {
     map(
         delimited(
-            tag(start),
+            char(start),
             fold_many0(
                 alt((
                     map(tag(";"), |_| vec![StringPart::from(";")]),
@@ -110,7 +105,7 @@ fn custom_value_paren<'a>(
                     acc
                 },
             ),
-            tag(end),
+            cut(char(end)),
         ),
         |mut parts| {
             parts.push(StringPart::Raw(end.into()));
@@ -431,6 +426,8 @@ fn is_ext_str_start_char(c: &char) -> bool {
         || *c == '='
         || *c == '?'
         || *c == '|'
+        || *c == '<'
+        || *c == '>'
 }
 fn is_ext_str_char(c: &char) -> bool {
     is_name_char(c)
@@ -443,13 +440,18 @@ fn is_ext_str_char(c: &char) -> bool {
         || *c == '='
         || *c == '?'
         || *c == '|'
+        || *c == '<'
+        || *c == '>'
+        || *c == '\\'
 }
 
 pub fn name(input: Span) -> PResult<String> {
+    let (input, first) =
+        verify(alt((escaped_char, take_char)), is_name_start_char)(input)?;
     verify(
         fold_many0(
             alt((escaped_char, name_char)),
-            String::new,
+            move || String::from(first),
             |mut s, c| {
                 s.push(c);
                 s
@@ -482,21 +484,31 @@ fn escaped_char(input: Span) -> PResult<char> {
         alt((
             value('\\', tag("\\")),
             map_opt(
-                map_res(
-                    map_res(
-                        terminated(
-                            recognize(many_m_n(
-                                1,
-                                6,
-                                one_of("0123456789ABCDEFabcdef"),
-                            )),
-                            opt(tag(" ")),
+                pair(
+                    recognize(many_m_n(
+                        1,
+                        6,
+                        one_of("0123456789ABCDEFabcdef"),
+                    )),
+                    alt((
+                        value(true, tag(" ")),
+                        value(
+                            true,
+                            peek(not(one_of("0123456789ABCDEFabcdef"))),
                         ),
-                        input_to_str,
-                    ),
-                    |s| u32::from_str_radix(s, 16),
+                        value(false, tag("")),
+                    )),
                 ),
-                std::char::from_u32,
+                |(code, term): (Span, bool)| {
+                    if term || code.len() == 6 {
+                        std::char::from_u32(
+                            u32::from_str_radix(input_to_str(code).ok()?, 16)
+                                .ok()?,
+                        )
+                    } else {
+                        None
+                    }
+                },
             ),
             take_char,
         )),
@@ -521,4 +533,7 @@ fn single_char(data: Span) -> Option<char> {
 
 fn is_name_char(c: &char) -> bool {
     c.is_alphanumeric() || *c == '_' || *c == '-'
+}
+fn is_name_start_char(c: &char) -> bool {
+    c.is_alphabetic() || *c == '_' || *c == '-'
 }

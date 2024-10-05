@@ -10,7 +10,6 @@ mod brackets {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn curly() {
         assert_eq!(
             runner().err(
@@ -27,7 +26,6 @@ mod brackets {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn curly_in_square() {
         assert_eq!(
             runner().err(
@@ -44,7 +42,6 @@ mod brackets {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn paren() {
         assert_eq!(
             runner().err(
@@ -61,7 +58,6 @@ mod brackets {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn paren_in_curly() {
         assert_eq!(
             runner().err(
@@ -78,7 +74,6 @@ mod brackets {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn square() {
         assert_eq!(
             runner().err(
@@ -95,7 +90,6 @@ mod brackets {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn square_in_paren() {
         assert_eq!(
             runner().err(
@@ -113,7 +107,6 @@ mod brackets {
     }
 }
 #[test]
-#[ignore] // wrong error
 fn empty() {
     assert_eq!(
         runner().err(

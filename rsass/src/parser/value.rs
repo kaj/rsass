@@ -2,7 +2,7 @@ use super::css_function::css_function;
 use super::formalargs::call_args;
 use super::strings::{
     name, sass_string_dq, sass_string_ext, sass_string_sq,
-    special_function_misc, special_url, var_name,
+    special_function_misc, special_url,
 };
 use super::unit::unit;
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
@@ -14,11 +14,12 @@ use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
-    alphanumeric1, multispace0, multispace1, one_of,
+    alphanumeric1, char, multispace0, multispace1, one_of,
 };
 use nom::combinator::{
-    into, map, map_res, not, opt, peek, recognize, value, verify,
+    cut, into, map, map_res, not, opt, peek, recognize, value, verify,
 };
+use nom::error::context;
 use nom::multi::{fold_many0, fold_many1, many0, many_m_n, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use num_traits::Zero;
@@ -79,7 +80,13 @@ pub fn simple_space_list(input: Span) -> PResult<Value> {
 }
 
 fn se_or_ext_string(input: Span) -> PResult<Value> {
-    alt((single_expression, map(sass_string_ext, Value::Literal)))(input)
+    let result = single_expression(input);
+    if matches!(result, Err(nom::Err::Error(_))) {
+        if let Ok((rest, lit)) = sass_string_ext(input) {
+            return Ok((rest, Value::Literal(lit)));
+        }
+    }
+    result
 }
 
 fn single_expression(input: Span) -> PResult<Value> {
@@ -210,6 +217,7 @@ pub fn single_value(input: Span) -> PResult<Value> {
         Some(b'\'') => map(sass_string_sq, Value::Literal)(input),
         Some(b'[') => bracket_list(input),
         Some(b'(') => value_in_parens(input),
+        Some(b'$') => variable_nomod(input),
         _ => alt((
             value(Value::True, tag("true")),
             value(Value::False, tag("false")),
@@ -220,23 +228,23 @@ pub fn single_value(input: Span) -> PResult<Value> {
             value(Value::Null, tag("null")),
             map(special_url, Value::Literal),
             special_function,
-            // Really ugly special case ... sorry.
-            value(Value::Literal("-null".into()), tag("-null")),
-            map(var_name, Value::Literal),
-            unary_op,
             function_call_or_string,
+            unary_op,
         ))(input),
     }
 }
 
 fn bang(input: Span) -> PResult<Value> {
     map(
-        map_res(
-            preceded(
-                pair(tag("!"), opt_spacelike),
-                tag("important"), // TODO Pretty much anythig goes, here?
+        context(
+            "Expected \"important\".",
+            map_res(
+                preceded(
+                    pair(tag("!"), opt_spacelike),
+                    tag("important"), // TODO Pretty much anythig goes, here?
+                ),
+                input_to_string,
             ),
-            input_to_string,
         ),
         Value::Bang,
     )(input)
@@ -305,7 +313,7 @@ pub(crate) fn unicode_range_inner(input: Span) -> PResult<String> {
 
 pub fn bracket_list(input: Span) -> PResult<Value> {
     let (input, content) =
-        delimited(tag("["), opt(value_expression), tag("]"))(input)?;
+        delimited(char('['), opt(value_expression), char(']'))(input)?;
     Ok((
         input,
         match content {
@@ -401,10 +409,16 @@ pub fn decimal_decimals(input: Span) -> PResult<Number> {
     )(input)
 }
 
+pub fn variable_nomod(input: Span) -> PResult<Value> {
+    let (rest, name) = preceded(char('$'), identifier)(input)?;
+    let pos = input.up_to(&rest).to_owned();
+    Ok((rest, Value::Variable(name.into(), pos)))
+}
+
 pub fn variable(input: Span) -> PResult<Value> {
     let (rest, (modules, name)) = pair(
         many0(terminated(name, tag("."))),
-        preceded(tag("$"), name),
+        preceded(tag("$"), cut(identifier)),
     )(input)?;
     let name = if modules.is_empty() {
         name
@@ -413,6 +427,10 @@ pub fn variable(input: Span) -> PResult<Value> {
     };
     let pos = input.up_to(&rest).to_owned();
     Ok((rest, Value::Variable(name.into(), pos)))
+}
+
+pub fn identifier(input: Span) -> PResult<String> {
+    context("Expected identifier.", name)(input)
 }
 
 fn hex_color(input: Span) -> PResult<Value> {
@@ -470,32 +488,63 @@ pub fn special_function(input: Span) -> PResult<Value> {
 }
 
 pub fn function_call_or_string(input: Span) -> PResult<Value> {
+    function_call_or_string_real(input, true)
+}
+pub fn function_call_or_string_rulearg(input: Span) -> PResult<Value> {
+    function_call_or_string_real(input, false)
+}
+fn function_call_or_string_real(
+    input: Span,
+    allow_not: bool,
+) -> PResult<Value> {
     let (rest, name) = sass_string(input)?;
-    /* TODO: true, false and null should end up here, but can't as long as '.' is a normal part of a string.
-    if let Some(special) = name.single_raw().and_then(|s| match s {
-        "true" => return Some(Value::True),
-        "false" => return Some(Value::False),
-        "null" => return Some(Value::Null),
-        _ => None,
-    }) {
-        return Ok((rest, special));
+
+    if let Some(val) = name.single_raw() {
+        match val {
+            "not" if allow_not => {
+                if let Ok((rest, arg)) =
+                    preceded(ignore_comments, single_value)(rest)
+                {
+                    return Ok((
+                        rest,
+                        Value::UnaryOp(Operator::Not, Box::new(arg)),
+                    ));
+                }
+            }
+            "NaN" => return Ok((rest, Value::scalar(f64::NAN))),
+            "infinity" => return Ok((rest, Value::scalar(f64::INFINITY))),
+            "-infinity" => {
+                return Ok((rest, Value::scalar(f64::NEG_INFINITY)))
+            }
+
+            /* TODO: true, false and null should end up here, but can't as long as '.' is a normal part of a string.
+            "true" => return Ok((rest, Value::True)),
+            "false" => return Ok((rest, Value::False)),
+            "null" => return Ok((rest, Value::Null)),
+             */
+            _ => (),
+        }
     }
-     */
-    if let Ok((rest, args)) = call_args(rest) {
-        let pos = input.up_to(&rest).to_owned();
-        return Ok((rest, Value::Call(name, args, pos)));
+    if rest.starts_with(b"(") {
+        match call_args(rest) {
+            Ok((rest, args)) => {
+                let pos = input.up_to(&rest).to_owned();
+                return Ok((rest, Value::Call(name, args, pos)));
+            }
+            Err(error) => {
+                if let Ok((rest, lit)) = sass_string_ext(rest) {
+                    return Ok((rest, Value::Literal(lit)));
+                } else {
+                    return Err(error);
+                }
+            }
+        }
     }
     Ok((rest, literal_or_color(name)))
 }
 
 fn literal_or_color(s: SassString) -> Value {
     if let Some(val) = s.single_raw() {
-        if val == "infinity" {
-            return Value::scalar(f64::INFINITY);
-        }
-        if val == "NaN" {
-            return Value::scalar(f64::NAN);
-        }
         if let Some(rgba) = Rgba::from_name(val) {
             return Value::Color(rgba, Some(val.to_string()));
         }

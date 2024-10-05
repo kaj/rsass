@@ -10,7 +10,6 @@ mod test_else {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn partial_if() {
         assert_eq!(
         runner().err(

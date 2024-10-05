@@ -33,7 +33,6 @@ mod after_close_paren {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn loud() {
         let runner = runner().with_cwd("loud");
         assert_eq!(runner.ok("@use \"other\" with ($a: b) /**/\n"), "");
@@ -72,7 +71,6 @@ mod after_keyword {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn loud() {
         let runner = runner().with_cwd("loud");
         assert_eq!(runner.ok("@use \"other\" as /**/ a\n"), "");
@@ -94,7 +92,6 @@ mod after_modifier {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn loud() {
         let runner = runner().with_cwd("loud");
         assert_eq!(runner.ok("@use \"other\" as a /**/\n"), "");
@@ -112,7 +109,6 @@ mod after_open_paren {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn loud() {
         let runner = runner().with_cwd("loud");
         assert_eq!(runner.ok("@use \"other\" with (/**/ $a: b)\n"), "");
@@ -141,7 +137,6 @@ mod after_url {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn loud() {
         let runner = runner().with_cwd("loud");
         assert_eq!(runner.ok("@use \"other\" /**/\n"), "");
@@ -159,7 +154,6 @@ mod before_close_paren {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn loud() {
         let runner = runner().with_cwd("loud");
         assert_eq!(runner.ok("@use \"other\" with ($a: b /**/)\n"), "");
@@ -181,7 +175,6 @@ mod before_colon {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn loud() {
         let runner = runner().with_cwd("loud");
         assert_eq!(runner.ok("@use \"other\" with ($a /**/ : b)\n"), "");
@@ -203,7 +196,6 @@ mod before_keyword {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn loud() {
         let runner = runner().with_cwd("loud");
         assert_eq!(runner.ok("@use \"other\" /**/ as a\n"), "");
@@ -225,7 +217,6 @@ mod before_url {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn loud() {
         let runner = runner().with_cwd("loud");
         assert_eq!(runner.ok("@use /**/ \"other\"\n"), "");

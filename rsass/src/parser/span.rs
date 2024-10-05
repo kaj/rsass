@@ -34,6 +34,9 @@ impl<'a> Span<'a> {
             source,
         }
     }
+    pub(crate) fn is_at_end(&self) -> bool {
+        self.start == self.source.data().len()
+    }
     fn range(&self) -> Range<usize> {
         self.start..self.end
     }
