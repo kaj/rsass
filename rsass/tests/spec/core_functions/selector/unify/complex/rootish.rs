@@ -34,7 +34,7 @@ fn mixed() {
         runner().ok("@use \"sass:selector\";\
              \na {b: selector.unify(\":root .c .d\", \":scope .e .f\")}\n"),
         "a {\
-         \n  b: :scope:root .c .e .d.f, :scope:root .e .c .d.f;\
+         \n  b: :root:scope .c .e .d.f, :root:scope .e .c .d.f;\
          \n}\n"
     );
 }
@@ -52,7 +52,7 @@ mod root {
                 runner().ok("@use \"sass:selector\";\
              \na {b: selector.unify(\".c:root .d\", \".e:root .f\")}\n"),
                 "a {\
-         \n  b: .e.c:root .d.f;\
+         \n  b: .c.e:root .d.f;\
          \n}\n"
             );
         }

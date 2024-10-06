@@ -62,7 +62,7 @@ fn isolated() {
         runner().ok("@use \"sass:selector\";\
              \na {b: selector.unify(\".c > .d + .e\", \".f .g ~ .h\")}\n"),
         "a {\
-         \n  b: .f .c > .g ~ .d + .e.h, .f .c > .d.g + .e.h;\
+         \n  b: .f .c > .g ~ .d + .e.h, .f .c > .g.d + .e.h;\
          \n}\n"
     );
 }

@@ -11,7 +11,7 @@ fn test() {
     assert_eq!(
         runner().ok(".a + x {a: b}\
              \n.b ~ y {@extend x}\n"),
-        ".a + x, .b ~ .a + y, .a.b + y {\
+        ".a + x, .b ~ .a + y, .b.a + y {\
          \n  a: b;\
          \n}\n"
     );

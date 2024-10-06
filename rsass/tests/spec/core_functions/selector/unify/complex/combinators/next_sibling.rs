@@ -48,7 +48,7 @@ mod and_next_sibling {
             runner().ok("@use \"sass:selector\";\
              \na {b: selector.unify(\".c + .d\", \".e + .f\")}\n"),
             "a {\
-         \n  b: .e.c + .d.f;\
+         \n  b: .c.e + .d.f;\
          \n}\n"
         );
     }
@@ -60,7 +60,7 @@ mod and_next_sibling {
              \na {b: selector.unify(\".c.s1-1 + .s1-2\", \".c.s2-1 + .s2-2\")}\n"
         ),
         "a {\
-         \n  b: .c.s2-1.s1-1 + .s1-2.s2-2;\
+         \n  b: .c.s1-1.s2-1 + .s1-2.s2-2;\
          \n}\n"
     );
     }
@@ -97,7 +97,7 @@ mod and_sibling {
             runner().ok("@use \"sass:selector\";\
              \na {b: selector.unify(\".c + .d\", \".e ~ .f\")}\n"),
             "a {\
-         \n  b: .e ~ .c + .d.f, .c.e + .d.f;\
+         \n  b: .e ~ .c + .d.f, .e.c + .d.f;\
          \n}\n"
         );
     }
@@ -119,7 +119,7 @@ mod and_sibling {
              \na {b: selector.unify(\".c.s1-1 + .s1-2\", \".c.s2-1 ~ .s2-2\")}\n"
         ),
         "a {\
-         \n  b: .c.s2-1 ~ .c.s1-1 + .s1-2.s2-2, .c.s1-1.s2-1 + .s1-2.s2-2;\
+         \n  b: .c.s2-1 ~ .c.s1-1 + .s1-2.s2-2, .c.s2-1.s1-1 + .s1-2.s2-2;\
          \n}\n"
     );
     }

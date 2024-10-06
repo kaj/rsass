@@ -11,7 +11,7 @@ fn test() {
     assert_eq!(
         runner().ok(".a > .b + x {a: b}\
              \n.c > .d + y {@extend x}\n"),
-        ".a > .b + x, .c.a > .d.b + y {\
+        ".a > .b + x, .a.c > .b.d + y {\
          \n  a: b;\
          \n}\n"
     );
