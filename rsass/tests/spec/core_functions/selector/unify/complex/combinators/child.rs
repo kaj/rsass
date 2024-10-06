@@ -28,7 +28,7 @@ mod and_child {
             runner().ok("@use \"sass:selector\";\
              \na {b: selector.unify(\".c > .d\", \".e > .f\")}\n"),
             "a {\
-         \n  b: .e.c > .d.f;\
+         \n  b: .c.e > .d.f;\
          \n}\n"
         );
     }
@@ -40,7 +40,7 @@ mod and_child {
              \na {b: selector.unify(\".c.s1-1 > .s1-2\", \".c.s2-1 > .s2-2\")}\n"
         ),
         "a {\
-         \n  b: .c.s2-1.s1-1 > .s1-2.s2-2;\
+         \n  b: .c.s1-1.s2-1 > .s1-2.s2-2;\
          \n}\n"
     );
     }

@@ -525,12 +525,12 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
         s.into_iter().map(|s| Box::new((kind, s))).collect()
     }
     if a.0 == b.0 && a.1.compound.is_rootish() && b.1.compound.is_rootish() {
-        return Some(as_rel_vec(a.0, b.1.unify(a.1)));
+        return Some(as_rel_vec(a.0, a.1.unify(b.1)));
     }
 
     Some(match (*a, *b) {
         ((k @ AdjacentSibling, a), (AdjacentSibling, b))
-        | ((k @ Parent, a), (Parent, b)) => as_rel_vec(k, b._unify(a)?),
+        | ((k @ Parent, a), (Parent, b)) => as_rel_vec(k, a._unify(b)?),
         ((Ancestor, a), (Ancestor, b)) => {
             if b.is_local_superselector(&a) {
                 as_rel_vec(Ancestor, a._unify(b)?)
@@ -560,10 +560,10 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
                         .with_rel_of(k, a.clone())
                         .into_iter()
                         .chain(a.clone().with_rel_of(k, b.clone()))
-                        .chain(b.unify(a)),
+                        .chain(a.unify(b)),
                 )
             } else {
-                as_rel_vec(Sibling, b.unify(a))
+                as_rel_vec(Sibling, a.unify(b))
             }
         }
         ((a_k @ AdjacentSibling, a_s), (Sibling, b_s))
@@ -578,7 +578,7 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
                     a_s.clone()
                         .with_rel_of(Sibling, b_s.clone())
                         .into_iter()
-                        .chain(a_s.unify(b_s)),
+                        .chain(b_s.unify(a_s)),
                 )
             }
         }

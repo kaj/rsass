@@ -15,7 +15,7 @@ fn test() {
              \n.c\
              \n> .d +\
              \ny {@extend x}\n"),
-        ".a > .b + x, .c.a > .d.b + y {\
+        ".a > .b + x, .a.c > .b.d + y {\
          \n  a: b;\
          \n}\n"
     );

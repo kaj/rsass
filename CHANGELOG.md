@@ -29,7 +29,7 @@ project adheres to
 * Improved parse error handling (PR #201, Issue #141).
   Many parse errors now match the dart sass error message.
   Also allow "loud" comments in more places.
-* Updated sass-spec test suite to 2024-09-20.
+* Updated sass-spec test suite to 2024-09-30.
 
 
 ## Release 0.28.10

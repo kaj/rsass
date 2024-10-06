@@ -26,13 +26,13 @@ fn test() {
         ":root .foo-1, :root .bar-1 .baz-1 {\
          \n  test: 1;\
          \n}\
-         \n.foo-2:root .bar-2, .baz-2.foo-2:root .bang-2 {\
+         \n.foo-2:root .bar-2, .foo-2.baz-2:root .bang-2 {\
          \n  test: 2;\
          \n}\
          \nhtml:root .bar-3 {\
          \n  test: 3;\
          \n}\
-         \n.foo-4:root > .bar-4 .x-4, .baz-4.foo-4:root > .bar-4 .bang-4 .y-4 {\
+         \n.foo-4:root > .bar-4 .x-4, .foo-4.baz-4:root > .bar-4 .bang-4 .y-4 {\
          \n  test: 4;\
          \n}\n"
     );
