@@ -291,13 +291,13 @@ fn test_rational_overflow_div() {
 #[test]
 fn test_rational_overflow_add() {
     init_logger();
-    check_value("4142135623 + 1.4142135623", "4142135624.4142135623")
+    check_value("4142135623 + 1.4142135623", "4142135624.414214")
 }
 /// https://github.com/kaj/rsass/issues/98
 #[test]
 fn test_rational_overflow_sub() {
     init_logger();
-    check_value("4142135623 - 1.4142135623", "4142135621.5857864377")
+    check_value("4142135623 - 1.4142135623", "4142135621.585786")
 }
 
 /// https://github.com/kaj/rsass/issues/116

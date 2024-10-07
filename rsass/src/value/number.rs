@@ -1,5 +1,4 @@
 use crate::output::{Format, Formatted};
-use num_bigint::BigInt;
 use num_integer::Integer;
 use num_rational::Ratio;
 pub use num_rational::Rational64 as Rational;
@@ -24,11 +23,6 @@ pub struct Number {
 #[derive(Clone, Debug)]
 enum NumValue {
     Rational(Rational),
-    // Note: Using a Box here is essentially a double indirection, but
-    // it also makes the size of a NumValue a lot smaller (24 bytes
-    // for a Ratio<i64> plus denominator and padding rather than the
-    // 48 bytes (two Vec headers) that is put in this box.
-    BigRational(Box<Ratio<BigInt>>),
     Float(f64),
 }
 
@@ -42,11 +36,6 @@ impl From<i64> for NumValue {
         Self::Rational(Rational::from_integer(value))
     }
 }
-impl From<Ratio<BigInt>> for NumValue {
-    fn from(value: Ratio<BigInt>) -> Self {
-        Self::BigRational(Box::new(value))
-    }
-}
 impl From<f64> for NumValue {
     fn from(value: f64) -> Self {
         Self::Float(value)
@@ -57,7 +46,6 @@ impl NumValue {
     pub fn is_negative(&self) -> bool {
         match self {
             Self::Rational(s) => s.is_negative(),
-            Self::BigRational(s) => s.is_negative(),
             Self::Float(s) => s.is_sign_negative(),
         }
     }
@@ -74,7 +62,6 @@ impl Neg for &Number {
     fn neg(self) -> Number {
         match &self.value {
             NumValue::Rational(s) => (-s).into(),
-            NumValue::BigRational(s) => (-s.as_ref()).into(),
             NumValue::Float(s) => (-s).into(),
         }
     }
@@ -90,13 +77,6 @@ impl PartialOrd for NumValue {
     fn partial_cmp(&self, rhs: &Self) -> Option<Ordering> {
         match (self, rhs) {
             (Self::Rational(s), Self::Rational(r)) => s.partial_cmp(r),
-            (Self::Rational(s), Self::BigRational(r)) => {
-                biggen(s).partial_cmp(r)
-            }
-            (Self::BigRational(s), Self::Rational(r)) => {
-                s.as_ref().partial_cmp(&biggen(r))
-            }
-            (Self::BigRational(s), Self::BigRational(r)) => s.partial_cmp(r),
             (Self::Float(s), r) => s.partial_cmp(&r.into()),
             (s, Self::Float(r)) => f64::from(s).partial_cmp(r),
         }
@@ -124,33 +104,6 @@ impl Mul for &NumValue {
                         .unwrap_or_else(|| (biggen(s) * biggen(r)).into())
                 }
             }
-            (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                if (s.is_zero() && r.is_negative())
-                    || (r.is_zero() && s.is_negative())
-                {
-                    (-0.0).into()
-                } else {
-                    (biggen(s) * r.as_ref()).into()
-                }
-            }
-            (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                if (s.is_zero() && r.is_negative())
-                    || (r.is_zero() && s.is_negative())
-                {
-                    (-0.0).into()
-                } else {
-                    (s.as_ref() * biggen(r)).into()
-                }
-            }
-            (NumValue::BigRational(s), NumValue::BigRational(r)) => {
-                if (s.is_zero() && r.is_negative())
-                    || (r.is_zero() && s.is_negative())
-                {
-                    (-0.0).into()
-                } else {
-                    (s.as_ref() * r.as_ref()).into()
-                }
-            }
             (NumValue::Float(s), r) => (s * f64::from(r)).into(),
             (s, NumValue::Float(r)) => (f64::from(s) * r).into(),
         }
@@ -161,7 +114,6 @@ impl Mul<&Rational> for &NumValue {
     fn mul(self, rhs: &Rational) -> NumValue {
         match self {
             NumValue::Rational(s) => (s * rhs).into(),
-            NumValue::BigRational(s) => (s.as_ref() * biggen(rhs)).into(),
             NumValue::Float(s) => {
                 rhs.to_f64().map_or(f64::NAN, |r| s * r).into()
             }
@@ -173,7 +125,6 @@ impl Mul<i64> for NumValue {
     fn mul(self, rhs: i64) -> Self {
         match self {
             s @ Self::Rational(_) => s * Self::from(rhs),
-            Self::BigRational(s) => (s.as_ref() * BigInt::from(rhs)).into(),
             Self::Float(s) => (s * (rhs as f64)).into(),
         }
     }
@@ -216,15 +167,6 @@ impl Rem for &NumValue {
         }
         match (self, rhs) {
             (NumValue::Rational(s), NumValue::Rational(r)) => (s % r).into(),
-            (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                (biggen(s) % r.as_ref()).into()
-            }
-            (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                (s.as_ref() % biggen(r)).into()
-            }
-            (NumValue::BigRational(s), NumValue::BigRational(r)) => {
-                (s.as_ref() % r.as_ref()).into()
-            }
             (NumValue::Float(s), r) => float_rem(*s, r.into()).into(),
             (s, NumValue::Float(r)) => float_rem(s.into(), *r).into(),
         }
@@ -247,15 +189,6 @@ impl Div for &NumValue {
                 .checked_div(r)
                 .map(Into::into)
                 .unwrap_or_else(|| (biggen(s) / biggen(r)).into()),
-            (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                (biggen(s) / r.as_ref()).into()
-            }
-            (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                (s.as_ref() / biggen(r)).into()
-            }
-            (NumValue::BigRational(s), NumValue::BigRational(r)) => {
-                (s.as_ref() / r.as_ref()).into()
-            }
             (NumValue::Float(s), r) => (s / f64::from(r)).into(),
             (s, NumValue::Float(r)) => (f64::from(s) / r).into(),
         }
@@ -267,7 +200,6 @@ impl Div<i64> for NumValue {
     fn div(self, rhs: i64) -> Self {
         match self {
             Self::Rational(s) => (s / rhs).into(),
-            Self::BigRational(s) => (s.as_ref() / BigInt::from(rhs)).into(),
             Self::Float(s) => (s / (rhs as f64)).into(),
         }
     }
@@ -281,15 +213,6 @@ impl Add for NumValue {
                 .checked_add(&r)
                 .map(Into::into)
                 .unwrap_or_else(|| (biggen(&s) + biggen(&r)).into()),
-            (Self::Rational(s), Self::BigRational(r)) => {
-                (biggen(&s) + r.as_ref()).into()
-            }
-            (Self::BigRational(s), Self::Rational(r)) => {
-                (s.as_ref() + biggen(&r)).into()
-            }
-            (Self::BigRational(s), Self::BigRational(r)) => {
-                (s.as_ref() + r.as_ref()).into()
-            }
             (Self::Float(s), r) => (s + f64::from(r)).into(),
             (s, Self::Float(r)) => (f64::from(s) + r).into(),
         }
@@ -309,23 +232,14 @@ impl Sub for &NumValue {
                 .checked_sub(r)
                 .map(Into::into)
                 .unwrap_or_else(|| (biggen(s) - biggen(r)).into()),
-            (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                (biggen(s) - r.as_ref()).into()
-            }
-            (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                (s.as_ref() - biggen(r)).into()
-            }
-            (NumValue::BigRational(s), NumValue::BigRational(r)) => {
-                (s.as_ref() - r.as_ref()).into()
-            }
             (NumValue::Float(s), r) => (s - f64::from(r)).into(),
             (s, NumValue::Float(r)) => (f64::from(s) - r).into(),
         }
     }
 }
 
-fn biggen(val: &Rational) -> Ratio<BigInt> {
-    Ratio::<BigInt>::new((*val.numer()).into(), (*val.denom()).into())
+fn biggen(val: &Rational) -> f64 {
+    val.to_f64().unwrap_or(f64::NAN)
 }
 
 impl One for NumValue {
@@ -348,7 +262,6 @@ impl Zero for NumValue {
     fn is_zero(&self) -> bool {
         match self {
             Self::Rational(r) => r.is_zero(),
-            Self::BigRational(r) => r.is_zero(),
             Self::Float(r) => r.is_zero(),
         }
     }
@@ -358,35 +271,30 @@ impl NumValue {
     pub fn ceil(&self) -> Self {
         match self {
             Self::Rational(r) => r.ceil().into(),
-            Self::BigRational(r) => r.ceil().into(),
             Self::Float(r) => r.ceil().into(),
         }
     }
     pub fn floor(&self) -> Self {
         match self {
             Self::Rational(r) => r.floor().into(),
-            Self::BigRational(r) => r.floor().into(),
             Self::Float(r) => r.floor().into(),
         }
     }
     pub fn trunc(&self) -> Self {
         match self {
             Self::Rational(r) => r.trunc().into(),
-            Self::BigRational(r) => r.trunc().into(),
             Self::Float(r) => r.trunc().into(),
         }
     }
     pub fn round(&self) -> Self {
         match self {
             Self::Rational(r) => r.round().into(),
-            Self::BigRational(r) => r.round().into(),
             Self::Float(r) => r.round().into(),
         }
     }
     pub fn signum(&self) -> Self {
         match self {
             Self::Rational(r) => r.signum().into(),
-            Self::BigRational(r) => r.signum().into(),
             Self::Float(r) => {
                 // The sass spec says sign(-0) is -0
                 // ... which may be a bug, but here's to compatibility:
@@ -401,22 +309,6 @@ impl NumValue {
     pub fn as_ratio(&self) -> Result<Rational, BadNumber> {
         match self {
             Self::Rational(r) => Ok(*r),
-            Self::BigRational(r) => {
-                let mut numer = r.numer().clone();
-                let mut denom = r.denom().clone();
-                loop {
-                    let tn = i64::try_from(&numer);
-                    let td = i64::try_from(&denom);
-                    if let (Ok(n), Ok(d)) = (tn, td) {
-                        return Ok(Ratio::new(n, d));
-                    }
-                    numer /= 32;
-                    denom /= 32;
-                    if denom.is_zero() {
-                        return Err(BadNumber::TooLarge);
-                    }
-                }
-            }
             Self::Float(r) => {
                 Ratio::approximate_float(*r).ok_or(BadNumber::BadFloat(*r))
             }
@@ -472,7 +364,6 @@ impl Number {
     pub fn abs(&self) -> Self {
         match &self.value {
             NumValue::Rational(s) => s.abs().into(),
-            NumValue::BigRational(s) => s.abs().into(),
             NumValue::Float(s) => s.abs().into(),
         }
     }
@@ -485,7 +376,6 @@ impl Number {
     pub fn is_finite(&self) -> bool {
         match self.value {
             NumValue::Rational(_) => true,
-            NumValue::BigRational(_) => true,
             NumValue::Float(r) => r.is_finite(),
         }
     }
@@ -508,13 +398,6 @@ impl Number {
                     s.to_f64().and_then(float_int).ok_or(self)
                 }
             }
-            NumValue::BigRational(s) => {
-                if s.is_integer() {
-                    i64::try_from(s.to_integer()).map_err(|_| self)
-                } else {
-                    s.to_f64().and_then(float_int).ok_or(self)
-                }
-            }
             NumValue::Float(s) => float_int(*s).ok_or(self),
         }
     }
@@ -525,7 +408,6 @@ impl Number {
     pub fn to_integer(&self) -> Option<i64> {
         match &self.value {
             NumValue::Rational(s) => Some(s.to_integer()),
-            NumValue::BigRational(s) => i64::try_from(s.to_integer()).ok(),
             NumValue::Float(s) => Some(s.ceil() as i64),
         }
     }
@@ -533,7 +415,6 @@ impl Number {
     pub fn powi(self, p: i32) -> Self {
         match self.value {
             NumValue::Rational(s) => s.pow(p).into(),
-            NumValue::BigRational(s) => s.pow(p).into(),
             NumValue::Float(s) => s.powi(p).into(),
         }
     }
@@ -563,7 +444,7 @@ impl From<usize> for Number {
     fn from(value: usize) -> Self {
         match i64::try_from(value) {
             Ok(v) => v.into(),
-            Err(_) => Ratio::from_integer(BigInt::from(value)).into(),
+            Err(_) => (value as f64).into(),
         }
     }
 }
@@ -576,13 +457,6 @@ impl From<Rational> for Number {
 }
 impl From<f64> for Number {
     fn from(value: f64) -> Self {
-        Self {
-            value: value.into(),
-        }
-    }
-}
-impl From<Ratio<BigInt>> for Number {
-    fn from(value: Ratio<BigInt>) -> Self {
         Self {
             value: value.into(),
         }
@@ -643,7 +517,6 @@ impl From<&NumValue> for f64 {
     fn from(val: &NumValue) -> Self {
         match val {
             NumValue::Rational(s) => s.to_f64().unwrap_or(Self::NAN),
-            NumValue::BigRational(s) => s.to_f64().unwrap_or(Self::NAN),
             NumValue::Float(s) => *s,
         }
     }
@@ -706,7 +579,6 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self.value.value {
             NumValue::Rational(ref s) => do_fmt(out, s, self.format),
-            NumValue::BigRational(ref s) => do_fmt(out, s, self.format),
             NumValue::Float(ref s) => {
                 if s.is_nan() {
                     write!(out, "NaN")
@@ -873,9 +745,6 @@ impl fmt::Debug for Number {
                 out.write_str(" / ")?;
                 r.denom().fmt(out)
             }
-            NumValue::BigRational(r) => {
-                out.debug_list().entry(r.numer()).entry(r.denom()).finish()
-            }
             NumValue::Float(f) => f.fmt(out),
         }
     }
@@ -912,17 +781,6 @@ fn debug_integer() {
 #[test]
 fn debug_long_integer() {
     assert_eq!(format!("{:?}", Number::from(17)), "Number 17 / 1",);
-}
-
-#[test]
-fn debug_biginteger() {
-    assert_eq!(
-        format!(
-            "{:?}",
-            Number::from(Ratio::<BigInt>::new(17.into(), 1.into()))
-        ),
-        "Number [17, 1]",
-    );
 }
 
 #[test]

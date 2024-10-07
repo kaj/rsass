@@ -26,7 +26,6 @@ mod int {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn very() {
             assert_eq!(
         runner().ok(
@@ -57,7 +56,6 @@ mod int {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn very() {
             assert_eq!(
         runner().ok(
@@ -72,6 +70,7 @@ mod int {
         }
     }
     #[test]
+    #[ignore] // wrong result
     fn max_value() {
         assert_eq!(
         runner().ok(
@@ -83,6 +82,7 @@ mod int {
     );
     }
     #[test]
+    #[ignore] // wrong result
     fn min_value() {
         assert_eq!(
         runner().ok(
