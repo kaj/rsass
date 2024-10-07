@@ -19,19 +19,14 @@ impl Hwba {
     /// Hue is modulo 360 degrees.  Other inputs will be clamped to
     /// their ranges.
     pub fn new(hue: f64, w: f64, b: f64, alpha: f64) -> Self {
-        let mut w = w;
-        let mut b = b;
         let wbsum = w + b;
-        if !(wbsum < 1.) {
-            w /= wbsum;
-            b /= wbsum;
-        }
-        Self {
-            hue,
-            w,
-            b,
-            alpha: alpha.clamp(0., 1.),
-        }
+        let (w, b) = if wbsum > 1. {
+            (w / wbsum, b / wbsum)
+        } else {
+            (w, b)
+        };
+        let alpha = alpha.clamp(0., 1.);
+        Self { hue, w, b, alpha }
     }
 
     /// Get the hue of this color.

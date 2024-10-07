@@ -65,7 +65,9 @@ pub fn register(f: &mut Scope) {
                     sat,
                     lum,
                     opt_add(hsla.alpha(), a_adj),
-                    hsla.hsla_format || sat > 1. || lum > 1. || lum < 0.,
+                    hsla.hsla_format
+                        || sat > 1.
+                        || !(0. ..=1.).contains(&lum),
                 )
                 .into())
             } else {
