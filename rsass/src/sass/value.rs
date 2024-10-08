@@ -4,7 +4,6 @@ use crate::input::SourcePos;
 use crate::output::Format;
 use crate::value::{BadOp, ListSeparator, Number, Numeric, Operator, Rgba};
 use crate::{css, Error, Invalid, ScopeRef};
-use num_traits::Zero;
 use std::fmt::{self, Write};
 
 /// A sass value.
@@ -169,7 +168,7 @@ impl Value {
                 let value = v.do_evaluate(scope, true)?;
                 match (op, value) {
                     (Operator::Not, css::Value::Numeric(v, _)) => {
-                        v.value.is_zero().into()
+                        (v.value == 0.into()).into()
                     }
                     (Operator::Not, css::Value::True) => css::Value::False,
                     (Operator::Not, css::Value::False) => css::Value::True,

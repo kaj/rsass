@@ -1,5 +1,4 @@
 use crate::output::{Format, Formatted};
-use num_traits::{One, Signed, Zero};
 use std::fmt::{self, Write};
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 
@@ -29,22 +28,14 @@ impl Neg for &Number {
 impl Mul for Number {
     type Output = Self;
     fn mul(mut self, rhs: Self) -> Self {
-        self.value = self.value * rhs.value;
+        self.value *= rhs.value;
         self
     }
 }
 impl Mul for &Number {
     type Output = Number;
     fn mul(self, rhs: Self) -> Self::Output {
-        Number {
-            value: &self.value * &rhs.value,
-        }
-    }
-}
-
-impl One for Number {
-    fn one() -> Self {
-        Self { value: 1.0 }
+        (self.value * rhs.value).into()
     }
 }
 
@@ -77,7 +68,7 @@ impl Number {
     pub fn signum(&self) -> Self {
         // The sass spec says sign(-0) is -0
         // ... which may be a bug, but here's to compatibility:
-        if self.value.is_zero() {
+        if self.value == 0. {
             self.clone()
         } else {
             self.value.signum().into()
@@ -154,9 +145,7 @@ impl From<usize> for Number {
 
 impl From<f64> for Number {
     fn from(value: f64) -> Self {
-        Self {
-            value: value.into(),
-        }
+        Self { value }
     }
 }
 impl Add for Number {
@@ -201,9 +190,7 @@ impl From<Number> for f64 {
 impl<'a> Div for &'a Number {
     type Output = Number;
     fn div(self, rhs: Self) -> Self::Output {
-        Number {
-            value: &self.value / &rhs.value,
-        }
+        (self.value / rhs.value).into()
     }
 }
 
@@ -212,18 +199,19 @@ impl Rem for &Number {
     fn rem(self, rhs: Self) -> Self::Output {
         // The modulo operator in rust handles negative values different from
         // num-rational.
-        let a = dbg!(&self.value);
-        let b = dbg!(&rhs.value);
-        let result = dbg!(a % b);
-        let result = if !a.is_zero() && (b.is_negative() != a.is_negative()) {
-            if b.is_finite() {
-                result + b.clone()
+        let a = self.value;
+        let b = rhs.value;
+        let result = a % b;
+        let result =
+            if a != 0. && (b.is_sign_negative() != a.is_sign_negative()) {
+                if b.is_finite() {
+                    result + b
+                } else {
+                    f64::NAN
+                }
             } else {
-                f64::NAN
-            }
-        } else {
-            result
-        };
+                result
+            };
         Number { value: result }
     }
 }
@@ -231,18 +219,7 @@ impl Rem for &Number {
 impl Sub for &Number {
     type Output = Number;
     fn sub(self, rhs: Self) -> Self::Output {
-        Number {
-            value: &self.value - &rhs.value,
-        }
-    }
-}
-
-impl Zero for Number {
-    fn zero() -> Self {
-        Self::from(0)
-    }
-    fn is_zero(&self) -> bool {
-        self.value.is_zero()
+        (self.value - rhs.value).into()
     }
 }
 
@@ -260,23 +237,23 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
         } else {
             let mut frac = s.fract();
             let mut whole = s.trunc().abs();
-            let mut dec = String::with_capacity(if frac.is_zero() {
+            let mut dec = String::with_capacity(if frac == 0. {
                 0
             } else {
                 self.format.precision
             });
 
-            if !frac.is_zero() {
+            if frac != 0. {
                 let max_decimals = 16 - whole.log10().ceil() as usize;
                 for _ in 1..max_decimals.min(self.format.precision) {
                     frac *= 10.;
                     write!(dec, "{}", (frac as i8).abs())?;
                     frac = frac.fract();
-                    if frac.is_zero() {
+                    if frac == 0. {
                         break;
                     }
                 }
-                if !frac.is_zero() {
+                if frac != 0. {
                     let end = (frac * 10.).round().abs() as u8;
                     if end == 10 {
                         loop {
@@ -292,7 +269,7 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                                 }
                             }
                         }
-                    } else if end.is_zero() {
+                    } else if end == 0 {
                         loop {
                             match dec.pop() {
                                 Some('0') => continue,
@@ -309,12 +286,12 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                 }
             }
 
-            if s.is_sign_negative() && (!whole.is_zero() || !dec.is_empty()) {
+            if s.is_sign_negative() && (whole != 0. || !dec.is_empty()) {
                 out.write_char('-')?;
             }
 
             let skip_zero = self.format.is_compressed();
-            if !(whole.is_zero() && skip_zero && !dec.is_empty()) {
+            if !(whole == 0. && skip_zero && !dec.is_empty()) {
                 write!(out, "{whole}")?;
             }
 

@@ -1,7 +1,6 @@
 //! The Unit enum defines css units
 
 use crate::value::Number;
-use num_traits::one;
 use std::f64::consts::FRAC_1_PI;
 use std::fmt;
 
@@ -153,7 +152,7 @@ impl Unit {
     /// Returns None if the units are of different dimension.
     pub fn scale_to(&self, other: &Self) -> Option<Number> {
         if self == other {
-            Some(one())
+            Some(1.into())
         } else if self.dimension() == other.dimension() {
             Some(self.scale_factor() / other.scale_factor())
         } else {
@@ -170,9 +169,9 @@ impl Unit {
             Self::Em | Self::Rem => 10. / 2.,
             Self::Ex => 10. / 3.,
             Self::Ch => 10. / 4.,
-            Self::Vw | Self::Vh | Self::Vmin | Self::Vmax => one(),
+            Self::Vw | Self::Vh | Self::Vmin | Self::Vmax => 1.,
             Self::Cm => 10.,
-            Self::Mm => one(),
+            Self::Mm => 1.,
             Self::Q => 1. / 4.,
             Self::In => 254. / 10.,
             Self::Pt => 254. / 720.,
@@ -182,23 +181,23 @@ impl Unit {
             Self::Deg => 1. / 360.,
             Self::Grad => 1. / 400.,
             Self::Rad => FRAC_1_PI / 2.0,
-            Self::Turn => one(),
+            Self::Turn => 1.,
 
-            Self::S => one(),
+            Self::S => 1.,
             Self::Ms => 1. / 1000.,
 
-            Self::Hz => one(),
+            Self::Hz => 1.,
             Self::Khz => 1000.,
 
             Self::Dpi => 1. / 96.,
             Self::Dpcm => 254. / 9600.,
-            Self::Dppx => one(),
+            Self::Dppx => 1.,
 
             Self::Percent => 1. / 100.,
-            Self::Fr => one(),
-            Self::None => one(),
+            Self::Fr => 1.,
+            Self::None => 1.,
 
-            Self::Unknown(_) => one(),
+            Self::Unknown(_) => 1.,
         })
     }
 }

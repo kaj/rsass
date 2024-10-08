@@ -1,5 +1,4 @@
 use super::{CssDimension, Dimension, Number, Unit};
-use num_traits::one;
 use std::fmt::{self, Display};
 use std::ops::{Div, Mul};
 
@@ -92,7 +91,7 @@ impl UnitSet {
         } else {
             let quote = self / other;
             if quote.dimension().is_empty() {
-                Some(quote.units.iter().fold(one(), |a, (unit, power)| {
+                Some(quote.units.iter().fold(1.into(), |a, (unit, power)| {
                     a * unit.scale_factor().powi((*power).into())
                 }))
             } else {
@@ -117,7 +116,7 @@ impl UnitSet {
 
     /// Simplify this unit set, returning a scaling factor.
     pub fn simplify(&mut self) -> Number {
-        let mut factor = one();
+        let mut factor = 1.into();
         if self.units.len() > 1 {
             for i in 1..(self.units.len()) {
                 let (a, b) = self.units.split_at_mut(i);
