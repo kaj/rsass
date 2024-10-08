@@ -1,4 +1,4 @@
-use super::{BadNumber, Number, Rational, Unit, UnitSet};
+use super::{Number, Unit, UnitSet};
 use crate::output::{Format, Formatted};
 use std::fmt::{self, Display};
 use std::ops::{Div, Mul, Neg};
@@ -23,7 +23,7 @@ impl Numeric {
     /// Create a new numeric value.
     ///
     /// The value can be given as anything that can be converted into
-    /// a [`Number`], e.g. an [`isize`], a [`Rational`], or a [`f64`].
+    /// a [`Number`], e.g. an [`isize`] or a [`f64`].
     pub fn new<V: Into<Number>, U: Into<UnitSet>>(value: V, unit: U) -> Self {
         Self {
             value: value.into(),
@@ -80,15 +80,6 @@ impl Numeric {
         } else {
             self.as_unit(unit)
         }
-    }
-
-    /// Get this number as a rational number.
-    ///
-    /// The unit is ignored.  If the value is bignum rational or
-    /// floating point, it is approximated as long as it is withing
-    /// range, otherwises an error is returned.
-    pub fn as_ratio(&self) -> Result<Rational, BadNumber> {
-        self.value.as_ratio()
     }
 
     /// Return true if this value has no unit.

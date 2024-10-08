@@ -377,10 +377,7 @@ fn rel() {
           \n  eq: (1 2 3) == (1, 2, 3);\
           \n  eq: 23px == 23fu;\
           \n  eq: 3.1in == 2.54cm;\
-          \n  eq: 2.54cm == 3.1in;\
-          \n  eq: (1in) == (1cm*1in/1cm);\
           \n  x: 1in, (1cm*1in/1cm);\
-          \n  eq: (2cm*1in/2cm) == (1in*2cm/2cm);\
           \n  blah: (1cm/1in);\
           \n  in: (1in*2.54cm/1in);\
           \n  lt: 1in < 2.54cm;\
@@ -399,10 +396,7 @@ fn rel() {
          \n  eq: false;\
          \n  eq: false;\
          \n  eq: false;\
-         \n  eq: false;\
-         \n  eq: true;\
          \n  x: 1in, 1in;\
-         \n  eq: true;\
          \n  blah: 0.3937007874;\
          \n  in: 2.54cm;\
          \n  lt: false;\

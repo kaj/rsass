@@ -595,43 +595,42 @@ mod test {
     use super::*;
     use crate::sass::CallArgs;
     use crate::sass::Value::{Color, List, Literal, Map, Paren};
-    use crate::value::Rational;
     use crate::ScopeRef;
 
     #[test]
     fn simple_number() {
-        check_expr("4;", number(4, 1))
+        check_expr("4;", number(4.))
     }
 
     #[test]
     fn simple_number_neg() {
-        check_expr("-4;", number(-4, 1))
+        check_expr("-4;", number(-4.))
     }
 
     #[test]
     fn simple_number_pos() {
-        check_expr("+4;", Value::scalar(4))
+        check_expr("+4;", Value::scalar(4.))
     }
 
     #[test]
     fn simple_number_dec() {
-        check_expr("4.34;", number(434, 100))
+        check_expr("4.34;", number(4.34))
     }
     #[test]
     fn simple_number_onlydec() {
-        check_expr(".34;", number(34, 100))
+        check_expr(".34;", number(0.34))
     }
     #[test]
     fn simple_number_onlydec_neg() {
-        check_expr("-.34;", number(-34, 100))
+        check_expr("-.34;", number(-0.34))
     }
     #[test]
     fn simple_number_onlydec_pos() {
-        check_expr("+.34;", number(34, 100))
+        check_expr("+.34;", number(0.34))
     }
 
-    fn number(nom: i64, denom: i64) -> Value {
-        Value::scalar(Rational::new(nom, denom))
+    fn number(value: f64) -> Value {
+        Value::scalar(value)
     }
 
     #[test]

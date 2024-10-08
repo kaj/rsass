@@ -166,40 +166,40 @@ impl Unit {
     /// When comparing rems to vw, who can say?
     pub(crate) fn scale_factor(&self) -> Number {
         #[allow(clippy::match_same_arms)]
-        match *self {
-            Self::Em | Self::Rem => Number::rational(10, 2),
-            Self::Ex => Number::rational(10, 3),
-            Self::Ch => Number::rational(10, 4),
+        Number::from(match *self {
+            Self::Em | Self::Rem => 10. / 2.,
+            Self::Ex => 10. / 3.,
+            Self::Ch => 10. / 4.,
             Self::Vw | Self::Vh | Self::Vmin | Self::Vmax => one(),
-            Self::Cm => Number::rational(10, 1),
+            Self::Cm => 10.,
             Self::Mm => one(),
-            Self::Q => Number::rational(1, 4),
-            Self::In => Number::rational(254, 10),
-            Self::Pt => Number::rational(254, 720),
-            Self::Pc => Number::rational(254, 60),
-            Self::Px => Number::rational(254, 960),
+            Self::Q => 1. / 4.,
+            Self::In => 254. / 10.,
+            Self::Pt => 254. / 720.,
+            Self::Pc => 254. / 60.,
+            Self::Px => 254. / 960.,
 
-            Self::Deg => Number::rational(1, 360),
-            Self::Grad => Number::rational(1, 400),
-            Self::Rad => (FRAC_1_PI / 2.0).into(), // 1/(2 pi)
+            Self::Deg => 1. / 360.,
+            Self::Grad => 1. / 400.,
+            Self::Rad => FRAC_1_PI / 2.0,
             Self::Turn => one(),
 
             Self::S => one(),
-            Self::Ms => Number::rational(1, 1000),
+            Self::Ms => 1. / 1000.,
 
             Self::Hz => one(),
-            Self::Khz => Number::rational(1000, 1),
+            Self::Khz => 1000.,
 
-            Self::Dpi => Number::rational(1, 96),
-            Self::Dpcm => Number::rational(254, 9600),
+            Self::Dpi => 1. / 96.,
+            Self::Dpcm => 254. / 9600.,
             Self::Dppx => one(),
 
-            Self::Percent => Number::rational(1, 100),
+            Self::Percent => 1. / 100.,
             Self::Fr => one(),
             Self::None => one(),
 
             Self::Unknown(_) => one(),
-        }
+        })
     }
 }
 
