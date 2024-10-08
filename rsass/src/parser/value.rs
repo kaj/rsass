@@ -14,15 +14,15 @@ use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
-    alphanumeric1, char, multispace0, multispace1, one_of,
+    alphanumeric1, char, digit1, multispace0, multispace1, one_of,
 };
 use nom::combinator::{
-    cut, into, map, map_res, not, opt, peek, recognize, value, verify,
+    cut, into, map, map_res, not, opt, peek, recognize, success, value,
+    verify,
 };
 use nom::error::context;
 use nom::multi::{fold_many0, fold_many1, many0, many_m_n, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
-use num_traits::Zero;
 use std::str::from_utf8;
 
 pub fn value_expression(input: Span) -> PResult<Value> {
@@ -326,11 +326,6 @@ pub fn bracket_list(input: Span) -> PResult<Value> {
     ))
 }
 
-fn sign_prefix(input: Span) -> PResult<Option<&[u8]>> {
-    opt(alt((tag("-"), tag("+"))))(input)
-        .map(|(r, s)| (r, s.map(|s| s.fragment())))
-}
-
 pub fn numeric(input: Span) -> PResult<Numeric> {
     map(pair(number, unit), |(number, unit)| {
         Numeric::new(number, unit)
@@ -340,7 +335,7 @@ pub fn numeric(input: Span) -> PResult<Numeric> {
 pub fn number(input: Span) -> PResult<Number> {
     map(
         tuple((
-            sign_prefix,
+            sign_neg,
             alt((
                 map(pair(decimal_integer, decimal_decimals), |(n, d)| n + d),
                 decimal_decimals,
@@ -348,38 +343,37 @@ pub fn number(input: Span) -> PResult<Number> {
             )),
             opt(preceded(
                 alt((tag("e"), tag("E"))),
-                tuple((sign_prefix, decimal_i32)),
+                tuple((sign_neg, decimal_i32)),
             )),
         )),
-        |(sign, num, exp)| {
-            let value = if sign == Some(b"-") {
-                // Only f64-based Number can represent negative zero.
-                if num.is_zero() {
-                    (-0.0).into()
-                } else {
-                    -num
-                }
-            } else {
-                num
-            };
-            if let Some((e_sign, e_val)) = exp {
-                let e_val = if e_sign == Some(b"-") { -e_val } else { e_val };
+        |(is_neg, num, exp)| {
+            let value = if is_neg { -num } else { num };
+            Number::from(if let Some((e_neg, e_val)) = exp {
+                let e_val = if e_neg { -e_val } else { e_val };
                 // Note: powi sounds right, but looses some precision.
-                value * Number::from(10f64.powf(e_val.into()))
+                value * 10f64.powf(e_val.into())
             } else {
                 value
-            }
+            })
         },
     )(input)
 }
 
-pub fn decimal_integer(input: Span) -> PResult<Number> {
-    fold_many1(
-        // Note: We should use bytes directly, one_of returns a char.
-        one_of("0123456789"),
-        || Number::from(0),
-        |r, d| (r * 10) + Number::from(i64::from(d as u8 - b'0')),
-    )(input)
+/// Parse true on `-` and false on `+` or no sign.
+fn sign_neg(input: Span) -> PResult<bool> {
+    alt((
+        value(true, char('-')),
+        value(false, char('+')),
+        success(false),
+    ))(input)
+}
+
+pub fn decimal_integer(input: Span) -> PResult<f64> {
+    map(digit1, |s: Span| {
+        s.fragment()
+            .iter()
+            .fold(0.0, |r, d| (r * 10.) + f64::from(d - b'0'))
+    })(input)
 }
 pub fn decimal_i32(input: Span) -> PResult<i32> {
     fold_many1(
@@ -390,23 +384,14 @@ pub fn decimal_i32(input: Span) -> PResult<i32> {
     )(input)
 }
 
-pub fn decimal_decimals(input: Span) -> PResult<Number> {
-    map(
-        preceded(
-            tag("."),
-            fold_many1(
-                one_of("0123456789"),
-                || (Number::from(0), Number::from(1)),
-                |(r, n), d| {
-                    (
-                        (r * 10) + Number::from(i64::from(d as u8 - b'0')),
-                        n * 10,
-                    )
-                },
-            ),
-        ),
-        |(r, d)| r / d,
-    )(input)
+pub fn decimal_decimals(input: Span) -> PResult<f64> {
+    map(preceded(char('.'), digit1), |s: Span| {
+        let digits = s.fragment();
+        digits
+            .iter()
+            .fold(0.0, |r, d| (r * 10.) + f64::from(d - b'0'))
+            * (10f64).powf(-(digits.len() as f64))
+    })(input)
 }
 
 pub fn variable_nomod(input: Span) -> PResult<Value> {
