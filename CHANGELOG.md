@@ -18,6 +18,9 @@ project adheres to
   Some will probably be made public after some stabilization period.
 * The `Debug` trait for `Error` is now the standard derived impl,
   to get the pretty output, use the `Display` trait.
+* All numbers are now represented as f64 (#203).
+  This removes integration with `num-rational`, `num-bigint`,
+  `num-integer` and `num-traits`.
 
 ### Other changes:
 
