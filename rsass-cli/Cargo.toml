@@ -1,7 +1,7 @@
 [package]
 name = "rsass-cli"
 version = "0.28.11-PRE"
-authors = ["Rasmus Kaj <kaj@kth.se>"]
+authors = ["Rasmus Kaj <rasmus@krats.se>"]
 description = "Commandline interface for rsass, compiles scss to css."
 categories = ["command-line-utilities", "web-programming"]
 keywords = ["scss", "sass", "css", "web"]

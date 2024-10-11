@@ -1,6 +1,7 @@
 [package]
 name = "rsass-macros"
 version = "0.28.11-PRE"
+authors = ["Rasmus Kaj <rasmus@krats.se>"]
 categories = ["web-programming"]
 keywords = ["scss", "sass", "css", "web", "macro"]
 description = "Sass as a rust function-like macro."

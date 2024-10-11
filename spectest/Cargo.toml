@@ -1,7 +1,7 @@
 [package]
 name = "spectest"
 version = "0.28.10"
-authors = ["Rasmus Kaj <kaj@kth.se>"]
+authors = ["Rasmus Kaj <rasmus@krats.se>"]
 description = "Converts sass-spec to rust tests."
 edition = "2021"
 rust-version = "1.65.0"
