@@ -14,7 +14,6 @@ mod int {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn slightly() {
             assert_eq!(
         runner().ok(
@@ -26,7 +25,6 @@ mod int {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn very() {
             assert_eq!(
         runner().ok(
@@ -45,7 +43,6 @@ mod int {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn slightly() {
             assert_eq!(
         runner().ok(
@@ -57,7 +54,6 @@ mod int {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn very() {
             assert_eq!(
         runner().ok(
@@ -98,7 +94,6 @@ mod int {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn above_max() {
             assert_eq!(
                 runner().ok("a {\
@@ -110,7 +105,6 @@ mod int {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn below_min() {
             assert_eq!(
                 runner().ok("a {b: -9007199254740993}\n"),
@@ -211,7 +205,6 @@ mod precision_limit {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn balanced() {
             assert_eq!(
         runner().ok(
@@ -225,7 +218,6 @@ mod precision_limit {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn no_decimal() {
             assert_eq!(
         runner().ok(

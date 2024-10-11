@@ -10,19 +10,19 @@ use super::{
     input_to_string, list_or_single, position, sass_string, PResult, Span,
 };
 use crate::sass::{BinOp, SassString, Value};
-use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
+use crate::value::{ListSeparator, Numeric, Operator, Rgba};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
-    alphanumeric1, char, multispace0, multispace1, one_of,
+    alphanumeric1, char, digit1, multispace0, multispace1, one_of,
 };
 use nom::combinator::{
-    cut, into, map, map_res, not, opt, peek, recognize, value, verify,
+    cut, into, map, map_opt, map_res, not, opt, peek, recognize, value,
+    verify,
 };
 use nom::error::context;
-use nom::multi::{fold_many0, fold_many1, many0, many_m_n, separated_list1};
+use nom::multi::{fold_many0, many0, many_m_n, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
-use num_traits::Zero;
 use std::str::from_utf8;
 
 pub fn value_expression(input: Span) -> PResult<Value> {
@@ -326,86 +326,23 @@ pub fn bracket_list(input: Span) -> PResult<Value> {
     ))
 }
 
-fn sign_prefix(input: Span) -> PResult<Option<&[u8]>> {
-    opt(alt((tag("-"), tag("+"))))(input)
-        .map(|(r, s)| (r, s.map(|s| s.fragment())))
-}
-
 pub fn numeric(input: Span) -> PResult<Numeric> {
     map(pair(number, unit), |(number, unit)| {
         Numeric::new(number, unit)
     })(input)
 }
 
-pub fn number(input: Span) -> PResult<Number> {
-    map(
-        tuple((
-            sign_prefix,
+pub fn number(input: Span) -> PResult<f64> {
+    map_opt(
+        recognize(delimited(
+            opt(one_of("+-")),
             alt((
-                map(pair(decimal_integer, decimal_decimals), |(n, d)| n + d),
-                decimal_decimals,
-                decimal_integer,
+                terminated(digit1, opt(terminated(char('.'), digit1))),
+                preceded(char('.'), digit1),
             )),
-            opt(preceded(
-                alt((tag("e"), tag("E"))),
-                tuple((sign_prefix, decimal_i32)),
-            )),
+            opt(delimited(one_of("eE"), opt(one_of("+-")), digit1)),
         )),
-        |(sign, num, exp)| {
-            let value = if sign == Some(b"-") {
-                // Only f64-based Number can represent negative zero.
-                if num.is_zero() {
-                    (-0.0).into()
-                } else {
-                    -num
-                }
-            } else {
-                num
-            };
-            if let Some((e_sign, e_val)) = exp {
-                let e_val = if e_sign == Some(b"-") { -e_val } else { e_val };
-                // Note: powi sounds right, but looses some precision.
-                value * Number::from(10f64.powf(e_val.into()))
-            } else {
-                value
-            }
-        },
-    )(input)
-}
-
-pub fn decimal_integer(input: Span) -> PResult<Number> {
-    fold_many1(
-        // Note: We should use bytes directly, one_of returns a char.
-        one_of("0123456789"),
-        || Number::from(0),
-        |r, d| (r * 10) + Number::from(i64::from(d as u8 - b'0')),
-    )(input)
-}
-pub fn decimal_i32(input: Span) -> PResult<i32> {
-    fold_many1(
-        // Note: We should use bytes directly, one_of returns a char.
-        one_of("0123456789"),
-        || 0,
-        |r, d| (r * 10) + i32::from(d as u8 - b'0'),
-    )(input)
-}
-
-pub fn decimal_decimals(input: Span) -> PResult<Number> {
-    map(
-        preceded(
-            tag("."),
-            fold_many1(
-                one_of("0123456789"),
-                || (Number::from(0), Number::from(1)),
-                |(r, n), d| {
-                    (
-                        (r * 10) + Number::from(i64::from(d as u8 - b'0')),
-                        n * 10,
-                    )
-                },
-            ),
-        ),
-        |(r, d)| r / d,
+        |s: Span| from_utf8(s.fragment()).ok()?.parse().ok(),
     )(input)
 }
 
@@ -595,43 +532,38 @@ mod test {
     use super::*;
     use crate::sass::CallArgs;
     use crate::sass::Value::{Color, List, Literal, Map, Paren};
-    use crate::value::Rational;
     use crate::ScopeRef;
 
     #[test]
     fn simple_number() {
-        check_expr("4;", number(4, 1))
+        check_expr("4;", Value::scalar(4.))
     }
 
     #[test]
     fn simple_number_neg() {
-        check_expr("-4;", number(-4, 1))
+        check_expr("-4;", Value::scalar(-4.))
     }
 
     #[test]
     fn simple_number_pos() {
-        check_expr("+4;", Value::scalar(4))
+        check_expr("+4;", Value::scalar(4.))
     }
 
     #[test]
     fn simple_number_dec() {
-        check_expr("4.34;", number(434, 100))
+        check_expr("4.34;", Value::scalar(4.34))
     }
     #[test]
     fn simple_number_onlydec() {
-        check_expr(".34;", number(34, 100))
+        check_expr(".34;", Value::scalar(0.34))
     }
     #[test]
     fn simple_number_onlydec_neg() {
-        check_expr("-.34;", number(-34, 100))
+        check_expr("-.34;", Value::scalar(-0.34))
     }
     #[test]
     fn simple_number_onlydec_pos() {
-        check_expr("+.34;", number(34, 100))
-    }
-
-    fn number(nom: i64, denom: i64) -> Value {
-        Value::scalar(Rational::new(nom, denom))
+        check_expr("+.34;", Value::scalar(0.34))
     }
 
     #[test]

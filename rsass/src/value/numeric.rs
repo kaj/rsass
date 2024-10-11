@@ -1,11 +1,11 @@
-use super::{BadNumber, Number, Rational, Unit, UnitSet};
+use super::{Number, Unit, UnitSet};
 use crate::output::{Format, Formatted};
 use std::fmt::{self, Display};
 use std::ops::{Div, Mul, Neg};
 
 /// A Numeric value is a [`Number`] with a [`Unit`] (which may be
 /// `Unit::None`).
-#[derive(Clone, Eq)]
+#[derive(Clone)]
 pub struct Numeric {
     /// The number value of this numeric.
     pub value: Number,
@@ -23,7 +23,7 @@ impl Numeric {
     /// Create a new numeric value.
     ///
     /// The value can be given as anything that can be converted into
-    /// a [`Number`], e.g. an [`isize`], a [`Rational`], or a [`f64`].
+    /// a [`Number`], e.g. an [`isize`] or a [`f64`].
     pub fn new<V: Into<Number>, U: Into<UnitSet>>(value: V, unit: U) -> Self {
         Self {
             value: value.into(),
@@ -55,7 +55,7 @@ impl Numeric {
     pub fn as_unit(&self, unit: Unit) -> Option<Number> {
         self.unit
             .scale_to_unit(&unit)
-            .map(|scale| &self.value * &scale)
+            .map(|scale| &self.value * &Number::from(scale))
     }
     /// Convert this numeric value to a given unit, if possible.
     ///
@@ -67,7 +67,9 @@ impl Numeric {
     /// assert_eq!(inch.as_unit(Unit::Deg), None);
     /// ```
     pub fn as_unitset(&self, unit: &UnitSet) -> Option<Number> {
-        self.unit.scale_to(unit).map(|scale| &self.value * &scale)
+        self.unit
+            .scale_to(unit)
+            .map(|scale| &self.value * &Number::from(scale))
     }
 
     /// Convert this numeric value to a given unit, if possible.
@@ -80,15 +82,6 @@ impl Numeric {
         } else {
             self.as_unit(unit)
         }
-    }
-
-    /// Get this number as a rational number.
-    ///
-    /// The unit is ignored.  If the value is bignum rational or
-    /// floating point, it is approximated as long as it is withing
-    /// range, otherwises an error is returned.
-    pub fn as_ratio(&self) -> Result<Rational, BadNumber> {
-        self.value.as_ratio()
     }
 
     /// Return true if this value has no unit.
@@ -110,6 +103,7 @@ impl PartialEq for Numeric {
         self.partial_cmp(other) == Some(std::cmp::Ordering::Equal)
     }
 }
+impl Eq for Numeric {}
 
 impl PartialOrd for Numeric {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {

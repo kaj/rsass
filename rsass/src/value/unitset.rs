@@ -1,5 +1,4 @@
 use super::{CssDimension, Dimension, Number, Unit};
-use num_traits::one;
 use std::fmt::{self, Display};
 use std::ops::{Div, Mul};
 
@@ -84,7 +83,7 @@ impl UnitSet {
     /// Get a scaling factor to convert this unit to another unit.
     ///
     /// Returns None if the units are of different dimension.
-    pub fn scale_to(&self, other: &Self) -> Option<Number> {
+    pub fn scale_to(&self, other: &Self) -> Option<f64> {
         if let [(u, 1)] = other.units.as_slice() {
             self.scale_to_unit(u)
         } else if other.is_none() {
@@ -92,7 +91,7 @@ impl UnitSet {
         } else {
             let quote = self / other;
             if quote.dimension().is_empty() {
-                Some(quote.units.iter().fold(one(), |a, (unit, power)| {
+                Some(quote.units.iter().fold(1., |a, (unit, power)| {
                     a * unit.scale_factor().powi((*power).into())
                 }))
             } else {
@@ -104,7 +103,7 @@ impl UnitSet {
     /// Get a scaling factor to convert this unit to another unit.
     ///
     /// Returns None if the units are of different dimension.
-    pub fn scale_to_unit(&self, other: &Unit) -> Option<Number> {
+    pub fn scale_to_unit(&self, other: &Unit) -> Option<f64> {
         if let [(u, 1)] = self.units.as_slice() {
             u.scale_to(other)
         } else if self.is_none() {
@@ -117,7 +116,7 @@ impl UnitSet {
 
     /// Simplify this unit set, returning a scaling factor.
     pub fn simplify(&mut self) -> Number {
-        let mut factor = one();
+        let mut factor = 1.;
         if self.units.len() > 1 {
             for i in 1..(self.units.len()) {
                 let (a, b) = self.units.split_at_mut(i);
@@ -125,11 +124,11 @@ impl UnitSet {
                 for (bu, bp) in b {
                     if let Some(f) = bu.scale_to(au) {
                         if ap.abs() > bp.abs() {
-                            factor = factor * f.powi((*bp).into());
+                            factor *= f.powi((*bp).into());
                             *ap += *bp;
                             *bp = 0;
                         } else {
-                            factor = factor / f.powi((*ap).into());
+                            factor /= f.powi((*ap).into());
                             *bp += *ap;
                             *ap = 0;
                         }
@@ -138,7 +137,7 @@ impl UnitSet {
             }
         }
         self.units.retain(|(_u, p)| *p != 0);
-        factor
+        factor.into()
     }
 }
 

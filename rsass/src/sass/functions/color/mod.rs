@@ -8,7 +8,6 @@ use crate::output::Format;
 use crate::sass::{FormalArgs, Name};
 use crate::value::{ListSeparator, Numeric, Quotes, Unit};
 use crate::Scope;
-use num_traits::{one, zero};
 mod channels;
 mod hsl;
 mod hwb;
@@ -63,7 +62,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
 /// Special perk: Defaults to 1.0 if the value is null.
 fn check_alpha(v: Value) -> Result<f64, String> {
     Ok(match v {
-        Value::Null => one(),
+        Value::Null => 1.0,
         v => {
             let num = Numeric::try_from(v)?;
             num.as_unit(Unit::None)
@@ -77,7 +76,7 @@ fn check_alpha(v: Value) -> Result<f64, String> {
 /// Get a rational number in the 0..1 range.
 fn check_alpha_range(v: Value) -> Result<f64, String> {
     let v = Numeric::try_from(v)?;
-    if v.value < zero() || v.value > one() {
+    if v.value < 0.into() || v.value > 1.into() {
         Err(expected_to(v, "be within 0 and 1"))
     } else {
         Ok(v.value.into())
@@ -85,7 +84,7 @@ fn check_alpha_range(v: Value) -> Result<f64, String> {
 }
 fn check_alpha_pm(v: Value) -> Result<f64, String> {
     let v = Numeric::try_from(v)?;
-    if v.value.abs() > one() {
+    if v.value.abs() > 1.into() {
         Err(expected_to(v, "be within -1 and 1"))
     } else {
         Ok(v.value.into())
@@ -140,7 +139,7 @@ fn check_expl_pct(v: Value) -> Result<f64, String> {
     if !val.unit.is_percent() {
         return Err(expected_to(val, "have unit \"%\""));
     }
-    if val.value < zero() || val.value > 100.into() {
+    if val.value < 0.into() || val.value > 100.into() {
         Err(expected_to(val, "be within 0% and 100%"))
     } else {
         Ok(f64::from(val.value) / 100.)
@@ -149,7 +148,7 @@ fn check_expl_pct(v: Value) -> Result<f64, String> {
 
 fn check_pct_range(v: Value) -> Result<f64, String> {
     let val = check_pct(v)?;
-    if val < zero() || val > one() {
+    if val < 0.into() || val > 1.into() {
         Err(expected_to(
             Numeric::percentage(val),
             "be within 0% and 100%",
@@ -161,7 +160,7 @@ fn check_pct_range(v: Value) -> Result<f64, String> {
 
 fn check_amount(v: Value) -> Result<f64, String> {
     let val = check_pct(v)?;
-    if val < zero() || val > one() {
+    if val < 0.into() || val > 1.into() {
         Err(expected_to(
             Value::scalar(val * 100.),
             "be within 0 and 100",
@@ -177,10 +176,10 @@ fn check_channel(v: Value) -> Result<f64, String> {
 fn check_channel_range(v: Value) -> Result<f64, String> {
     let v = Numeric::try_from(v)?;
     let r = num2chan(&v)?;
-    if r > 255. || r < zero() {
-        Err(expected_to(v, "be within 0 and 255"))
-    } else {
+    if (0. ..=255.).contains(&r) {
         Ok(r)
+    } else {
+        Err(expected_to(v, "be within 0 and 255"))
     }
 }
 fn check_channel_pm(v: Value) -> Result<f64, String> {

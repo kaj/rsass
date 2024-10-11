@@ -1,7 +1,5 @@
 //! The Unit enum defines css units
 
-use crate::value::Number;
-use num_traits::one;
 use std::f64::consts::FRAC_1_PI;
 use std::fmt;
 
@@ -151,9 +149,9 @@ impl Unit {
     /// Get a scaling factor to convert this unit to another unit.
     ///
     /// Returns None if the units are of different dimension.
-    pub fn scale_to(&self, other: &Self) -> Option<Number> {
+    pub fn scale_to(&self, other: &Self) -> Option<f64> {
         if self == other {
-            Some(one())
+            Some(1.)
         } else if self.dimension() == other.dimension() {
             Some(self.scale_factor() / other.scale_factor())
         } else {
@@ -164,41 +162,41 @@ impl Unit {
     /// Some of these are exact and correct, others are more arbitrary.
     /// When comparing 10cm to 4in, these factors will give correct results.
     /// When comparing rems to vw, who can say?
-    pub(crate) fn scale_factor(&self) -> Number {
+    pub(crate) fn scale_factor(&self) -> f64 {
         #[allow(clippy::match_same_arms)]
         match *self {
-            Self::Em | Self::Rem => Number::rational(10, 2),
-            Self::Ex => Number::rational(10, 3),
-            Self::Ch => Number::rational(10, 4),
-            Self::Vw | Self::Vh | Self::Vmin | Self::Vmax => one(),
-            Self::Cm => Number::rational(10, 1),
-            Self::Mm => one(),
-            Self::Q => Number::rational(1, 4),
-            Self::In => Number::rational(254, 10),
-            Self::Pt => Number::rational(254, 720),
-            Self::Pc => Number::rational(254, 60),
-            Self::Px => Number::rational(254, 960),
+            Self::Em | Self::Rem => 5.,
+            Self::Ex => 3.,
+            Self::Ch => 2.,
+            Self::Vw | Self::Vh | Self::Vmin | Self::Vmax => 1.,
+            Self::Cm => 10.,
+            Self::Mm => 1.,
+            Self::Q => 1. / 4.,
+            Self::In => 254. / 10.,
+            Self::Pt => 254. / 720.,
+            Self::Pc => 254. / 60.,
+            Self::Px => 254. / 960.,
 
-            Self::Deg => Number::rational(1, 360),
-            Self::Grad => Number::rational(1, 400),
-            Self::Rad => (FRAC_1_PI / 2.0).into(), // 1/(2 pi)
-            Self::Turn => one(),
+            Self::Deg => 1. / 360.,
+            Self::Grad => 1. / 400.,
+            Self::Rad => FRAC_1_PI / 2.0,
+            Self::Turn => 1.,
 
-            Self::S => one(),
-            Self::Ms => Number::rational(1, 1000),
+            Self::S => 1.,
+            Self::Ms => 1. / 1000.,
 
-            Self::Hz => one(),
-            Self::Khz => Number::rational(1000, 1),
+            Self::Hz => 1.,
+            Self::Khz => 1000.,
 
-            Self::Dpi => Number::rational(1, 96),
-            Self::Dpcm => Number::rational(254, 9600),
-            Self::Dppx => one(),
+            Self::Dpi => 1. / 96.,
+            Self::Dpcm => 254. / 9600.,
+            Self::Dppx => 1.,
 
-            Self::Percent => Number::rational(1, 100),
-            Self::Fr => one(),
-            Self::None => one(),
+            Self::Percent => 1. / 100.,
+            Self::Fr => 1.,
+            Self::None => 1.,
 
-            Self::Unknown(_) => one(),
+            Self::Unknown(_) => 1.,
         }
     }
 }
