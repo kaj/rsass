@@ -14,7 +14,6 @@ mod int {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn slightly() {
             assert_eq!(
         runner().ok(
@@ -44,7 +43,6 @@ mod int {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn slightly() {
             assert_eq!(
         runner().ok(
@@ -70,7 +68,6 @@ mod int {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn max_value() {
         assert_eq!(
         runner().ok(
@@ -82,7 +79,6 @@ mod int {
     );
     }
     #[test]
-    #[ignore] // wrong result
     fn min_value() {
         assert_eq!(
         runner().ok(
@@ -194,7 +190,6 @@ mod precision_limit {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn after_decimal() {
             assert_eq!(
         runner().ok(

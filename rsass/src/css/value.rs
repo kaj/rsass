@@ -6,7 +6,7 @@ use crate::sass::Function;
 use crate::value::{Color, ListSeparator, Number, Numeric, Operator};
 
 /// A css value.
-#[derive(Clone, Debug, Eq, PartialOrd)]
+#[derive(Clone, Debug, PartialOrd)]
 pub enum Value {
     /// A special kind of escape.  Only really used for !important.
     Bang(String),
@@ -311,6 +311,7 @@ impl PartialEq for Value {
         }
     }
 }
+impl Eq for Value {}
 
 impl From<bool> for Value {
     fn from(v: bool) -> Self {

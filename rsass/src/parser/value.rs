@@ -10,18 +10,18 @@ use super::{
     input_to_string, list_or_single, position, sass_string, PResult, Span,
 };
 use crate::sass::{BinOp, SassString, Value};
-use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
+use crate::value::{ListSeparator, Numeric, Operator, Rgba};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
     alphanumeric1, char, digit1, multispace0, multispace1, one_of,
 };
 use nom::combinator::{
-    cut, into, map, map_res, not, opt, peek, recognize, success, value,
+    cut, into, map, map_opt, map_res, not, opt, peek, recognize, value,
     verify,
 };
 use nom::error::context;
-use nom::multi::{fold_many0, fold_many1, many0, many_m_n, separated_list1};
+use nom::multi::{fold_many0, many0, many_m_n, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use std::str::from_utf8;
 
@@ -332,66 +332,18 @@ pub fn numeric(input: Span) -> PResult<Numeric> {
     })(input)
 }
 
-pub fn number(input: Span) -> PResult<Number> {
-    map(
-        tuple((
-            sign_neg,
+pub fn number(input: Span) -> PResult<f64> {
+    map_opt(
+        recognize(delimited(
+            opt(one_of("+-")),
             alt((
-                map(pair(decimal_integer, decimal_decimals), |(n, d)| n + d),
-                decimal_decimals,
-                decimal_integer,
+                terminated(digit1, opt(terminated(char('.'), digit1))),
+                preceded(char('.'), digit1),
             )),
-            opt(preceded(
-                alt((tag("e"), tag("E"))),
-                tuple((sign_neg, decimal_i32)),
-            )),
+            opt(delimited(one_of("eE"), opt(one_of("+-")), digit1)),
         )),
-        |(is_neg, num, exp)| {
-            let value = if is_neg { -num } else { num };
-            Number::from(if let Some((e_neg, e_val)) = exp {
-                let e_val = if e_neg { -e_val } else { e_val };
-                // Note: powi sounds right, but looses some precision.
-                value * 10f64.powf(e_val.into())
-            } else {
-                value
-            })
-        },
+        |s: Span| from_utf8(s.fragment()).ok()?.parse().ok(),
     )(input)
-}
-
-/// Parse true on `-` and false on `+` or no sign.
-fn sign_neg(input: Span) -> PResult<bool> {
-    alt((
-        value(true, char('-')),
-        value(false, char('+')),
-        success(false),
-    ))(input)
-}
-
-pub fn decimal_integer(input: Span) -> PResult<f64> {
-    map(digit1, |s: Span| {
-        s.fragment()
-            .iter()
-            .fold(0.0, |r, d| (r * 10.) + f64::from(d - b'0'))
-    })(input)
-}
-pub fn decimal_i32(input: Span) -> PResult<i32> {
-    fold_many1(
-        // Note: We should use bytes directly, one_of returns a char.
-        one_of("0123456789"),
-        || 0,
-        |r, d| (r * 10) + i32::from(d as u8 - b'0'),
-    )(input)
-}
-
-pub fn decimal_decimals(input: Span) -> PResult<f64> {
-    map(preceded(char('.'), digit1), |s: Span| {
-        let digits = s.fragment();
-        digits
-            .iter()
-            .fold(0.0, |r, d| (r * 10.) + f64::from(d - b'0'))
-            * (10f64).powf(-(digits.len() as f64))
-    })(input)
 }
 
 pub fn variable_nomod(input: Span) -> PResult<Value> {
@@ -584,12 +536,12 @@ mod test {
 
     #[test]
     fn simple_number() {
-        check_expr("4;", number(4.))
+        check_expr("4;", Value::scalar(4.))
     }
 
     #[test]
     fn simple_number_neg() {
-        check_expr("-4;", number(-4.))
+        check_expr("-4;", Value::scalar(-4.))
     }
 
     #[test]
@@ -599,23 +551,19 @@ mod test {
 
     #[test]
     fn simple_number_dec() {
-        check_expr("4.34;", number(4.34))
+        check_expr("4.34;", Value::scalar(4.34))
     }
     #[test]
     fn simple_number_onlydec() {
-        check_expr(".34;", number(0.34))
+        check_expr(".34;", Value::scalar(0.34))
     }
     #[test]
     fn simple_number_onlydec_neg() {
-        check_expr("-.34;", number(-0.34))
+        check_expr("-.34;", Value::scalar(-0.34))
     }
     #[test]
     fn simple_number_onlydec_pos() {
-        check_expr("+.34;", number(0.34))
-    }
-
-    fn number(value: f64) -> Value {
-        Value::scalar(value)
+        check_expr("+.34;", Value::scalar(0.34))
     }
 
     #[test]

@@ -6,11 +6,26 @@ use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 ///
 /// Only the actual numeric value is included, not any unit.
 /// Internally, a number is represented as a floating-point value.
-#[derive(Clone, PartialEq, PartialOrd)]
+#[derive(Clone)]
 pub struct Number {
     value: f64,
 }
+impl PartialEq for Number {
+    fn eq(&self, other: &Self) -> bool {
+        (self.value - other.value).abs() / self.value.abs() <= f64::EPSILON
+    }
+}
 impl Eq for Number {}
+
+impl PartialOrd for Number {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        if self == other {
+            Some(std::cmp::Ordering::Equal)
+        } else {
+            self.value.partial_cmp(&other.value)
+        }
+    }
+}
 
 impl Neg for Number {
     type Output = Self;
@@ -88,28 +103,17 @@ impl Number {
         self.value.is_finite()
     }
 
-    /// Returns true if the number is an integer.
+    /// Convert this number to an `i64` if it is (very close to)
+    /// integer and in range for `i64`, otherwise return `Err(self)`.
     pub fn into_integer(self) -> Result<i64, Self> {
-        let sr = self.value.round();
-        if (sr - self.value).abs() <= f32::EPSILON.into() {
-            Ok(sr as i64)
+        let int = self.value.round() as i64;
+        if ((int as f64) - self.value).abs() <= f32::EPSILON.into() {
+            Ok(int)
         } else {
             Err(self)
         }
     }
 
-    /// Converts to an integer, rounding towards zero.
-    ///
-    /// An integer that is too big to fit in an i64 returns `None`.
-    pub fn to_integer(&self) -> Option<i64> {
-        let i = self.value.ceil() as i64;
-        let ia = i.abs() as f64;
-        if ia <= self.value.abs() && ia + 1. >= self.value.abs() {
-            Some(i)
-        } else {
-            None
-        }
-    }
     /// Computes self^p.
     pub fn powi(self, p: i32) -> Self {
         self.value.powi(p).into()
@@ -131,15 +135,12 @@ impl From<i64> for Number {
 }
 impl From<i32> for Number {
     fn from(value: i32) -> Self {
-        Self::from(i64::from(value))
+        Self::from(f64::from(value))
     }
 }
 impl From<usize> for Number {
     fn from(value: usize) -> Self {
-        match i64::try_from(value) {
-            Ok(v) => v.into(),
-            Err(_) => (value as f64).into(),
-        }
+        (value as f64).into()
     }
 }
 
@@ -305,22 +306,22 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
 
 impl fmt::Debug for Number {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        write!(out, "Number {}", self.value)
+        write!(out, "Number({:?})", self.value)
     }
 }
 
 #[test]
 fn debug_integer() {
-    assert_eq!(format!("{:?}", Number::from(17)), "Number 17",);
+    assert_eq!(format!("{:?}", Number::from(17)), "Number(17.0)",);
 }
 #[test]
 fn debug_long_integer() {
-    assert_eq!(format!("{:#?}", Number::from(17)), "Number 17",);
+    assert_eq!(format!("{:#?}", Number::from(17)), "Number(17.0)",);
 }
 
 #[test]
 fn debug_float() {
-    assert_eq!(format!("{:?}", Number::from(17.5)), "Number 17.5",);
+    assert_eq!(format!("{:?}", Number::from(17.5)), "Number(17.5)",);
 }
 
 #[test]
@@ -328,7 +329,7 @@ fn debug_int_value() {
     assert_eq!(
         format!("{:#?}", crate::sass::Value::scalar(17)),
         "Numeric(\
-         \n    Number 17; UnitSet [],\
+         \n    Number(17.0); UnitSet [],\
          \n)",
     );
 }

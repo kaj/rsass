@@ -5,7 +5,7 @@ use std::ops::{Div, Mul, Neg};
 
 /// A Numeric value is a [`Number`] with a [`Unit`] (which may be
 /// `Unit::None`).
-#[derive(Clone, Eq)]
+#[derive(Clone)]
 pub struct Numeric {
     /// The number value of this numeric.
     pub value: Number,
@@ -55,7 +55,7 @@ impl Numeric {
     pub fn as_unit(&self, unit: Unit) -> Option<Number> {
         self.unit
             .scale_to_unit(&unit)
-            .map(|scale| &self.value * &scale)
+            .map(|scale| &self.value * &Number::from(scale))
     }
     /// Convert this numeric value to a given unit, if possible.
     ///
@@ -67,7 +67,9 @@ impl Numeric {
     /// assert_eq!(inch.as_unit(Unit::Deg), None);
     /// ```
     pub fn as_unitset(&self, unit: &UnitSet) -> Option<Number> {
-        self.unit.scale_to(unit).map(|scale| &self.value * &scale)
+        self.unit
+            .scale_to(unit)
+            .map(|scale| &self.value * &Number::from(scale))
     }
 
     /// Convert this numeric value to a given unit, if possible.
@@ -101,6 +103,7 @@ impl PartialEq for Numeric {
         self.partial_cmp(other) == Some(std::cmp::Ordering::Equal)
     }
 }
+impl Eq for Numeric {}
 
 impl PartialOrd for Numeric {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
