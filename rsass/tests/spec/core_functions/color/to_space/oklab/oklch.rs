@@ -127,7 +127,7 @@ mod out_of_range {
              \na {b: color.to-space(color.change(oklab(0% -2 2), $lightness: -50%), oklch)}\n"
         ),
         "a {\
-         \n  b: color-mix(in oklch, color(xyz -7.6342507319 1.7017043263 -38.7847424885) 100%, black);\
+         \n  b: color-mix(in oklch, color(xyz -7.6342505681 1.7017041167 -38.7847424763) 100%, black);\
          \n}\n"
     );
     }

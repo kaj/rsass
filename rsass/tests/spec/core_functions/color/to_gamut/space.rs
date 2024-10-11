@@ -183,7 +183,7 @@ mod clip {
              \na {b: color.to-gamut(oklch(60% 0.15 240deg), $space: rgb, $method: clip)}\n"
         ),
         "a {\
-         \n  b: oklch(60.4068473688% 0.1443906201 242.3895382399deg);\
+         \n  b: oklch(60.4068471201% 0.1443906236 242.3895367243deg);\
          \n}\n"
     );
     }
@@ -357,7 +357,7 @@ mod local_minde {
              \n  );\
              \n}\n"),
                         "a {\
-         \n  b: rgb(220.0210985908, 255, 215.6454599021);\
+         \n  b: rgb(220.0211077797, 255, 215.6454381401);\
          \n}\n"
                     );
                 }
@@ -427,7 +427,7 @@ mod local_minde {
              \na {b: color.to-gamut(color(srgb none 1.2 none), $method: local-minde)}\n"
         ),
         "a {\
-         \n  b: color(srgb 0.9249489323 1 0.9135716721);\
+         \n  b: color(srgb 0.9249489701 1 0.9135715783);\
          \n}\n"
     );
                 }
@@ -443,7 +443,7 @@ mod local_minde {
              \na {b: color.to-gamut(oklch(60% 0.15 240deg), $space: rgb, $method: local-minde)}\n"
         ),
         "a {\
-         \n  b: oklch(60.4068473688% 0.1443906201 242.3895382399deg);\
+         \n  b: oklch(60.4068471201% 0.1443906236 242.3895367243deg);\
          \n}\n"
     );
     }
@@ -536,7 +536,7 @@ mod local_minde {
              \na {b: color.to-gamut(oklch(100% 0.13 240deg), $space: rgb, $method: local-minde)}\n"
         ),
         "a {\
-         \n  b: oklch(99.9999993474% 0.0000000373 89.8755630959deg);\
+         \n  b: oklch(100% 0 none);\
          \n}\n"
     );
     }

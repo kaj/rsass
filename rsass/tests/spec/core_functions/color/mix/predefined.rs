@@ -13,7 +13,7 @@ fn rgb() {
             "a {b: mix(color(display-p3 1 0 0), color(display-p3 0 1 0), 20%, oklch)}\n"
         ),
         "a {\
-         \n  b: color(display-p3 0.6684751745 0.8535262883 -0.4281891831);\
+         \n  b: color(display-p3 0.6684751748 0.8535262895 -0.4281892011);\
          \n}\n"
     );
 }

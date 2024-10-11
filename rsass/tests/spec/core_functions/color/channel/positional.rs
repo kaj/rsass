@@ -12,7 +12,7 @@ fn test() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.channel(oklch(60% 70% 0.6turn), \"red\", rgb)}\n"),
         "a {\
-         \n  b: -143.1028884453;\
+         \n  b: -143.1028856642;\
          \n}\n"
     );
 }

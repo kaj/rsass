@@ -16,7 +16,7 @@ mod foreign {
             runner().ok("@use \"sass:color\";\
              \na {b: color.channel(pink, \"a\", $space: oklab)}\n"),
             "a {\
-         \n  b: 0.0729803698;\
+         \n  b: 0.072980372;\
          \n}\n"
         );
     }
@@ -27,7 +27,7 @@ mod foreign {
             runner().ok("@use \"sass:color\";\
              \na {b: color.channel(pink, \"b\", $space: oklab)}\n"),
             "a {\
-         \n  b: 0.0090714488;\
+         \n  b: 0.0090714168;\
          \n}\n"
         );
     }
@@ -38,7 +38,7 @@ mod foreign {
             runner().ok("@use \"sass:color\";\
              \na {b: color.channel(pink, \"lightness\", $space: oklab)}\n"),
             "a {\
-         \n  b: 86.7738445294%;\
+         \n  b: 86.7738450841%;\
          \n}\n"
         );
     }

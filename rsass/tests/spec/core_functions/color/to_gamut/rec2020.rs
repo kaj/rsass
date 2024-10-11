@@ -62,7 +62,7 @@ mod local_minde {
              \na {b: color.to-gamut(color(rec2020 1.1 0.5 0.8), $method: local-minde)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 1 0.5720949845 0.7959438083);\
+         \n  b: color(rec2020 1 0.572094984 0.7959437908);\
          \n}\n"
     );
     }

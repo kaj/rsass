@@ -113,7 +113,7 @@ mod numerator_and_denominator {
             runner().ok("@use \"sass:math\";\
              \na {b: math.unit(1px * 1em / 1rad / 1s)}\n"),
             "a {\
-         \n  b: \"px*em/rad*s\";\
+         \n  b: \"px*em/(rad*s)\";\
          \n}\n"
         );
     }

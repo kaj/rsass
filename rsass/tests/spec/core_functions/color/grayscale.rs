@@ -256,7 +256,7 @@ mod modern {
             runner().ok("@use \"sass:color\";\
              \na {b: color.grayscale(lch(54.3 107 40.9))}\n"),
             "a {\
-         \n  b: lch(56.854581217% 0.0000089094 270.4699001175deg);\
+         \n  b: lch(56.8545812484% 0 none);\
          \n}\n"
         );
     }
@@ -278,7 +278,7 @@ mod modern {
             runner().ok("@use \"sass:color\";\
              \na {b: color.grayscale(color(xyz-d65 0.41 0.21 0.02))}\n"),
             "a {\
-         \n  b: color(xyz 0.232829773 0.2449664044 0.2667826176);\
+         \n  b: color(xyz 0.2328297704 0.2449664038 0.2667825607);\
          \n}\n"
         );
     }
@@ -289,7 +289,7 @@ mod modern {
             runner().ok("@use \"sass:color\";\
              \na {b: color.grayscale(lab(50 -30 40))}\n"),
             "a {\
-         \n  b: lab(48.58892555% 0.0000000648 -0.0000078984);\
+         \n  b: lab(48.5889256803% 0 0);\
          \n}\n"
         );
     }

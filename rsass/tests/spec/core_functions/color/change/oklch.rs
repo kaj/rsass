@@ -179,7 +179,7 @@ mod lightness {
              \na {b: color.change(oklch(50% 0.2 30deg), $lightness: 120%)}\n"
         ),
         "a {\
-         \n  b: color-mix(in oklch, color(xyz 2.0602078346 1.6344742217 1.0169251403) 100%, black);\
+         \n  b: color-mix(in oklch, color(xyz 2.0602077969 1.6344741917 1.0169248199) 100%, black);\
          \n}\n"
     );
     }

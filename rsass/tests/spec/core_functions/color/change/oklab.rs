@@ -166,7 +166,7 @@ mod lightness {
              \na {b: color.change(oklab(50% 0.2 -0.3), $lightness: 1.2)}\n"
         ),
         "a {\
-         \n  b: color-mix(in oklab, color(xyz 2.3267923962 1.5626810194 5.2743259015) 100%, black);\
+         \n  b: color-mix(in oklab, color(xyz 2.3267922825 1.5626810145 5.2743251916) 100%, black);\
          \n}\n"
     );
     }

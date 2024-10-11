@@ -19,7 +19,7 @@ fn test() {
         "div {\
          \n  hey: 370866.1417322835pt;\
          \n  ho: true;\
-         \n  hoo: \"px/fu*emu*gnu\";\
+         \n  hoo: \"px/(fu*emu*gnu)\";\
          \n  hee: \"cm^-1\";\
          \n}\n"
     );

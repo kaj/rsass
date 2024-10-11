@@ -63,7 +63,7 @@ fn out_of_range() {
              \na {b: color.to-space(color.change(oklch(0% 1 0deg), $lightness: -10%), oklch)}\n"
         ),
         "a {\
-         \n  b: color-mix(in oklch, color(xyz 0.0348582183 -0.010229465 -0.0091226442) 100%, black);\
+         \n  b: color-mix(in oklch, color(xyz 0.034858214 -0.0102294646 -0.0091226416) 100%, black);\
          \n}\n"
     );
 }

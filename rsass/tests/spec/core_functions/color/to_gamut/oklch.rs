@@ -19,7 +19,7 @@ fn clip() {
              \n}\n"
         ),
         "a {\
-         \n  b: color-mix(in oklch, color(xyz 5.2395754107 2.9713210909 -1.434870419) 100%, black);\
+         \n  b: color-mix(in oklch, color(xyz 5.2395754279 2.9713210325 -1.434870444) 100%, black);\
          \n}\n"
     );
 }
@@ -37,7 +37,7 @@ fn local_minde() {
              \n}\n"
         ),
         "a {\
-         \n  b: color-mix(in oklch, color(xyz 5.2395754107 2.9713210909 -1.434870419) 100%, black);\
+         \n  b: color-mix(in oklch, color(xyz 5.2395754279 2.9713210325 -1.434870444) 100%, black);\
          \n}\n"
     );
 }

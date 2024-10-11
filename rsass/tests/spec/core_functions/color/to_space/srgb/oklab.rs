@@ -18,7 +18,7 @@ mod alpha {
              \na {b: color.to-space(color(srgb 0.1 0.2 0.3 / 0.4), oklab)}\n"
             ),
             "a {\
-         \n  b: oklab(31.3834098842% -0.0190902788 -0.0525285242 / 0.4);\
+         \n  b: oklab(31.3834100712% -0.0190902787 -0.0525285359 / 0.4);\
          \n}\n"
         );
     }
@@ -31,7 +31,7 @@ mod alpha {
              \na {b: color.to-space(color(srgb 0.1 0.2 0.3 / 0.0), oklab)}\n"
             ),
             "a {\
-         \n  b: oklab(31.3834098842% -0.0190902788 -0.0525285242 / 0);\
+         \n  b: oklab(31.3834100712% -0.0190902787 -0.0525285359 / 0);\
          \n}\n"
         );
     }
@@ -54,7 +54,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb 0.5 0.5 0.5), oklab)}\n"),
         "a {\
-         \n  b: oklab(59.8180726623% 0 0.0000000223);\
+         \n  b: oklab(59.8180730527% 0 0);\
          \n}\n"
     );
 }
@@ -65,7 +65,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb 0.2 0.4 0.8), oklab)}\n"),
         "a {\
-         \n  b: oklab(53.248255955% -0.0225118457 -0.1663491641);\
+         \n  b: oklab(53.2482562144% -0.0225118436 -0.1663491839);\
          \n}\n"
     );
 }
@@ -80,7 +80,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb 0.1 0.2 none), oklab)}\n"),
             "a {\
-         \n  b: oklab(28.8978411941% -0.0558272225 0.0596397714);\
+         \n  b: oklab(28.8978413919% -0.0558272242 0.05963976);\
          \n}\n"
         );
     }
@@ -91,7 +91,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb 0.1 none 0.3), oklab)}\n"),
             "a {\
-         \n  b: oklab(21.1364004026% 0.0335334923 -0.1181436252);\
+         \n  b: oklab(21.1364004374% 0.0335334963 -0.1181436332);\
          \n}\n"
         );
     }
@@ -102,7 +102,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb none 0.2 0.3), oklab)}\n"),
             "a {\
-         \n  b: oklab(30.4674630654% -0.0359109243 -0.0568929135);\
+         \n  b: oklab(30.4674632444% -0.0359109246 -0.0568929249);\
          \n}\n"
         );
     }
@@ -120,7 +120,7 @@ mod out_of_range {
              \na {b: color.to-space(color(srgb -999999 0 0), oklab)}\n"
         ),
         "a {\
-         \n  b: color-mix(in oklab, color(xyz -91096581353071.4 -46971674760177.49 -4270152250925.199) 100%, black);\
+         \n  b: color-mix(in oklab, color(xyz -91096581353071.47 -46971674760177.46 -4270152250925.215) 100%, black);\
          \n}\n"
     );
     }
@@ -131,7 +131,7 @@ mod out_of_range {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb -1 0.4 2), oklab)}\n"),
             "a {\
-         \n  b: oklab(49.0997083563% -2.0235857478 -0.6049594977);\
+         \n  b: oklab(49.0997071072% -2.0235857629 -0.6049595305);\
          \n}\n"
         );
     }
@@ -143,7 +143,7 @@ fn white() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb 1 1 1), oklab)}\n"),
         "a {\
-         \n  b: oklab(99.9999993474% 0.0000000001 0.0000000373);\
+         \n  b: oklab(100% 0 0);\
          \n}\n"
     );
 }

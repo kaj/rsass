@@ -16,7 +16,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% 0.1 30deg / 0.4), hwb)}\n"),
             "a {\
-         \n  b: hsla(349.9222383971, 174.3087628098%, 3.6948783654%, 0.4);\
+         \n  b: hsla(349.9222385729, 174.308760087%, 3.6948783411%, 0.4);\
          \n}\n"
         );
     }
@@ -27,7 +27,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% 0.1 30deg / 0.0), hwb)}\n"),
             "a {\
-         \n  b: hsla(349.9222383971, 174.3087628098%, 3.6948783654%, 0);\
+         \n  b: hsla(349.9222385729, 174.308760087%, 3.6948783411%, 0);\
          \n}\n"
         );
     }
@@ -52,7 +52,7 @@ fn float() {
              \na {b: color.to-space(oklch(10.123456789% 0.198765432 30.192837465deg), hwb)}\n"
         ),
         "a {\
-         \n  b: hsl(342.3640346721, 274.4922188663%, 4.7714615434%);\
+         \n  b: hsl(342.3640348742, 274.4922123902%, 4.7714615118%);\
          \n}\n"
     );
 }
@@ -63,7 +63,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(50% 0 0deg), hwb)}\n"),
         "a {\
-         \n  b: hsl(223.8135972091, 0.0000078676%, 38.8572876766%);\
+         \n  b: hsl(0, 0%, 38.8572859046%);\
          \n}\n"
     );
 }
@@ -74,7 +74,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% 0.1 30deg), hwb)}\n"),
         "a {\
-         \n  b: hsl(349.9222383971, 174.3087628098%, 3.6948783654%);\
+         \n  b: hsl(349.9222385729, 174.308760087%, 3.6948783411%);\
          \n}\n"
     );
 }
@@ -89,7 +89,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% none 30deg), hwb)}\n"),
             "a {\
-         \n  b: hsl(223.813598298, 0.0000165409%, 1.2920001239%);\
+         \n  b: hsl(0, 0%, 1.292%);\
          \n}\n"
         );
     }
@@ -100,7 +100,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% 0.1 none), hwb)}\n"),
             "a {\
-         \n  b: hsl(0, 169.3005035983%, 3.4369836375%);\
+         \n  b: hsl(0, 169.3004993061%, 3.4369836159%);\
          \n}\n"
         );
     }
@@ -111,7 +111,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(none 0.1 30deg), hwb)}\n"),
             "a {\
-         \n  b: hsl(221.7487183642, 266.6061391496%, -0.2273359503%);\
+         \n  b: hsl(221.7487198664, 266.6061126985%, -0.2273359665%);\
          \n}\n"
         );
     }
@@ -127,7 +127,7 @@ mod out_of_range {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% 999999 0deg), hwb)}\n"),
             "a {\
-         \n  b: hsl(160.1123681644, 426.4426548179%, 360094749.9760007%);\
+         \n  b: hsl(160.1123665311, 426.4426501978%, 360094735.872504%);\
          \n}\n"
         );
     }
@@ -140,7 +140,7 @@ mod out_of_range {
              \na {b: color.to-space(color.change(oklch(0% 1 0deg), $lightness: -10%), hwb)}\n"
         ),
         "a {\
-         \n  b: hsl(342.6995890373, 454.6290714992%, 7.2218303523%);\
+         \n  b: hsl(342.6995872052, 454.6290807287%, 7.2218298303%);\
          \n}\n"
     );
     }
@@ -152,7 +152,7 @@ fn white() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(100% 0 0deg), hwb)}\n"),
         "a {\
-         \n  b: hsl(43.8135971652, 172.5242119439%, 100.0000042145%);\
+         \n  b: white;\
          \n}\n"
     );
 }

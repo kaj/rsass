@@ -62,7 +62,7 @@ mod local_minde {
              \na {b: color.to-gamut(color(srgb-linear 1.5 0.5 0.8), $method: local-minde)}\n"
         ),
         "a {\
-         \n  b: color(srgb-linear 1 0.6455185586 0.7900912983);\
+         \n  b: color(srgb-linear 1 0.6455185573 0.7900912017);\
          \n}\n"
     );
     }

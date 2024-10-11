@@ -62,7 +62,7 @@ mod local_minde {
              \na {b: color.to-gamut(color(prophoto-rgb 1.1 0.5 0.8), $method: local-minde)}\n"
         ),
         "a {\
-         \n  b: color(prophoto-rgb 1 0.5625312196 0.7939519528);\
+         \n  b: color(prophoto-rgb 1 0.5625312191 0.7939519353);\
          \n}\n"
     );
     }

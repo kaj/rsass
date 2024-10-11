@@ -374,7 +374,7 @@ mod space {
                 runner().ok("@use \"sass:color\";\
              \na {b: color.complement(red, $space: oklch)}\n"),
                 "a {\
-         \n  b: hsl(188.1998868883, 488.1808399597%, 14.588696385%);\
+         \n  b: hsl(188.199882451, 488.180958059%, 14.5886916745%);\
          \n}\n"
             );
         }
@@ -453,7 +453,7 @@ mod space {
                     runner().ok("@use \"sass:color\";\
              \na {b: color.complement(lch(none 50% 0deg), $space: oklch)}\n"),
                     "a {\
-         \n  b: lch(none 24.5072211405 180.9107983689deg);\
+         \n  b: lch(none 24.5072331187 180.9107983391deg);\
          \n}\n"
                 );
             }
@@ -466,7 +466,7 @@ mod space {
              \na {b: color.complement(color(srgb none 100 200), $space: oklch)}\n"
         ),
         "a {\
-         \n  b: color(srgb 156.4212689375 85.1578644836 -71.2263945029);\
+         \n  b: color(srgb 156.4212742119 85.1578604941 -71.226404054);\
          \n}\n"
     );
             }
@@ -505,7 +505,7 @@ mod space {
                 runner().ok("@use \"sass:color\";\
              \na {b: color.complement(lab(50% 10 -20), $space: oklch)}\n"),
                 "a {\
-         \n  b: lab(51.2269614349% -7.7080887555 21.8652618775);\
+         \n  b: lab(51.226961501% -7.7080869407 21.8652805706);\
          \n}\n"
             );
         }

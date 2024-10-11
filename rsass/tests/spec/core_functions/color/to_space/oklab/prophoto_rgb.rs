@@ -18,7 +18,7 @@ mod alpha {
              \na {b: color.to-space(oklab(10% 0.2 0.3 / 0.4), prophoto-rgb)}\n"
         ),
         "a {\
-         \n  b: color(prophoto-rgb 0.1071252394 -0.0424411714 -0.1726130102 / 0.4);\
+         \n  b: color(prophoto-rgb 0.1071252352 -0.042441166 -0.1726130164 / 0.4);\
          \n}\n"
     );
     }
@@ -31,7 +31,7 @@ mod alpha {
              \na {b: color.to-space(oklab(10% 0.2 0.3 / 0.0), prophoto-rgb)}\n"
         ),
         "a {\
-         \n  b: color(prophoto-rgb 0.1071252394 -0.0424411714 -0.1726130102 / 0);\
+         \n  b: color(prophoto-rgb 0.1071252352 -0.042441166 -0.1726130164 / 0);\
          \n}\n"
     );
     }
@@ -54,7 +54,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(50% 0 0), prophoto-rgb)}\n"),
         "a {\
-         \n  b: color(prophoto-rgb 0.3149802636 0.3149802656 0.3149803022);\
+         \n  b: color(prophoto-rgb 0.3149802625 0.3149802625 0.3149802625);\
          \n}\n"
     );
 }
@@ -65,7 +65,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(50% 0.2 -0.3), prophoto-rgb)}\n"),
         "a {\
-         \n  b: color(prophoto-rgb 0.4918881954 -0.0624904068 0.9386035712);\
+         \n  b: color(prophoto-rgb 0.4918881798 -0.0624903392 0.9386035263);\
          \n}\n"
     );
 }
@@ -80,7 +80,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(10% none 0.3), prophoto-rgb)}\n"),
             "a {\
-         \n  b: color(prophoto-rgb 0.0211561039 0.0415370447 -0.1548071681);\
+         \n  b: color(prophoto-rgb 0.0211560983 0.0415370461 -0.1548071753);\
          \n}\n"
         );
     }
@@ -91,7 +91,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(10% 0.2 none), prophoto-rgb)}\n"),
             "a {\
-         \n  b: color(prophoto-rgb 0.0759873356 -0.0414646645 0.0022071932);\
+         \n  b: color(prophoto-rgb 0.0759873336 -0.0414646624 0.0022071927);\
          \n}\n"
         );
     }
@@ -102,7 +102,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(none 0.2 0.3), prophoto-rgb)}\n"),
             "a {\
-         \n  b: color(prophoto-rgb -0.0831372042 0.0891975511 -0.2723906896);\
+         \n  b: color(prophoto-rgb -0.0831372046 0.089197549 -0.2723906915);\
          \n}\n"
         );
     }
@@ -120,7 +120,7 @@ mod out_of_range {
              \na {b: color.to-space(oklab(50% -999999 0), prophoto-rgb)}\n"
         ),
         "a {\
-         \n  b: color(prophoto-rgb -2922133015.648196 1810415223.5562131 574653584.8087448);\
+         \n  b: color(prophoto-rgb -2922132835.874805 1810415087.1875782 574653499.7241842);\
          \n}\n"
     );
     }
@@ -133,7 +133,7 @@ mod out_of_range {
              \na {b: color.to-space(color.change(oklab(0% -2 2), $lightness: -50%), prophoto-rgb)}\n"
         ),
         "a {\
-         \n  b: color(prophoto-rgb -2.9829710472 2.6753284297 -7.2338243089);\
+         \n  b: color(prophoto-rgb -2.9829709834 2.6753283295 -7.2338243082);\
          \n}\n"
     );
     }
@@ -145,7 +145,7 @@ fn white() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(100% 0 0), prophoto-rgb)}\n"),
         "a {\
-         \n  b: color(prophoto-rgb 1.0000000036 1.0000000099 1.0000001263);\
+         \n  b: color(prophoto-rgb 1 1 1);\
          \n}\n"
     );
 }

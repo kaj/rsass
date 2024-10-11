@@ -16,7 +16,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lab(10% 20 30 / 0.4), oklch)}\n"),
             "a {\
-         \n  b: oklch(22.8064235198% 0.2865602554 102.4652159995deg / 0.4);\
+         \n  b: oklch(22.8064235633% 0.2865602455 102.4652162351deg / 0.4);\
          \n}\n"
         );
     }
@@ -27,7 +27,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lab(10% 20 30 / 0.0), oklch)}\n"),
             "a {\
-         \n  b: oklch(22.8064235198% 0.2865602554 102.4652159995deg / 0);\
+         \n  b: oklch(22.8064235633% 0.2865602455 102.4652162351deg / 0);\
          \n}\n"
         );
     }
@@ -50,7 +50,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lab(50% 0 0), oklch)}\n"),
         "a {\
-         \n  b: oklch(56.8965513528% 0.0000000212 89.8755629589deg);\
+         \n  b: oklch(56.8965517241% 0 none);\
          \n}\n"
     );
 }
@@ -61,7 +61,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lab(50% 50 -75), oklch)}\n"),
         "a {\
-         \n  b: oklch(60.2352362176% 0.2304671542 293.6915443769deg);\
+         \n  b: oklch(60.2352364768% 0.2304671771 293.6915436279deg);\
          \n}\n"
     );
 }
@@ -76,7 +76,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lab(10% none 30), oklch)}\n"),
             "a {\
-         \n  b: oklch(22.1884319419% 0.3083157518 112.9588813999deg);\
+         \n  b: oklch(22.1884319999% 0.3083157421 112.9588823005deg);\
          \n}\n"
         );
     }
@@ -87,7 +87,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lab(10% 20 none), oklch)}\n"),
             "a {\
-         \n  b: oklch(23.0834632697% 0.0614385657 359.3456866656deg);\
+         \n  b: oklch(23.0834634055% 0.0614385679 359.3456789541deg);\
          \n}\n"
         );
     }
@@ -98,7 +98,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lab(none 20 30), oklch)}\n"),
             "a {\
-         \n  b: oklch(none 0.5070738953 13.2116104316deg);\
+         \n  b: oklch(none 0.5070739066 13.2116105787deg);\
          \n}\n"
         );
     }
@@ -141,7 +141,7 @@ fn white() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lab(100% 0 0), oklch)}\n"),
         "a {\
-         \n  b: oklch(99.9999993474% 0.0000000373 89.8755630959deg);\
+         \n  b: oklch(100% 0 none);\
          \n}\n"
     );
 }

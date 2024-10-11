@@ -58,7 +58,7 @@ mod local_minde {
              \na {b: color.to-gamut(hwb(70deg -5% -5%), $method: local-minde)}\n"
         ),
         "a {\
-         \n  b: hsl(75.7157487534, 100%, 75.8982992248%);\
+         \n  b: hsl(75.715745279, 100%, 75.8982967878%);\
          \n}\n"
     );
     }

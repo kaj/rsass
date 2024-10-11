@@ -62,7 +62,7 @@ mod local_minde {
              \na {b: color.to-gamut(color(srgb 1.5 0.5 0.8), $method: local-minde)}\n"
         ),
         "a {\
-         \n  b: color(srgb 1 0.8660162103 0.8987034234);\
+         \n  b: color(srgb 1 0.8660162083 0.8987033424);\
          \n}\n"
     );
     }

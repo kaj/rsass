@@ -1,5 +1,5 @@
 use super::{CssDimension, Dimension, Number, Unit};
-use std::fmt::{self, Display};
+use std::fmt::{self, Display, Write};
 use std::ops::{Div, Mul};
 
 /// A set of units.
@@ -203,10 +203,17 @@ impl Display for UnitSet {
             }
             if let Some((u, p)) = neg.next() {
                 out.write_str(if short { "/" } else { " / 1" })?;
+                let paren = short && neg.clone().next().is_some();
+                if paren {
+                    out.write_char('(')?;
+                }
                 write_one(out, u, p.abs())?;
                 for (u, p) in neg {
                     out.write_str(if short { "*" } else { " / 1" })?;
                     write_one(out, u, p.abs())?;
+                }
+                if paren {
+                    out.write_char(')')?;
                 }
             }
         } else if short {

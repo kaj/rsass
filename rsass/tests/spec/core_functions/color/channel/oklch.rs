@@ -16,7 +16,7 @@ mod foreign {
             runner().ok("@use \"sass:color\";\
              \na {b: color.channel(pink, \"chroma\", $space: oklch)}\n"),
             "a {\
-         \n  b: 0.0735419986;\
+         \n  b: 0.0735419968;\
          \n}\n"
         );
     }
@@ -27,7 +27,7 @@ mod foreign {
             runner().ok("@use \"sass:color\";\
              \na {b: color.channel(pink, \"hue\", $space: oklch)}\n"),
             "a {\
-         \n  b: 7.0855142734deg;\
+         \n  b: 7.0854893498deg;\
          \n}\n"
         );
     }
@@ -38,7 +38,7 @@ mod foreign {
             runner().ok("@use \"sass:color\";\
              \na {b: color.channel(pink, \"lightness\", $space: oklch)}\n"),
             "a {\
-         \n  b: 86.7738445294%;\
+         \n  b: 86.7738450841%;\
          \n}\n"
         );
     }

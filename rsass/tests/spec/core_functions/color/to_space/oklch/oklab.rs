@@ -127,7 +127,7 @@ mod out_of_range {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% 999999 0deg), oklab)}\n"),
             "a {\
-         \n  b: oklab(10% 999998.9999999994 0);\
+         \n  b: oklab(9.9999999976% 999998.9999999992 0);\
          \n}\n"
         );
     }
@@ -140,7 +140,7 @@ mod out_of_range {
              \na {b: color.to-space(color.change(oklch(0% 1 0deg), $lightness: -10%), oklab)}\n"
         ),
         "a {\
-         \n  b: color-mix(in oklab, color(xyz 0.0348582183 -0.010229465 -0.0091226442) 100%, black);\
+         \n  b: color-mix(in oklab, color(xyz 0.034858214 -0.0102294646 -0.0091226416) 100%, black);\
          \n}\n"
     );
     }

@@ -62,7 +62,7 @@ mod local_minde {
              \na {b: color.to-gamut(color(display-p3 1.5 0.5 0.8), $method: local-minde)}\n"
         ),
         "a {\
-         \n  b: color(display-p3 1 0.9080382844 0.9302909848);\
+         \n  b: color(display-p3 1 0.9080382834 0.9302909049);\
          \n}\n"
     );
     }
