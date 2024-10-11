@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: rustfmt
-      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo fmt --all -- --check
+      - name: Rustfmt Check
+        uses: actions-rust-lang/rustfmt@v1
 
   # Run clippy on stable only
   clippy:
@@ -22,10 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: clippy
-      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
+          rustflags: ""
       - run: cargo clippy --all-features
 
   test-all:
@@ -41,10 +41,9 @@ jobs:
           - nightly
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@master
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
-      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
       - run: cargo build
       - run: cargo test -q
 
@@ -59,10 +58,9 @@ jobs:
           - 1.74.1
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@master
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
-      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
       - run: cargo test -q
 
   test-macos:
@@ -76,10 +74,9 @@ jobs:
           - 1.74.1
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@master
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
-      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
       - run: cargo test -q
 
   test-old:
@@ -94,9 +91,8 @@ jobs:
           - 1.61.0
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@master
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
-      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
       - run: sed -i 's/"rsass-cli",/# \0/' Cargo.toml
       - run: cargo test --package rsass-macros -q
