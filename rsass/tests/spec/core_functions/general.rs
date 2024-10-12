@@ -45,7 +45,6 @@ mod error {
     }
 
     #[test]
-    #[ignore] // wrong error
     fn set_variable() {
         let runner = runner().with_cwd("set_variable");
         assert_eq!(

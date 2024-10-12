@@ -316,14 +316,14 @@ impl Scope {
             let module = self
                 .get_module(&modulename)
                 .ok_or(ScopeError::NoModule(modulename))?;
+            // Refuse to declare new var from outside module:
+            let _check_existence = module.get(&name)?;
             if module
                 .get_local_or_none(&Name::from_static("@scope_name@"))
                 .is_some()
             {
                 return Err(ScopeError::ModifiedBuiltin);
             } else {
-                // Refuse to declare new var from outside module:
-                let _check_existence = module.get(&name)?;
                 return module.set_variable(name, val, default, global);
             }
         }
