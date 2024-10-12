@@ -14,6 +14,9 @@ pub enum Item {
     /// A variable declaration.
     VariableDeclaration(VariableDeclaration),
 
+    /// An `@keyframes` directive with a name.
+    KeyFrames(SassString, Vec<KfItem>),
+
     /// An `@at-root` directive.
     AtRoot(Selectors, Vec<Item>),
     /// An `@media` directive.
@@ -110,6 +113,17 @@ impl From<VariableDeclaration> for Item {
     fn from(value: VariableDeclaration) -> Self {
         Self::VariableDeclaration(value)
     }
+}
+
+/// An item of a keyframes declaration.
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
+pub enum KfItem {
+    /// An `@keyframes` directive with a name.
+    Stop(Vec<SassString>, Vec<(SassString, Value)>),
+    /// A comment (that might be preserved for the output).
+    Comment(SassString),
+    /// A local variable in the keyframes.
+    VariableDeclaration(VariableDeclaration),
 }
 
 /// How an `@forward`-ed module should be exposed.

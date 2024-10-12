@@ -3,6 +3,7 @@ mod css_function;
 mod error;
 pub mod formalargs;
 mod imports;
+mod keyframes;
 mod media;
 pub mod selectors;
 mod span;
@@ -30,7 +31,9 @@ use self::value::{
     value_expression,
 };
 use crate::input::{SourceFile, SourceName, SourcePos};
-use crate::sass::parser::{variable_declaration2, variable_declaration_mod};
+use crate::sass::parser::{
+    variable_declaration, variable_declaration2, variable_declaration_mod,
+};
 use crate::sass::{Callable, FormalArgs, Item, Name, Selectors, Value};
 use crate::value::ListSeparator;
 #[cfg(test)]
@@ -224,6 +227,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
         "if" => if_statement2(input),
         "import" => import2(input),
         "include" => mixin_call(input0, input),
+        "keyframes" => keyframes::keyframes2(input),
         "media" => media::rule(input0, input),
         "mixin" => mixin_declaration2(input),
         "return" => return_stmt2(input0, input),

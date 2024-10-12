@@ -1,6 +1,6 @@
 use super::{
-    BodyItem, Comment, CustomProperty, Import, Item, MediaRule, Property,
-    Rule, Value,
+    BodyItem, Comment, CustomProperty, Import, Item, Keyframes, MediaRule,
+    Property, Rule, Value,
 };
 use crate::output::CssBuf;
 use std::io::{self, Write};
@@ -71,6 +71,8 @@ pub enum AtRuleBodyItem {
     MediaRule(MediaRule),
     /// An `@` rule.
     AtRule(AtRule),
+    /// Keyframes
+    Keyframes(Keyframes),
 }
 
 impl AtRuleBodyItem {
@@ -83,6 +85,7 @@ impl AtRuleBodyItem {
             Self::CustomProperty(cp) => cp.write(buf),
             Self::MediaRule(rule) => rule.write(buf)?,
             Self::AtRule(rule) => rule.write(buf)?,
+            Self::Keyframes(rule) => rule.write(buf)?,
         }
         Ok(())
     }
@@ -140,6 +143,12 @@ impl TryFrom<Item> for AtRuleBodyItem {
             Item::MediaRule(x) => Ok(x.into()),
             Item::AtRule(x) => Ok(x.into()),
             Item::Separator => Err("separator not supported here"),
+            Item::Keyframes(x) => Ok(x.into()),
         }
+    }
+}
+impl From<Keyframes> for AtRuleBodyItem {
+    fn from(value: Keyframes) -> Self {
+        AtRuleBodyItem::Keyframes(value)
     }
 }

@@ -1,4 +1,4 @@
-use super::{AtRule, Comment, CssString, MediaRule, Rule, Value};
+use super::{AtRule, Comment, CssString, Keyframes, MediaRule, Rule, Value};
 use crate::output::CssBuf;
 use std::io::{self, Write};
 
@@ -15,6 +15,8 @@ pub enum Item {
     MediaRule(MediaRule),
     /// An (unknown) `@` rule.
     AtRule(AtRule),
+    /// An `@keyframes` rule.
+    Keyframes(Keyframes),
     /// An extra newline for grouping (unless compressed format).
     Separator,
 }
@@ -27,6 +29,7 @@ impl Item {
             Self::Rule(rule) => rule.write(buf)?,
             Self::MediaRule(rule) => rule.write(buf)?,
             Self::AtRule(atrule) => atrule.write(buf)?,
+            Self::Keyframes(rule) => rule.write(buf)?,
             Self::Separator => buf.opt_nl(),
         }
         Ok(())
@@ -51,6 +54,11 @@ impl From<Rule> for Item {
 impl From<AtRule> for Item {
     fn from(value: AtRule) -> Self {
         Self::AtRule(value)
+    }
+}
+impl From<Keyframes> for Item {
+    fn from(value: Keyframes) -> Self {
+        Item::Keyframes(value)
     }
 }
 impl From<MediaRule> for Item {

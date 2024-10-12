@@ -32,6 +32,9 @@ project adheres to
 * Improved parse error handling (PR #201, Issue #141).
   Many parse errors now match the dart sass error message.
   Also allow "loud" comments in more places.
+* Added proper handling of `@keyframes`.  This is a breaking change for
+  adding new variants to public enums (PR #178).
+* Handle trailing comma in function arguments in plain css correctly.
 * Updated sass-spec test suite to 2024-10-10.
 
 
