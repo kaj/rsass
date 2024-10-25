@@ -15,7 +15,7 @@ fn error_in_right_place() {
         // Note: The error message should be better, but this is a good place for it.
         // Specifically, the marker should _not_ indicate the opening brace.
         Err(String::from(
-            "Error: Parse error: Nom(Tag)\
+            "Error: Parse error.\
              \n  ,\
              \n5 |   error here\
              \n  |   ^\

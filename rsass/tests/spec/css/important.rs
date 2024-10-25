@@ -14,7 +14,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn eof_after_bang() {
             assert_eq!(
         runner().err(

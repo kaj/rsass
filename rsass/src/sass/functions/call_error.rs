@@ -43,7 +43,7 @@ impl CallError {
                 Error::BadCall(msg, call_pos.clone().opt_in_calc(), None)
             }
             Self::Invalid(err) => {
-                Error::BadCall(format!("{err:?}"), call_pos.clone(), None)
+                Error::BadCall(err.to_string(), call_pos.clone(), None)
             }
             Self::BadArgument(name, problem) => Error::BadCall(
                 if name.as_ref().is_empty() {

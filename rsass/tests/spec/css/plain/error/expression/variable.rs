@@ -9,7 +9,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong error
 fn declaration() {
     let runner = runner().with_cwd("declaration");
     assert_eq!(
@@ -24,7 +23,6 @@ fn declaration() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn test_use() {
     let runner = runner().with_cwd("use");
     assert_eq!(

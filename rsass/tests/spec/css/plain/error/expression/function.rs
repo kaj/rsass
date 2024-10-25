@@ -31,7 +31,6 @@ fn built_in() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn keyword_arguments() {
     let runner = runner().with_cwd("keyword_arguments");
     assert_eq!(
@@ -46,7 +45,6 @@ fn keyword_arguments() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn variable_arguments() {
     let runner = runner().with_cwd("variable_arguments");
     assert_eq!(

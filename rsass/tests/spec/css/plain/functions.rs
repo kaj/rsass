@@ -68,7 +68,6 @@ mod error {
         }
 
         #[test]
-        #[ignore] // wrong error
         fn empty_second_before_third() {
             let runner = runner().with_cwd("empty_second_before_third");
             assert_eq!(
@@ -83,7 +82,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn invalid_second_arg_syntax() {
             let runner = runner().with_cwd("invalid_second_arg_syntax");
             assert_eq!(

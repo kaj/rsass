@@ -280,7 +280,7 @@ fn handle_item(
                         }
                         e => {
                             let pos = pos.in_call(name);
-                            Error::BadCall(format!("{e:?}"), pos, None)
+                            Error::BadCall(e.to_string(), pos, None)
                         }
                     })?;
             } else {

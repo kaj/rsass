@@ -69,6 +69,15 @@ impl<'a> Span<'a> {
     pub(crate) fn up_to(self, other: &Self) -> Self {
         self.take(self.offset(other))
     }
+    /// If `self` goes on the end of input, return just the starting point.
+    /// Otherwise preserve `self` as is.
+    pub(crate) fn sanitize_end(self) -> Self {
+        if self.end < self.source.data().len() {
+            self
+        } else {
+            self.up_to(&self)
+        }
+    }
 }
 
 impl<'a, T> Compare<T> for Span<'a>
