@@ -24,6 +24,10 @@ impl ListSeparator {
             Self::Space => " ",
         }
     }
+    /// Return true for slash (with or without space).
+    pub fn is_slash(&self) -> bool {
+        matches!(self, Self::Slash | Self::SlashNoSpace)
+    }
 }
 
 impl Default for ListSeparator {

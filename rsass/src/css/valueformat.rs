@@ -36,7 +36,8 @@ impl<'a> Display for Formatted<'a, Value> {
                 }
                 let t = v
                     .iter()
-                    .filter(|v| !v.is_null() || introspect)
+                    // TODO: Get rid of this filter entirely?
+                    .filter(|v| !v.is_null() || sep.is_slash() || introspect)
                     .map(|v| {
                         let needs_paren = match *v {
                             Value::List(ref v, inner, false) => {

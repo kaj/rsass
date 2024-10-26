@@ -32,7 +32,6 @@ mod without_intermediate {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn no_whitespace() {
         let runner = runner().with_cwd("no_whitespace");
         assert_eq!(
@@ -43,7 +42,6 @@ mod without_intermediate {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn whitespace() {
         let runner = runner().with_cwd("whitespace");
         assert_eq!(

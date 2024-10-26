@@ -1,12 +1,12 @@
 use super::super::{input_to_str, input_to_string, PResult, Span};
-use super::opt_spacelike;
+use super::{nom_err, opt_spacelike};
 use crate::css::CssString;
 use crate::value::Quotes;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, take};
-use nom::character::complete::one_of;
+use nom::character::complete::{char, one_of};
 use nom::combinator::{
-    into, map, map_opt, map_res, not, opt, peek, recognize, value, verify,
+    into, map, map_opt, map_res, opt, recognize, value, verify,
 };
 use nom::multi::{fold_many0, fold_many1, many0, many_m_n};
 use nom::sequence::{delimited, preceded, terminated};
@@ -130,7 +130,18 @@ fn selector_plain_part(input: Span) -> PResult<String> {
 }
 
 fn hash_no_interpolation(input: Span) -> PResult<&str> {
-    map_res(terminated(tag("#"), peek(not(tag("{")))), input_to_str)(input)
+    let (next, hash) = tag("#")(input)?;
+    if let Ok((end, _)) = interpolation_block(next) {
+        return Err(nom_err(
+            "Interpolation isn't allowed in plain CSS.",
+            input.up_to(&end),
+        ));
+    } else {
+        Ok((next, input_to_str(hash).unwrap()))
+    }
+}
+fn interpolation_block(input: Span) -> PResult<char> {
+    terminated(char('{'), opt(terminated(is_not("{}"), char('}'))))(input)
 }
 
 fn escaped_char(input: Span) -> PResult<char> {

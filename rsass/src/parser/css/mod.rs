@@ -11,6 +11,7 @@ use nom::character::complete::{multispace0, multispace1};
 use nom::combinator::{
     all_consuming, into, map, map_res, not, opt, peek, recognize,
 };
+use nom::error::{VerboseError, VerboseErrorKind};
 use nom::multi::{fold_many0, many0, many_till};
 use nom::sequence::{delimited, preceded, terminated};
 use std::str::from_utf8;
@@ -34,9 +35,14 @@ pub fn file(input: Span) -> PResult<Vec<Item>> {
 }
 
 fn top_level_item(input: Span) -> PResult<Item> {
-    let (rest, start) = alt((tag("@"), tag("/*"), tag("")))(input)?;
+    let (rest, start) = alt((tag("@"), tag("/*"), tag("$"), tag("")))(input)?;
     match start.fragment() {
         b"/*" => into(comment)(input),
+        b"$" => {
+            let (end, _) = preceded(tag("$"), strings::css_string)(input)?;
+            let pos = input.up_to(&end);
+            Err(nom_err("Sass variables aren't allowed in plain CSS.", pos))
+        }
         b"@" => {
             let (input, name) = strings::css_string(rest)?;
             match name.as_ref() {
@@ -153,4 +159,13 @@ pub fn spacelike(input: Span) -> PResult<()> {
 
 pub fn opt_spacelike(input: Span) -> PResult<()> {
     map(multispace0, |_| ())(input)
+}
+
+fn nom_err<'a>(
+    msg: &'static str,
+    pos: Span<'a>,
+) -> nom::Err<VerboseError<Span<'a>>> {
+    nom::Err::Error(VerboseError {
+        errors: vec![(pos, VerboseErrorKind::Context(msg))],
+    })
 }

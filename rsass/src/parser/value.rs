@@ -236,15 +236,12 @@ pub fn single_value(input: Span) -> PResult<Value> {
 
 fn bang(input: Span) -> PResult<Value> {
     map(
-        context(
-            "Expected \"important\".",
-            map_res(
-                preceded(
-                    pair(tag("!"), opt_spacelike),
-                    tag("important"), // TODO Pretty much anythig goes, here?
-                ),
-                input_to_string,
+        map_res(
+            preceded(
+                pair(tag("!"), opt_spacelike),
+                context("Expected \"important\".", tag("important")),
             ),
+            input_to_string,
         ),
         Value::Bang,
     )(input)

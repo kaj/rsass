@@ -12,7 +12,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong error
 fn interpolation() {
     let runner = runner().with_cwd("interpolation");
     assert_eq!(
@@ -42,7 +41,6 @@ fn line_noise() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn namespaced_function() {
     let runner = runner().with_cwd("namespaced_function");
     assert_eq!(
@@ -57,7 +55,6 @@ fn namespaced_function() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn variable() {
     let runner = runner().with_cwd("variable");
     assert_eq!(
@@ -72,7 +69,6 @@ fn variable() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn wrong_args() {
     let runner = runner().with_cwd("wrong_args");
     assert_eq!(

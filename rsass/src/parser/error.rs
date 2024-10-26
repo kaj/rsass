@@ -35,12 +35,10 @@ impl ParseError {
     where
         Msg: Into<String>,
     {
-        let msg = if pos.is_at_end() {
-            String::from("expected more input.")
-        } else {
-            msg.into()
-        };
-        Self { msg, pos }
+        Self {
+            msg: msg.into(),
+            pos,
+        }
     }
 }
 
@@ -62,18 +60,18 @@ impl From<nom::error::VerboseError<Span<'_>>> for ParseError {
             })
             .next()
             .or_else(|| {
-                value.errors.first().map(|(pos, kind)| {
+                value.errors.first().map(|(pos, _)| {
                     if pos.is_at_end() {
                         ("expected more input.".to_string(), pos)
                     } else if let PResult::Ok((_, b)) = one_of(")}]")(*pos) {
                         (format!("unmatched \"{b}\"."), pos)
                     } else {
-                        (format!("Parse error: {kind:?}"), pos)
+                        ("Parse error.".to_string(), pos)
                     }
                 })
             })
             .unwrap();
-        Self::new(msg, pos.up_to(pos).to_owned())
+        Self::new(msg, pos.sanitize_end().to_owned())
     }
 }
 
