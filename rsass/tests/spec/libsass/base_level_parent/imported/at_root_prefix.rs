@@ -11,8 +11,17 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        runner().err("@import \"include.scss\";"),
-        "Error: \"&\" may only used at the beginning of a compound selector.\
+        runner().err(
+            "@import \"include.scss\";"
+        ),
+        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | @import \"include.scss\";\
+         \n  |         ^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:9  root stylesheet\n\
+         \nError: \"&\" may only used at the beginning of a compound selector.\
          \n  ,\
          \n2 |   pre& {\
          \n  |      ^\

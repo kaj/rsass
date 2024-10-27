@@ -5,6 +5,25 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("comment")
 }
 
+mod block {
+    #[allow(unused)]
+    use super::runner;
+
+    mod loud {
+        #[allow(unused)]
+        use super::runner;
+
+        mod sass {
+            #[allow(unused)]
+            use super::runner;
+
+            mod content_after_close {
+                #[allow(unused)]
+                use super::runner;
+            }
+        }
+    }
+}
 mod converts_newlines {
     #[allow(unused)]
     use super::runner;
@@ -76,6 +95,15 @@ mod error {
         mod multi_line {
             #[allow(unused)]
             use super::runner;
+        }
+        mod sass {
+            #[allow(unused)]
+            use super::runner;
+
+            mod content_after_close {
+                #[allow(unused)]
+                use super::runner;
+            }
         }
         mod unterminated {
             #[allow(unused)]

@@ -23,28 +23,50 @@ mod error {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong error
         fn too_high() {
             assert_eq!(
-                runner().err("a {b: lighten(red, 100.001)}\n"),
-                "Error: $amount: Expected 100.001 to be within 0 and 100.\
+        runner().err(
+            "a {b: lighten(red, 100.001)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.adjust instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: lighten(red, 100.001)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $amount: Expected 100.001 to be within 0 and 100.\
          \n  ,\
          \n1 | a {b: lighten(red, 100.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
         #[test]
+        #[ignore] // wrong error
         fn too_low() {
             assert_eq!(
-                runner().err("a {b: lighten(red, -0.001)}\n"),
-                "Error: $amount: Expected -0.001 to be within 0 and 100.\
+        runner().err(
+            "a {b: lighten(red, -0.001)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.adjust instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: lighten(red, -0.001)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $amount: Expected -0.001 to be within 0 and 100.\
          \n  ,\
          \n1 | a {b: lighten(red, -0.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
     }
     #[test]
@@ -54,7 +76,15 @@ mod error {
         runner().err(
             "a {b: lighten(color(srgb 0 0 0), 10%)}\n"
         ),
-        "Error: lighten() is only supported for legacy colors. Please use color.adjust() instead with an explicit $space argument.\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.adjust instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: lighten(color(srgb 0 0 0), 10%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: lighten() is only supported for legacy colors. Please use color.adjust() instead with an explicit $space argument.\
          \n  ,\
          \n1 | a {b: lighten(color(srgb 0 0 0), 10%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -99,28 +129,50 @@ mod error {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong error
         fn color() {
             assert_eq!(
-                runner().err("a {b: lighten(1, 2)}\n"),
-                "Error: $color: 1 is not a color.\
+        runner().err(
+            "a {b: lighten(1, 2)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.adjust instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: lighten(1, 2)}\
+         \n  |       ^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $color: 1 is not a color.\
          \n  ,\
          \n1 | a {b: lighten(1, 2)}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
         #[test]
+        #[ignore] // wrong error
         fn lightness() {
             assert_eq!(
-                runner().err("a {b: lighten(red, blue)}\n"),
-                "Error: $amount: blue is not a number.\
+        runner().err(
+            "a {b: lighten(red, blue)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.adjust instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: lighten(red, blue)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $amount: blue is not a number.\
          \n  ,\
          \n1 | a {b: lighten(red, blue)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
     }
 }

@@ -23,6 +23,14 @@ fn test() {
          \n  |        ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n    input.scss 4:8  root stylesheet\n\
+         \nDEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse math.max instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n4 |   bar: meta.call(max, $foo...);\
+         \n  |        ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 4:8  root stylesheet\n\
          \nError: blah is not a number.\
          \n  ,\
          \n4 |   bar: meta.call(max, $foo...);\

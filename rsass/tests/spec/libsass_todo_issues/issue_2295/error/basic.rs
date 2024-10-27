@@ -16,7 +16,14 @@ fn test() {
              \n  @import \'include.scss\';\r\
              \n}"
         ),
-        "Error: expected \"{\".\
+        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n2 |   @import \'include.scss\';\
+         \n  |           ^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 2:11  root stylesheet\n\
+         \nError: expected \"{\".\
          \n  ,\
          \n1 | display: none;\
          \n  |              ^\

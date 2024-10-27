@@ -108,7 +108,14 @@ mod leading_combinator {
         runner.err(
             "a {@import \"plain\"}\n"
         ),
-        "Error: Top-level leading combinators aren\'t allowed in plain CSS.\
+        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {@import \"plain\"}\
+         \n  |            ^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:12  root stylesheet\n\
+         \nError: Top-level leading combinators aren\'t allowed in plain CSS.\
          \n  ,\
          \n1 | > b {c: d}\
          \n  | ^\

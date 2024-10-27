@@ -100,6 +100,19 @@ fn through_import() {
     );
 }
 #[test]
+fn through_use() {
+    let runner = runner().with_cwd("through_use");
+    assert_eq!(
+        runner.ok("@use \"sass:math\";\
+             \n@use \"sass:meta\";\
+             \n$round-fn: meta.get-function(round, $module: math);\n\
+             \na {b: meta.call($round-fn, 0.6)}\n"),
+        "a {\
+         \n  b: 1;\
+         \n}\n"
+    );
+}
+#[test]
 fn user_defined() {
     let runner = runner().with_cwd("user_defined");
     assert_eq!(

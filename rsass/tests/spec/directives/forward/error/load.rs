@@ -59,18 +59,29 @@ mod test_loop {
         );
     }
     #[test]
+    #[ignore] // wrong error
     fn forward_to_import() {
         let runner = runner().with_cwd("forward_to_import");
         assert_eq!(
-            runner.err("@forward \"other\";\n"),
-            "Error: This file is already being loaded.\
+        runner.err(
+            "@forward \"other\";\n"
+        ),
+        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | @import \"input\";\
+         \n  |         ^^^^^^^\
+         \n  \'\
+         \n    other.scss 1:9  @forward\
+         \n    input.scss 1:1  root stylesheet\n\
+         \nError: This file is already being loaded.\
          \n  ,\
          \n1 | @import \"input\";\
          \n  |         ^^^^^^^\
          \n  \'\
          \n  other.scss 1:9  @forward\
          \n  input.scss 1:1  root stylesheet",
-        );
+    );
     }
     #[test]
     fn forward_to_use() {

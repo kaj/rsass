@@ -14,30 +14,53 @@ mod error {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong error
         fn too_high() {
             assert_eq!(
-                runner().err("a {b: fade-out(red, 1.001)}\n"),
-                "Error: $amount: Expected 1.001 to be within 0 and 1.\
+        runner().err(
+            "a {b: fade-out(red, 1.001)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.adjust instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: fade-out(red, 1.001)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $amount: Expected 1.001 to be within 0 and 1.\
          \n  ,\
          \n1 | a {b: fade-out(red, 1.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
         #[test]
+        #[ignore] // wrong error
         fn too_low() {
             assert_eq!(
-                runner().err("a {b: fade-out(red, -0.001)}\n"),
-                "Error: $amount: Expected -0.001 to be within 0 and 1.\
+        runner().err(
+            "a {b: fade-out(red, -0.001)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.adjust instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: fade-out(red, -0.001)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $amount: Expected -0.001 to be within 0 and 1.\
          \n  ,\
          \n1 | a {b: fade-out(red, -0.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
         #[test]
+        #[ignore] // wrong error
         fn unit() {
             assert_eq!(
         runner().err(
@@ -45,7 +68,15 @@ mod error {
              \n// fully forbidden (sass/sass#3374).\
              \na {b: fade-out(red, 50%)}\n"
         ),
-        "Error: $amount: Expected 50% to be within 0 and 1.\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.adjust instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n3 | a {b: fade-out(red, 50%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 3:7  root stylesheet\n\
+         \nError: $amount: Expected 50% to be within 0 and 1.\
          \n  ,\
          \n3 | a {b: fade-out(red, 50%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
@@ -61,7 +92,15 @@ mod error {
         runner().err(
             "a {b: fade-out(color(srgb 1 1 1), 0.1)}\n"
         ),
-        "Error: fade-out() is only supported for legacy colors. Please use color.adjust() instead with an explicit $space argument.\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.adjust instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: fade-out(color(srgb 1 1 1), 0.1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: fade-out() is only supported for legacy colors. Please use color.adjust() instead with an explicit $space argument.\
          \n  ,\
          \n1 | a {b: fade-out(color(srgb 1 1 1), 0.1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -106,28 +145,50 @@ mod error {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong error
         fn alpha() {
             assert_eq!(
-                runner().err("a {b: fade-out(red, blue)}\n"),
-                "Error: $amount: blue is not a number.\
+        runner().err(
+            "a {b: fade-out(red, blue)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.adjust instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: fade-out(red, blue)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $amount: blue is not a number.\
          \n  ,\
          \n1 | a {b: fade-out(red, blue)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
         #[test]
+        #[ignore] // wrong error
         fn color() {
             assert_eq!(
-                runner().err("a {b: fade-out(1, 0.1)}\n"),
-                "Error: $color: 1 is not a color.\
+        runner().err(
+            "a {b: fade-out(1, 0.1)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.adjust instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: fade-out(1, 0.1)}\
+         \n  |       ^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $color: 1 is not a color.\
          \n  ,\
          \n1 | a {b: fade-out(1, 0.1)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
     }
 }

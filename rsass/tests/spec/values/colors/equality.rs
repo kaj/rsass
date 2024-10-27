@@ -22,7 +22,8 @@ mod test_false {
     #[test]
     fn different_type() {
         assert_eq!(
-            runner().ok("a {b: red == unquote(\"red\")}\n"),
+            runner().ok("@use \"sass:string\";\n\
+             \na {b: red == string.unquote(\"red\")}\n"),
             "a {\
          \n  b: false;\
          \n}\n"

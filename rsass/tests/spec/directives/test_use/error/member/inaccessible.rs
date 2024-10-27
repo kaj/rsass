@@ -198,33 +198,47 @@ mod transitive_from_import {
     fn mixin() {
         let runner = runner().with_cwd("mixin");
         assert_eq!(
-            runner.err(
-                "@import \"midstream\";\n\
+        runner.err(
+            "@import \"midstream\";\n\
              \n@include upstream;\n"
-            ),
-            "Error: Undefined mixin.\
+        ),
+        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | @import \"midstream\";\
+         \n  |         ^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:9  root stylesheet\n\
+         \nError: Undefined mixin.\
          \n  ,\
          \n3 | @include upstream;\
          \n  | ^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 3:1  root stylesheet",
-        );
+    );
     }
     #[test]
     #[ignore] // missing error
     fn variable() {
         let runner = runner().with_cwd("variable");
         assert_eq!(
-            runner.err(
-                "@import \"midstream\";\n\
+        runner.err(
+            "@import \"midstream\";\n\
              \na {b: $upstream};\n"
-            ),
-            "Error: Undefined variable.\
+        ),
+        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | @import \"midstream\";\
+         \n  |         ^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:9  root stylesheet\n\
+         \nError: Undefined variable.\
          \n  ,\
          \n3 | a {b: $upstream};\
          \n  |       ^^^^^^^^^\
          \n  \'\
          \n  input.scss 3:7  root stylesheet",
-        );
+    );
     }
 }

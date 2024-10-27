@@ -6,10 +6,20 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong error
 fn test() {
     assert_eq!(
-        runner().err("@import \"../does-not-exist\";\n"),
-        "Error: Can\'t find stylesheet to import.\
+        runner().err(
+            "@import \"../does-not-exist\";\n"
+        ),
+        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | @import \"../does-not-exist\";\
+         \n  |         ^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:9  root stylesheet\n\
+         \nError: Can\'t find stylesheet to import.\
          \n  ,\
          \n1 | @import \"../does-not-exist\";\
          \n  |         ^^^^^^^^^^^^^^^^^^^\

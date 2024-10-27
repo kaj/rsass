@@ -45,32 +45,32 @@ fn test() {
              \n  baz: 3 %  #{1  %  2};\r\
              \n}"
         ),
-        "DEPRECATION WARNING on line 11, column 14 of input.scss: \
-         \nThis operation is parsed as:\n\
+        "DEPRECATION WARNING: This operation is parsed as:\n\
          \n    1 + 2\n\
          \nbut you may have intended it to mean:\n\
          \n    1 (+2)\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\
-         \nMore info and automated migrator: https://sass-lang.com/d/strict-unary\
+         \nMore info and automated migrator: https://sass-lang.com/d/strict-unary\n\
          \n   ,\
          \n11 |   baz: 3  +#{1  +2};\
          \n   |              ^^^^^\
-         \n   \'\n\
-         \nDEPRECATION WARNING on line 11, column 8 of input.scss: \
-         \nThis operation is parsed as:\n\
+         \n   \'\
+         \n    input.scss 11:14  root stylesheet\n\
+         \nDEPRECATION WARNING: This operation is parsed as:\n\
          \n    3 + #{1 + 2}\n\
          \nbut you may have intended it to mean:\n\
          \n    3 (+#{1 + 2})\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\
-         \nMore info and automated migrator: https://sass-lang.com/d/strict-unary\
+         \nMore info and automated migrator: https://sass-lang.com/d/strict-unary\n\
          \n   ,\
          \n11 |   baz: 3  +#{1  +2};\
          \n   |        ^^^^^^^^^^^^\
-         \n   \'\n\
+         \n   \'\
+         \n    input.scss 11:8  root stylesheet\n\
          \nError: Undefined operation \"3 * 2\".\
          \n   ,\
          \n23 |   baz: 3*#{1*2};\

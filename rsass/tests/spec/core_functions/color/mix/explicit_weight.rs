@@ -8,7 +8,8 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn even() {
     assert_eq!(
-        runner().ok("a {b: mix(#91e16f, #0144bf, 50%)}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.mix(#91e16f, #0144bf, 50%)}\n"),
         "a {\
          \n  b: rgb(73, 146.5, 151);\
          \n}\n"
@@ -17,7 +18,8 @@ fn even() {
 #[test]
 fn first() {
     assert_eq!(
-        runner().ok("a {b: mix(#91e16f, #0144bf, 100%)}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.mix(#91e16f, #0144bf, 100%)}\n"),
         "a {\
          \n  b: #91e16f;\
          \n}\n"
@@ -26,7 +28,8 @@ fn first() {
 #[test]
 fn firstwards() {
     assert_eq!(
-        runner().ok("a {b: mix(#91e16f, #0144bf, 92%)}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.mix(#91e16f, #0144bf, 92%)}\n"),
         "a {\
          \n  b: rgb(133.48, 212.44, 117.4);\
          \n}\n"
@@ -35,7 +38,8 @@ fn firstwards() {
 #[test]
 fn last() {
     assert_eq!(
-        runner().ok("a {b: mix(#91e16f, #0144bf, 0%)}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.mix(#91e16f, #0144bf, 0%)}\n"),
         "a {\
          \n  b: #0144bf;\
          \n}\n"
@@ -44,7 +48,8 @@ fn last() {
 #[test]
 fn lastwards() {
     assert_eq!(
-        runner().ok("a {b: mix(#91e16f, #0144bf, 43%)}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.mix(#91e16f, #0144bf, 43%)}\n"),
         "a {\
          \n  b: rgb(62.92, 135.51, 156.6);\
          \n}\n"

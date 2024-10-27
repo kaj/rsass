@@ -9,7 +9,8 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok("a {b: mix(hsl(0 100% 50%), green, $method: lch)}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.mix(hsl(0 100% 50%), green, $method: lch)}\n"),
         "a {\
          \n  b: hsl(50.9351301875, 199.2813015981%, 19.0269267557%);\
          \n}\n"

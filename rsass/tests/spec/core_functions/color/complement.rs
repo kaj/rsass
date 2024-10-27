@@ -286,7 +286,8 @@ mod error {
 #[ignore] // unexepected error
 fn explicit_space() {
     assert_eq!(
-        runner().ok("a {b: complement(red, hwb)}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.complement(red, hwb)}\n"),
         "a {\
          \n  b: aqua;\
          \n}\n"

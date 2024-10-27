@@ -10,36 +10,68 @@ mod bounds {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong error
     fn too_high() {
         assert_eq!(
-            runner().err("a {b: mix(red, blue, 100.001%)}\n"),
-            "Error: $weight: Expected 100.001% to be within 0% and 100%.\
+        runner().err(
+            "a {b: mix(red, blue, 100.001%)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, 100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $weight: Expected 100.001% to be within 0% and 100%.\
          \n  ,\
          \n1 | a {b: mix(red, blue, 100.001%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-        );
+    );
     }
     #[test]
+    #[ignore] // wrong error
     fn too_low() {
         assert_eq!(
-            runner().err("a {b: mix(red, blue, -0.001%)}\n"),
-            "Error: $weight: Expected -0.001% to be within 0% and 100%.\
+        runner().err(
+            "a {b: mix(red, blue, -0.001%)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, -0.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $weight: Expected -0.001% to be within 0% and 100%.\
          \n  ,\
          \n1 | a {b: mix(red, blue, -0.001%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-        );
+    );
     }
 }
 #[test]
 #[ignore] // wrong error
 fn color_interpolation_method() {
     assert_eq!(
-        runner().err("a {b: mix(red, blue, $method: brighter)}\n"),
-        "Error: $method: Unknown color space \"brighter\".\
+        runner().err(
+            "a {b: mix(red, blue, $method: brighter)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, $method: brighter)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $method: Unknown color space \"brighter\".\
          \n  ,\
          \n1 | a {b: mix(red, blue, $method: brighter)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -81,14 +113,24 @@ mod interpolation {
     #[ignore] // wrong error
     fn number() {
         assert_eq!(
-            runner().err("a {b: mix(red, blue, $method: hsl 1)}\n"),
-            "Error: $method: 1 is not a string.\
+        runner().err(
+            "a {b: mix(red, blue, $method: hsl 1)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, $method: hsl 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $method: 1 is not a string.\
          \n  ,\
          \n1 | a {b: mix(red, blue, $method: hsl 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-        );
+    );
     }
 }
 mod interpolation_list {
@@ -102,7 +144,15 @@ mod interpolation_list {
         runner().err(
             "a {b: mix(red, blue, $method: \"hsl longer hue\")}\n"
         ),
-        "Error: $method: Expected \"hsl longer hue\" to be an unquoted string.\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, $method: \"hsl longer hue\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $method: Expected \"hsl longer hue\" to be an unquoted string.\
          \n  ,\
          \n1 | a {b: mix(red, blue, $method: \"hsl longer hue\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -127,14 +177,24 @@ mod interpolation_list {
     #[ignore] // wrong error
     fn slash() {
         assert_eq!(
-            runner().err("a {b: mix(red, blue, $method: hsl/longer/hue)}\n"),
-            "Error: $method: Unknown color space \"hsl/longer/hue\".\
+        runner().err(
+            "a {b: mix(red, blue, $method: hsl/longer/hue)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, $method: hsl/longer/hue)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $method: Unknown color space \"hsl/longer/hue\".\
          \n  ,\
          \n1 | a {b: mix(red, blue, $method: hsl/longer/hue)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-        );
+    );
     }
 }
 mod invalid_method {
@@ -150,7 +210,15 @@ mod invalid_method {
              \n// dropped because it required implementations to lazily normalize hues.\
              \na {b: mix(red, blue, $method: hsl specified hue)}\n"
         ),
-        "Error: $method: Unknown hue interpolation method specified.\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n3 | a {b: mix(red, blue, $method: hsl specified hue)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 3:7  root stylesheet\n\
+         \nError: $method: Unknown hue interpolation method specified.\
          \n  ,\
          \n3 | a {b: mix(red, blue, $method: hsl specified hue)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -165,7 +233,15 @@ mod invalid_method {
         runner().err(
             "a {b: mix(red, blue, $method: hsl longer shade)}\n"
         ),
-        "Error: $method: Expected unquoted string \"hue\" at the end of (hsl longer shade), was shade.\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, $method: hsl longer shade)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $method: Expected unquoted string \"hue\" at the end of (hsl longer shade), was shade.\
          \n  ,\
          \n1 | a {b: mix(red, blue, $method: hsl longer shade)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -181,7 +257,15 @@ fn missing_hue_string() {
         runner().err(
             "a {b: mix(red, blue, $method: lch decreasing)}\n"
         ),
-        "Error: $method: Expected unquoted string \"hue\" after (lch decreasing).\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, $method: lch decreasing)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $method: Expected unquoted string \"hue\" after (lch decreasing).\
          \n  ,\
          \n1 | a {b: mix(red, blue, $method: lch decreasing)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -204,7 +288,15 @@ mod null_method {
         runner().err(
             "a {b: mix(lch(20% -20 0), red)}\n"
         ),
-        "Error: $color1: To use color.mix() with non-legacy color lch(20% 0 0deg), you must provide a $method.\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(lch(20% -20 0), red)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $color1: To use color.mix() with non-legacy color lch(20% 0 0deg), you must provide a $method.\
          \n  ,\
          \n1 | a {b: mix(lch(20% -20 0), red)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -219,7 +311,15 @@ mod null_method {
         runner().err(
             "a {b: mix(red, lch(20% -20 0))}\n"
         ),
-        "Error: $color2: To use color.mix() with non-legacy color lch(20% 0 0deg), you must provide a $method.\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, lch(20% -20 0))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $color2: To use color.mix() with non-legacy color lch(20% 0 0deg), you must provide a $method.\
          \n  ,\
          \n1 | a {b: mix(red, lch(20% -20 0))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -233,9 +333,18 @@ mod null_method {
 #[ignore] // wrong error
 fn parentheses() {
     assert_eq!(
-        runner()
-            .err("a {b: mix(red, blue, $method: lch (decreasing hue))}\n"),
-        "Error: $method: (decreasing hue) is not a string.\
+        runner().err(
+            "a {b: mix(red, blue, $method: lch (decreasing hue))}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, $method: lch (decreasing hue))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $method: (decreasing hue) is not a string.\
          \n  ,\
          \n1 | a {b: mix(red, blue, $method: lch (decreasing hue))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -250,7 +359,15 @@ fn rectangular_space_with_method() {
         runner().err(
             "a {b: mix(red, blue, $method: srgb longer hue)}\n"
         ),
-        "Error: $method: Hue interpolation method \"HueInterpolationMethod.longer hue\" may not be set for rectangular color space srgb.\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, $method: srgb longer hue)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $method: Hue interpolation method \"HueInterpolationMethod.longer hue\" may not be set for rectangular color space srgb.\
          \n  ,\
          \n1 | a {b: mix(red, blue, $method: srgb longer hue)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -301,48 +418,91 @@ mod test_type {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong error
     fn color1() {
         assert_eq!(
-            runner().err("a {b: mix(1, blue)}\n"),
-            "Error: $color1: 1 is not a color.\
+        runner().err(
+            "a {b: mix(1, blue)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(1, blue)}\
+         \n  |       ^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $color1: 1 is not a color.\
          \n  ,\
          \n1 | a {b: mix(1, blue)}\
          \n  |       ^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-        );
+    );
     }
     #[test]
+    #[ignore] // wrong error
     fn color2() {
         assert_eq!(
-            runner().err("a {b: mix(red, 1)}\n"),
-            "Error: $color2: 1 is not a color.\
+        runner().err(
+            "a {b: mix(red, 1)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, 1)}\
+         \n  |       ^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $color2: 1 is not a color.\
          \n  ,\
          \n1 | a {b: mix(red, 1)}\
          \n  |       ^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-        );
+    );
     }
     #[test]
+    #[ignore] // wrong error
     fn weight() {
         assert_eq!(
-            runner().err("a {b: mix(red, blue, green)}\n"),
-            "Error: $weight: green is not a number.\
+        runner().err(
+            "a {b: mix(red, blue, green)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, green)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $weight: green is not a number.\
          \n  ,\
          \n1 | a {b: mix(red, blue, green)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-        );
+    );
     }
 }
 #[test]
 #[ignore] // wrong error
 fn unknown_interpolation() {
     assert_eq!(
-        runner().err("a {b: mix(red, blue, $method: lch longerhue)}\n"),
-        "Error: $method: Unknown hue interpolation method longerhue.\
+        runner().err(
+            "a {b: mix(red, blue, $method: lch longerhue)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.mix instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, $method: lch longerhue)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $method: Unknown hue interpolation method longerhue.\
          \n  ,\
          \n1 | a {b: mix(red, blue, $method: lch longerhue)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\

@@ -63,16 +63,27 @@ mod global {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong error
         fn color() {
             assert_eq!(
-                runner().err("a {b: invert(c)}\n"),
-                "Error: $color: c is not a color.\
+        runner().err(
+            "a {b: invert(c)}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.invert instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: invert(c)}\
+         \n  |       ^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $color: c is not a color.\
          \n  ,\
          \n1 | a {b: invert(c)}\
          \n  |       ^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
     }
 }
@@ -91,7 +102,15 @@ mod missing {
         runner().err(
             "a {b: invert(rgb(10 none 20), $space: xyz)}\n"
         ),
-        "Error: $y: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: color(xyz 0.0025142545 none 0.0067080366)).\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.invert instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: invert(rgb(10 none 20), $space: xyz)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $y: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: color(xyz 0.0025142545 none 0.0067080366)).\
          \n  ,\
          \n1 | a {b: invert(rgb(10 none 20), $space: xyz)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -106,7 +125,15 @@ mod missing {
         runner().err(
             "a {b: invert(grey, $space: hsl)}\n"
         ),
-        "Error: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: hsl(none 0% 50.1960784314%)).\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.invert instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: invert(grey, $space: hsl)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: hsl(none 0% 50.1960784314%)).\
          \n  ,\
          \n1 | a {b: invert(grey, $space: hsl)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -125,7 +152,15 @@ mod missing {
         runner().err(
             "a {b: invert(hsl(0 40% none), $space: hsl)}\n"
         ),
-        "Error: $lightness: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: hsl(0deg 40% none)).\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.invert instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: invert(hsl(0 40% none), $space: hsl)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $lightness: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: hsl(0deg 40% none)).\
          \n  ,\
          \n1 | a {b: invert(hsl(0 40% none), $space: hsl)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -140,7 +175,15 @@ mod missing {
         runner().err(
             "a {b: invert(hwb(none 10% 20%), $space: hwb)}\n"
         ),
-        "Error: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: hwb(none 10% 20%)).\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.invert instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: invert(hwb(none 10% 20%), $space: hwb)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: hwb(none 10% 20%)).\
          \n  ,\
          \n1 | a {b: invert(hwb(none 10% 20%), $space: hwb)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -155,7 +198,15 @@ mod missing {
         runner().err(
             "a {b: invert(rgb(none 10 20))}\n"
         ),
-        "Error: $red: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: rgb(none 10 20)).\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.invert instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: invert(rgb(none 10 20))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $red: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: rgb(none 10 20)).\
          \n  ,\
          \n1 | a {b: invert(rgb(none 10 20))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
@@ -176,7 +227,15 @@ mod missing {
         runner().err(
             "a {b: invert(color(rec2020 0.1 none 0.2), $space: xyz)}\n"
         ),
-        "Error: $y: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: color(xyz 0.0237000113 none 0.0589013339)).\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.invert instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: invert(color(rec2020 0.1 none 0.2), $space: xyz)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $y: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: color(xyz 0.0237000113 none 0.0589013339)).\
          \n  ,\
          \n1 | a {b: invert(color(rec2020 0.1 none 0.2), $space: xyz)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -191,7 +250,15 @@ mod missing {
         runner().err(
             "a {b: invert(color(rec2020 0.4 0.4 0.4), $space: lch)}\n"
         ),
-        "Error: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: lch(48.649404846% 0 none)).\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.invert instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: invert(color(rec2020 0.4 0.4 0.4), $space: lch)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: lch(48.649404846% 0 none)).\
          \n  ,\
          \n1 | a {b: invert(color(rec2020 0.4 0.4 0.4), $space: lch)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -206,7 +273,15 @@ mod missing {
         runner().err(
             "a {b: invert(color(srgb none 0.1 0.2), $space: srgb)}\n"
         ),
-        "Error: $red: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: color(srgb none 0.1 0.2)).\
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse color.invert instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: invert(color(srgb none 0.1 0.2), $space: srgb)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $red: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: color(srgb none 0.1 0.2)).\
          \n  ,\
          \n1 | a {b: invert(color(srgb none 0.1 0.2), $space: srgb)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\

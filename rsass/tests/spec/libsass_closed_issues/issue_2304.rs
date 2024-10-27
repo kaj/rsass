@@ -14,7 +14,14 @@ fn test() {
         runner().err(
             "@import \"module\";"
         ),
-        "Error: Top-level selectors may not contain the parent selector \"&\".\
+        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | @import \"module\";\
+         \n  |         ^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:9  root stylesheet\n\
+         \nError: Top-level selectors may not contain the parent selector \"&\".\
          \n  ,\
          \n1 | .foo, & {\
          \n  |       ^\

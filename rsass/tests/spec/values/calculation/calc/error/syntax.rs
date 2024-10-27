@@ -179,19 +179,19 @@ mod no_whitespace {
         runner().err(
             "a {b: calc(1 +1)}\n"
         ),
-        "DEPRECATION WARNING on line 1, column 12 of input.scss: \
-         \nThis operation is parsed as:\n\
+        "DEPRECATION WARNING: This operation is parsed as:\n\
          \n    1 + 1\n\
          \nbut you may have intended it to mean:\n\
          \n    1 (+1)\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\
-         \nMore info and automated migrator: https://sass-lang.com/d/strict-unary\
+         \nMore info and automated migrator: https://sass-lang.com/d/strict-unary\n\
          \n  ,\
          \n1 | a {b: calc(1 +1)}\
          \n  |            ^^^^\
-         \n  \'\n\
+         \n  \'\
+         \n    input.scss 1:12  root stylesheet\n\
          \nError: \"+\" and \"-\" must be surrounded by whitespace in calculations.\
          \n  ,\
          \n1 | a {b: calc(1 +1)}\

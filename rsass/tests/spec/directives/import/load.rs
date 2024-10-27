@@ -82,17 +82,27 @@ mod index {
         );
     }
     #[test]
+    #[ignore] // wrong error
     fn dir_dot_scss() {
         let runner = runner().with_cwd("dir_dot_scss");
         assert_eq!(
-            runner.err("@import \"dir.scss\";\n"),
-            "Error: Can\'t find stylesheet to import.\
+        runner.err(
+            "@import \"dir.scss\";\n"
+        ),
+        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | @import \"dir.scss\";\
+         \n  |         ^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:9  root stylesheet\n\
+         \nError: Can\'t find stylesheet to import.\
          \n  ,\
          \n1 | @import \"dir.scss\";\
          \n  |         ^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:9  root stylesheet",
-        );
+    );
     }
     #[test]
     fn partial() {

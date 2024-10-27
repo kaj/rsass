@@ -14,16 +14,27 @@ mod one_argument {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong error
         fn variable_named_argument() {
             assert_eq!(
-                runner().err("a {b: round($number: var(--c))}\n"),
-                "Error: $number: var(--c) is not a number.\
+        runner().err(
+            "a {b: round($number: var(--c))}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse math.round instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: round($number: var(--c))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $number: var(--c) is not a number.\
          \n  ,\
          \n1 | a {b: round($number: var(--c))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-            );
+    );
         }
     }
     mod syntax {
@@ -45,16 +56,27 @@ mod one_argument {
         }
     }
     #[test]
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
-            runner().err("a {b: round(\"0\")}\n"),
-            "Error: $number: \"0\" is not a number.\
+        runner().err(
+            "a {b: round(\"0\")}\n"
+        ),
+        "DEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nUse math.round instead.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {b: round(\"0\")}\
+         \n  |       ^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:7  root stylesheet\n\
+         \nError: $number: \"0\" is not a number.\
          \n  ,\
          \n1 | a {b: round(\"0\")}\
          \n  |       ^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-        );
+    );
     }
     #[test]
     fn unsimplifiable() {

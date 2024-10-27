@@ -39,36 +39,52 @@ mod inaccessible {
             );
         }
         #[test]
+        #[ignore] // wrong error
         fn mixin() {
             let runner = runner().with_cwd("mixin");
             assert_eq!(
-                runner.err(
-                    "a {@import \"other\"}\n\
+        runner.err(
+            "a {@import \"other\"}\n\
              \nb {@include c}\n"
-                ),
-                "Error: Undefined mixin.\
+        ),
+        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {@import \"other\"}\
+         \n  |            ^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:12  root stylesheet\n\
+         \nError: Undefined mixin.\
          \n  ,\
          \n3 | b {@include c}\
          \n  |    ^^^^^^^^^^\
          \n  \'\
          \n  input.scss 3:4  root stylesheet",
-            );
+    );
         }
         #[test]
+        #[ignore] // wrong error
         fn variable() {
             let runner = runner().with_cwd("variable");
             assert_eq!(
-                runner.err(
-                    "a {@import \"other\"}\n\
+        runner.err(
+            "a {@import \"other\"}\n\
              \nb {c: $d}\n"
-                ),
-                "Error: Undefined variable.\
+        ),
+        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
+         \n  ,\
+         \n1 | a {@import \"other\"}\
+         \n  |            ^^^^^^^\
+         \n  \'\
+         \n    input.scss 1:12  root stylesheet\n\
+         \nError: Undefined variable.\
          \n  ,\
          \n3 | b {c: $d}\
          \n  |       ^^\
          \n  \'\
          \n  input.scss 3:7  root stylesheet",
-            );
+    );
         }
     }
 }

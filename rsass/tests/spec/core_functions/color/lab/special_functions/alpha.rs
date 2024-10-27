@@ -83,8 +83,9 @@ mod calc {
         fn arg_1() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(unquote(\"calc(1%)\") 2 3 / 0.4));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(string.unquote(\"calc(1%)\") 2 3 / 0.4));\n"
         ),
         "a {\
          \n  value: lab(calc(1%) 2 3/0.4);\
@@ -97,8 +98,9 @@ mod calc {
         fn arg_2() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(1% unquote(\"calc(2)\") 3 / 0.4));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% string.unquote(\"calc(2)\") 3 / 0.4));\n"
         ),
         "a {\
          \n  value: lab(1% calc(2) 3/0.4);\
@@ -111,8 +113,9 @@ mod calc {
         fn arg_3() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(1% 2 unquote(\"calc(3)\") / 0.4));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% 2 string.unquote(\"calc(3)\") / 0.4));\n"
         ),
         "a {\
          \n  value: lab(1% 2 calc(3)/0.4);\
@@ -125,8 +128,9 @@ mod calc {
         fn arg_4() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(1% 2 3 / unquote(\"calc(0.4)\")));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% 2 3 / string.unquote(\"calc(0.4)\")));\n"
         ),
         "a {\
          \n  value: lab(1% 2 3/calc(0.4));\
@@ -149,8 +153,9 @@ mod clamp {
         fn arg_1() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(unquote(\"clamp(1%, 2, 3)\") 2 3 / 0.4));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(string.unquote(\"clamp(1%, 2, 3)\") 2 3 / 0.4));\n"
         ),
         "a {\
          \n  value: lab(clamp(1%, 2, 3) 2 3/0.4);\
@@ -163,8 +168,9 @@ mod clamp {
         fn arg_2() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(1% unquote(\"clamp(2, 3, 4)\") 3 / 0.4));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% string.unquote(\"clamp(2, 3, 4)\") 3 / 0.4));\n"
         ),
         "a {\
          \n  value: lab(1% clamp(2, 3, 4) 3/0.4);\
@@ -177,8 +183,9 @@ mod clamp {
         fn arg_3() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(1% 2 unquote(\"clamp(3, 4, 5)\") / 0.4));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% 2 string.unquote(\"clamp(3, 4, 5)\") / 0.4));\n"
         ),
         "a {\
          \n  value: lab(1% 2 clamp(3, 4, 5)/0.4);\
@@ -191,8 +198,9 @@ mod clamp {
         fn arg_4() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(1% 2 3 / unquote(\"clamp(0.4, 0.5, 0.6)\")));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% 2 3 / string.unquote(\"clamp(0.4, 0.5, 0.6)\")));\n"
         ),
         "a {\
          \n  value: lab(1% 2 3/clamp(0.4, 0.5, 0.6));\
@@ -268,8 +276,9 @@ mod max {
         fn arg_1() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(unquote(\"max(1%)\") 2 3 / 0.4));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(string.unquote(\"max(1%)\") 2 3 / 0.4));\n"
         ),
         "a {\
          \n  value: lab(max(1%) 2 3/0.4);\
@@ -282,8 +291,9 @@ mod max {
         fn arg_2() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(1% unquote(\"max(2)\") 3 / 0.4));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% string.unquote(\"max(2)\") 3 / 0.4));\n"
         ),
         "a {\
          \n  value: lab(1% max(2) 3/0.4);\
@@ -296,8 +306,9 @@ mod max {
         fn arg_3() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(1% 2 unquote(\"max(3)\") / 0.4));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% 2 string.unquote(\"max(3)\") / 0.4));\n"
         ),
         "a {\
          \n  value: lab(1% 2 max(3)/0.4);\
@@ -310,8 +321,9 @@ mod max {
         fn arg_4() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(1% 2 3 / unquote(\"max(0.4)\")));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% 2 3 / string.unquote(\"max(0.4)\")));\n"
         ),
         "a {\
          \n  value: lab(1% 2 3/max(0.4));\
@@ -334,8 +346,9 @@ mod min {
         fn arg_1() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(unquote(\"min(1%)\") 2 3 / 0.4));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(string.unquote(\"min(1%)\") 2 3 / 0.4));\n"
         ),
         "a {\
          \n  value: lab(min(1%) 2 3/0.4);\
@@ -348,8 +361,9 @@ mod min {
         fn arg_2() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(1% unquote(\"min(2)\") 3 / 0.4));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% string.unquote(\"min(2)\") 3 / 0.4));\n"
         ),
         "a {\
          \n  value: lab(1% min(2) 3/0.4);\
@@ -362,8 +376,9 @@ mod min {
         fn arg_3() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(1% 2 unquote(\"min(3)\") / 0.4));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% 2 string.unquote(\"min(3)\") / 0.4));\n"
         ),
         "a {\
          \n  value: lab(1% 2 min(3)/0.4);\
@@ -376,8 +391,9 @@ mod min {
         fn arg_4() {
             assert_eq!(
         runner().ok(
-            "@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(lab(1% 2 3 / unquote(\"min(0.4)\")));\n"
+            "@use \"sass:string\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% 2 3 / string.unquote(\"min(0.4)\")));\n"
         ),
         "a {\
          \n  value: lab(1% 2 3/min(0.4));\

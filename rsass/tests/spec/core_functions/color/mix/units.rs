@@ -12,7 +12,8 @@ mod weight {
     #[test]
     fn unitless() {
         assert_eq!(
-            runner().ok("a {b: mix(#91e16f, #0144bf, 50)}\n"),
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.mix(#91e16f, #0144bf, 50)}\n"),
             "a {\
          \n  b: rgb(73, 146.5, 151);\
          \n}\n"
@@ -21,7 +22,8 @@ mod weight {
     #[test]
     fn unknown() {
         assert_eq!(
-            runner().ok("a {b: mix(#91e16f, #0144bf, 50px)}\n"),
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.mix(#91e16f, #0144bf, 50px)}\n"),
             "a {\
          \n  b: rgb(73, 146.5, 151);\
          \n}\n"

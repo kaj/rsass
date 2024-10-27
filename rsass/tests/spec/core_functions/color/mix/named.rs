@@ -10,7 +10,8 @@ fn runner() -> crate::TestRunner {
 fn polar_space() {
     assert_eq!(
         runner().ok(
-            "a {b: mix($color1: #91e16f, $color2: #0144bf, $weight: 92%, $method: hsl decreasing hue)}\n"
+            "@use \"sass:color\";\
+             \na {b: color.mix($color1: #91e16f, $color2: #0144bf, $weight: 92%, $method: hsl decreasing hue)}\n"
         ),
         "a {\
          \n  b: rgb(177.749777646, 225.4953896552, 98.9846103448);\
@@ -22,7 +23,8 @@ fn polar_space() {
 fn rectangular_space() {
     assert_eq!(
         runner().ok(
-            "a {b: mix($color1: #91e16f, $color2: #0144bf, $weight: 92%, $method: lab)}\n"
+            "@use \"sass:color\";\
+             \na {b: color.mix($color1: #91e16f, $color2: #0144bf, $weight: 92%, $method: lab)}\n"
         ),
         "a {\
          \n  b: rgb(141.3483384924, 211.5499489073, 120.4340844852);\

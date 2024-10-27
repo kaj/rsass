@@ -10,7 +10,8 @@ fn runner() -> crate::TestRunner {
 fn case_insensitive() {
     assert_eq!(
         runner().ok(
-            "a {b: mix(oklch(0.5 0.1 30), oklch(0.5 0.1 190), $method: oKlCh LONger HUE)}\n"
+            "@use \"sass:color\";\
+             \na {b: color.mix(oklch(0.5 0.1 30), oklch(0.5 0.1 190), $method: oKlCh LONger HUE)}\n"
         ),
         "a {\
          \n  b: oklch(50% 0.1 290deg);\
@@ -26,7 +27,8 @@ mod decreasing {
     fn acute() {
         assert_eq!(
         runner().ok(
-            "a {b: mix(oklch(0.5 0.1 30), oklch(0.5 0.1 190), $method: oklch decreasing hue)}\n"
+            "@use \"sass:color\";\
+             \na {b: color.mix(oklch(0.5 0.1 30), oklch(0.5 0.1 190), $method: oklch decreasing hue)}\n"
         ),
         "a {\
          \n  b: oklch(50% 0.1 290deg);\
@@ -38,7 +40,8 @@ mod decreasing {
     fn obtuse() {
         assert_eq!(
         runner().ok(
-            "a {b: mix(oklch(0.5 0.1 30), oklch(0.5 0.1 230), $method: oklch decreasing hue)}\n"
+            "@use \"sass:color\";\
+             \na {b: color.mix(oklch(0.5 0.1 30), oklch(0.5 0.1 230), $method: oklch decreasing hue)}\n"
         ),
         "a {\
          \n  b: oklch(50% 0.1 310deg);\
@@ -55,7 +58,8 @@ mod default {
     fn acute() {
         assert_eq!(
         runner().ok(
-            "a {b: mix(oklch(0.5 0.1 30), oklch(0.5 0.1 190), $method: oklch)}\n"
+            "@use \"sass:color\";\
+             \na {b: color.mix(oklch(0.5 0.1 30), oklch(0.5 0.1 190), $method: oklch)}\n"
         ),
         "a {\
          \n  b: oklch(50% 0.1 110deg);\
@@ -67,7 +71,8 @@ mod default {
     fn obtuse() {
         assert_eq!(
         runner().ok(
-            "a {b: mix(oklch(0.5 0.1 30), oklch(0.5 0.1 230), $method: oklch)}\n"
+            "@use \"sass:color\";\
+             \na {b: color.mix(oklch(0.5 0.1 30), oklch(0.5 0.1 230), $method: oklch)}\n"
         ),
         "a {\
          \n  b: oklch(50% 0.1 310deg);\
@@ -84,7 +89,8 @@ mod increasing {
     fn acute() {
         assert_eq!(
         runner().ok(
-            "a {b: mix(oklch(0.5 0.1 30), oklch(0.5 0.1 190), $method: oklch increasing hue)}\n"
+            "@use \"sass:color\";\
+             \na {b: color.mix(oklch(0.5 0.1 30), oklch(0.5 0.1 190), $method: oklch increasing hue)}\n"
         ),
         "a {\
          \n  b: oklch(50% 0.1 110deg);\
@@ -96,7 +102,8 @@ mod increasing {
     fn obtuse() {
         assert_eq!(
         runner().ok(
-            "a {b: mix(oklch(0.5 0.1 30), oklch(0.5 0.1 230), $method: oklch increasing hue)}\n"
+            "@use \"sass:color\";\
+             \na {b: color.mix(oklch(0.5 0.1 30), oklch(0.5 0.1 230), $method: oklch increasing hue)}\n"
         ),
         "a {\
          \n  b: oklch(50% 0.1 130deg);\
@@ -113,7 +120,8 @@ mod longer {
     fn obtuse() {
         assert_eq!(
         runner().ok(
-            "a {b: mix(oklch(0.5 0.1 30), oklch(0.5 0.1 230), $method: oklch longer hue)}\n"
+            "@use \"sass:color\";\
+             \na {b: color.mix(oklch(0.5 0.1 30), oklch(0.5 0.1 230), $method: oklch longer hue)}\n"
         ),
         "a {\
          \n  b: oklch(50% 0.1 130deg);\
@@ -130,7 +138,8 @@ mod shorter {
     fn acute() {
         assert_eq!(
         runner().ok(
-            "a {b: mix(oklch(0.5 0.1 30), oklch(0.5 0.1 190), $method: oklch shorter hue)}\n"
+            "@use \"sass:color\";\
+             \na {b: color.mix(oklch(0.5 0.1 30), oklch(0.5 0.1 190), $method: oklch shorter hue)}\n"
         ),
         "a {\
          \n  b: oklch(50% 0.1 110deg);\
@@ -142,7 +151,8 @@ mod shorter {
     fn obtuse() {
         assert_eq!(
         runner().ok(
-            "a {b: mix(oklch(0.5 0.1 30), oklch(0.5 0.1 230), $method: oklch shorter hue)}\n"
+            "@use \"sass:color\";\
+             \na {b: color.mix(oklch(0.5 0.1 30), oklch(0.5 0.1 230), $method: oklch shorter hue)}\n"
         ),
         "a {\
          \n  b: oklch(50% 0.1 310deg);\
@@ -154,7 +164,8 @@ mod shorter {
 #[ignore] // unexepected error
 fn weighted() {
     assert_eq!(
-        runner().ok("a {b: mix(red, green, 20%, lch longer hue)}\n"),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.mix(red, green, 20%, lch longer hue)}\n"),
         "a {\
          \n  b: rgb(201.9125152451, 62.5456438786, 25.0531427989);\
          \n}\n"
