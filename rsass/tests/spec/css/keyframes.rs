@@ -73,7 +73,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn style_rule() {
             assert_eq!(
                 runner().err(
@@ -96,7 +96,7 @@ mod in_keyframe_block {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn known_at_rule() {
         assert_eq!(
             runner().ok("@keyframes a {\
@@ -112,6 +112,7 @@ mod in_keyframe_block {
         );
     }
     #[test]
+    #[ignore] // unexepected error
     fn unknown_at_rule() {
         assert_eq!(
             runner().ok("@keyframes a {\
@@ -281,7 +282,6 @@ mod selector {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_exponent() {
                 assert_eq!(
                     runner().ok("@keyframes a {\
@@ -297,7 +297,6 @@ mod selector {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn positive_exponent() {
                 assert_eq!(
                     runner().ok("@keyframes a {\

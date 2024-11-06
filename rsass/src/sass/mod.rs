@@ -28,7 +28,7 @@ pub use self::formal_args::{ArgsError, FormalArgs};
 pub use self::functions::{
     get_global_module, CallError, Function, ResolvedArgs,
 };
-pub use self::item::{Expose, Item, UseAs};
+pub use self::item::{Expose, Item, KfItem, UseAs};
 pub use self::mixin::{Mixin, MixinDecl};
 pub use self::name::Name;
 pub use self::selectors::{Selector, SelectorPart, Selectors};

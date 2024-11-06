@@ -4,9 +4,10 @@
 use super::cssdest::CssDestination;
 use super::CssData;
 use crate::css::{self, AtRule, Import, SelectorCtx};
+use crate::css::{Comment, Property};
 use crate::error::ResultPos;
 use crate::input::{Context, Loader, Parsed, SourceKind};
-use crate::sass::{get_global_module, Expose, Item, UseAs};
+use crate::sass::{get_global_module, Expose, Item, KfItem, UseAs};
 use crate::value::ValueRange;
 use crate::{Error, Invalid, ScopeRef};
 
@@ -201,6 +202,42 @@ fn handle_item(
                 dest.push_import(Import::new(name, args));
             }
         }
+        Item::KeyFrames(name, stops) => {
+            let name = name.evaluate(scope.clone())?.unquote();
+            let rules = stops
+                .iter()
+                .map(|item| match item {
+                    KfItem::Stop(name, rules) => Ok(Some(css::KfItem::Stop(
+                        name.iter()
+                            .map(|name| {
+                                Ok(name.evaluate(scope.clone())?.take_value())
+                            })
+                            .collect::<Result<_, Error>>()?,
+                        rules
+                            .iter()
+                            .map(|(name, val)| {
+                                let name = name.evaluate(scope.clone())?;
+                                let val = val.evaluate(scope.clone())?;
+                                Ok(Property::new(name.take_value(), val))
+                            })
+                            .collect::<Result<_, Error>>()?,
+                    ))),
+                    KfItem::VariableDeclaration(var) => {
+                        var.evaluate(&scope)?;
+                        Ok(None)
+                    }
+                    KfItem::Comment(comment) => {
+                        let comment = Comment::from(
+                            comment.evaluate(scope.clone())?.value(),
+                        );
+                        Ok(Some(css::KfItem::Comment(comment)))
+                    }
+                })
+                .filter_map(|r| r.transpose())
+                .collect::<Result<_, Error>>()?;
+            dest.push_item(css::Keyframes::new(name, rules).into())
+                .no_pos()?;
+        }
         Item::AtRoot(ref selectors, ref body) => {
             let selectors = selectors.eval(scope.clone())?;
             let ctx = scope.get_selectors().at_root(selectors);
@@ -231,7 +268,9 @@ fn handle_item(
             let args = args.evaluate(scope.clone())?;
             if let Some(ref body) = *body {
                 let mut atrule = dest.start_atrule(name.clone(), args);
-                let local = if name == "keyframes" {
+                let local = if name == "keyframes"
+                    || (name.starts_with("-") && name.ends_with("-keyframes"))
+                {
                     ScopeRef::sub_selectors(scope, SelectorCtx::root())
                 } else {
                     ScopeRef::sub(scope)
@@ -470,7 +509,7 @@ fn check_body(body: &[Item], context: BodyContext) -> Result<(), Error> {
     Ok(())
 }
 
-const CSS_AT_RULES: [&str; 16] = [
+const CSS_AT_RULES: [&str; 15] = [
     "charset",
     "color-profile",
     "counter-style",
@@ -478,7 +517,6 @@ const CSS_AT_RULES: [&str; 16] = [
     "font-face",
     "font-feature-values",
     "import",
-    "keyframes",
     "layer",
     "media",
     "namespace",
