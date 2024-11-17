@@ -49,12 +49,6 @@ pub fn css_round(s: &ResolvedArgs) -> Result<Value, CallError> {
             };
         }
         (Err(v0), Some(step), None) => (None, v0, Some(step)),
-        (Err(arg @ Value::BinOp(_)), None, _) => {
-            return Err(CallError::msg(format!(
-                "Single argument {} expected to be simplifiable.",
-                arg.format(Format::introspect()),
-            )));
-        }
         (Err(v), None, _) => (None, v, None),
     };
     let number = NumOrSpecial::try_from(number).named(name!(number))?;

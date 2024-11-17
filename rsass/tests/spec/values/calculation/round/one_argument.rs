@@ -102,7 +102,6 @@ fn sass_script() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn unsimplifiable() {
     assert_eq!(
         runner().ok("a {b: round(1px + 2px - var(--c))}\n"),
