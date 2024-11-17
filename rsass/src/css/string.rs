@@ -28,7 +28,7 @@ impl CssString {
                         match iter.peek() {
                             Some(' ') if got_num => {
                                 iter.next();
-                                break (None);
+                                break None;
                             }
                             Some(&c) => {
                                 if let Some(digit) = c.to_digit(16) {
@@ -36,12 +36,12 @@ impl CssString {
                                     got_num = true;
                                     iter.next();
                                 } else if !got_num {
-                                    break (iter.next());
+                                    break iter.next();
                                 } else {
-                                    break (None);
+                                    break None;
                                 }
                             }
-                            _ => break (None),
+                            _ => break None,
                         }
                     };
                     if got_num {
