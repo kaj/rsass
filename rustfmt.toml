@@ -1,3 +1,2 @@
 max_width = 78
-
-reorder_imports = true
+newline_style = "Unix"
