@@ -18,7 +18,6 @@ mod new_line {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn cr() {
             assert_eq!(
                 runner().err(
@@ -49,7 +48,6 @@ mod new_line {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn ff() {
             assert_eq!(
                 runner().err(
@@ -66,7 +64,6 @@ mod new_line {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn raw() {
             assert_eq!(
                 runner().err(

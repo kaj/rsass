@@ -291,7 +291,7 @@ fn dq_parts(input: Span) -> PResult<Vec<StringPart>> {
             value(StringPart::Raw("'".to_string()), tag("'")),
             map(normalized_escaped_char_q, StringPart::Raw),
         ))),
-        tag("\""),
+        char('"'),
     )(input)
 }
 
@@ -307,7 +307,7 @@ pub fn sass_string_sq(input: Span) -> PResult<SassString> {
             value(StringPart::from(""), tag("\\\n")),
             map(normalized_escaped_char_q, StringPart::Raw),
         ))),
-        tag("'"),
+        char('\''),
     )(input)?;
     cleanup_escape_ws(&mut parts);
     Ok((input, SassString::new(parts, Quotes::Single)))
@@ -358,7 +358,7 @@ pub fn string_part_interpolation(input: Span) -> PResult<StringPart> {
 
 fn simple_qstring_part(input: Span) -> PResult<StringPart> {
     let (input, part) =
-        map_res(is_not("\\#'\"\n\r"), input_to_string)(input)?;
+        map_res(is_not("\\#'\"\n\r\u{c}"), input_to_string)(input)?;
     Ok((input, StringPart::Raw(part)))
 }
 

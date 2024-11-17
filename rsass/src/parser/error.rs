@@ -52,6 +52,9 @@ impl From<nom::error::VerboseError<Span<'_>>> for ParseError {
                     VerboseErrorKind::Context(ctx) => {
                         Some((ctx.to_string(), pos))
                     }
+                    VerboseErrorKind::Char(ch) if *ch == '\'' => {
+                        Some((format!("Expected {ch}."), pos))
+                    }
                     VerboseErrorKind::Char(ch) => {
                         Some((format!("expected {:?}.", ch.to_string()), pos))
                     }
