@@ -78,20 +78,6 @@ mod one_argument {
          \n  input.scss 1:7  root stylesheet",
     );
     }
-    #[test]
-    fn unsimplifiable() {
-        assert_eq!(
-        runner().err(
-            "a {b: round(1px + 2px - var(--c))}\n"
-        ),
-        "Error: Single argument 3px - var(--c) expected to be simplifiable.\
-         \n  ,\
-         \n1 | a {b: round(1px + 2px - var(--c))}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
-         \n  \'\
-         \n  input.scss 1:7  root stylesheet",
-    );
-    }
 }
 mod three_argument {
     #[allow(unused)]

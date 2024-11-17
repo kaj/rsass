@@ -7,6 +7,8 @@ fn runner() -> crate::TestRunner {
 
 mod at_root;
 
+mod each;
+
 // Ignoring "extend", not expected to work yet.
 
 mod test_for;

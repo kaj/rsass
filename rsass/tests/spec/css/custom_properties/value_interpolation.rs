@@ -5,9 +5,94 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("value_interpolation")
 }
 
-#[test]
-fn test() {
-    assert_eq!(
+mod error {
+    #[allow(unused)]
+    use super::runner;
+
+    mod sass {
+        #[allow(unused)]
+        use super::runner;
+    }
+}
+mod sass {
+    #[allow(unused)]
+    use super::runner;
+}
+mod scss {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn alone() {
+        assert_eq!(
+            runner().ok("a{\
+             \n  --b: #{1 + 2};\
+             \n}\n"),
+            "a {\
+         \n  --b: 3;\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn in_ident() {
+        assert_eq!(
+            runner().ok("a{\
+             \n  --b: c#{1 + 2}d;\
+             \n}\n"),
+            "a {\
+         \n  --b: c3d;\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn in_list() {
+        assert_eq!(
+            runner().ok("a{\
+             \n  --b: c #{1 + 2} d;\
+             \n}\n"),
+            "a {\
+         \n  --b: c 3 d;\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn in_string() {
+        assert_eq!(
+            runner().ok("a{\
+             \n  --b: \"c#{1 + 2}d\";\
+             \n}\n"),
+            "a {\
+         \n  --b: \"c3d\";\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn in_uri() {
+        assert_eq!(
+            runner().ok("a{\
+             \n  --b: uri(c#{1 + 2}d);\
+             \n}\n"),
+            "a {\
+         \n  --b: uri(c3d);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn linebreak_interpolation() {
+        assert_eq!(
+            runner().ok("a{\
+             \n  --b: #{1 \
+             \n    + \
+             \n    2};\
+             \n}\n"),
+            "a {\
+         \n  --b: 3;\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn value_interpolation() {
+        assert_eq!(
         runner().ok(
             ".value-interpolation {\
              \n  // Interpolation is the only Sass construct that\'s supported in custom\
@@ -27,4 +112,5 @@ fn test() {
          \n  --in-uri: uri(foo3bar);\
          \n}\n"
     );
+    }
 }

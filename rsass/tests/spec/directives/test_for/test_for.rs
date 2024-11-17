@@ -1,143 +1,23 @@
-//! Tests auto-converted from "sass-spec/spec/directives/for.hrx"
+//! Tests auto-converted from "sass-spec/spec/directives/for/for.hrx"
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("for")
 }
 
-mod comment {
+mod empty {
     #[allow(unused)]
     use super::runner;
 
-    mod after_from {
-        #[allow(unused)]
-        use super::runner;
-
-        #[test]
-        fn loud() {
-            assert_eq!(
-                runner().ok("@for $i from /**/ 1 through 10 {}\n"),
-                ""
-            );
-        }
-        #[test]
-        fn silent() {
-            assert_eq!(
-                runner().ok("@for $i from //\
-             \n  1 through 10 {}\n"),
-                ""
-            );
-        }
-    }
-    mod after_through {
-        #[allow(unused)]
-        use super::runner;
-
-        #[test]
-        fn loud() {
-            assert_eq!(
-                runner().ok("@for $i from 1 through /**/ 10 {}\n"),
-                ""
-            );
-        }
-        #[test]
-        fn silent() {
-            assert_eq!(
-                runner().ok("@for $i from 1 through //\
-             \n  10 {}\n"),
-                ""
-            );
-        }
-    }
-    mod before_block {
-        #[allow(unused)]
-        use super::runner;
-
-        #[test]
-        fn loud() {
-            assert_eq!(
-                runner().ok("@for $i from 1 through 10 /**/ {}\n"),
-                ""
-            );
-        }
-        #[test]
-        fn silent() {
-            assert_eq!(
-                runner().ok("@for $i from 1 through 10 //\
-             \n  {}\n"),
-                ""
-            );
-        }
-    }
-    mod before_from {
-        #[allow(unused)]
-        use super::runner;
-
-        #[test]
-        fn loud() {
-            assert_eq!(
-                runner().ok("@for $i /**/ from 1 through 10 {}\n"),
-                ""
-            );
-        }
-        #[test]
-        fn silent() {
-            assert_eq!(
-                runner().ok("@for $i //\
-             \n  from 1 through 10 {}\n"),
-                ""
-            );
-        }
-    }
-    mod before_through {
-        #[allow(unused)]
-        use super::runner;
-
-        #[test]
-        fn loud() {
-            assert_eq!(
-                runner().ok("@for $i from 1 /**/ through 10 {}\n"),
-                ""
-            );
-        }
-        #[test]
-        fn silent() {
-            assert_eq!(
-                runner().ok("@for $i from 1 //\
-             \n  through 10 {}\n"),
-                ""
-            );
-        }
-    }
-    mod before_var {
-        #[allow(unused)]
-        use super::runner;
-
-        #[test]
-        fn loud() {
-            assert_eq!(
-                runner().ok("@for /**/ $i from 1 through 10 {}\n"),
-                ""
-            );
-        }
-        #[test]
-        fn silent() {
-            assert_eq!(
-                runner().ok("@for //\
-             \n  $i from 1 through 10 {}\n"),
-                ""
-            );
-        }
-    }
-}
-#[test]
-fn empty() {
-    assert_eq!(
-        runner().ok("a {\
+    #[test]
+    fn scss() {
+        assert_eq!(
+            runner().ok("a {\
              \n  @for $i from 1 to 1 {b: $i;}\
              \n}\n"),
-        ""
-    );
+            ""
+        );
+    }
 }
 mod error {
     #[allow(unused)]
@@ -222,19 +102,24 @@ mod error {
         );
     }
 }
-#[test]
-fn exclusive_backward() {
-    assert_eq!(
-        runner().ok("a {\
+mod exclusive_backward {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn scss() {
+        assert_eq!(
+            runner().ok("a {\
              \n  @for $i from 5 to 1 {b: $i;}\
              \n}\n"),
-        "a {\
+            "a {\
          \n  b: 5;\
          \n  b: 4;\
          \n  b: 3;\
          \n  b: 2;\
          \n}\n"
-    );
+        );
+    }
 }
 #[test]
 fn exclusive_forward() {
@@ -282,20 +167,25 @@ fn inclusive_backward() {
          \n}\n"
     );
 }
-#[test]
-fn inclusive_forward() {
-    assert_eq!(
-        runner().ok("a {\
+mod inclusive_forward {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn scss() {
+        assert_eq!(
+            runner().ok("a {\
              \n  @for $i from 1 through 5 {b: $i;}\
              \n}\n"),
-        "a {\
+            "a {\
          \n  b: 1;\
          \n  b: 2;\
          \n  b: 3;\
          \n  b: 4;\
          \n  b: 5;\
          \n}\n"
-    );
+        );
+    }
 }
 #[test]
 fn negative_to_negative() {

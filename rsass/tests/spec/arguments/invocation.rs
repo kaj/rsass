@@ -9,6 +9,10 @@ mod function {
     #[allow(unused)]
     use super::runner;
 
+    mod arguments {
+        #[allow(unused)]
+        use super::runner;
+    }
     mod error {
         #[allow(unused)]
         use super::runner;
@@ -28,6 +32,15 @@ mod function {
          \n  \'\
          \n  input.scss 3:14  root stylesheet",
     );
+        }
+        mod sass {
+            #[allow(unused)]
+            use super::runner;
+
+            mod multi_line_arguments {
+                #[allow(unused)]
+                use super::runner;
+            }
         }
     }
 }

@@ -5,21 +5,57 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("trailing_whitespace")
 }
 
-#[test]
-fn test() {
-    assert_eq!(
-        runner().ok(".trailing-whitespace {\
-             \n  --space: value ;\
-             \n  --tab: value\t;\
-             \n  --newline: value\
-             \n;\
-             \n  --before-closing-brace: value\
+mod sass {
+    #[allow(unused)]
+    use super::runner;
+}
+mod scss {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn before_closing_brace() {
+        assert_eq!(
+            runner().ok("a {\
+             \n  --b: c\
              \n}\n"),
-        ".trailing-whitespace {\
-         \n  --space: value ;\
-         \n  --tab: value\t;\
-         \n  --newline: value ;\
-         \n  --before-closing-brace: value ;\
+            "a {\
+         \n  --b: c ;\
          \n}\n"
-    );
+        );
+    }
+    #[test]
+    fn newline() {
+        assert_eq!(
+            runner().ok("a {\
+             \n  --b: c\
+             \n;\
+             \n}\n"),
+            "a {\
+         \n  --b: c ;\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn space() {
+        assert_eq!(
+            runner().ok("a {\
+             \n  --b: c ;\
+             \n}\n"),
+            "a {\
+         \n  --b: c ;\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn tab() {
+        assert_eq!(
+            runner().ok("a {\
+             \n  --b: c\t;\
+             \n}\n"),
+            "a {\
+         \n  --b: c\t;\
+         \n}\n"
+        );
+    }
 }
