@@ -107,7 +107,7 @@ fn import2(input: Span) -> PResult<Import> {
     map(
         delimited(
             opt_spacelike,
-            strings::css_string_any,
+            values::string_or_call,
             // TODO: Media arguments!
             opt(terminated(opt_spacelike, tag(";"))),
         ),

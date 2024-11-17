@@ -1,4 +1,4 @@
-use super::{AtRule, Comment, CssString, MediaRule, Rule, Value};
+use super::{AtRule, Comment, MediaRule, Rule, Value};
 use crate::output::CssBuf;
 use std::io::{self, Write};
 
@@ -62,20 +62,20 @@ impl From<MediaRule> for Item {
 /// An `@import` rule in css.
 #[derive(Clone, Debug)]
 pub struct Import {
-    name: CssString,
+    name: Value,
     args: Value,
 }
 
 impl Import {
     /// Create a new `@import`.
-    pub fn new(name: CssString, args: Value) -> Self {
+    pub fn new(name: Value, args: Value) -> Self {
         Self { name, args }
     }
 
     /// Write this comment to a css output buffer.
     pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
         buf.do_indent_no_nl();
-        write!(buf, "@import {}", self.name)?;
+        write!(buf, "@import {}", &self.name.format(buf.format()))?;
         if !self.args.is_null() {
             write!(buf, " {}", self.args.format(buf.format()))?;
         }

@@ -21,7 +21,6 @@ mod url {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn quoted() {
         let runner = runner().with_cwd("quoted");
         assert_eq!(
@@ -30,7 +29,6 @@ mod url {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn unquoted() {
         let runner = runner().with_cwd("unquoted");
         assert_eq!(

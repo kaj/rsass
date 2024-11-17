@@ -187,7 +187,7 @@ mod import {
     }
 
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn interpolated() {
         let runner = runner().with_cwd("interpolated");
         assert_eq!(

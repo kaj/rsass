@@ -92,7 +92,7 @@ pub fn single(input: Span) -> PResult<Value> {
     }
 }
 
-fn string_or_call(input: Span) -> PResult<Value> {
+pub fn string_or_call(input: Span) -> PResult<Value> {
     let (rest, string) = strings::css_string_any(input)?;
     if string.quotes().is_none() {
         if let Ok((rest, _)) = terminated(tag("("), opt_spacelike)(rest) {

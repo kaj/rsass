@@ -3,7 +3,7 @@
 
 use super::cssdest::CssDestination;
 use super::CssData;
-use crate::css::{self, AtRule, Import, SelectorCtx};
+use crate::css::{self, AtRule, Import, SelectorCtx, Value};
 use crate::error::ResultPos;
 use crate::input::{Context, Loader, Parsed, SourceKind};
 use crate::sass::{get_global_module, Expose, Item, UseAs};
@@ -198,7 +198,7 @@ fn handle_item(
                     }
                 }
                 let args = args.evaluate(scope.clone())?;
-                dest.push_import(Import::new(name, args));
+                dest.push_import(Import::new(Value::Literal(name), args));
             }
         }
         Item::AtRoot(ref selectors, ref body) => {
