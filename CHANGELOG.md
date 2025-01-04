@@ -33,7 +33,8 @@ project adheres to
   Many parse errors now match the dart sass error message.
   Also allow "loud" comments in more places.
 * Pure css `round()` may take an expression argument.
-* Updated sass-spec test suite to 2024-11-15.
+* Minor changes in agrument syntax errors.
+* Updated sass-spec test suite to 2024-12-12.
 
 
 ## Release 0.28.10

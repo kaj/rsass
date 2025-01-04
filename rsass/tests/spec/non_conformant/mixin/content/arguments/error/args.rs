@@ -16,7 +16,7 @@ fn named() {
              \n}\n\
              \n@include mixin using ($valid: value) {}\n"
         ),
-        "Error: No argument named $invalid.\
+        "Error: No parameter named $invalid.\
          \n    ,\
          \n3   |   @content($invalid: value);\
          \n    |   ^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\

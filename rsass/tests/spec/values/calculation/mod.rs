@@ -17,6 +17,8 @@ mod atan2;
 
 mod calc;
 
+mod calc_size;
+
 mod clamp;
 
 mod cos;

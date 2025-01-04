@@ -12,7 +12,7 @@ fn named() {
             "@use \"sass:list\";\
              \na {b: list.join(c, d, $invalid: true)}\n"
         ),
-        "Error: No argument named $invalid.\
+        "Error: No parameter named $invalid.\
          \n  ,--> input.scss\
          \n2 | a {b: list.join(c, d, $invalid: true)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\

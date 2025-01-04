@@ -26,8 +26,14 @@ pub fn formal_args(input: Span) -> PResult<FormalArgs> {
             |(name, d)| (name.into(), d),
         ),
     )(input)?;
-    let (input, _) = terminated(opt(tag(",")), opt_spacelike)(input)?;
-    let (input, va) = terminated(opt(tag("...")), opt_spacelike)(input)?;
+    let (input, va) = if !v.is_empty() {
+        terminated(
+            opt(tag("...")),
+            preceded(opt_spacelike, terminated(opt(tag(",")), opt_spacelike)),
+        )(input)?
+    } else {
+        (input, None)
+    };
     let (input, _) = char(')')(input)?;
     Ok((
         input,
@@ -43,8 +49,8 @@ pub fn call_args(input: Span) -> PResult<CallArgs> {
     delimited(
         terminated(char('('), opt_spacelike),
         map_res(
-            pair(
-                separated_list0(
+            |input| {
+                let (input, args) = separated_list0(
                     terminated(tag(","), opt_spacelike),
                     pair(
                         opt(map(
@@ -61,9 +67,14 @@ pub fn call_args(input: Span) -> PResult<CallArgs> {
                         )),
                         terminated(space_list, opt_spacelike),
                     ),
-                ),
-                opt(terminated(char(','), opt_spacelike)),
-            ),
+                )(input)?;
+                let (input, trail) = if !args.is_empty() {
+                    opt(terminated(char(','), opt_spacelike))(input)?
+                } else {
+                    (input, None)
+                };
+                Ok((input, (args, trail)))
+            },
             |(args, trail)| CallArgs::new(args, trail.is_some()),
         ),
         cut(char(')')),

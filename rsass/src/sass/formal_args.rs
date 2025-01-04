@@ -167,7 +167,7 @@ impl fmt::Display for ArgsError {
                 write!(out, "Missing argument ${name}.")
             }
             Self::Unexpected(name) => {
-                write!(out, "No argument named ${name}.")
+                write!(out, "No parameter named ${name}.")
             }
             Self::Eval(e) => e.fmt(out),
         }

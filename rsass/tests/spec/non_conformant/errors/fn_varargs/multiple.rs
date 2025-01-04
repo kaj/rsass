@@ -12,8 +12,8 @@ fn test() {
         "Error: expected \")\".\
          \n  ,\
          \n1 | @function test($param...,$rest...) {}\
-         \n  |                         ^\
+         \n  |                          ^\
          \n  \'\
-         \n  input.scss 1:25  root stylesheet",
+         \n  input.scss 1:26  root stylesheet",
     );
 }
