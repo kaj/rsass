@@ -135,36 +135,39 @@ impl Neg for &Numeric {
 impl Div for &Numeric {
     type Output = Numeric;
     fn div(self, rhs: Self) -> Self::Output {
-        let value = &self.value / &rhs.value;
-        let mut unit = &self.unit / &rhs.unit;
-        let scale = unit.simplify();
         Numeric {
-            value: value * scale,
-            unit,
+            value: &self.value / &rhs.value,
+            unit: &self.unit / &rhs.unit,
         }
+        .simplify()
     }
 }
+impl Numeric {
+    fn simplify(mut self) -> Self {
+        let scale = self.unit.simplify();
+        self.value = (f64::from(self.value) * scale).into();
+        self
+    }
+}
+
 impl Mul for &Numeric {
     type Output = Numeric;
     fn mul(self, rhs: Self) -> Self::Output {
-        let value = &self.value * &rhs.value;
-        let mut unit = &self.unit * &rhs.unit;
-        let scale = unit.simplify();
         Numeric {
-            value: value * scale,
-            unit,
+            value: &self.value * &rhs.value,
+            unit: &self.unit * &rhs.unit,
         }
+        .simplify()
     }
 }
 
 impl Display for Formatted<'_, Numeric> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        let mut unit = self.value.unit.clone();
-        let value = &self.value.value * &unit.simplify();
-        value.format(self.format).fmt(out)?;
-        if !value.is_finite() && unit.is_pos() {
+        let t = self.value.clone().simplify();
+        t.value.format(self.format).fmt(out)?;
+        if !t.value.is_finite() && t.unit.is_pos() {
             out.write_str(" * 1")?;
         }
-        unit.fmt(out)
+        t.unit.fmt(out)
     }
 }

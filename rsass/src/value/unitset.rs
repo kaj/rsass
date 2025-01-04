@@ -1,4 +1,4 @@
-use super::{CssDimension, Dimension, Number, Unit};
+use super::{CssDimension, Dimension, Unit};
 use std::fmt::{self, Display, Write};
 use std::ops::{Div, Mul};
 
@@ -115,7 +115,7 @@ impl UnitSet {
     }
 
     /// Simplify this unit set, returning a scaling factor.
-    pub fn simplify(&mut self) -> Number {
+    pub fn simplify(&mut self) -> f64 {
         let mut factor = 1.;
         if self.units.len() > 1 {
             for i in 1..(self.units.len()) {

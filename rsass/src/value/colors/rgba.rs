@@ -480,20 +480,13 @@ fn write_rgba(
     let r = r.format(format);
     let g = g.format(format);
     let b = b.format(format);
+    let sep = if format.is_compressed() { "," } else { ", " };
     if rgba.is_opaque() {
-        if format.is_compressed() {
-            write!(out, "rgb({r},{g},{b})")
-        } else {
-            write!(out, "rgb({r}, {g}, {b})")
-        }
+        write!(out, "rgb({r}{sep}{g}{sep}{b})")
     } else {
         let a = Number::from(rgba.alpha);
         let a = a.format(format);
-        if format.is_compressed() {
-            write!(out, "rgba({r},{g},{b},{a})")
-        } else {
-            write!(out, "rgba({r}, {g}, {b}, {a})")
-        }
+        write!(out, "rgba({r}{sep}{g}{sep}{b}{sep}{a})")
     }
 }
 
