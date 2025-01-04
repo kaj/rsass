@@ -21,6 +21,7 @@ project adheres to
 * All numbers are now represented as f64 (#203).
   This removes integration with `num-rational`, `num-bigint`,
   `num-integer` and `num-traits`.
+* Msrv is now 1.63.0 for rsass (and 1.74 for rsass-cli).
 
 ### Other changes:
 
