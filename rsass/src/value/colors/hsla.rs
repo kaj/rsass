@@ -91,7 +91,7 @@ fn deg_mod(value: f64) -> f64 {
     }
 }
 
-impl<'a> Display for Formatted<'a, Hsla> {
+impl Display for Formatted<'_, Hsla> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         let hsla = self.value;
         // Special: Don't round the hue to 360!

@@ -3,7 +3,7 @@ use crate::output::Formatted;
 use crate::value::{ListSeparator, Numeric, Operator};
 use std::fmt::{self, Display, Write};
 
-impl<'a> Display for Formatted<'a, Value> {
+impl Display for Formatted<'_, Value> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match *self.value {
             Value::Bang(ref s) => write!(out, "!{s}"),

@@ -178,7 +178,7 @@ impl From<Hwba> for Color {
     }
 }
 
-impl<'a> Display for Formatted<'a, Color> {
+impl Display for Formatted<'_, Color> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self.value {
             Color::Rgba(rgba) => rgba.format(self.format).fmt(out),

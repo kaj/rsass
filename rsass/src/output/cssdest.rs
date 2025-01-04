@@ -48,7 +48,7 @@ impl<'a> RuleDest<'a> {
         }
     }
 }
-impl<'a> Drop for RuleDest<'a> {
+impl Drop for RuleDest<'_> {
     fn drop(&mut self) {
         fn end(dest: &mut RuleDest) -> Result<()> {
             dest.parent.push_item(dest.rule.clone().into())?;
@@ -64,7 +64,7 @@ impl<'a> Drop for RuleDest<'a> {
     }
 }
 
-impl<'a> CssDestination for RuleDest<'a> {
+impl CssDestination for RuleDest<'_> {
     fn head(&mut self) -> &mut CssData {
         self.parent.head()
     }
@@ -137,7 +137,7 @@ pub struct NsRuleDest<'a> {
     name: String,
 }
 
-impl<'a> CssDestination for NsRuleDest<'a> {
+impl CssDestination for NsRuleDest<'_> {
     fn head(&mut self) -> &mut CssData {
         self.parent.head()
     }
@@ -201,7 +201,7 @@ impl<'a> AtRuleDest<'a> {
     }
 }
 
-impl<'a> Drop for AtRuleDest<'a> {
+impl Drop for AtRuleDest<'_> {
     fn drop(&mut self) {
         let mut body = std::mem::take(&mut self.body);
         let name = std::mem::take(&mut self.name);
@@ -216,7 +216,7 @@ impl<'a> Drop for AtRuleDest<'a> {
         self.parent.separate();
     }
 }
-impl<'a> CssDestination for AtRuleDest<'a> {
+impl CssDestination for AtRuleDest<'_> {
     fn head(&mut self) -> &mut CssData {
         self.parent.head()
     }
@@ -316,7 +316,7 @@ impl<'a> AtMediaDest<'a> {
     }
 }
 
-impl<'a> Drop for AtMediaDest<'a> {
+impl Drop for AtMediaDest<'_> {
     fn drop(&mut self) {
         let mut body = std::mem::take(&mut self.body);
         let args =
@@ -334,7 +334,7 @@ impl<'a> Drop for AtMediaDest<'a> {
     }
 }
 
-impl<'a> CssDestination for AtMediaDest<'a> {
+impl CssDestination for AtMediaDest<'_> {
     fn head(&mut self) -> &mut CssData {
         self.parent.head()
     }

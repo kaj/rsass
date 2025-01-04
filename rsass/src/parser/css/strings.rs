@@ -132,10 +132,10 @@ fn selector_plain_part(input: Span) -> PResult<String> {
 fn hash_no_interpolation(input: Span) -> PResult<&str> {
     let (next, hash) = tag("#")(input)?;
     if let Ok((end, _)) = interpolation_block(next) {
-        return Err(nom_err(
+        Err(nom_err(
             "Interpolation isn't allowed in plain CSS.",
             input.up_to(&end),
-        ));
+        ))
     } else {
         Ok((next, input_to_str(hash).unwrap()))
     }

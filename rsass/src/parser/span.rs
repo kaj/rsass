@@ -92,7 +92,7 @@ where
     }
 }
 
-impl<'a> InputLength for Span<'a> {
+impl InputLength for Span<'_> {
     fn input_len(&self) -> usize {
         self.range().len()
     }
@@ -105,13 +105,13 @@ impl<'a> Deref for Span<'a> {
     }
 }
 
-impl<'a> AsRef<[u8]> for Span<'a> {
+impl AsRef<[u8]> for Span<'_> {
     fn as_ref(&self) -> &[u8] {
         self.fragment()
     }
 }
 
-impl<'a> InputTake for Span<'a> {
+impl InputTake for Span<'_> {
     fn take(&self, count: usize) -> Self {
         let end = self.start + count;
         assert!(end <= self.end, "Tried to take {count} from {self:?}");
@@ -139,7 +139,7 @@ impl<'a> InputTake for Span<'a> {
     }
 }
 
-impl<'a> Slice<Range<usize>> for Span<'a> {
+impl Slice<Range<usize>> for Span<'_> {
     fn slice(&self, range: Range<usize>) -> Self {
         let start = self.start + range.start;
         let end = self.start + range.end;
@@ -152,7 +152,7 @@ impl<'a> Slice<Range<usize>> for Span<'a> {
         }
     }
 }
-impl<'a> Slice<RangeFrom<usize>> for Span<'a> {
+impl Slice<RangeFrom<usize>> for Span<'_> {
     fn slice(&self, range: RangeFrom<usize>) -> Self {
         let start = self.start + range.start;
         assert!(start <= self.end);
@@ -163,7 +163,7 @@ impl<'a> Slice<RangeFrom<usize>> for Span<'a> {
         }
     }
 }
-impl<'a> Slice<RangeTo<usize>> for Span<'a> {
+impl Slice<RangeTo<usize>> for Span<'_> {
     fn slice(&self, range: RangeTo<usize>) -> Self {
         let end = self.start + range.end;
         assert!(end <= self.end);
@@ -196,7 +196,7 @@ impl<'a> InputIter for Span<'a> {
     }
 }
 
-impl<'a> Offset for Span<'a> {
+impl Offset for Span<'_> {
     fn offset(&self, second: &Self) -> usize {
         assert!(std::ptr::eq(self.source, second.source));
         second.start - self.start
@@ -208,7 +208,7 @@ pub fn position(s: Span) -> super::PResult<Span> {
     Ok((s, s))
 }
 
-impl<'a> InputTakeAtPosition for Span<'a> {
+impl InputTakeAtPosition for Span<'_> {
     type Item = u8;
 
     fn split_at_position<P, E: nom::error::ParseError<Self>>(
@@ -275,7 +275,7 @@ impl<'a> InputTakeAtPosition for Span<'a> {
     }
 }
 
-impl<'a> std::fmt::Debug for Span<'a> {
+impl std::fmt::Debug for Span<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Span")
             .field("range", &self.range())
@@ -286,7 +286,7 @@ impl<'a> std::fmt::Debug for Span<'a> {
 
 pub(crate) struct DebugBytes<'a>(pub(crate) &'a [u8]);
 
-impl<'a> std::fmt::Debug for DebugBytes<'a> {
+impl std::fmt::Debug for DebugBytes<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_char('"')?;
         for b in self.0 {

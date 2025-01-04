@@ -188,7 +188,7 @@ impl From<Number> for f64 {
     }
 }
 
-impl<'a> Div for &'a Number {
+impl Div for &Number {
     type Output = Number;
     fn div(self, rhs: Self) -> Self::Output {
         (self.value / rhs.value).into()
@@ -224,7 +224,7 @@ impl Sub for &Number {
     }
 }
 
-impl<'a> fmt::Display for Formatted<'a, Number> {
+impl fmt::Display for Formatted<'_, Number> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         let s = self.value.value;
         if s.is_nan() {

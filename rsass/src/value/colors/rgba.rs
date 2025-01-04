@@ -416,7 +416,7 @@ lazy_static! {
     ]);
 }
 
-impl<'a> Display for Formatted<'a, Rgba> {
+impl Display for Formatted<'_, Rgba> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         // The byte-version of alpha is not used here.
         let rgba = self.value;

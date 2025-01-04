@@ -403,7 +403,7 @@ impl From<BinOp> for Value {
 
 struct Inspect<'a>(&'a BinOp);
 
-impl<'a> fmt::Display for Inspect<'a> {
+impl fmt::Display for Inspect<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.a.inspect(f)?;
         if self.0.s1 {

@@ -157,7 +157,7 @@ impl Mul for &Numeric {
     }
 }
 
-impl<'a> Display for Formatted<'a, Numeric> {
+impl Display for Formatted<'_, Numeric> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         let mut unit = self.value.unit.clone();
         let value = &self.value.value * &unit.simplify();
