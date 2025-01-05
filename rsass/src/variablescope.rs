@@ -75,18 +75,8 @@ impl ScopeRef {
                     }
                     None
                 }
-                Item::For {
-                    ref name,
-                    ref from,
-                    ref to,
-                    inclusive,
-                    ref body,
-                } => {
-                    let range = crate::value::ValueRange::new(
-                        from.evaluate(self.clone())?,
-                        to.evaluate(self.clone())?,
-                        inclusive,
-                    )?;
+                Item::For(ref name, ref range, ref body) => {
+                    let range = range.evaluate(self.clone())?;
                     let s = self.clone();
                     for value in range {
                         s.define(name.clone(), value)?;

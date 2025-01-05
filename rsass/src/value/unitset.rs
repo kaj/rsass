@@ -137,7 +137,7 @@ impl UnitSet {
             }
         }
         self.units.retain(|(_u, p)| *p != 0);
-        factor.into()
+        factor
     }
 }
 

@@ -7,7 +7,6 @@ use crate::css::{self, AtRule, Import, SelectorCtx, Value};
 use crate::error::ResultPos;
 use crate::input::{Context, Loader, Parsed, SourceKind};
 use crate::sass::{get_global_module, Expose, Item, UseAs};
-use crate::value::ValueRange;
 use crate::{Error, Invalid, ScopeRef};
 
 pub fn handle_parsed(
@@ -315,18 +314,8 @@ fn handle_item(
             }
             scope.restore_local_values(pushed);
         }
-        Item::For {
-            ref name,
-            ref from,
-            ref to,
-            inclusive,
-            ref body,
-        } => {
-            let range = ValueRange::new(
-                from.evaluate(scope.clone())?,
-                to.evaluate(scope.clone())?,
-                *inclusive,
-            )?;
+        Item::For(ref name, ref range, ref body) => {
+            let range = range.evaluate(scope.clone())?;
             check_body(body, BodyContext::Control)?;
             for value in range {
                 let scope = ScopeRef::sub(scope.clone());
