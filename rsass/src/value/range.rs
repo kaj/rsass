@@ -1,89 +1,35 @@
-use super::{Number, Numeric, UnitSet};
+use super::{Numeric, UnitSet};
 use crate::css::Value;
-use std::fmt;
 
 pub struct ValueRange {
-    from: Number,
-    to: Number,
-    step: Number,
+    from: i64,
+    to: i64,
+    step: i64,
     unit: UnitSet,
 }
 
 impl ValueRange {
-    pub fn new(
-        from: Value,
-        to: Value,
-        inclusive: bool,
-    ) -> Result<Self, RangeError> {
-        let from =
-            from.numeric_value().map_err(RangeError::FromNotNumeric)?;
-        let to = to.numeric_value().map_err(RangeError::ToNotNumeric)?;
-
-        let to = if from.is_no_unit() || to.is_no_unit() {
-            to.value
-        } else if let Some(scaled) = to.as_unitset(&from.unit) {
-            scaled
-        } else {
-            return Err(RangeError::IncompatibleUnits(from.unit, to.unit));
-        };
-        let step = if to >= from.value {
-            Number::from(1)
-        } else {
-            Number::from(-1)
-        };
-        let to = if inclusive { to + step.clone() } else { to };
-        Ok(Self {
-            from: from.value,
+    pub fn new(from: i64, to: i64, inclusive: bool, unit: UnitSet) -> Self {
+        let step = if to >= from { 1 } else { -1 };
+        let to = if inclusive { to + step } else { to };
+        Self {
+            from,
             to,
             step,
-            unit: from.unit,
-        })
+            unit,
+        }
     }
 }
 
 impl Iterator for ValueRange {
     type Item = Value;
     fn next(&mut self) -> Option<Value> {
-        if self.from.partial_cmp(&self.to)
-            == Number::from(0).partial_cmp(&self.step)
-        {
-            let result =
-                Numeric::new(self.from.clone(), self.unit.clone()).into();
-            self.from = self.from.clone() + self.step.clone();
+        if self.from.partial_cmp(&self.to) == 0.partial_cmp(&self.step) {
+            let result = Numeric::new(self.from, self.unit.clone()).into();
+            self.from += self.step;
             Some(result)
         } else {
             None
-        }
-    }
-}
-
-#[derive(Debug)]
-pub enum RangeError {
-    FromNotNumeric(Value),
-    ToNotNumeric(Value),
-    IncompatibleUnits(UnitSet, UnitSet),
-}
-
-impl fmt::Display for RangeError {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Self::FromNotNumeric(v) => {
-                write!(
-                    out,
-                    "Bad Range: from needs to be numeric, got {}",
-                    v.format(Default::default()),
-                )
-            }
-            Self::ToNotNumeric(v) => {
-                write!(
-                    out,
-                    "Bad Range: to needs to be numeric, got {}",
-                    v.format(Default::default())
-                )
-            }
-            Self::IncompatibleUnits(a, b) => {
-                write!(out, "for loop needs compatible units, got {a}..{b}")
-            }
         }
     }
 }

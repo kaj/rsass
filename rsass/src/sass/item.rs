@@ -1,5 +1,5 @@
 use super::{
-    CallArgs, Callable, Name, SassString, Selectors, Value,
+    CallArgs, Callable, Name, SassString, Selectors, SrcRange, Value,
     VariableDeclaration,
 };
 use crate::input::SourcePos;
@@ -62,18 +62,7 @@ pub enum Item {
     /// The value may be or evaluate to a list.
     Each(Vec<Name>, Value, Vec<Item>),
     /// An `@for` loop directive.
-    For {
-        /// The name of the iteration variable.
-        name: Name,
-        /// The start value for the iteration.
-        from: Box<Value>,
-        /// The end value for the iteration.
-        to: Box<Value>,
-        /// True if the end should be included in the range.
-        inclusive: bool,
-        /// The body of the loop.
-        body: Vec<Item>,
-    },
+    For(Name, SrcRange, Vec<Item>),
     /// An `@while` loop directive.
     While(Value, Vec<Item>),
 

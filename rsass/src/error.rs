@@ -1,7 +1,7 @@
-use crate::css::InvalidCss;
+use crate::css::{is_not, InvalidCss};
 use crate::input::{LoadError, SourcePos};
+use crate::output::{Format, Formatted};
 use crate::parser::ParseError;
-use crate::value::RangeError;
 use crate::ScopeError;
 use std::{fmt, io};
 
@@ -29,8 +29,6 @@ pub enum Error {
     ///
     /// The bool is true for a used module and false for an import.
     ImportLoop(bool, SourcePos, Option<SourcePos>),
-    /// A range error
-    BadRange(RangeError),
     /// Error parsing sass data.
     ParseError(ParseError),
     /// Something bad at a specific position.
@@ -90,7 +88,6 @@ impl fmt::Display for Error {
                 writeln!(out, "{what}")?;
                 pos.show(out)
             }
-            Self::BadRange(ref err) => err.fmt(out),
             Self::IoError(ref err) => err.fmt(out),
         }
     }
@@ -110,11 +107,6 @@ impl From<fmt::Error> for Error {
 impl From<ParseError> for Error {
     fn from(e: ParseError) -> Self {
         Self::ParseError(e)
-    }
-}
-impl From<RangeError> for Error {
-    fn from(e: RangeError) -> Self {
-        Self::BadRange(e)
     }
 }
 
@@ -163,6 +155,26 @@ pub enum Invalid {
 }
 
 impl Invalid {
+    pub(crate) fn not<'a, T>(v: &'a T, what: &str) -> Self
+    where
+        Formatted<'a, T>: std::fmt::Display,
+    {
+        Self::AtError(is_not(v, what))
+    }
+    pub(crate) fn expected_to<'a, T>(value: &'a T, cond: &str) -> Self
+    where
+        Formatted<'a, T>: std::fmt::Display,
+    {
+        Self::AtError(format!(
+            "Expected {} to {}.",
+            Formatted {
+                value,
+                format: Format::introspect()
+            },
+            cond
+        ))
+    }
+
     /// Combine this with a position to get an [`Error`].
     pub fn at(self, pos: SourcePos) -> Error {
         Error::Invalid(self, pos)

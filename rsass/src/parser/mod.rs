@@ -30,8 +30,12 @@ use self::value::{
     value_expression,
 };
 use crate::input::{SourceFile, SourceName, SourcePos};
-use crate::sass::parser::{variable_declaration2, variable_declaration_mod};
-use crate::sass::{Callable, FormalArgs, Item, Name, Selectors, Value};
+use crate::sass::parser::{
+    src_range, variable_declaration2, variable_declaration_mod,
+};
+use crate::sass::{
+    Callable, FormalArgs, Item, Name, Selectors, SrcValue, Value,
+};
 use crate::value::ListSeparator;
 #[cfg(test)]
 use crate::value::{Numeric, Unit};
@@ -387,27 +391,18 @@ fn each_loop2(input: Span) -> PResult<Item> {
 /// A for loop after the initial `@for`.
 fn for_loop2(input: Span) -> PResult<Item> {
     let (input, name) = delimited(tag("$"), name, ignore_comments)(input)?;
-    let (input, from) = delimited(
-        terminated(tag("from"), ignore_comments),
-        single_value,
-        ignore_comments,
-    )(input)?;
-    let (input, inclusive) = terminated(
-        alt((value(true, tag("through")), value(false, tag("to")))),
-        ignore_comments,
-    )(input)?;
-    let (input, to) = terminated(single_value, ignore_comments)(input)?;
+    let (input, range) = src_range(input)?;
     let (input, body) = body_block(input)?;
-    Ok((
-        input,
-        Item::For {
-            name: name.into(),
-            from: Box::new(from),
-            to: Box::new(to),
-            inclusive,
-            body,
-        },
-    ))
+    Ok((input, Item::For(name.into(), range, body)))
+}
+
+/// A single `SrcValue`.
+///
+/// That is, a single sass value with source position.
+pub fn single_value_p(input: Span) -> PResult<SrcValue> {
+    let (rest, value) = single_value(input)?;
+    let pos = input.up_to(&rest).to_owned();
+    Ok((rest, SrcValue::new(value, pos)))
 }
 
 fn while_loop2(input: Span) -> PResult<Item> {

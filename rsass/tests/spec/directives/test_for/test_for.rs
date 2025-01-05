@@ -24,7 +24,6 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn from_float() {
         assert_eq!(
             runner().err("@for $i from 1.5 through 4 {}"),
@@ -37,7 +36,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn from_type() {
         assert_eq!(
             runner().err("@for $i from \"foo\" through 4 {}"),
@@ -50,7 +48,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn incompatible_units() {
         assert_eq!(
             runner().err("@for $i from 100% through 42px {}"),
@@ -63,7 +60,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn to_float() {
         assert_eq!(
             runner().err("@for $i from 1 through 1.5 {}"),
@@ -76,7 +72,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn to_type() {
         assert_eq!(
             runner().err("@for $i from 1 through \"foo\" {}"),
@@ -89,7 +84,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn unit_coersion_to_float() {
         assert_eq!(
             runner().err("@for $i from 1cm through 5mm {}"),

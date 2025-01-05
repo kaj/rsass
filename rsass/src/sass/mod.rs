@@ -18,6 +18,8 @@ mod item;
 mod mixin;
 mod name;
 mod selectors;
+mod srcrange;
+mod srcvalue;
 mod string;
 mod value;
 mod variabledeclaration;
@@ -36,6 +38,10 @@ pub use self::string::{SassString, StringPart};
 pub use self::value::{BinOp, Value};
 pub use self::variabledeclaration::VariableDeclaration;
 
+pub(crate) use srcrange::SrcRange;
+pub(crate) use srcvalue::SrcValue;
+
 pub(crate) mod parser {
+    pub(crate) use super::srcrange::parser::*;
     pub(crate) use super::variabledeclaration::parser::*;
 }
