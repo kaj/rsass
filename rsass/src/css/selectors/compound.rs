@@ -327,6 +327,7 @@ pub(crate) mod parser {
     use nom::bytes::complete::tag;
     use nom::combinator::{opt, value, verify};
     use nom::sequence::preceded;
+    use nom::Parser as _;
 
     pub(crate) fn compound_selector(
         input: Span,
@@ -336,25 +337,28 @@ pub(crate) mod parser {
             result.element = Some(stop);
             return Ok((rest, result));
         }
-        let (rest, backref) = opt(value((), tag("&")))(input)?;
+        let (rest, backref) = opt(value((), tag("&"))).parse(input)?;
         result.backref = backref;
-        let (mut rest, elem) = opt(elem_name)(rest)?;
+        let (mut rest, elem) = opt(elem_name).parse(rest)?;
         result.element = elem;
 
         loop {
             rest = match rest.first() {
                 Some(b'#') => {
-                    let (r, id) = preceded(tag("#"), css_string)(rest)?;
+                    let (r, id) =
+                        preceded(tag("#"), css_string).parse(rest)?;
                     result.id = Some(id);
                     r
                 }
                 Some(b'%') => {
-                    let (r, p) = preceded(tag("%"), css_string)(rest)?;
+                    let (r, p) =
+                        preceded(tag("%"), css_string).parse(rest)?;
                     result.placeholders.push(p);
                     r
                 }
                 Some(b'.') => {
-                    let (r, c) = preceded(tag("."), css_string)(rest)?;
+                    let (r, c) =
+                        preceded(tag("."), css_string).parse(rest)?;
                     result.classes.push(c);
                     r
                 }
@@ -371,7 +375,7 @@ pub(crate) mod parser {
                 _ => break,
             };
         }
-        verify(tag(""), |_| !result.is_empty())(rest)?;
+        verify(tag(""), |_| !result.is_empty()).parse(rest)?;
         Ok((rest, result))
     }
 }

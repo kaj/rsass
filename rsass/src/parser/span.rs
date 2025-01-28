@@ -1,10 +1,7 @@
 use crate::input::{SourceFile, SourcePos};
-use nom::{
-    Compare, CompareResult, InputIter, InputLength, InputTake,
-    InputTakeAtPosition, Needed, Offset, Slice,
-};
+use nom::{Compare, CompareResult, Input, Needed, Offset};
 use std::fmt::Write;
-use std::ops::{Deref, Range, RangeFrom, RangeTo};
+use std::ops::{Deref, Range};
 
 /// A specific piece of input data.
 #[derive(Clone, Copy)]
@@ -92,38 +89,40 @@ where
     }
 }
 
-impl InputLength for Span<'_> {
+impl<'a> Input for Span<'a> {
+    type Item = u8;
+
+    type Iter = <&'a [u8] as Input>::Iter;
+
+    type IterIndices = <&'a [u8] as Input>::IterIndices;
+
     fn input_len(&self) -> usize {
-        self.range().len()
+        self.end - self.start
     }
-}
 
-impl<'a> Deref for Span<'a> {
-    type Target = [u8];
-    fn deref(&self) -> &'a [u8] {
-        self.fragment()
-    }
-}
-
-impl AsRef<[u8]> for Span<'_> {
-    fn as_ref(&self) -> &[u8] {
-        self.fragment()
-    }
-}
-
-impl InputTake for Span<'_> {
-    fn take(&self, count: usize) -> Self {
-        let end = self.start + count;
-        assert!(end <= self.end, "Tried to take {count} from {self:?}");
+    fn take(&self, index: usize) -> Self {
+        let end = self.start + index;
+        assert!(end <= self.end, "Tried to take {index} from {self:?}");
         Span {
             start: self.start,
             end,
             source: self.source,
         }
     }
-    fn take_split(&self, count: usize) -> (Self, Self) {
-        let mid = self.start + count;
-        assert!(mid <= self.end, "Tried to take_split {count} from {self:?}");
+
+    fn take_from(&self, index: usize) -> Self {
+        let mid = self.start + index;
+        assert!(mid <= self.end, "Tried to take_from {index} from {self:?}");
+        Span {
+            start: mid,
+            end: self.end,
+            source: self.source,
+        }
+    }
+
+    fn take_split(&self, index: usize) -> (Self, Self) {
+        let mid = self.start + index;
+        assert!(mid <= self.end, "Tried to take_split {index} from {self:?}");
         (
             Span {
                 start: mid,
@@ -137,62 +136,31 @@ impl InputTake for Span<'_> {
             },
         )
     }
-}
 
-impl Slice<Range<usize>> for Span<'_> {
-    fn slice(&self, range: Range<usize>) -> Self {
-        let start = self.start + range.start;
-        let end = self.start + range.end;
-        assert!(start <= self.end);
-        assert!(end <= self.end);
-        Span {
-            start,
-            end,
-            source: self.source,
-        }
-    }
-}
-impl Slice<RangeFrom<usize>> for Span<'_> {
-    fn slice(&self, range: RangeFrom<usize>) -> Self {
-        let start = self.start + range.start;
-        assert!(start <= self.end);
-        Span {
-            start,
-            end: self.end,
-            source: self.source,
-        }
-    }
-}
-impl Slice<RangeTo<usize>> for Span<'_> {
-    fn slice(&self, range: RangeTo<usize>) -> Self {
-        let end = self.start + range.end;
-        assert!(end <= self.end);
-        Span {
-            start: self.start,
-            end,
-            source: self.source,
-        }
-    }
-}
-
-impl<'a> InputIter for Span<'a> {
-    type Item = <&'a [u8] as InputIter>::Item;
-    type Iter = <&'a [u8] as InputIter>::Iter;
-    type IterElem = <&'a [u8] as InputIter>::IterElem;
-    fn iter_indices(&self) -> Self::Iter {
-        self.fragment().iter_indices()
-    }
-    fn iter_elements(&self) -> Self::IterElem {
-        self.fragment().iter_elements()
-    }
     fn position<P>(&self, predicate: P) -> Option<usize>
     where
         P: Fn(Self::Item) -> bool,
     {
         self.fragment().position(predicate)
     }
+
+    fn iter_elements(&self) -> Self::Iter {
+        self.fragment().iter_elements()
+    }
+
+    fn iter_indices(&self) -> Self::IterIndices {
+        self.fragment().iter_indices()
+    }
+
     fn slice_index(&self, count: usize) -> Result<usize, Needed> {
         self.fragment().slice_index(count)
+    }
+}
+
+impl<'a> Deref for Span<'a> {
+    type Target = [u8];
+    fn deref(&self) -> &'a [u8] {
+        self.fragment()
     }
 }
 
@@ -206,73 +174,6 @@ impl Offset for Span<'_> {
 /// Capture the position of the current fragment
 pub fn position(s: Span) -> super::PResult<Span> {
     Ok((s, s))
-}
-
-impl InputTakeAtPosition for Span<'_> {
-    type Item = u8;
-
-    fn split_at_position<P, E: nom::error::ParseError<Self>>(
-        &self,
-        predicate: P,
-    ) -> nom::IResult<Self, Self, E>
-    where
-        P: Fn(Self::Item) -> bool,
-    {
-        match self.position(predicate) {
-            Some(n) => Ok(self.take_split(n)),
-            None => Err(nom::Err::Incomplete(Needed::new(1))),
-        }
-    }
-
-    fn split_at_position1<P, E: nom::error::ParseError<Self>>(
-        &self,
-        predicate: P,
-        e: nom::error::ErrorKind,
-    ) -> nom::IResult<Self, Self, E>
-    where
-        P: Fn(Self::Item) -> bool,
-    {
-        match self.position(predicate) {
-            Some(0) => Err(nom::Err::Error(E::from_error_kind(*self, e))),
-            Some(n) => Ok(self.take_split(n)),
-            None => Err(nom::Err::Incomplete(Needed::new(1))),
-        }
-    }
-
-    fn split_at_position_complete<P, E: nom::error::ParseError<Self>>(
-        &self,
-        predicate: P,
-    ) -> nom::IResult<Self, Self, E>
-    where
-        P: Fn(Self::Item) -> bool,
-    {
-        match self.split_at_position(predicate) {
-            Err(nom::Err::Incomplete(_)) => {
-                Ok(self.take_split(self.input_len()))
-            }
-            res => res,
-        }
-    }
-
-    fn split_at_position1_complete<P, E: nom::error::ParseError<Self>>(
-        &self,
-        predicate: P,
-        e: nom::error::ErrorKind,
-    ) -> nom::IResult<Self, Self, E>
-    where
-        P: Fn(Self::Item) -> bool,
-    {
-        match self.split_at_position1(predicate, e) {
-            Err(nom::Err::Incomplete(_)) => {
-                if self.input_len() == 0 {
-                    Err(nom::Err::Error(E::from_error_kind(*self, e)))
-                } else {
-                    Ok(self.take_split(self.input_len()))
-                }
-            }
-            res => res,
-        }
-    }
 }
 
 impl std::fmt::Debug for Span<'_> {

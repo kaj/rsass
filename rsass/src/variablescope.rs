@@ -612,6 +612,8 @@ impl Scope {
 
 #[cfg(test)]
 pub mod test {
+    use nom::Parser as _;
+
     macro_rules! assert_expr {
         ($context:expr, $input:expr, $expected:expr) => {{
             assert_eq!(
@@ -864,7 +866,8 @@ pub mod test {
             )?;
         }
         let span = code_span(expression);
-        let expr = terminated(value_expression, tag(";"))(span.borrow());
+        let expr =
+            terminated(value_expression, tag(";")).parse(span.borrow());
         Ok(ParseError::check(expr)?
             .evaluate(scope)?
             .format(f)

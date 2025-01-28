@@ -9,9 +9,10 @@ use nom::combinator::{cut, map, map_res, opt};
 use nom::error::context;
 use nom::multi::separated_list0;
 use nom::sequence::{delimited, pair, preceded, terminated};
+use nom::Parser as _;
 
 pub fn formal_args(input: Span) -> PResult<FormalArgs> {
-    let (input, _) = terminated(char('('), opt_spacelike)(input)?;
+    let (input, _) = terminated(char('('), opt_spacelike).parse(input)?;
     let (input, v) = separated_list0(
         preceded(tag(","), opt_spacelike),
         map(
@@ -25,12 +26,14 @@ pub fn formal_args(input: Span) -> PResult<FormalArgs> {
             ),
             |(name, d)| (name.into(), d),
         ),
-    )(input)?;
+    )
+    .parse(input)?;
     let (input, va) = if !v.is_empty() {
         terminated(
             opt(tag("...")),
             preceded(opt_spacelike, terminated(opt(tag(",")), opt_spacelike)),
-        )(input)?
+        )
+        .parse(input)?
     } else {
         (input, None)
     };
@@ -67,9 +70,10 @@ pub fn call_args(input: Span) -> PResult<CallArgs> {
                         )),
                         terminated(space_list, opt_spacelike),
                     ),
-                )(input)?;
+                )
+                .parse(input)?;
                 let (input, trail) = if !args.is_empty() {
-                    opt(terminated(char(','), opt_spacelike))(input)?
+                    opt(terminated(char(','), opt_spacelike)).parse(input)?
                 } else {
                     (input, None)
                 };
@@ -78,5 +82,6 @@ pub fn call_args(input: Span) -> PResult<CallArgs> {
             |(args, trail)| CallArgs::new(args, trail.is_some()),
         ),
         cut(char(')')),
-    )(input)
+    )
+    .parse(input)
 }

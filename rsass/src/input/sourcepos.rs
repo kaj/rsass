@@ -207,8 +207,8 @@ impl SourcePos {
 
     /// If self is preceded (on same line) by `s`, include `s` in self.
     pub(crate) fn opt_back(mut self, s: &str) -> Self {
-        let len = s.as_bytes().len();
-        if self.source.data().get(self.start - s.len()..self.start)
+        let len = s.len();
+        if self.source.data().get(self.start - len..self.start)
             == Some(s.as_bytes())
         {
             self.start -= len;
@@ -276,7 +276,7 @@ impl SourcePos {
     ) -> Self {
         let line = format!("{kind} {name}{args} {{");
         Self {
-            start: kind.as_bytes().len() + 1,
+            start: kind.len() + 1,
             end: line.len() - 2,
             source: SourceFile::scss_bytes(line, SourceName::root(module)),
         }

@@ -12,25 +12,29 @@ use nom::combinator::{
 };
 use nom::error::context;
 use nom::multi::{fold_many0, many0, separated_list0, separated_list1};
-use nom::sequence::{delimited, pair, preceded, terminated, tuple};
+use nom::sequence::{delimited, pair, preceded, terminated};
+use nom::Parser;
+use nom_language::error::VerboseError;
 
 pub fn any(input: Span) -> PResult<Value> {
-    let (input, list) = separated_list1(spaced(","), slash_list)(input)?;
+    let (input, list) =
+        separated_list1(spaced(","), slash_list).parse(input)?;
     Ok((input, list_or_single(list, ListSeparator::Comma)))
 }
 pub fn slash_list(input: Span) -> PResult<Value> {
     let (input, list) =
-        separated_list1(spaced("/"), slash_list_no_space)(input)?;
+        separated_list1(spaced("/"), slash_list_no_space).parse(input)?;
     Ok((input, list_or_single(list, ListSeparator::Slash)))
 }
 pub fn slash_list_no_space(input: Span) -> PResult<Value> {
     let (mut input, first) = space_list(input)?;
     let mut list = vec![first];
     while let PResult::Ok((rest, _)) =
-        terminated(tag("/"), peek(not(tag("*"))))(input)
+        terminated(tag("/"), peek(not(tag("*")))).parse(input)
     {
         let (rest, value) =
-            alt((map(space_list, Some), value(None, opt_spacelike)))(rest)?;
+            alt((map(space_list, Some), value(None, opt_spacelike)))
+                .parse(rest)?;
         list.push(value.unwrap_or(Value::Literal("".into())));
         input = rest;
     }
@@ -45,7 +49,8 @@ pub fn space_list(input: Span) -> PResult<Value> {
             list.push(item);
             list
         },
-    )(input)?;
+    )
+    .parse(input)?;
     Ok((input, list_or_single(list, ListSeparator::Space)))
 }
 
@@ -69,35 +74,39 @@ pub fn single(input: Span) -> PResult<Value> {
                 Value::List(v, sep, false) => Value::List(v, sep, true),
                 v => Value::List(vec![v], None, true),
             },
-        )(input),
-        Some(c) if c.is_ascii_digit() => into(numeric)(input),
+        )
+        .parse(input),
+        Some(c) if c.is_ascii_digit() => into(numeric).parse(input),
         Some(c) if *c == b'-' || *c == b'.' => {
-            alt((into(numeric), string_or_call))(input)
+            alt((into(numeric), string_or_call)).parse(input)
         }
         Some(b'(') => {
-            let (end, _) =
-                delimited(tag("("), none_of(")"), opt(tag(")")))(input)?;
+            let (end, _) = delimited(tag("("), none_of(")"), opt(tag(")")))
+                .parse(input)?;
             let pos = input.up_to(&end);
             Err(nom_err("Parentheses aren't allowed in plain CSS.", pos))
         }
         Some(b'$') => {
-            let (end, _) = preceded(tag("$"), strings::css_string)(input)?;
+            let (end, _) =
+                preceded(tag("$"), strings::css_string).parse(input)?;
             let pos = input.up_to(&end);
             Err(nom_err("Sass variables aren't allowed in plain CSS.", pos))
         }
         _ => alt((
             map(unicode_range_inner, Value::UnicodeRange),
             string_or_call,
-        ))(input),
+        ))
+        .parse(input),
     }
 }
 
 pub fn string_or_call(input: Span) -> PResult<Value> {
     let (rest, string) = strings::css_string_any(input)?;
     if string.quotes().is_none() {
-        if let Ok((rest, _)) = terminated(tag("("), opt_spacelike)(rest) {
+        if let Ok((rest, _)) = terminated(tag("("), opt_spacelike).parse(rest)
+        {
             fn endp(input: Span) -> PResult<()> {
-                terminated(opt_spacelike, char(')'))(input)
+                terminated(opt_spacelike, char(')')).parse(input)
             }
             let (rest, args) = if string.value() == "calc" {
                 if let Ok((end, _)) = endp(rest) {
@@ -106,12 +115,14 @@ pub fn string_or_call(input: Span) -> PResult<Value> {
                         input.up_to(&end),
                     ));
                 }
-                map(terminated(calc_expr, endp), CallArgs::from_single)(rest)?
+                map(terminated(calc_expr, endp), CallArgs::from_single)
+                    .parse(rest)?
             } else {
-                terminated(call_args, endp)(rest)?
+                terminated(call_args, endp).parse(rest)?
             };
             return Ok((rest, Value::Call(string.take_value(), args)));
-        } else if let Ok((end, _)) = preceded(char('.'), string_or_call)(rest)
+        } else if let Ok((end, _)) =
+            preceded(char('.'), string_or_call).parse(rest)
         {
             return Err(nom_err(
                 "Module namespaces aren't allowed in plain CSS.",
@@ -125,7 +136,7 @@ pub fn string_or_call(input: Span) -> PResult<Value> {
 fn calc_expr(input: Span) -> PResult<Value> {
     let (rest, first) = single_factor(input)?;
     fold_many0(
-        tuple((
+        (
             delimited(
                 opt_spacelike,
                 alt((
@@ -136,16 +147,17 @@ fn calc_expr(input: Span) -> PResult<Value> {
                 opt_spacelike,
             ),
             single_factor,
-        )),
+        ),
         move || first.clone(),
         |v, (op, v2)| BinOp::new(v, true, op, true, v2).into(),
-    )(rest)
+    )
+    .parse(rest)
 }
 
 pub fn single_factor(input: Span) -> PResult<Value> {
     let (rest, first) = single_term(input)?;
     fold_many0(
-        tuple((
+        (
             delimited(
                 opt_spacelike,
                 alt((
@@ -155,10 +167,11 @@ pub fn single_factor(input: Span) -> PResult<Value> {
                 opt_spacelike,
             ),
             single_term,
-        )),
+        ),
         move || first.clone(),
         |v, (op, v2)| BinOp::new(v, true, op, true, v2).into(),
-    )(rest)
+    )
+    .parse(rest)
 }
 
 fn single_term(input: Span) -> PResult<Value> {
@@ -167,13 +180,15 @@ fn single_term(input: Span) -> PResult<Value> {
             terminated(tag("("), opt_spacelike),
             calc_expr,
             preceded(opt_spacelike, tag(")")),
-        )(input),
+        )
+        .parse(input),
         Some(b'$') => {
-            let (end, _) = preceded(tag("$"), strings::css_string)(input)?;
+            let (end, _) =
+                preceded(tag("$"), strings::css_string).parse(input)?;
             let pos = input.up_to(&end);
             Err(nom_err("Sass variables aren't allowed in plain CSS.", pos))
         }
-        Some(c) if b'0' <= *c && *c <= b'9' => into(numeric)(input),
+        Some(c) if b'0' <= *c && *c <= b'9' => into(numeric).parse(input),
         _ => string_or_call(input),
     }
 }
@@ -182,14 +197,16 @@ fn call_args(input: Span) -> PResult<CallArgs> {
     let (rest, named) = many0(pair(
         terminated(strings::css_string, spaced("=")),
         terminated(single, alt((spaced(","), peek(tag(")"))))),
-    ))(input)?;
+    ))
+    .parse(input)?;
     let named = named
         .into_iter()
         .map(|(name, val)| (name.into(), val))
         .collect();
-    let (rest, positional) = separated_list0(spaced(","), single_arg)(rest)?;
+    let (rest, positional) =
+        separated_list0(spaced(","), single_arg).parse(rest)?;
     let (rest, trailing_comma) =
-        map(opt(spaced(",")), |c| c.is_some())(rest)?;
+        map(opt(spaced(",")), |c| c.is_some()).parse(rest)?;
 
     let (rest, _) = cond(
         trailing_comma,
@@ -197,7 +214,8 @@ fn call_args(input: Span) -> PResult<CallArgs> {
             peek(tag(")")),
             context("Expected expression.", recognize(single_arg)),
         )),
-    )(rest)?;
+    )
+    .parse(rest)?;
     Ok((
         rest,
         CallArgs {
@@ -210,15 +228,13 @@ fn call_args(input: Span) -> PResult<CallArgs> {
 
 fn single_arg(input: Span) -> PResult<Value> {
     fn end(input: Span) -> PResult<()> {
-        peek(preceded(opt_spacelike, map(one_of(",)."), |_| ())))(input)
+        peek(preceded(opt_spacelike, map(one_of(",)."), |_| ()))).parse(input)
     }
-    match terminated(space_list, end)(input) {
-        Ok(ok) => Ok(ok),
-        Err(err) => match terminated(into(ext_arg_as_string), end)(input) {
-            Ok(ok) => Ok(ok),
-            Err(_) => Err(err),
-        },
-    }
+    terminated(space_list, end).parse(input).or_else(|err| {
+        terminated(into(ext_arg_as_string), end)
+            .parse(input)
+            .map_err(|_| err)
+    })
 }
 
 fn ext_arg_as_string(input: Span) -> PResult<String> {
@@ -228,11 +244,13 @@ fn ext_arg_as_string(input: Span) -> PResult<String> {
         } else {
             Some(input_to_str(s).ok()?.to_owned())
         }
-    })(input)
+    })
+    .parse(input)
 }
 
 fn spaced<'a>(
     the_tag: &'static str,
-) -> impl FnMut(Span<'a>) -> PResult<'a, Span<'a>> {
+) -> impl Parser<Span<'a>, Output = Span<'a>, Error = VerboseError<Span<'a>>>
+{
     delimited(opt_spacelike, tag(the_tag), opt_spacelike)
 }

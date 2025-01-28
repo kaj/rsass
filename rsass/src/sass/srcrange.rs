@@ -56,18 +56,22 @@ pub mod parser {
     use nom::bytes::complete::tag;
     use nom::combinator::value;
     use nom::sequence::{delimited, terminated};
+    use nom::Parser as _;
 
     pub fn src_range(input: Span) -> PResult<SrcRange> {
         let (input, from) = delimited(
             terminated(tag("from"), ignore_comments),
             single_value_p,
             ignore_comments,
-        )(input)?;
+        )
+        .parse(input)?;
         let (input, inclusive) = terminated(
             alt((value(true, tag("through")), value(false, tag("to")))),
             ignore_comments,
-        )(input)?;
-        let (input, to) = terminated(single_value_p, ignore_comments)(input)?;
+        )
+        .parse(input)?;
+        let (input, to) =
+            terminated(single_value_p, ignore_comments).parse(input)?;
         Ok((
             input,
             SrcRange {

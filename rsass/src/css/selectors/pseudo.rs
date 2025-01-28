@@ -208,11 +208,12 @@ pub(super) mod parser {
     use nom::branch::alt;
     use nom::bytes::complete::tag;
     use nom::combinator::{map, value};
-    use nom::sequence::{delimited, tuple};
+    use nom::sequence::delimited;
+    use nom::Parser as _;
 
     pub(crate) fn pseudo(input: Span) -> PResult<Pseudo> {
         map(
-            tuple((
+            (
                 alt((value(true, tag("::")), value(false, tag(":")))),
                 css_string_nohash,
                 // Note: The accepted type of selector should probably
@@ -229,8 +230,9 @@ pub(super) mod parser {
                     ),
                     map(tag(""), |_| Arg::None),
                 )),
-            )),
+            ),
             |(element, name, arg)| Pseudo { name, arg, element },
-        )(input)
+        )
+        .parse(input)
     }
 }

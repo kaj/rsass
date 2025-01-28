@@ -308,9 +308,10 @@ fn ok_as_filterarg(v: &Value) -> bool {
             use crate::parser::strings::unitname;
             use crate::parser::{code_span, util::opt_spacelike};
             use nom::bytes::complete::tag;
-            use nom::sequence::tuple;
+            use nom::Parser as _;
             let span = code_span(s.value().as_ref());
-            let b = tuple((unitname, opt_spacelike, tag("=")))(span.borrow())
+            let b = (unitname, opt_spacelike, tag("="))
+                .parse(span.borrow())
                 .is_ok();
             b
         }

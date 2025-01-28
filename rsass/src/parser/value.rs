@@ -22,16 +22,19 @@ use nom::combinator::{
 };
 use nom::error::context;
 use nom::multi::{fold_many0, many0, many_m_n, separated_list1};
-use nom::sequence::{delimited, pair, preceded, terminated, tuple};
+use nom::sequence::{delimited, pair, preceded, terminated};
+use nom::Parser as _;
 use std::str::from_utf8;
 
 pub fn value_expression(input: Span) -> PResult<Value> {
     let (input, result) = separated_list1(
         preceded(tag(","), ignore_comments),
         terminated(space_list, ignore_comments),
-    )(input)?;
+    )
+    .parse(input)?;
     let (input, trail) =
-        many0(delimited(opt_spacelike, tag(","), opt_spacelike))(input)?;
+        many0(delimited(opt_spacelike, tag(","), opt_spacelike))
+            .parse(input)?;
     Ok((
         input,
         if result.len() == 1 && trail.is_empty() {
@@ -62,7 +65,8 @@ pub fn space_list(input: Span) -> PResult<Value> {
             }
             list
         },
-    )(input)?;
+    )
+    .parse(input)?;
     Ok((input, list_or_single(list, ListSeparator::Space)))
 }
 
@@ -75,7 +79,8 @@ pub fn simple_space_list(input: Span) -> PResult<Value> {
             list.push(item);
             list
         },
-    )(input)?;
+    )
+    .parse(input)?;
     Ok((input, list_or_single(list, ListSeparator::Space)))
 }
 
@@ -92,7 +97,7 @@ fn se_or_ext_string(input: Span) -> PResult<Value> {
 fn single_expression(input: Span) -> PResult<Value> {
     let (input1, a) = logic_expression(input)?;
     fold_many0(
-        tuple((
+        (
             delimited(
                 multispace0,
                 alt((
@@ -103,29 +108,31 @@ fn single_expression(input: Span) -> PResult<Value> {
             ),
             single_expression,
             position,
-        )),
+        ),
         move || a.clone(),
         |a, (op, b, end)| {
             let pos = input.up_to(&end).to_owned();
             BinOp::new(a, false, op, false, b, pos).into()
         },
-    )(input1)
+    )
+    .parse(input1)
 }
 
 fn logic_expression(input: Span) -> PResult<Value> {
     let (input1, a) = sum_expression(input)?;
     fold_many0(
-        tuple((
+        (
             delimited(multispace0, relational_operator, multispace0),
             sum_expression,
             position,
-        )),
+        ),
         move || a.clone(),
         |a, (op, b, end)| {
             let pos = input.up_to(&end).to_owned();
             BinOp::new(a, true, op, true, b, pos).into()
         },
-    )(input1)
+    )
+    .parse(input1)
 }
 
 fn relational_operator(input: Span) -> PResult<Operator> {
@@ -136,7 +143,8 @@ fn relational_operator(input: Span) -> PResult<Operator> {
         value(Operator::Greater, tag(">")),
         value(Operator::LesserE, tag("<=")),
         value(Operator::Lesser, tag("<")),
-    ))(input)
+    ))
+    .parse(input)
 }
 
 fn sum_expression(input: Span) -> PResult<Value> {
@@ -150,18 +158,18 @@ where
     let (rest, v) = term(input)?;
     fold_many0(
         verify(
-            tuple((
-                tuple((
+            (
+                (
                     ignore_comments,
                     alt((
                         value(Operator::Plus, tag("+")),
                         value(Operator::Minus, tag("-")),
                     )),
                     ignore_comments,
-                )),
+                ),
                 term,
                 position,
-            )),
+            ),
             |((s1, op, s2), t2, _)| {
                 use Value::*;
                 *s2 || !*s1
@@ -174,7 +182,8 @@ where
             let pos = input.up_to(&end).to_owned();
             BinOp::new(v, s1, op, s2, v2, pos).into()
         },
-    )(rest)
+    )
+    .parse(rest)
 }
 
 fn term_value(input: Span) -> PResult<Value> {
@@ -187,7 +196,7 @@ where
 {
     let (rest, v) = factor(input)?;
     fold_many0(
-        tuple((
+        (
             ignore_comments,
             alt((
                 value(Operator::Multiply, tag("*")),
@@ -200,21 +209,22 @@ where
             ignore_comments,
             factor,
             position,
-        )),
+        ),
         move || v.clone(),
         |v1, (s1, op, s2, v2, end)| {
             let pos = input.up_to(&end).to_owned();
             BinOp::new(v1, s1, op, s2, v2, pos).into()
         },
-    )(rest)
+    )
+    .parse(rest)
 }
 
 pub fn single_value(input: Span) -> PResult<Value> {
     match input.first() {
         Some(b'!') => bang(input),
-        Some(b'&') => value(Value::HereSelector, tag("&"))(input),
-        Some(b'"') => map(sass_string_dq, Value::Literal)(input),
-        Some(b'\'') => map(sass_string_sq, Value::Literal)(input),
+        Some(b'&') => value(Value::HereSelector, tag("&")).parse(input),
+        Some(b'"') => map(sass_string_dq, Value::Literal).parse(input),
+        Some(b'\'') => map(sass_string_sq, Value::Literal).parse(input),
         Some(b'[') => bracket_list(input),
         Some(b'(') => value_in_parens(input),
         Some(b'$') => variable_nomod(input),
@@ -230,7 +240,8 @@ pub fn single_value(input: Span) -> PResult<Value> {
             special_function,
             function_call_or_string,
             unary_op,
-        ))(input),
+        ))
+        .parse(input),
     }
 }
 
@@ -244,25 +255,27 @@ fn bang(input: Span) -> PResult<Value> {
             input_to_string,
         ),
         Value::Bang,
-    )(input)
+    )
+    .parse(input)
 }
 
 pub fn value_in_parens(input: Span) -> PResult<Value> {
-    let (input0, _p) = preceded(tag("("), opt_spacelike)(input)?;
+    let (input0, _p) = preceded(tag("("), opt_spacelike).parse(input)?;
     if let Ok((input, first_key)) = simple_space_list(input0) {
         let (input, value) = if let Ok((mut input, first_val)) =
-            preceded(colon, space_list)(input)
+            preceded(colon, space_list).parse(input)
         {
             let mut items = vec![(first_key, first_val)];
             while let Ok((rest, (key, val))) = pair(
                 preceded(comma, simple_space_list),
                 preceded(colon, space_list),
-            )(input)
+            )
+            .parse(input)
             {
                 items.push((key, val));
                 input = rest;
             }
-            let (input, _) = opt(comma)(input)?;
+            let (input, _) = opt(comma).parse(input)?;
             (input, Value::Map(items))
         } else {
             (input, Value::Paren(Box::new(first_key), false))
@@ -277,31 +290,34 @@ pub fn value_in_parens(input: Span) -> PResult<Value> {
             map(tag(""), |_| Value::List(vec![], None, false)),
         )),
         end_paren,
-    )(input0)
+    )
+    .parse(input0)
 }
 
 fn comma(input: Span) -> PResult<Span> {
-    delimited(opt_spacelike, tag(","), opt_spacelike)(input)
+    delimited(opt_spacelike, tag(","), opt_spacelike).parse(input)
 }
 
 fn colon(input: Span) -> PResult<Span> {
-    delimited(opt_spacelike, tag(":"), opt_spacelike)(input)
+    delimited(opt_spacelike, tag(":"), opt_spacelike).parse(input)
 }
 
 fn end_paren(input: Span) -> PResult<Span> {
-    preceded(opt_spacelike, tag(")"))(input)
+    preceded(opt_spacelike, tag(")")).parse(input)
 }
 
 fn unicode_range(input: Span) -> PResult<Value> {
-    map(unicode_range_inner, Value::UnicodeRange)(input)
+    map(unicode_range_inner, Value::UnicodeRange).parse(input)
 }
 pub(crate) fn unicode_range_inner(input: Span) -> PResult<String> {
-    let (rest, _) = tag_no_case("U+")(input)?;
-    let (rest, a) = many_m_n(0, 6, one_of("0123456789ABCDEFabcdef"))(rest)?;
+    let (rest, _) = tag_no_case("U+").parse(input)?;
+    let (rest, a) =
+        many_m_n(0, 6, one_of("0123456789ABCDEFabcdef")).parse(rest)?;
     let (rest, _) = alt((
         preceded(tag("-"), many_m_n(1, 6, one_of("0123456789ABCDEFabcdef"))),
         many_m_n(0, 6 - a.len(), one_of("?")),
-    ))(rest)?;
+    ))
+    .parse(rest)?;
     let length = rest.location_offset() - input.location_offset();
     let matched = &input.fragment()[0..length];
     // The unwrap should be ok, as only ascii is matched.
@@ -310,7 +326,8 @@ pub(crate) fn unicode_range_inner(input: Span) -> PResult<String> {
 
 pub fn bracket_list(input: Span) -> PResult<Value> {
     let (input, content) =
-        delimited(char('['), opt(value_expression), char(']'))(input)?;
+        delimited(char('['), opt(value_expression), char(']'))
+            .parse(input)?;
     Ok((
         input,
         match content {
@@ -326,7 +343,8 @@ pub fn bracket_list(input: Span) -> PResult<Value> {
 pub fn numeric(input: Span) -> PResult<Numeric> {
     map(pair(number, unit), |(number, unit)| {
         Numeric::new(number, unit)
-    })(input)
+    })
+    .parse(input)
 }
 
 pub fn number(input: Span) -> PResult<f64> {
@@ -340,11 +358,12 @@ pub fn number(input: Span) -> PResult<f64> {
             opt(delimited(one_of("eE"), opt(one_of("+-")), digit1)),
         )),
         |s: Span| from_utf8(s.fragment()).ok()?.parse().ok(),
-    )(input)
+    )
+    .parse(input)
 }
 
 pub fn variable_nomod(input: Span) -> PResult<Value> {
-    let (rest, name) = preceded(char('$'), identifier)(input)?;
+    let (rest, name) = preceded(char('$'), identifier).parse(input)?;
     let pos = input.up_to(&rest).to_owned();
     Ok((rest, Value::Variable(name.into(), pos)))
 }
@@ -353,7 +372,8 @@ pub fn variable(input: Span) -> PResult<Value> {
     let (rest, (modules, name)) = pair(
         many0(terminated(name, tag("."))),
         preceded(tag("$"), cut(identifier)),
-    )(input)?;
+    )
+    .parse(input)?;
     let name = if modules.is_empty() {
         name
     } else {
@@ -364,18 +384,19 @@ pub fn variable(input: Span) -> PResult<Value> {
 }
 
 pub fn identifier(input: Span) -> PResult<String> {
-    context("Expected identifier.", name)(input)
+    context("Expected identifier.", name).parse(input)
 }
 
 fn hex_color(input: Span) -> PResult<Value> {
     let (rest, (r, g, b, a)) = delimited(
         tag("#"),
         alt((
-            tuple((hexchar2, hexchar2, hexchar2, opt(hexchar2))),
-            tuple((hexchar1, hexchar1, hexchar1, opt(hexchar1))),
+            (hexchar2, hexchar2, hexchar2, opt(hexchar2)),
+            (hexchar1, hexchar1, hexchar1, opt(hexchar1)),
         )),
         peek(map(not(alphanumeric1), |_| ())),
-    )(input)?;
+    )
+    .parse(input)?;
 
     if let Some(a) = a {
         let rgba = Rgba::from_rgba(r, g, b, a);
@@ -392,7 +413,7 @@ fn hex_color(input: Span) -> PResult<Value> {
 
 pub fn unary_op(input: Span) -> PResult<Value> {
     map(
-        tuple((
+        (
             alt((
                 value(Operator::Plus, tag("+")),
                 value(Operator::Minus, tag("-")),
@@ -401,7 +422,7 @@ pub fn unary_op(input: Span) -> PResult<Value> {
             )),
             ignore_comments,
             single_value,
-        )),
+        ),
         |(op, s, v)| match (op, s, v) {
             (
                 Operator::Minus | Operator::Plus,
@@ -413,12 +434,14 @@ pub fn unary_op(input: Span) -> PResult<Value> {
             }
             (op, _, v) => Value::UnaryOp(op, Box::new(v)),
         },
-    )(input)
+    )
+    .parse(input)
 }
 
 pub fn special_function(input: Span) -> PResult<Value> {
     // Either a nice semantic css function or a fallback with interpolation.
-    alt((css_function, map(special_function_misc, Value::Literal)))(input)
+    alt((css_function, map(special_function_misc, Value::Literal)))
+        .parse(input)
 }
 
 pub fn function_call_or_string(input: Span) -> PResult<Value> {
@@ -437,7 +460,7 @@ fn function_call_or_string_real(
         match val {
             "not" if allow_not => {
                 if let Ok((rest, arg)) =
-                    preceded(ignore_comments, single_value)(rest)
+                    preceded(ignore_comments, single_value).parse(rest)
                 {
                     return Ok((
                         rest,
@@ -487,15 +510,17 @@ fn literal_or_color(s: SassString) -> Value {
 }
 
 fn hexchar1(input: Span) -> PResult<u8> {
-    map(hexchar_raw, |one| one * 0x11)(input)
+    map(hexchar_raw, |one| one * 0x11).parse(input)
 }
 fn hexchar2(input: Span) -> PResult<u8> {
-    map(pair(hexchar_raw, hexchar_raw), |(hi, lo)| hi * 0x10 + lo)(input)
+    map(pair(hexchar_raw, hexchar_raw), |(hi, lo)| hi * 0x10 + lo)
+        .parse(input)
 }
 fn hexchar_raw(input: Span) -> PResult<u8> {
     map(one_of("0123456789ABCDEFabcdef"), |ch| {
         ch.to_digit(16).unwrap() as u8
-    })(input)
+    })
+    .parse(input)
 }
 
 pub fn dictionary(input: Span) -> PResult<Value> {
@@ -503,7 +528,8 @@ pub fn dictionary(input: Span) -> PResult<Value> {
         preceded(tag("("), opt_spacelike),
         dictionary_inner,
         terminated(opt_spacelike, tag(")")),
-    )(input)
+    )
+    .parse(input)
 }
 
 pub fn dictionary_inner(input: Span) -> PResult<Value> {
@@ -519,7 +545,8 @@ pub fn dictionary_inner(input: Span) -> PResult<Value> {
             ),
         ),
         opt(delimited(opt_spacelike, tag(","), opt_spacelike)),
-    )(input)?;
+    )
+    .parse(input)?;
     Ok((input, Value::Map(items.into_iter().collect())))
 }
 
