@@ -666,19 +666,20 @@ pub(crate) mod parser {
     use nom::combinator::{into, opt, value, verify};
     use nom::multi::fold_many0;
     use nom::sequence::{delimited, pair, preceded, terminated};
+    use nom::Parser as _;
 
     pub(crate) fn selector(input: Span) -> PResult<Selector> {
         let (input, prerel) =
-            preceded(opt_spacelike, opt(explicit_rel_kind))(input)?;
+            preceded(opt_spacelike, opt(explicit_rel_kind)).parse(input)?;
         let (input, first) = if let Some(prerel) = prerel {
-            let (input, first) = opt(compound_selector)(input)?;
+            let (input, first) = opt(compound_selector).parse(input)?;
             let first = Selector {
                 rel_of: Some(Box::new((prerel, Selector::default()))),
                 compound: first.unwrap_or_default(),
             };
             (input, first)
         } else {
-            into(compound_selector)(input)?
+            into(compound_selector).parse(input)?
         };
         terminated(
             fold_many0(
@@ -692,7 +693,8 @@ pub(crate) mod parser {
                 },
             ),
             opt_spacelike,
-        )(input)
+        )
+        .parse(input)
     }
 
     fn explicit_rel_kind(input: Span) -> PResult<RelKind> {
@@ -704,10 +706,12 @@ pub(crate) mod parser {
                 value(RelKind::Parent, tag(">")),
             )),
             opt_spacelike,
-        )(input)
+        )
+        .parse(input)
     }
 
     fn rel_kind(input: Span) -> PResult<RelKind> {
-        alt((explicit_rel_kind, value(RelKind::Ancestor, spacelike)))(input)
+        alt((explicit_rel_kind, value(RelKind::Ancestor, spacelike)))
+            .parse(input)
     }
 }

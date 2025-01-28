@@ -1,6 +1,7 @@
 use super::{PResult, Span};
 use crate::input::SourcePos;
-use nom::{character::complete::one_of, error::VerboseErrorKind, Finish};
+use nom::{character::complete::one_of, Finish};
+use nom_language::error::{VerboseError, VerboseErrorKind};
 use std::fmt;
 
 /// An error encountered when parsing sass.
@@ -42,8 +43,8 @@ impl ParseError {
     }
 }
 
-impl From<nom::error::VerboseError<Span<'_>>> for ParseError {
-    fn from(value: nom::error::VerboseError<Span<'_>>) -> Self {
+impl From<VerboseError<Span<'_>>> for ParseError {
+    fn from(value: VerboseError<Span<'_>>) -> Self {
         let (msg, pos) = value
             .errors
             .iter()

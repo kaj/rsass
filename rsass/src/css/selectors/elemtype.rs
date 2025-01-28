@@ -78,10 +78,11 @@ pub(super) mod parser {
     use nom::branch::alt;
     use nom::bytes::complete::{is_a, tag};
     use nom::combinator::{map, opt, recognize, value};
-    use nom::sequence::{pair, preceded, tuple};
+    use nom::sequence::{pair, preceded};
+    use nom::Parser as _;
 
     pub(crate) fn elem_name(input: Span) -> PResult<ElemType> {
-        map(name_opt_ns, |s| ElemType { s })(input)
+        map(name_opt_ns, |s| ElemType { s }).parse(input)
     }
 
     /// Recognize a keyframe stop as an element selector.
@@ -90,20 +91,21 @@ pub(super) mod parser {
     /// in the future.
     pub(crate) fn keyframe_stop(input: Span) -> PResult<ElemType> {
         map(
-            recognize(tuple((
+            recognize((
                 is_a("0123456789."),
-                opt(tuple((is_a("eE"), opt(tag("-")), is_a("0123456789")))),
+                opt((is_a("eE"), opt(tag("-")), is_a("0123456789"))),
                 tag("%"),
-            ))),
+            )),
             |stop: Span| ElemType {
                 s: String::from_utf8_lossy(stop.fragment()).to_string(),
             },
-        )(input)
+        )
+        .parse(input)
     }
 
     pub(crate) fn name_opt_ns(input: Span) -> PResult<String> {
         fn name_part(input: Span) -> PResult<String> {
-            alt((value(String::from("*"), tag("*")), css_string))(input)
+            alt((value(String::from("*"), tag("*")), css_string)).parse(input)
         }
         alt((
             map(preceded(tag("|"), name_part), |mut s| {
@@ -120,6 +122,7 @@ pub(super) mod parser {
                     }
                 },
             ),
-        ))(input)
+        ))
+        .parse(input)
     }
 }

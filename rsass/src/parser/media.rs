@@ -13,18 +13,20 @@ use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{into, map, opt, value};
 use nom::multi::{many0, separated_list0};
-use nom::sequence::{delimited, preceded, terminated, tuple};
+use nom::sequence::{delimited, preceded, terminated};
+use nom::Parser as _;
 
 #[cfg(test)]
 use super::check_parse;
 
 pub fn rule<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
     let pos = start.up_to(&input).to_owned();
-    let (input, args) = opt(terminated(args, opt_spacelike))(input)?;
+    let (input, args) = opt(terminated(args, opt_spacelike)).parse(input)?;
     let (input, body) = preceded(
         opt_spacelike,
         alt((map(body_block, Some), value(None, semi_or_end))),
-    )(input)?;
+    )
+    .parse(input)?;
     Ok((
         input,
         Item::AtMedia {
@@ -73,16 +75,18 @@ pub fn args(input: Span) -> PResult<Value> {
             )),
             |args| list_or_single(args, ListSeparator::Space),
         ),
-    )(input)?;
+    )
+    .parse(input)?;
     Ok((input, list_or_single(args, ListSeparator::Comma)))
 }
 
 fn media_relation(input: Span) -> PResult<Value> {
     let (rest, first) = media_additive_expr(input)?;
-    if let Ok((rest, (op, b))) = tuple((
+    if let Ok((rest, (op, b))) = (
         delimited(opt_spacelike, relational_operator, opt_spacelike),
         media_relation,
-    ))(rest)
+    )
+        .parse(rest)
     {
         let pos = input.up_to(&rest).to_owned();
         Ok((

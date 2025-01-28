@@ -10,10 +10,11 @@ use nom::combinator::{
 };
 use nom::multi::{fold_many0, fold_many1, many0, many_m_n};
 use nom::sequence::{delimited, preceded, terminated};
+use nom::Parser as _;
 use std::str::from_utf8;
 
 pub fn css_string_any(input: Span) -> PResult<CssString> {
-    alt((css_string_dq, css_string_sq, into(css_string)))(input)
+    alt((css_string_dq, css_string_sq, into(css_string))).parse(input)
 }
 
 pub fn css_string(input: Span) -> PResult<String> {
@@ -21,7 +22,8 @@ pub fn css_string(input: Span) -> PResult<String> {
         selector_plain_part,
         normalized_first_escaped_char,
         map(hash_no_interpolation, String::from),
-    ))(input)?;
+    ))
+    .parse(input)?;
     fold_many0(
         // Note: This could probably be a whole lot more efficient,
         // but try to get stuff correct before caring too much about that.
@@ -35,12 +37,14 @@ pub fn css_string(input: Span) -> PResult<String> {
             acc.push_str(&item);
             acc
         },
-    )(input)
+    )
+    .parse(input)
 }
 
 pub fn css_string_nohash(input: Span) -> PResult<String> {
     let (input, first) =
-        alt((selector_plain_part, normalized_first_escaped_char))(input)?;
+        alt((selector_plain_part, normalized_first_escaped_char))
+            .parse(input)?;
     fold_many0(
         // Note: This could probably be a whole lot more efficient,
         // but try to get stuff correct before caring too much about that.
@@ -50,7 +54,8 @@ pub fn css_string_nohash(input: Span) -> PResult<String> {
             acc.push_str(&item);
             acc
         },
-    )(input)
+    )
+    .parse(input)
 }
 
 pub fn css_string_dq(input: Span) -> PResult<CssString> {
@@ -62,7 +67,8 @@ pub fn css_string_dq(input: Span) -> PResult<CssString> {
             normalized_escaped_char_q,
         ))),
         tag("\""),
-    )(input)?;
+    )
+    .parse(input)?;
     Ok((input, CssString::new(parts.join(""), Quotes::Double)))
 }
 
@@ -75,7 +81,8 @@ pub fn css_string_sq(input: Span) -> PResult<CssString> {
             normalized_escaped_char_q,
         ))),
         tag("'"),
-    )(input)?;
+    )
+    .parse(input)?;
     Ok((input, CssString::new(parts.join(""), Quotes::Single)))
 }
 
@@ -126,7 +133,8 @@ fn selector_plain_part(input: Span) -> PResult<String> {
             acc.push(chr);
             acc
         },
-    )(input)
+    )
+    .parse(input)
 }
 
 fn hash_no_interpolation(input: Span) -> PResult<&str> {
@@ -141,14 +149,16 @@ fn hash_no_interpolation(input: Span) -> PResult<&str> {
     }
 }
 fn interpolation_block(input: Span) -> PResult<char> {
-    terminated(char('{'), opt(terminated(is_not("{}"), char('}'))))(input)
+    terminated(char('{'), opt(terminated(is_not("{}"), char('}'))))
+        .parse(input)
 }
 
 fn escaped_char(input: Span) -> PResult<char> {
     preceded(
         tag("\\"),
         alt((map_opt(hex_number, std::char::from_u32), take_char)),
-    )(input)
+    )
+    .parse(input)
 }
 
 fn hex_number(input: Span) -> PResult<u32> {
@@ -161,7 +171,8 @@ fn hex_number(input: Span) -> PResult<u32> {
             input_to_str,
         ),
         |s| u32::from_str_radix(s, 16),
-    )(input)
+    )
+    .parse(input)
 }
 
 fn take_char(input: Span) -> PResult<char> {
@@ -171,7 +182,8 @@ fn take_char(input: Span) -> PResult<char> {
         map_opt(take(3usize), single_char),
         map_opt(take(4usize), single_char),
         map_opt(take(5usize), single_char),
-    ))(input)
+    ))
+    .parse(input)
 }
 
 fn single_char(data: Span) -> Option<char> {
@@ -191,7 +203,8 @@ pub fn custom_value(input: Span) -> PResult<CssString> {
             }
             CssString::new(raw, Quotes::None)
         }),
-    ))(input)
+    ))
+    .parse(input)
 }
 pub fn custom_value_inner(input: Span) -> PResult<String> {
     fold_many1(
@@ -212,7 +225,8 @@ pub fn custom_value_inner(input: Span) -> PResult<String> {
             acc.push_str(&items);
             acc
         },
-    )(input)
+    )
+    .parse(input)
 }
 
 fn custom_value_paren<'a>(
@@ -240,5 +254,6 @@ fn custom_value_paren<'a>(
             parts.push_str(end);
             parts
         },
-    )(input)
+    )
+    .parse(input)
 }

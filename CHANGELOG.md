@@ -22,7 +22,7 @@ project adheres to
   This removes integration with `num-rational`, `num-bigint`,
   `num-integer` and `num-traits`.
 * Improved `@for` loop evaluation and error handling (#206).
-* Msrv is now 1.63.0 for rsass (and 1.74 for rsass-cli).
+* Msrv is now 1.65.0 for rsass (and 1.74 for rsass-cli).
 
 ### Other changes:
 
@@ -36,6 +36,7 @@ project adheres to
   Also allow "loud" comments in more places.
 * Pure css `round()` may take an expression argument.
 * Minor changes in agrument syntax errors.
+* Updated `nom` to 8.0.0 and added `nom-language` 0.1.0.
 * Updated sass-spec test suite to 2024-12-12.
 
 

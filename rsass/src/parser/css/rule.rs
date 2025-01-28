@@ -10,6 +10,7 @@ use nom::character::complete::one_of;
 use nom::combinator::{into, map, opt};
 use nom::multi::many_till;
 use nom::sequence::{delimited, pair, preceded, terminated};
+use nom::Parser as _;
 
 pub fn rule(input: Span) -> PResult<Rule> {
     map(
@@ -18,7 +19,8 @@ pub fn rule(input: Span) -> PResult<Rule> {
             many_till(terminated(body_item, opt_spacelike), tag("}")),
         ),
         |(selectors, (body, _))| Rule { selectors, body },
-    )(input)
+    )
+    .parse(input)
 }
 
 fn body_item(input: Span) -> PResult<BodyItem> {
@@ -26,17 +28,20 @@ fn body_item(input: Span) -> PResult<BodyItem> {
         into(comment),
         into(preceded(tag("@import"), import2)),
         property,
-    ))(input)
+    ))
+    .parse(input)
 }
 
 pub fn property(input: Span) -> PResult<BodyItem> {
-    let (rest, name) = terminated(property_name, tag(":"))(input)?;
+    let (rest, name) = terminated(property_name, tag(":")).parse(input)?;
     if name.starts_with("--") {
-        let (rest, value) = terminated(custom_value, opt(tag(";")))(rest)?;
+        let (rest, value) =
+            terminated(custom_value, opt(tag(";"))).parse(rest)?;
         Ok((rest, CustomProperty::new(name, value).into()))
     } else {
         let (rest, value) =
-            delimited(opt_spacelike, values::any, opt(tag(";")))(rest)?;
+            delimited(opt_spacelike, values::any, opt(tag(";")))
+                .parse(rest)?;
         Ok((rest, Property::new(name, value).into()))
     }
 }
@@ -50,5 +55,6 @@ fn property_name(input: Span) -> PResult<String> {
             }
             main
         },
-    )(input)
+    )
+    .parse(input)
 }

@@ -6,13 +6,15 @@ use nom::character::complete::{char, multispace1};
 use nom::combinator::{eof, map, map_res, not, opt, peek};
 use nom::multi::{fold_many0, fold_many1, many0};
 use nom::sequence::{preceded, terminated};
+use nom::Parser;
+use nom_language::error::VerboseError;
 use std::str::from_utf8;
 
 pub(crate) fn term_opt_space<'a, F, T>(
     f: F,
-) -> impl FnMut(Span<'a>) -> PResult<'a, T>
+) -> impl Parser<Span<'a>, Output = T, Error = VerboseError<Span<'a>>>
 where
-    F: FnMut(Span<'a>) -> PResult<'a, T>,
+    F: Parser<Span<'a>, Output = T, Error = VerboseError<Span<'a>>>,
 {
     terminated(f, opt_spacelike)
 }
@@ -25,23 +27,23 @@ pub fn semi_or_end(input: Span) -> PResult<()> {
             map(peek(char('}')), |_| ()),
             map(char(';'), |_| ()),
         )),
-    )(input)
+    )
+    .parse(input)
 }
 
 pub fn spacelike(input: Span) -> PResult<()> {
-    fold_many1(alt((ignore_space, ignore_lcomment)), || (), |(), ()| ())(
-        input,
-    )
+    fold_many1(alt((ignore_space, ignore_lcomment)), || (), |(), ()| ())
+        .parse(input)
 }
 
 pub fn spacelike2(input: Span) -> PResult<()> {
-    map_res(ignore_comments, |s| if s { Ok(()) } else { Err(()) })(input)
+    map_res(ignore_comments, |s| if s { Ok(()) } else { Err(()) })
+        .parse(input)
 }
 
 pub fn opt_spacelike(input: Span) -> PResult<()> {
-    fold_many0(alt((ignore_space, ignore_lcomment)), || (), |(), ()| ())(
-        input,
-    )
+    fold_many0(alt((ignore_space, ignore_lcomment)), || (), |(), ()| ())
+        .parse(input)
 }
 
 pub fn ignore_comments(input: Span) -> PResult<bool> {
@@ -53,11 +55,12 @@ pub fn ignore_comments(input: Span) -> PResult<bool> {
         )),
         || false,
         |a, b| a || b,
-    )(input)
+    )
+    .parse(input)
 }
 
 pub fn comment(input: Span) -> PResult<SassString> {
-    preceded(tag("/*"), comment2)(input)
+    preceded(tag("/*"), comment2).parse(input)
 }
 
 pub fn comment2(input: Span) -> PResult<SassString> {
@@ -88,15 +91,16 @@ pub fn comment2(input: Span) -> PResult<SassString> {
             tag("*/"),
         ),
         |p| SassString::new(p, Quotes::None),
-    )(input)
+    )
+    .parse(input)
 }
 
 pub fn ignore_space(input: Span) -> PResult<()> {
-    map(multispace1, |_| ())(input)
+    map(multispace1, |_| ()).parse(input)
 }
 
 fn ignore_lcomment(input: Span) -> PResult<()> {
-    map(terminated(tag("//"), opt(is_not("\n"))), |_| ())(input)
+    map(terminated(tag("//"), opt(is_not("\n"))), |_| ()).parse(input)
 }
 
 #[cfg(test)]

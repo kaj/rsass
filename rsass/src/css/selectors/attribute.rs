@@ -44,7 +44,8 @@ pub(super) mod parser {
     use nom::bytes::complete::tag;
     use nom::character::complete::one_of;
     use nom::combinator::{map, map_res, opt};
-    use nom::sequence::{delimited, pair, tuple};
+    use nom::sequence::{delimited, pair};
+    use nom::Parser as _;
 
     pub(crate) fn attribute(input: Span) -> PResult<Attribute> {
         map(
@@ -52,7 +53,7 @@ pub(super) mod parser {
                 term_opt_space(tag("[")),
                 pair(
                     term_opt_space(name_opt_ns),
-                    opt(tuple((
+                    opt((
                         term_opt_space(map_res(
                             alt((
                                 tag("*="),
@@ -69,7 +70,7 @@ pub(super) mod parser {
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ\
                              abcdefghijklmnopqrstuvwxyz",
                         ))),
-                    ))),
+                    )),
                 ),
                 tag("]"),
             ),
@@ -90,6 +91,7 @@ pub(super) mod parser {
                     }
                 }
             },
-        )(input)
+        )
+        .parse(input)
     }
 }

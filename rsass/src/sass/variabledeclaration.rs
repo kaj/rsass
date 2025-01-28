@@ -39,6 +39,7 @@ pub(crate) mod parser {
     #[cfg(test)]
     use crate::value::ListSeparator;
     use nom::sequence::{delimited, pair, preceded, terminated};
+    use nom::Parser as _;
     use nom::{
         branch::alt, bytes::complete::tag, combinator::map, multi::fold_many0,
     };
@@ -46,7 +47,7 @@ pub(crate) mod parser {
     pub(crate) fn variable_declaration(
         input: Span,
     ) -> PResult<VariableDeclaration> {
-        preceded(tag("$"), variable_declaration2)(input)
+        preceded(tag("$"), variable_declaration2).parse(input)
     }
 
     pub(crate) fn variable_declaration_mod(
@@ -59,7 +60,8 @@ pub(crate) mod parser {
                 pos: decl.pos.opt_back(&format!("{module}.")),
                 ..decl
             },
-        )(input)
+        )
+        .parse(input)
     }
 
     pub(crate) fn variable_declaration2(
@@ -68,9 +70,10 @@ pub(crate) mod parser {
         let (input, name) = terminated(
             map(name, Name::from),
             delimited(opt_spacelike, tag(":"), opt_spacelike),
-        )(input0)?;
+        )
+        .parse(input0)?;
         let (input, val) =
-            terminated(value_expression, opt_spacelike)(input)?;
+            terminated(value_expression, opt_spacelike).parse(input)?;
         let (input, (default, global)) = fold_many0(
             terminated(
                 alt((
@@ -81,7 +84,8 @@ pub(crate) mod parser {
             ),
             || (false, false),
             |(default, global), (d, g)| (default || d, global || g),
-        )(input)?;
+        )
+        .parse(input)?;
         let (trail, _) = semi_or_end(input)?;
         let pos = input0.up_to(&input).to_owned().opt_back("$");
         Ok((

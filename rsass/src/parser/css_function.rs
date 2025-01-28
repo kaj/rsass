@@ -14,14 +14,16 @@ use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::multispace0;
 use nom::combinator::{into, map, not, peek, value};
-use nom::sequence::{delimited, pair, preceded, terminated, tuple};
+use nom::sequence::{delimited, pair, preceded, terminated};
+use nom::Parser as _;
 
 pub fn css_function(input: Span) -> PResult<Value> {
     let (rest, arg) = delimited(
         terminated(tag_no_case("calc("), ignore_comments),
         one_arg,
         preceded(ignore_comments, tag(")")),
-    )(input)?;
+    )
+    .parse(input)?;
     let pos = input.up_to(&rest).to_owned();
     Ok((
         rest,
@@ -36,13 +38,14 @@ fn one_arg(input: Span) -> PResult<Value> {
         }),
         sum_expression,
         map(sass_string, Value::Literal),
-    ))(input)
+    ))
+    .parse(input)
 }
 
 fn sum_expression(input: Span) -> PResult<Value> {
     let (mut rest, mut v) = term(input)?;
     while let Ok((nrest, (s1, op, s2, v2, end))) = alt((
-        tuple((
+        (
             value(false, tag("")),
             alt((
                 value(Operator::Plus, tag("+")),
@@ -51,8 +54,8 @@ fn sum_expression(input: Span) -> PResult<Value> {
             ignore_comments,
             term,
             position,
-        )),
-        tuple((
+        ),
+        (
             value(true, spacelike2),
             alt((
                 value(Operator::Plus, tag("+")),
@@ -61,8 +64,9 @@ fn sum_expression(input: Span) -> PResult<Value> {
             ignore_comments,
             term,
             position,
-        )),
-    ))(rest)
+        ),
+    ))
+    .parse(rest)
     {
         let pos = input.up_to(&end).to_owned();
         v = BinOp::new(v, s1, op, s2, v2, pos).into();
@@ -73,7 +77,7 @@ fn sum_expression(input: Span) -> PResult<Value> {
 
 fn term(input: Span) -> PResult<Value> {
     let (mut rest, mut v) = single_value(input)?;
-    while let Ok((nrest, (s1, op, s2, v2, end))) = tuple((
+    while let Ok((nrest, (s1, op, s2, v2, end))) = (
         map(multispace0, |s: Span| !s.fragment().is_empty()),
         alt((
             value(Operator::Multiply, tag("*")),
@@ -83,7 +87,8 @@ fn term(input: Span) -> PResult<Value> {
         map(multispace0, |s: Span| !s.fragment().is_empty()),
         single_value,
         position,
-    ))(rest)
+    )
+        .parse(rest)
     {
         let pos = input.up_to(&end).to_owned();
         rest = nrest;
@@ -103,7 +108,8 @@ fn single_value(input: Span) -> PResult<Value> {
         value(Value::Null, tag("null")),
         special_function,
         function_call,
-    ))(input)
+    ))
+    .parse(input)
 }
 
 fn paren(input: Span) -> PResult<Value> {
@@ -114,11 +120,12 @@ fn paren(input: Span) -> PResult<Value> {
             preceded(opt_spacelike, tag(")")),
         ),
         |inner| Value::Paren(Box::new(inner), false),
-    )(input)
+    )
+    .parse(input)
 }
 
 fn function_call(input: Span) -> PResult<Value> {
-    let (rest, (name, args)) = pair(sass_string, call_args)(input)?;
+    let (rest, (name, args)) = pair(sass_string, call_args).parse(input)?;
     let pos = input.up_to(&rest).to_owned();
     Ok((rest, Value::Call(name, args, pos)))
 }

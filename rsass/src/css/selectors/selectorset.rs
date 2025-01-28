@@ -173,6 +173,7 @@ pub(super) mod parser {
     use nom::combinator::map;
     use nom::multi::separated_list1;
     use nom::sequence::delimited;
+    use nom::Parser as _;
 
     pub(crate) fn selector_set(input: Span) -> PResult<SelectorSet> {
         map(
@@ -181,6 +182,7 @@ pub(super) mod parser {
                 super::super::parser::selector,
             ),
             |s| SelectorSet { s },
-        )(input)
+        )
+        .parse(input)
     }
 }

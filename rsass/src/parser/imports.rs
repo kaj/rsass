@@ -12,14 +12,15 @@ use nom::character::complete::char;
 use nom::combinator::{cut, map, opt, value};
 use nom::error::context;
 use nom::multi::{separated_list0, separated_list1};
-use nom::sequence::{delimited, pair, preceded, terminated, tuple};
+use nom::sequence::{delimited, pair, preceded, terminated};
+use nom::Parser as _;
 use std::collections::BTreeSet;
 
 /// What follows the `@import` tag.
 pub fn import2(input: Span) -> PResult<Item> {
     map(
         terminated(
-            tuple((
+            (
                 separated_list0(
                     comma,
                     alt((
@@ -31,20 +32,21 @@ pub fn import2(input: Span) -> PResult<Item> {
                 ),
                 opt(media::args),
                 position,
-            )),
+            ),
             semi_or_end,
         ),
         |(import, args, end)| {
             let pos = input.up_to(&end).to_owned();
             Item::Import(import, args.unwrap_or(Value::Null), pos)
         },
-    )(input)
+    )
+    .parse(input)
 }
 
 pub fn use2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
     map(
         terminated(
-            tuple((
+            (
                 context(
                     "Expected string.",
                     terminated(quoted_sass_string, ignore_comments),
@@ -55,7 +57,7 @@ pub fn use2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
                 )),
                 opt(preceded(terminated(tag("as"), ignore_comments), as_arg)),
                 position,
-            )),
+            ),
             semi_or_end,
         ),
         |(s, w, n, end)| {
@@ -66,19 +68,21 @@ pub fn use2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
                 start.up_to(&end).to_owned(),
             )
         },
-    )(input)
+    )
+    .parse(input)
 }
 
 pub fn forward2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
     let (mut end, path) = context(
         "Expected string.",
         terminated(quoted_sass_string, opt_spacelike),
-    )(input)?;
+    )
+    .parse(input)?;
     let mut found_as = None;
     let mut expose = Expose::All;
     let mut found_with = None;
     while let Ok((rest, arg)) =
-        delimited(ignore_comments, name, ignore_comments)(end)
+        delimited(ignore_comments, name, ignore_comments).parse(end)
     {
         end = match arg.as_ref() {
             "as" if found_as.is_none() && found_with.is_none() => {
@@ -137,7 +141,8 @@ fn exposed_names(input: Span) -> PResult<(BTreeSet<Name>, BTreeSet<Name>)> {
             }
             (funs, vars)
         },
-    )(input)
+    )
+    .parse(input)
 }
 
 fn as_arg(input: Span) -> PResult<UseAs> {
@@ -150,11 +155,12 @@ fn as_arg(input: Span) -> PResult<UseAs> {
             value(UseAs::Star, tag("*")),
         )),
         opt_spacelike,
-    )(input)
+    )
+    .parse(input)
 }
 
 fn fwd_as_arg(input: Span) -> PResult<UseAs> {
-    map(terminated(identifier, char('*')), UseAs::Prefix)(input)
+    map(terminated(identifier, char('*')), UseAs::Prefix).parse(input)
 }
 
 fn with_arg(input: Span) -> PResult<Vec<(Name, Value, bool)>> {
@@ -162,7 +168,7 @@ fn with_arg(input: Span) -> PResult<Vec<(Name, Value, bool)>> {
         terminated(char('('), ignore_comments),
         separated_list1(
             comma,
-            tuple((
+            (
                 delimited(
                     char('$'),
                     map(identifier, Name::from),
@@ -172,16 +178,18 @@ fn with_arg(input: Span) -> PResult<Vec<(Name, Value, bool)>> {
                 map(opt(terminated(tag("!default"), opt_spacelike)), |o| {
                     o.is_some()
                 }),
-            )),
+            ),
         ),
         delimited(opt(comma), char(')'), opt_spacelike),
-    )(input)
+    )
+    .parse(input)
 }
 
 fn quoted_sass_string(input: Span) -> PResult<SassString> {
-    alt((sass_string_dq, sass_string_sq))(input)
+    alt((sass_string_dq, sass_string_sq)).parse(input)
 }
 
 fn comma(input: Span) -> PResult<()> {
-    delimited(ignore_comments, map(tag(","), |_| ()), ignore_comments)(input)
+    delimited(ignore_comments, map(tag(","), |_| ()), ignore_comments)
+        .parse(input)
 }

@@ -47,10 +47,11 @@ use nom::character::complete::{char, one_of};
 use nom::combinator::{
     all_consuming, into, map, map_res, not, opt, peek, value, verify,
 };
-use nom::error::{context, VerboseError};
+use nom::error::context;
 use nom::multi::{many0, many_till, separated_list0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::IResult;
+use nom::{IResult, Parser as _};
+use nom_language::error::VerboseError;
 use std::str::{from_utf8, Utf8Error};
 
 /// A Parsing Result; ok gives a span for the rest of the data and a parsed T.
@@ -69,7 +70,7 @@ pub(crate) fn input_span(value: impl Into<Vec<u8>>) -> SourcePos {
 /// Returns a single value (or an error).
 pub fn parse_value_data(data: &[u8]) -> Result<Value, Error> {
     let data = code_span(data);
-    let value = all_consuming(value_expression)(data.borrow());
+    let value = all_consuming(value_expression).parse(data.borrow());
     Ok(ParseError::check(value)?)
 }
 
@@ -97,41 +98,44 @@ pub(crate) fn sassfile(input: Span) -> PResult<Vec<Item>> {
             ),
             |(v, _eof)| v,
         ),
-    )(input)
+    )
+    .parse(input)
 }
 
 fn top_level_item(input: Span) -> PResult<Item> {
-    let (rest, tag) = alt((tag("$"), tag("/*"), tag("@"), tag("")))(input)?;
+    let (rest, tag) =
+        alt((tag("$"), tag("/*"), tag("@"), tag(""))).parse(input)?;
     match tag.fragment() {
-        b"$" => into(variable_declaration2)(rest),
+        b"$" => into(variable_declaration2).parse(rest),
         b"/*" => comment_item(rest),
         b"@" => at_rule2(input),
-        b"" => alt((into(variable_declaration_mod), rule))(input),
+        b"" => alt((into(variable_declaration_mod), rule)).parse(input),
         _ => unreachable!(),
     }
 }
 
 fn comment_item(input: Span) -> PResult<Item> {
-    map(comment2, Item::Comment)(input)
+    map(comment2, Item::Comment).parse(input)
 }
 
 fn rule(input: Span) -> PResult<Item> {
     map(pair(rule_start, body_block2), |(selectors, body)| {
         Item::Rule(selectors, body)
-    })(input)
+    })
+    .parse(input)
 }
 
 fn rule_start(input: Span) -> PResult<Selectors> {
-    terminated(selectors, terminated(opt(is_a(", \t\r\n")), tag("{")))(input)
+    terminated(selectors, terminated(opt(is_a(", \t\r\n")), tag("{")))
+        .parse(input)
 }
 
 fn body_item(input: Span) -> PResult<Item> {
     let (rest, tag) =
-        alt((tag("$"), tag("/*"), tag(";"), tag("@"), tag("--"), tag("")))(
-            input,
-        )?;
+        alt((tag("$"), tag("/*"), tag(";"), tag("@"), tag("--"), tag("")))
+            .parse(input)?;
     match tag.fragment() {
-        b"$" => into(variable_declaration2)(rest),
+        b"$" => into(variable_declaration2).parse(rest),
         b"/*" => comment_item(rest),
         b";" => Ok((rest, Item::None)),
         b"@" => at_rule2(input),
@@ -167,21 +171,25 @@ fn at_root2(input: Span) -> PResult<Item> {
             ),
             |(selectors, body)| Item::AtRoot(selectors, body),
         ),
-    )(input)
+    )
+    .parse(input)
 }
 
 /// What follows the `@include` tag.
 fn mixin_call<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
-    let (rest, n1) = terminated(name, opt_spacelike)(input)?;
-    let (rest, n2) = opt(preceded(tag("."), name))(rest)?;
+    let (rest, n1) = terminated(name, opt_spacelike).parse(input)?;
+    let (rest, n2) = opt(preceded(tag("."), name)).parse(rest)?;
     let name = n2.map(|n2| format!("{n1}.{n2}")).unwrap_or(n1);
     let (rest, _) = opt_spacelike(rest)?;
-    let (rest0, args) = terminated(opt(call_args), ignore_comments)(rest)?;
-    let (rest, t) = alt((tag("using"), tag("{"), tag("")))(rest0)?;
+    let (rest0, args) =
+        terminated(opt(call_args), ignore_comments).parse(rest)?;
+    let (rest, t) = alt((tag("using"), tag("{"), tag(""))).parse(rest0)?;
     let (end, body) = match t.fragment() {
         b"using" => {
-            let (end, args) = preceded(ignore_comments, formal_args)(rest)?;
-            let (rest, body) = preceded(ignore_comments, body_block)(end)?;
+            let (end, args) =
+                preceded(ignore_comments, formal_args).parse(rest)?;
+            let (rest, body) =
+                preceded(ignore_comments, body_block).parse(end)?;
             let decl = rest0.up_to(&end).to_owned();
             (rest, Some(Callable::new(args, body, decl)))
         }
@@ -190,7 +198,7 @@ fn mixin_call<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
             let decl = rest0.up_to(&rest).to_owned();
             (rest, Some(Callable::no_args(body, decl)))
         }
-        _ => map(semi_or_end, |_| None)(rest)?,
+        _ => map(semi_or_end, |_| None).parse(rest)?,
     };
     let pos = start.up_to(&rest).to_owned();
     Ok((
@@ -205,23 +213,25 @@ fn at_rule2(input0: Span) -> PResult<Item> {
         tag("@"),
         context("Expected identifier.", sass_string),
         ignore_comments,
-    )(input0)?;
+    )
+    .parse(input0)?;
     match name.single_raw().unwrap_or("") {
         "at-root" => at_root2(input),
         "charset" => charset2(input),
         "content" => content_stmt2(input),
-        "debug" => map(expression_argument, Item::Debug)(input),
+        "debug" => map(expression_argument, Item::Debug).parse(input),
         "each" => each_loop2(input),
         "error" => {
             let (end, v) = value_expression(input)?;
-            let (rest, _) = opt(tag(";"))(end)?;
+            let (rest, _) = opt(tag(";")).parse(end)?;
             let pos = input0.up_to(&end).to_owned();
             Ok((rest, Item::Error(v, pos)))
         }
         "extend" => map(
             delimited(opt_spacelike, selectors, semi_or_end),
             Item::Extend,
-        )(input),
+        )
+        .parse(input),
         "for" => for_loop2(input),
         "forward" => forward2(input0, input),
         "function" => function_declaration2(input),
@@ -232,7 +242,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
         "mixin" => mixin_declaration2(input),
         "return" => return_stmt2(input0, input),
         "use" => use2(input0, input),
-        "warn" => map(expression_argument, Item::Warn)(input),
+        "warn" => map(expression_argument, Item::Warn).parse(input),
         "while" => while_loop2(input),
         _ => unknown_atrule(name, input0, input),
     }
@@ -243,7 +253,7 @@ fn unknown_atrule<'a>(
     input: Span<'a>,
 ) -> PResult<'a, Item> {
     let (input, args) =
-        terminated(opt(unknown_rule_args), opt(ignore_space))(input)?;
+        terminated(opt(unknown_rule_args), opt(ignore_space)).parse(input)?;
     fn x_args(value: Value) -> Value {
         match value {
             Value::Variable(name, _pos) => {
@@ -258,9 +268,9 @@ fn unknown_atrule<'a>(
         }
     }
     let (rest, body) = if input.first() == Some(&b'{') {
-        map(body_block, Some)(input)?
+        map(body_block, Some).parse(input)?
     } else {
-        value(None, semi_or_end)(input)?
+        value(None, semi_or_end).parse(input)?
     };
     Ok((
         rest,
@@ -274,7 +284,7 @@ fn unknown_atrule<'a>(
 }
 
 fn expression_argument(input: Span) -> PResult<Value> {
-    terminated(value_expression, opt(tag(";")))(input)
+    terminated(value_expression, opt(tag(";"))).parse(input)
 }
 
 fn charset2(input: Span) -> PResult<Item> {
@@ -293,7 +303,8 @@ fn charset2(input: Span) -> PResult<Item> {
                 }
             })
         },
-    )(input)
+    )
+    .parse(input)
 }
 
 /// Arguments to an unkown at rule.
@@ -330,7 +341,8 @@ fn unknown_rule_args(input: Span) -> PResult<Value> {
             )),
             |args| list_or_single(args, ListSeparator::Space),
         ),
-    )(input)?;
+    )
+    .parse(input)?;
     Ok((input, list_or_single(args, ListSeparator::Comma)))
 }
 
@@ -346,23 +358,25 @@ fn if_statement_inner(input: Span) -> PResult<Item> {
     preceded(
         terminated(verify(name, |n: &String| n == "if"), opt_spacelike),
         if_statement2,
-    )(input)
+    )
+    .parse(input)
 }
 
 fn if_statement2(input: Span) -> PResult<Item> {
-    let (input, cond) = terminated(value_expression, opt_spacelike)(input)?;
+    let (input, cond) =
+        terminated(value_expression, opt_spacelike).parse(input)?;
     let (input, body) = body_block(input)?;
     let (input2, word) = opt(delimited(
         preceded(opt_spacelike, tag("@")),
         name,
         opt_spacelike,
-    ))(input)?;
+    ))
+    .parse(input)?;
     match word.as_ref().map(AsRef::as_ref) {
         Some("else") => {
-            let (input2, else_body) = alt((
-                map(if_statement_inner, |s| vec![s]),
-                body_block,
-            ))(input2)?;
+            let (input2, else_body) =
+                alt((map(if_statement_inner, |s| vec![s]), body_block))
+                    .parse(input2)?;
             Ok((input2, Item::IfStatement(cond, body, else_body)))
         }
         Some("elseif") => {
@@ -378,19 +392,22 @@ fn each_loop2(input: Span) -> PResult<Item> {
     let (input, names) = separated_list1(
         delimited(opt_spacelike, tag(","), opt_spacelike),
         map(preceded(tag("$"), name), Name::from),
-    )(input)?;
+    )
+    .parse(input)?;
     let (input, values) = delimited(
         delimited(spacelike, tag("in"), spacelike),
         value_expression,
         opt_spacelike,
-    )(input)?;
+    )
+    .parse(input)?;
     let (input, body) = body_block(input)?;
     Ok((input, Item::Each(names, values, body)))
 }
 
 /// A for loop after the initial `@for`.
 fn for_loop2(input: Span) -> PResult<Item> {
-    let (input, name) = delimited(tag("$"), name, ignore_comments)(input)?;
+    let (input, name) =
+        delimited(tag("$"), name, ignore_comments).parse(input)?;
     let (input, range) = src_range(input)?;
     let (input, body) = body_block(input)?;
     Ok((input, Item::For(name.into(), range, body)))
@@ -406,7 +423,8 @@ pub fn single_value_p(input: Span) -> PResult<SrcValue> {
 }
 
 fn while_loop2(input: Span) -> PResult<Item> {
-    let (input, cond) = terminated(value_expression, opt_spacelike)(input)?;
+    let (input, cond) =
+        terminated(value_expression, opt_spacelike).parse(input)?;
     let (input, body) = body_block(input)?;
     Ok((input, Item::While(cond, body)))
 }
@@ -415,8 +433,9 @@ fn mixin_declaration2(input: Span) -> PResult<Item> {
     let (rest, (name, args)) = pair(
         terminated(name, ignore_comments),
         alt((value(None, peek(not(char('(')))), map(formal_args, Some))),
-    )(input)?;
-    let (end, body) = preceded(ignore_comments, body_block)(rest)?;
+    )
+    .parse(input)?;
+    let (end, body) = preceded(ignore_comments, body_block).parse(rest)?;
     let args = args.unwrap_or_else(FormalArgs::none);
     let decl = input.up_to(&rest).to_owned();
     Ok((
@@ -426,9 +445,9 @@ fn mixin_declaration2(input: Span) -> PResult<Item> {
 }
 
 fn function_declaration2(input: Span) -> PResult<Item> {
-    let (end, name) = terminated(name, ignore_comments)(input)?;
+    let (end, name) = terminated(name, ignore_comments).parse(input)?;
     let (end, args) = formal_args(end)?;
-    let (rest, body) = preceded(ignore_comments, body_block)(end)?;
+    let (rest, body) = preceded(ignore_comments, body_block).parse(end)?;
     let decl = input.up_to(&end).to_owned();
     Ok((
         rest,
@@ -437,21 +456,23 @@ fn function_declaration2(input: Span) -> PResult<Item> {
 }
 
 fn return_stmt2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
-    let (input, v) = terminated(value_expression, ignore_comments)(input)?;
+    let (input, v) =
+        terminated(value_expression, ignore_comments).parse(input)?;
     let pos = start.up_to(&input).to_owned();
-    let (input, _) = opt(tag(";"))(input)?;
+    let (input, _) = opt(tag(";")).parse(input)?;
     Ok((input, Item::Return(v, pos)))
 }
 
 fn content_stmt2(input: Span) -> PResult<Item> {
-    let (rest, args) = terminated(opt(call_args), opt(tag(";")))(input)?;
+    let (rest, args) =
+        terminated(opt(call_args), opt(tag(";"))).parse(input)?;
     let pos = input.up_to(&rest).to_owned();
     Ok((rest, Item::Content(args.unwrap_or_default(), pos)))
 }
 
 fn custom_property(input: Span) -> PResult<Item> {
-    let (rest, name) = terminated(sass_string, char(':'))(input)?;
-    let (rest, value) = terminated(custom_value, semi_or_end)(rest)?;
+    let (rest, name) = terminated(sass_string, char(':')).parse(input)?;
+    let (rest, value) = terminated(custom_value, semi_or_end).parse(rest)?;
     Ok((rest, Item::CustomProperty(name, value)))
 }
 
@@ -465,19 +486,22 @@ fn property_or_namespace_rule(input: Span) -> PResult<Item> {
             sass_string,
         )),
         delimited(ignore_comments, char(':'), ignore_comments),
-    )(input)?;
+    )
+    .parse(input)?;
 
     let (input, val) = alt((
         map(peek(char('{')), |_| None),
         map(context("Expected expression.", value_expression), Some),
-    ))(start_val)?;
+    ))
+    .parse(start_val)?;
 
     let pos = start_val.up_to(&input);
 
     let (input, body) = preceded(
         ignore_comments,
         alt((map(semi_or_end, |_| None), map(body_block, Some))),
-    )(input)?;
+    )
+    .parse(input)?;
     Ok((input, ns_or_prop_item(name, val, body, pos.to_owned())))
 }
 
@@ -498,7 +522,7 @@ fn ns_or_prop_item(
 }
 
 fn body_block(input: Span) -> PResult<Vec<Item>> {
-    preceded(char('{'), body_block2)(input)
+    preceded(char('{'), body_block2).parse(input)
 }
 
 fn body_block2(input: Span) -> PResult<Vec<Item>> {
@@ -508,7 +532,8 @@ fn body_block2(input: Span) -> PResult<Vec<Item>> {
             terminated(body_item, opt_spacelike),
             terminated(terminated(tag("}"), opt_spacelike), opt(tag(";"))),
         ),
-    )(input)?;
+    )
+    .parse(input)?;
     Ok((input, v))
 }
 

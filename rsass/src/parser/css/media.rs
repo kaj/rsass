@@ -7,6 +7,7 @@ use nom::bytes::complete::{tag, tag_no_case};
 use nom::combinator::{map, value};
 use nom::multi::{fold_many0, fold_many1, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated};
+use nom::Parser as _;
 use std::str::from_utf8;
 
 pub fn args(input: Span) -> PResult<MediaArgs> {
@@ -22,7 +23,8 @@ pub fn args(input: Span) -> PResult<MediaArgs> {
                 MediaArgs::Comma(v)
             }
         },
-    )(input)
+    )
+    .parse(input)
 }
 fn media_args_and(input: Span) -> PResult<MediaArgs> {
     map(
@@ -37,7 +39,8 @@ fn media_args_and(input: Span) -> PResult<MediaArgs> {
                 MediaArgs::And(v)
             }
         },
-    )(input)
+    )
+    .parse(input)
 }
 
 fn media_args_or(input: Span) -> PResult<MediaArgs> {
@@ -53,7 +56,8 @@ fn media_args_or(input: Span) -> PResult<MediaArgs> {
                 MediaArgs::Or(v)
             }
         },
-    )(input)
+    )
+    .parse(input)
 }
 
 fn media_args_one(input: Span) -> PResult<MediaArgs> {
@@ -94,7 +98,8 @@ fn media_args_one(input: Span) -> PResult<MediaArgs> {
             map(media_args_one, |v| MediaArgs::Bracket(Box::new(v))),
             tag("]"),
         ),
-    ))(input)
+    ))
+    .parse(input)
 }
 
 fn media_relation(input: Span) -> PResult<Vec<(Operator, Value)>> {
@@ -109,7 +114,8 @@ fn media_relation(input: Span) -> PResult<Vec<(Operator, Value)>> {
             acc.push(item);
             acc
         },
-    )(rest)
+    )
+    .parse(rest)
 }
 
 pub fn relational_operator(input: Span) -> PResult<Operator> {
@@ -121,7 +127,8 @@ pub fn relational_operator(input: Span) -> PResult<Operator> {
         value(Operator::Greater, tag(">")),
         value(Operator::LesserE, tag("<=")),
         value(Operator::Lesser, tag("<")),
-    ))(input)
+    ))
+    .parse(input)
 }
 
 /// Any css value that is allowd in a media relation / range.
@@ -133,7 +140,8 @@ fn media_value(input: Span) -> PResult<Value> {
             media_value,
             preceded(opt_spacelike, tag(")")),
         ),
-    ))(input)
+    ))
+    .parse(input)
 }
 pub fn media_slash_list_no_space(input: Span) -> PResult<Value> {
     let (input, first) = values::single(input)?;
@@ -144,7 +152,8 @@ pub fn media_slash_list_no_space(input: Span) -> PResult<Value> {
             list.push(item);
             list
         },
-    )(input)?;
+    )
+    .parse(input)?;
     Ok((
         input,
         if list.len() == 1 {

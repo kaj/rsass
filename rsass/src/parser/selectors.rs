@@ -9,7 +9,8 @@ use nom::bytes::complete::tag;
 use nom::character::complete::one_of;
 use nom::combinator::{map, map_opt, map_res, opt, value};
 use nom::multi::{many1, separated_list1};
-use nom::sequence::{delimited, pair, preceded, terminated, tuple};
+use nom::sequence::{delimited, pair, preceded, terminated};
+use nom::Parser as _;
 
 pub fn selectors(input: Span) -> PResult<Selectors> {
     map_opt(
@@ -22,11 +23,12 @@ pub fn selectors(input: Span) -> PResult<Selectors> {
                 Some(Selectors::new(v))
             }
         },
-    )(input)
+    )
+    .parse(input)
 }
 
 pub fn selector(input: Span) -> PResult<Selector> {
-    let (input, mut s) = many1(selector_part)(input)?;
+    let (input, mut s) = many1(selector_part).parse(input)?;
     if s.last() == Some(&SelectorPart::Descendant) {
         s.pop();
     }
@@ -38,7 +40,7 @@ fn selector_part(input: Span) -> PResult<SelectorPart> {
         map(
             // A single dash is allowed as a selector, because the parsing
             // of psedudo-element attributes don't handle expressions yet.
-            tuple((opt(tag("%")), sass_string_allow_dash, opt(tag("%")))),
+            (opt(tag("%")), sass_string_allow_dash, opt(tag("%"))),
             |(pre, mut s, post)| {
                 if pre.is_some() {
                     s.prepend("%");
@@ -73,7 +75,7 @@ fn selector_part(input: Span) -> PResult<SelectorPart> {
         map(
             delimited(
                 terminated(tag("["), opt_spacelike),
-                tuple((
+                (
                     terminated(sass_string, opt_spacelike),
                     terminated(
                         map_res(
@@ -100,7 +102,7 @@ fn selector_part(input: Span) -> PResult<SelectorPart> {
                         ),
                         opt_spacelike,
                     )),
-                )),
+                ),
                 tag("]"),
             ),
             |(name, op, val, modifier)| SelectorPart::Attribute {
@@ -135,7 +137,8 @@ fn selector_part(input: Span) -> PResult<SelectorPart> {
             opt_spacelike,
         ),
         value(SelectorPart::Descendant, spacelike2),
-    ))(input)
+    ))
+    .parse(input)
 }
 
 #[cfg(test)]
