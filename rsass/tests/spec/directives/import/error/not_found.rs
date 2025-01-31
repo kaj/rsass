@@ -23,7 +23,7 @@ fn directory_dot_import() {
              \n// directories.\
              \n@import \"other\";\n"
         ),
-        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n3 | @import \"other\";\
@@ -46,7 +46,7 @@ fn no_extension() {
         runner.err(
             "@import \"other\";\n"
         ),
-        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | @import \"other\";\
@@ -72,14 +72,14 @@ fn parent_relative() {
              \n// Regression test for scssphp/scssphp#242\
              \n@import \"dir/child\"\n"
         ),
-        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n4 | @import \"dir/child\"\
          \n  |         ^^^^^^^^^^^\
          \n  \'\
          \n    input.scss 4:9  root stylesheet\n\
-         \nDEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nDEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | @import \"sibling\"\

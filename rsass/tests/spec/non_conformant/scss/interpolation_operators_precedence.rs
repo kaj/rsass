@@ -59,7 +59,7 @@ fn test() {
              \n  e06: (#{a} !=5.0% != 2);\
              \n}\n"
         ),
-        "DEPRECATION WARNING: This operation is parsed as:\n\
+        "DEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    #{a} + 5%\n\
          \nbut you may have intended it to mean:\n\
          \n    #{a} (+5%)\n\
@@ -72,7 +72,7 @@ fn test() {
          \n  |         ^^^^^^^^^^^\
          \n  \'\
          \n    input.scss 4:9  root stylesheet\n\
-         \nDEPRECATION WARNING: This operation is parsed as:\n\
+         \nDEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    5 + 2% + #{a}\n\
          \nbut you may have intended it to mean:\n\
          \n    5 + 2% (+#{a})\n\
@@ -85,7 +85,7 @@ fn test() {
          \n  |         ^^^^^^^^^^^^^^^\
          \n  \'\
          \n    input.scss 8:9  root stylesheet\n\
-         \nDEPRECATION WARNING: This operation is parsed as:\n\
+         \nDEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    #{a} + 5%\n\
          \nbut you may have intended it to mean:\n\
          \n    #{a} (+5%)\n\
@@ -98,7 +98,7 @@ fn test() {
          \n   |         ^^^^^^^^^^\
          \n   \'\
          \n    input.scss 10:9  root stylesheet\n\
-         \nDEPRECATION WARNING: This operation is parsed as:\n\
+         \nDEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    #{a} + 5%\n\
          \nbut you may have intended it to mean:\n\
          \n    #{a} (+5%)\n\
@@ -111,7 +111,7 @@ fn test() {
          \n   |         ^^^^^^^^^^\
          \n   \'\
          \n    input.scss 14:9  root stylesheet\n\
-         \nDEPRECATION WARNING: This operation is parsed as:\n\
+         \nDEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    #{a} + 5% / 2\n\
          \nbut you may have intended it to mean:\n\
          \n    #{a} (+5% / 2)\n\
@@ -124,7 +124,7 @@ fn test() {
          \n   |         ^^^^^^^^^^^^^^\
          \n   \'\
          \n    input.scss 18:9  root stylesheet\n\
-         \nDEPRECATION WARNING: This operation is parsed as:\n\
+         \nDEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    #{a} + 5% * 2\n\
          \nbut you may have intended it to mean:\n\
          \n    #{a} (+5% * 2)\n\
@@ -137,7 +137,7 @@ fn test() {
          \n   |         ^^^^^^^^^^^^^^\
          \n   \'\
          \n    input.scss 22:9  root stylesheet\n\
-         \nDEPRECATION WARNING: This operation is parsed as:\n\
+         \nDEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    5 + 2% + #{a}\n\
          \nbut you may have intended it to mean:\n\
          \n    5 + 2% (+#{a})\n\
@@ -150,7 +150,7 @@ fn test() {
          \n   |         ^^^^^^^^^^^^^^\
          \n   \'\
          \n    input.scss 26:9  root stylesheet\n\
-         \nDEPRECATION WARNING: This operation is parsed as:\n\
+         \nDEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    5 - 2% + #{a}\n\
          \nbut you may have intended it to mean:\n\
          \n    5 - 2% (+#{a})\n\
@@ -163,7 +163,7 @@ fn test() {
          \n   |         ^^^^^^^^^^^^^^\
          \n   \'\
          \n    input.scss 30:9  root stylesheet\n\
-         \nDEPRECATION WARNING: This operation is parsed as:\n\
+         \nDEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    5% / 2 + #{a}\n\
          \nbut you may have intended it to mean:\n\
          \n    5% / 2 (+#{a})\n\
@@ -176,7 +176,7 @@ fn test() {
          \n   |         ^^^^^^^^^^^^^^\
          \n   \'\
          \n    input.scss 34:9  root stylesheet\n\
-         \nDEPRECATION WARNING: This operation is parsed as:\n\
+         \nDEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    5 * 2% + #{a}\n\
          \nbut you may have intended it to mean:\n\
          \n    5 * 2% (+#{a})\n\

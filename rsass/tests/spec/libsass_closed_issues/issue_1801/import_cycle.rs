@@ -15,14 +15,14 @@ fn test() {
         runner().err(
             "@import \'alpha\';\n"
         ),
-        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | @import \'alpha\';\
          \n  |         ^^^^^^^\
          \n  \'\
          \n    input.scss 1:9  root stylesheet\n\
-         \nDEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nDEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | @import \'beta\';\
@@ -30,7 +30,7 @@ fn test() {
          \n  \'\
          \n    _alpha.scss 1:9  @import\
          \n    input.scss 1:9   root stylesheet\n\
-         \nDEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+         \nDEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | @import \'alpha\';\

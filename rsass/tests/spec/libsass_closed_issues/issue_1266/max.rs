@@ -16,14 +16,14 @@ fn test() {
              \n  bar: meta.call(max, $foo...);\
              \n}\n"
         ),
-        "DEPRECATION WARNING: Passing a string to call() is deprecated and will be illegal in Dart Sass 2.0.0.\n\
+        "DEPRECATION WARNING [call-string]: Passing a string to call() is deprecated and will be illegal in Dart Sass 2.0.0.\n\
          \nRecommendation: call(get-function(max))\n\
          \n  ,\
          \n4 |   bar: meta.call(max, $foo...);\
          \n  |        ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n    input.scss 4:8  root stylesheet\n\
-         \nDEPRECATION WARNING: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+         \nDEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse math.max instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\

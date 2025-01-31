@@ -202,7 +202,7 @@ mod transitive_from_import {
             "@import \"midstream\";\n\
              \n@include upstream;\n"
         ),
-        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | @import \"midstream\";\
@@ -226,7 +226,7 @@ mod transitive_from_import {
             "@import \"midstream\";\n\
              \na {b: $upstream};\n"
         ),
-        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | @import \"midstream\";\

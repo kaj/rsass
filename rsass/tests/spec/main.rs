@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec"
-//! version c2a780e8d, 2024-12-12 14:19:41 -0800.
+//! version 1dafbb0a2, 2025-01-29 16:41:38 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["directives/extend", "libsass-todo-issues/issue_221260.hrx", "libsass-todo-issues/issue_221262.hrx", "libsass-todo-issues/issue_221264.hrx", "libsass-todo-issues/issue_221292.hrx", "libsass/unicode-bom/utf-16-big", "libsass/unicode-bom/utf-16-little", "non_conformant/scss/huge.hrx", "non_conformant/scss/multiline-var.hrx"]

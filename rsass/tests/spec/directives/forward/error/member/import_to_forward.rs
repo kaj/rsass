@@ -47,7 +47,7 @@ mod nested {
             "a {@import \"midstream\"}\n\
              \nb {@include c}\n"
         ),
-        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | a {@import \"midstream\"}\
@@ -71,7 +71,7 @@ mod nested {
             "a {@import \"midstream\"}\n\
              \nb {c: $d}\n"
         ),
-        "DEPRECATION WARNING: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | a {@import \"midstream\"}\

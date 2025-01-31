@@ -37,7 +37,7 @@ project adheres to
 * Pure css `round()` may take an expression argument.
 * Minor changes in agrument syntax errors.
 * Updated `nom` to 8.0.0 and added `nom-language` 0.1.0.
-* Updated sass-spec test suite to 2024-12-12.
+* Updated sass-spec test suite to 2025-01-29.
 
 
 ## Release 0.28.10

@@ -85,7 +85,7 @@ mod error {
             "@use \"sass:meta\";\
              \na {b: meta.feature-exists(1)}\n"
         ),
-        "DEPRECATION WARNING: The feature-exists() function is deprecated.\n\
+        "DEPRECATION WARNING [feature-exists]: The feature-exists() function is deprecated.\n\
          \nMore info: https://sass-lang.com/d/feature-exists\n\
          \n  ,\
          \n2 | a {b: meta.feature-exists(1)}\

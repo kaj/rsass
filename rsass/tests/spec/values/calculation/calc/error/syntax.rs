@@ -179,7 +179,7 @@ mod no_whitespace {
         runner().err(
             "a {b: calc(1 +1)}\n"
         ),
-        "DEPRECATION WARNING: This operation is parsed as:\n\
+        "DEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    1 + 1\n\
          \nbut you may have intended it to mean:\n\
          \n    1 (+1)\n\

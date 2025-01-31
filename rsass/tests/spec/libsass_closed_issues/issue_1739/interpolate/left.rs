@@ -45,7 +45,7 @@ fn test() {
              \n  baz: #{1  %  2}  %  3;\r\
              \n}"
         ),
-        "DEPRECATION WARNING: This operation is parsed as:\n\
+        "DEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    1 + 2\n\
          \nbut you may have intended it to mean:\n\
          \n    1 (+2)\n\
@@ -58,7 +58,7 @@ fn test() {
          \n   |          ^^^^^\
          \n   \'\
          \n    input.scss 11:10  root stylesheet\n\
-         \nDEPRECATION WARNING: This operation is parsed as:\n\
+         \nDEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    #{1 + 2} + 3\n\
          \nbut you may have intended it to mean:\n\
          \n    #{1 + 2} (+3)\n\
