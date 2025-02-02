@@ -15,7 +15,7 @@ set -euo pipefail
 cd `dirname "$0"`
 
 update="no"
-case "$1" in
+case "${1:-}" in
     "-u"|"--update")
 	update="yes"
 	shift
@@ -43,7 +43,7 @@ list_fails() {
     grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
 }
 
-case "$1" in
+case "${1:-}" in
     "")
         check
         ;;
@@ -56,7 +56,7 @@ case "$1" in
 	echo "          scss parser values"
 	;;
     "stats")
-	check | \
+	(check || true) | \
             rg --text --no-line-number --no-unicode \
                '^(\d+) runs, (\d+) passing, (\d+) failures, (\d+) todo, (\d+) ignored, (\d+) errors' \
                  --replace 'echo "$0"; echo "Progress: $[$2] of $[$1-$4-$5] tests passed"' - \
