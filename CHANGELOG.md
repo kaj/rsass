@@ -7,7 +7,12 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.29.0
+
+Released 2025-02-02.
+Progress: 5879 of 12589 tests passed.
+The large number of new failing tests are mainly for new color
+functions that rsass don't support yet.
 
 ### Breaking changes:
 

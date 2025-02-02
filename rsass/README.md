@@ -19,7 +19,7 @@ The sass language [is defined in its reference
 doc](http://sass-lang.com/documentation/).
 This implementation is incomplete but getting there, if slowly.
 
-Progress: 5803 of 7673 tests passed.
+Progress: 5879 of 12589 tests passed.
 
 If you need _complete_ sass support, you'll need to call
 [dart sass](https://sass-lang.com/dart-sass).
