@@ -448,7 +448,7 @@ fn check_body(body: &[Item], context: BodyContext) -> Result<(), Error> {
             } if context != BodyContext::Rule => {
                 if !name
                     .single_raw()
-                    .map_or(false, |name| CSS_AT_RULES.contains(&name))
+                    .map_or(false, |name| name_in(name, &CSS_AT_RULES[..]))
                 {
                     return Err(Invalid::AtRule.at(pos.clone()));
                 }
@@ -486,4 +486,14 @@ fn push_items(
         dest.push_item(item)?;
     }
     Ok(())
+}
+
+fn name_in(name: &str, known: &[&str]) -> bool {
+    if name.starts_with('-') {
+        known.iter().any(|end| {
+            name.strip_suffix(end).map_or(false, |s| s.ends_with('-'))
+        })
+    } else {
+        known.iter().any(|known| name == *known)
+    }
 }

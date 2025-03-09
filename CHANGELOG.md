@@ -11,6 +11,8 @@ project adheres to
 
 * Improve the relation of file names to module names regarding `-` and
   `_` characters.
+* Allow vendor prefixes when checking for css-allowed at rules
+  (e.g. `@-moz-document` should be allowed).
 
 
 ## Release 0.29.0
