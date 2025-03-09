@@ -10,7 +10,7 @@ project adheres to
 ## Unreleased
 
 * Improve the relation of file names to module names regarding `-` and
-  `_` characters.
+  `_` characters.  Thanks `@purelinux@social.tchncs.de` for reporting.
 * Allow vendor prefixes when checking for css-allowed at rules
   (e.g. `@-moz-document` should be allowed).
 
