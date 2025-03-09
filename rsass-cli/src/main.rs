@@ -66,9 +66,13 @@ struct Args {
     #[arg(long, short = 'I')]
     load_path: Option<PathBuf>,
 
-    /// Sass file(s) to translate
-    #[arg(required = true)]
-    input: Vec<PathBuf>,
+    /// Sass file to translate
+    input: PathBuf,
+
+    /// File for writing output.
+    ///
+    /// If not given, the output is writted to standard output.
+    output: Option<PathBuf>,
 }
 
 impl Args {
@@ -77,12 +81,14 @@ impl Args {
             style: self.style.into(),
             precision: self.precision,
         };
-        for name in &self.input {
-            let (mut context, source) = input::FsContext::for_path(name)?;
-            if let Some(include_path) = &self.load_path {
-                context.push_path(include_path.as_ref());
-            }
-            let result = context.with_format(format).transform(source)?;
+        let (mut context, source) = input::FsContext::for_path(&self.input)?;
+        if let Some(include_path) = &self.load_path {
+            context.push_path(include_path.as_ref());
+        }
+        let result = context.with_format(format).transform(source)?;
+        if let Some(path) = self.output {
+            std::fs::write(path, result)?;
+        } else {
             stdout().write_all(&result)?;
         }
         Ok(())
