@@ -1,6 +1,6 @@
 [package]
 name = "rsass-macros"
-version = "0.29.0"
+version = "0.29.1-PRE"
 authors = ["Rasmus Kaj <rasmus@krats.se>"]
 categories = ["web-programming"]
 keywords = ["scss", "sass", "css", "web", "macro"]
@@ -16,7 +16,7 @@ rust-version = "1.65.0"
 proc-macro = true
 
 [dependencies]
-rsass = { path = "../rsass", version = "0.29.0" }
+rsass = { path = "../rsass" }
 proc-macro2 = "1.0.32"
 quote = "1.0.22"
 syn = "2.0.2"
