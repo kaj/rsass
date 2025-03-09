@@ -9,6 +9,8 @@ project adheres to
 
 ## Unreleased
 
+* Improve the relation of file names to module names regarding `-` and
+  `_` characters.
 
 
 ## Release 0.29.0

@@ -509,9 +509,11 @@ impl Scope {
         let module = module.with_forwarded();
         match as_n {
             UseAs::KeepName => {
-                let name =
-                    name.rfind([':', '/']).map_or(name, |i| &name[i + 1..]);
-                self.define_module(name.into(), module.expose(expose));
+                let name = name
+                    .rfind([':', '/'])
+                    .map_or(name, |i| &name[i + 1..])
+                    .replace('_', "-");
+                self.define_module(name, module.expose(expose));
             }
             UseAs::Star => {
                 self.expose_star(&module.expose(expose));
