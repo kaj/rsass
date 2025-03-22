@@ -18,7 +18,7 @@ fastrand = "2.0"
 lazy_static = "1.0"
 nom = "8.0"
 nom-language = "0.1.0"
-tracing = "0.1.34"
+tracing = { version = "0.1.34", default-features = false }
 
 [badges]
 maintenance = { status = "actively-developed" }

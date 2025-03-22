@@ -7,6 +7,7 @@ The "r" in the name might stand for the Rust programming language, for
 [![Crate](https://img.shields.io/crates/v/rsass.svg)](https://crates.io/crates/rsass)
 [![docs](https://docs.rs/rsass/badge.svg)](https://docs.rs/rsass)
 [![Github build](https://github.com/kaj/rsass/workflows/CI/badge.svg)](https://github.com/kaj/rsass/actions)
+[![free of syn](https://img.shields.io/badge/free%20of-syn-hotpink)](https://github.com/fasterthanlime/free-of-syn)
 
 ## Commandline and library
 
@@ -22,6 +23,9 @@ To install the cli, use:
 To use the rust library, add `rsass` to your dependencies.
 
     cargo add rsass
+
+Note: The "Free of syn" badge above refers to the library, currently
+not the cli or the proc macro.
 
 ## Sass language and implementation status
 

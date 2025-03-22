@@ -5,7 +5,7 @@ use super::{
 use crate::output::{handle_parsed, CssData, Format};
 use crate::{Error, ScopeRef};
 use std::{borrow::Cow, collections::BTreeMap, fmt, path::Path};
-use tracing::instrument;
+use tracing::{span, Level};
 
 type Combine = &'static dyn Fn(&str, &str) -> String;
 
@@ -203,12 +203,13 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
     /// handling it.
     ///
     /// [import-only]: https://sass-lang.com/documentation/at-rules/import#import-only-files
-    #[instrument]
     pub fn find_file(
         &mut self,
         url: &str,
         from: SourceKind,
     ) -> Result<Option<SourceFile>, Error> {
+        let span = span!(Level::TRACE, "find_file", ?self, url, %from);
+        let _span = span.enter();
         let names: &[Combine] = if from.is_import() {
             &[
                 // base will either be empty or end with a slash.
