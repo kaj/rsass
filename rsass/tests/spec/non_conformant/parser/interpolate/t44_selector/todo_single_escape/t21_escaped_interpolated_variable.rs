@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/44_selector/todo_single_escape/21_escaped_interpolated_variable.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("21_escaped_interpolated_variable")
 }

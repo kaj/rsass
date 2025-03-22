@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/mixin/content/before_if.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("before_if")
 }

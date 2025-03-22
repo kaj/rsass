@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/desaturate.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("desaturate")
 }
@@ -15,11 +14,9 @@ fn alpha() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod bounds {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -93,7 +90,6 @@ mod error {
     );
     }
     mod one_arg {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -146,7 +142,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

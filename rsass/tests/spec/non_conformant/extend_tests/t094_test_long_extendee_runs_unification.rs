@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/094_test_long_extendee_runs_unification.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("094_test_long_extendee_runs_unification")
 }

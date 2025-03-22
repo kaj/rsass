@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/236_extend_with_universal_selector_empty_namespace.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("236_extend_with_universal_selector_empty_namespace")

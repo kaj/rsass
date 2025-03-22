@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/function_name_identifiers.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("function_name_identifiers")
 }

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/type_of.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("type_of")
 }
@@ -19,7 +18,6 @@ fn arglist() {
     );
 }
 mod boolean {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -44,11 +42,9 @@ mod boolean {
     }
 }
 mod calculation {
-    #[allow(unused)]
     use super::runner;
 
     mod preserved {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -94,7 +90,6 @@ fn color() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -149,7 +144,6 @@ fn function() {
     );
 }
 mod list {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -174,7 +168,6 @@ mod list {
     }
 }
 mod map {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -200,7 +193,6 @@ mod map {
     }
 }
 mod mixin {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -248,7 +240,6 @@ fn null() {
     );
 }
 mod number {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -273,7 +264,6 @@ mod number {
     }
 }
 mod string {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

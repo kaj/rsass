@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/sign.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("sign")
 }
@@ -15,7 +14,6 @@ fn case_insensitive() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -32,7 +30,6 @@ mod error {
         );
     }
     mod syntax {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

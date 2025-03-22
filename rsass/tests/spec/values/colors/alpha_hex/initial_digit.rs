@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/colors/alpha_hex/initial_digit.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("initial_digit").set_precision(10)
 }

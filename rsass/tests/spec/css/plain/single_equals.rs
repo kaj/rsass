@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/single_equals.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("single_equals").mock_file(
         "plain.css",

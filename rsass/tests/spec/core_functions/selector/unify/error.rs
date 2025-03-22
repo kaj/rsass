@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod selector1 {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -67,7 +65,6 @@ mod selector1 {
     }
 }
 mod selector2 {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/url.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("url")
 }
 
 mod escape {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/css/style_rule.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("style_rule")
 }
 
 mod comment {
-    #[allow(unused)]
     use super::runner;
 
     mod after_selector {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -35,15 +32,12 @@ mod comment {
     }
 }
 mod declaration {
-    #[allow(unused)]
     use super::runner;
 
     mod comment {
-        #[allow(unused)]
         use super::runner;
 
         mod after_colon {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -67,7 +61,6 @@ mod declaration {
             }
         }
         mod after_value {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -91,7 +84,6 @@ mod declaration {
             }
         }
         mod before_colon {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -116,11 +108,9 @@ mod declaration {
         }
     }
     mod interleaved {
-        #[allow(unused)]
         use super::runner;
 
         mod after_style_rule {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

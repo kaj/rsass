@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/mix/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod bounds {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -106,7 +104,6 @@ fn extra_character_start() {
     );
 }
 mod interpolation {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -134,7 +131,6 @@ mod interpolation {
     }
 }
 mod interpolation_list {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -198,7 +194,6 @@ mod interpolation_list {
     }
 }
 mod invalid_method {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -274,11 +269,9 @@ fn missing_hue_string() {
     );
 }
 mod null_method {
-    #[allow(unused)]
     use super::runner;
 
     mod non_legacy {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -414,7 +407,6 @@ fn too_many_args() {
     );
 }
 mod test_type {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_185/media_wrapper_selector.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("media_wrapper_selector")
 }

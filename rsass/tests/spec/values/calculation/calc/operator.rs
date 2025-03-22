@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/operator.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("operator")
 }
 
 mod divide {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -38,11 +36,9 @@ mod divide {
     }
 }
 mod minus {
-    #[allow(unused)]
     use super::runner;
 
     mod preserved {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -102,11 +98,9 @@ mod minus {
     }
 }
 mod plus {
-    #[allow(unused)]
     use super::runner;
 
     mod preserved {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -166,15 +160,12 @@ mod plus {
     }
 }
 mod precedence {
-    #[allow(unused)]
     use super::runner;
 
     mod interpolation {
-        #[allow(unused)]
         use super::runner;
 
         mod calculation {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -225,11 +216,9 @@ mod precedence {
         }
     }
     mod preserved {
-        #[allow(unused)]
         use super::runner;
 
         mod additive {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -252,7 +241,6 @@ mod precedence {
             }
         }
         mod additive_then_multiplicative {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -275,11 +263,9 @@ mod precedence {
             }
         }
         mod multiplicative {
-            #[allow(unused)]
             use super::runner;
 
             mod default {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -303,7 +289,6 @@ mod precedence {
                 }
             }
             mod needs_parens {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -328,7 +313,6 @@ mod precedence {
             }
         }
         mod multiplicative_then_additive {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -352,7 +336,6 @@ mod precedence {
         }
     }
     mod simplified {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -385,7 +368,6 @@ mod precedence {
             );
         }
         mod parens {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -410,11 +392,9 @@ mod precedence {
     }
 }
 mod sass_script {
-    #[allow(unused)]
     use super::runner;
 
     mod plus_string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -438,7 +418,6 @@ mod sass_script {
     }
 }
 mod times {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -470,7 +449,6 @@ mod times {
     }
 }
 mod units {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -502,7 +480,6 @@ mod units {
         );
     }
     mod percent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -525,7 +502,6 @@ mod units {
         }
     }
     mod unknown {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -549,7 +525,6 @@ mod units {
     }
 }
 mod var {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/087_test_function_splat_expression.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("087_test_function_splat_expression")
 }

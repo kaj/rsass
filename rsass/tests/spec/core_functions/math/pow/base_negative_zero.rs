@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/pow/base_negative_zero.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("base_negative_zero")
 }
 
 mod fuzzy {
-    #[allow(unused)]
     use super::runner;
 
     mod with_exponent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -106,7 +103,6 @@ mod fuzzy {
     }
 }
 mod with_exponent {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

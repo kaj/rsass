@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/media/comment.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("comment")
 }
 
 mod after_query {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -24,7 +22,6 @@ mod after_query {
     }
 }
 mod before_query {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/with/doesnt_run_default.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("doesnt_run_default")

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/font-face.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("font-face")
@@ -15,7 +14,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod bubble {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("bubble")
     }
@@ -63,7 +61,6 @@ mod bubble {
         );
     }
     mod loaded {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("loaded")
         }

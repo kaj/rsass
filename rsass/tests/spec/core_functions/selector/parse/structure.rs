@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/parse/structure.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("structure")
 }
 
 mod decomposed {
-    #[allow(unused)]
     use super::runner;
 
     mod complex {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -45,7 +42,6 @@ mod decomposed {
         }
     }
     mod full {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -80,7 +76,6 @@ mod decomposed {
         }
     }
     mod middle {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -116,7 +111,6 @@ mod decomposed {
         }
     }
     mod partial {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -156,7 +150,6 @@ mod decomposed {
     }
 }
 mod full_string {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

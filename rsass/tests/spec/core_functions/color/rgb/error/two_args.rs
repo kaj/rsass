@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb/error/two_args.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("two_args")
 }
 
 mod alpha {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -43,7 +41,6 @@ mod alpha {
     }
 }
 mod color {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/load_css/with.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("with")
@@ -45,7 +44,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod core_module {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("core_module")
     }
@@ -99,7 +97,6 @@ fn empty() {
     );
 }
 mod multi_load {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("multi_load")
     }
@@ -209,7 +206,6 @@ fn some_unconfigured() {
     );
 }
 mod through_forward {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("through_forward")
     }
@@ -285,7 +281,6 @@ mod through_forward {
         );
     }
     mod with {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("with")
         }
@@ -333,7 +328,6 @@ mod through_forward {
     }
 }
 mod through_import {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("through_import")
     }

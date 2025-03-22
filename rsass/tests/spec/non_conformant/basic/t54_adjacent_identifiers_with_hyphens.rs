@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/basic/54_adjacent_identifiers_with_hyphens.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("54_adjacent_identifiers_with_hyphens")
 }

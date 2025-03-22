@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/variables.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("variables")
 }
@@ -32,11 +31,9 @@ fn epsilon() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod assignment {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

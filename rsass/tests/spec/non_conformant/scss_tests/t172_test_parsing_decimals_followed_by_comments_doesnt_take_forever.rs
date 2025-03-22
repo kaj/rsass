@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/172_test_parsing_decimals_followed_by_comments_doesnt_take_forever.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd(
         "172_test_parsing_decimals_followed_by_comments_doesnt_take_forever",

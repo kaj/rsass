@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/import/scss_takes_precedence.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("scss_takes_precedence")

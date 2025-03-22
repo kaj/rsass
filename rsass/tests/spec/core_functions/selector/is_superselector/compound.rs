@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/is_superselector/compound.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("compound")
 }
@@ -16,11 +15,9 @@ fn different_order() {
     );
 }
 mod pseudo_element {
-    #[allow(unused)]
     use super::runner;
 
     mod absent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -45,7 +42,6 @@ mod pseudo_element {
         }
     }
     mod class_syntax {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -123,7 +119,6 @@ mod pseudo_element {
         );
     }
     mod subset {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -148,7 +143,6 @@ mod pseudo_element {
         }
     }
     mod superset {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/supports/syntax/calculations.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("calculations")
 }
 
 mod calc {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

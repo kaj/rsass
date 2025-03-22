@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("forward")
 }
@@ -16,5 +15,7 @@ mod escaped;
 mod extend;
 
 mod member;
+
+mod whitespace;
 
 mod with;

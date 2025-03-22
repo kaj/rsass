@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/media/range/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod invalid_binary_operator {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -112,7 +110,6 @@ mod invalid_binary_operator {
     }
 }
 mod invalid_comparison {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -156,7 +153,6 @@ mod invalid_comparison {
     }
 }
 mod mismatched_range {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

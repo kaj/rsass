@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/complex/overlap.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("overlap")
 }
@@ -20,7 +19,6 @@ fn class() {
     );
 }
 mod id {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -52,7 +50,6 @@ mod id {
     }
 }
 mod pseudo_element {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

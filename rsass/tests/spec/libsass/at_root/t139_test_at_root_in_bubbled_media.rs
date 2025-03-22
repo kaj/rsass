@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/at-root/139_test_at_root_in_bubbled_media.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("139_test_at_root_in_bubbled_media")
 }

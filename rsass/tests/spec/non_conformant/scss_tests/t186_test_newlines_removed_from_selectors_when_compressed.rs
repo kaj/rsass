@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/186_test_newlines_removed_from_selectors_when_compressed.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("186_test_newlines_removed_from_selectors_when_compressed")

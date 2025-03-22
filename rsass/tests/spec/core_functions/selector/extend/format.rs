@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/extend/format.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("format")
 }
 
 mod input {
-    #[allow(unused)]
     use super::runner;
 
     mod multiple_extendees {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -47,7 +44,6 @@ mod input {
         }
     }
     mod non_string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

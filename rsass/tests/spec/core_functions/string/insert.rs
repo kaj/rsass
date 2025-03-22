@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/string/insert.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("insert")
 }
@@ -39,7 +38,6 @@ fn double_width_character() {
     );
 }
 mod empty_destination {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -104,7 +102,6 @@ fn empty_insertion() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -161,7 +158,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -227,11 +223,9 @@ mod error {
     }
 }
 mod index {
-    #[allow(unused)]
     use super::runner;
 
     mod negative {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -255,7 +249,6 @@ mod index {
             );
         }
         mod after_last {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -292,7 +285,6 @@ mod index {
         }
     }
     mod positive {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/simple/pseudo.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("pseudo")
 }
 
 mod arg {
-    #[allow(unused)]
     use super::runner;
 
     mod class {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -35,7 +32,6 @@ mod arg {
         }
     }
     mod element {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -64,15 +60,12 @@ mod arg {
     }
 }
 mod host {
-    #[allow(unused)]
     use super::runner;
 
     mod arg {
-        #[allow(unused)]
         use super::runner;
 
         mod preserved {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -98,7 +91,6 @@ mod host {
             }
         }
         mod removed {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -126,11 +118,9 @@ mod host {
         }
     }
     mod argless {
-        #[allow(unused)]
         use super::runner;
 
         mod class {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -157,11 +147,9 @@ mod host {
             }
         }
         mod compound {
-            #[allow(unused)]
             use super::runner;
 
             mod class_and_selector_pseudo {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -192,7 +180,6 @@ mod host {
                 }
             }
             mod host_and_class {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -223,7 +210,6 @@ mod host {
                 }
             }
             mod selector_pseudos {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -250,7 +236,6 @@ mod host {
             }
         }
         mod host {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -275,7 +260,6 @@ mod host {
             }
         }
         mod host_context {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -300,7 +284,6 @@ mod host {
             }
         }
         mod pseudo {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -327,7 +310,6 @@ mod host {
             }
         }
         mod selector_pseudo {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -353,7 +335,6 @@ mod host {
             }
         }
         mod universal {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -382,11 +363,9 @@ mod host {
     }
 }
 mod host_context {
-    #[allow(unused)]
     use super::runner;
 
     mod preserved {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -412,7 +391,6 @@ mod host_context {
         }
     }
     mod removed {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -444,11 +422,9 @@ mod host_context {
     }
 }
 mod no_arg {
-    #[allow(unused)]
     use super::runner;
 
     mod class {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -473,7 +449,6 @@ mod no_arg {
         }
     }
     mod different_syntax_same_semantics {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -520,7 +495,6 @@ mod no_arg {
         }
     }
     mod element {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -547,11 +521,9 @@ mod no_arg {
     }
 }
 mod selector_arg {
-    #[allow(unused)]
     use super::runner;
 
     mod is {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -576,7 +548,6 @@ mod selector_arg {
         }
     }
     mod matches {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -601,7 +572,6 @@ mod selector_arg {
         }
     }
     mod test_where {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

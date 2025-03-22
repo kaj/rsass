@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/error/syntax/after.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("after")
 }
 
 mod at_rule {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -73,10 +71,6 @@ mod at_rule {
          \n  input.scss 2:1  root stylesheet",
         );
     }
-}
-mod indented {
-    #[allow(unused)]
-    use super::runner;
 }
 #[test]
 #[ignore] // wrong error

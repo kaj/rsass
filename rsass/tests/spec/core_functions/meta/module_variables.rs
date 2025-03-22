@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/module_variables.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("module_variables")
@@ -123,7 +122,6 @@ fn empty() {
     );
 }
 mod error {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("error")
     }
@@ -279,7 +277,6 @@ fn named() {
     );
 }
 mod through_forward {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("through_forward")
     }

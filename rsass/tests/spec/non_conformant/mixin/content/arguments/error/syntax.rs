@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/mixin/content/arguments/error/syntax.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("syntax")
 }
 
 mod arglist {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

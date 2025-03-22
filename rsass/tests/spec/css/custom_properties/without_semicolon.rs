@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/custom_properties/without_semicolon.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("without_semicolon")
 }

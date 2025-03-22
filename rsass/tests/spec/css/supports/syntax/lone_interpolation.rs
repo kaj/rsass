@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/supports/syntax/lone_interpolation.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("lone_interpolation")
 }
 
 mod parens {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -40,7 +38,6 @@ mod parens {
     }
 }
 mod top_level {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/color/spaces/xyz.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("xyz")
 }
 
 mod percent {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -23,7 +21,6 @@ mod percent {
         );
     }
     mod x {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -54,7 +51,6 @@ mod percent {
         }
     }
     mod y {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -85,7 +81,6 @@ mod percent {
         }
     }
     mod z {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -117,7 +112,6 @@ mod percent {
     }
 }
 mod unitless {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -134,7 +128,6 @@ mod unitless {
         );
     }
     mod x {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -165,7 +158,6 @@ mod unitless {
         }
     }
     mod y {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -196,7 +188,6 @@ mod unitless {
         }
     }
     mod z {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

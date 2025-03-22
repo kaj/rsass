@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/units/multiple/multiple_numerators.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("multiple_numerators")
 }

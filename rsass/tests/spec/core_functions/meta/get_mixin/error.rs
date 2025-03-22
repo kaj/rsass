@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/get_mixin/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("error")
@@ -25,7 +24,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod argument {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("argument")
     }
@@ -92,7 +90,6 @@ mod argument {
         );
     }
     mod test_type {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("type")
         }
@@ -158,7 +155,6 @@ fn conflict() {
     );
 }
 mod module {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("module")
     }
@@ -252,7 +248,6 @@ fn non_existent() {
     );
 }
 mod through_forward {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("through_forward")
     }

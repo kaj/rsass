@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1590/quoted-ampersand-does-not-select.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("quoted-ampersand-does-not-select")
 }

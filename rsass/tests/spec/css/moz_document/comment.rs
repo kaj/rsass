@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/moz_document/comment.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("comment")
 }
 
 mod after_arg {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -27,7 +25,6 @@ mod after_arg {
     }
 }
 mod before_arg {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

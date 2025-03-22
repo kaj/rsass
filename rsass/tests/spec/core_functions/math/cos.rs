@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/cos.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("cos")
 }
@@ -16,7 +15,6 @@ fn deg() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/110_test_nested_extender_finds_common_selectors_around_adjacent_sibling.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("110_test_nested_extender_finds_common_selectors_around_adjacent_sibling")

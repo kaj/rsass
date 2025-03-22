@@ -1,20 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/divide/slash_separated.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("slash_separated")
 }
 
 mod list {
-    #[allow(unused)]
     use super::runner;
 
     mod argument {
-        #[allow(unused)]
         use super::runner;
 
         mod function {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -106,7 +102,6 @@ mod list {
     }
 }
 mod value {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

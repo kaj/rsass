@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/wrapped-selector-whitespace.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("wrapped-selector-whitespace")
 }

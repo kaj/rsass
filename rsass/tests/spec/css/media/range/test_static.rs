@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/media/range/static.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("static")
 }

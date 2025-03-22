@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/is_superselector/simple/pseudo/selector_arg/host.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("host")
 }
@@ -18,7 +17,6 @@ fn bare_sub() {
     );
 }
 mod prefix {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

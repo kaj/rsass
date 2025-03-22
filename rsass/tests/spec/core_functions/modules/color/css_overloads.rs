@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/modules/color/css_overloads.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("css_overloads")
 }
 
 mod alpha {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

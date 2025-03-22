@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/member/import/import_to_forward/use_to.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("use_to")

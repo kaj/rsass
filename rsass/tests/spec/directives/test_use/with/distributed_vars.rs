@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/with/distributed_vars.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("distributed_vars")

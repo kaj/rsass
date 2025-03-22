@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/extend/complex/with_unification.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("with_unification")
 }
 
 mod leading_combinator {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -42,11 +40,9 @@ mod leading_combinator {
     }
 }
 mod multiple_combinators {
-    #[allow(unused)]
     use super::runner;
 
     mod leading {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -73,7 +69,6 @@ mod multiple_combinators {
         }
     }
     mod middle {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -99,7 +94,6 @@ mod multiple_combinators {
         }
     }
     mod trailing {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -126,11 +120,9 @@ mod multiple_combinators {
     }
 }
 mod parent {
-    #[allow(unused)]
     use super::runner;
 
     mod with_grandparent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -168,7 +160,6 @@ mod parent {
         }
     }
     mod without_grandparent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -207,7 +198,6 @@ mod parent {
     }
 }
 mod trailing_combinator {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -221,7 +211,6 @@ mod trailing_combinator {
         );
     }
     mod extender {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

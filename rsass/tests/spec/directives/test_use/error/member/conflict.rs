@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/error/member/conflict.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("conflict")
@@ -77,7 +76,6 @@ fn mixin() {
     );
 }
 mod same_value {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("same_value")
     }

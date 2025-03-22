@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/import/error/member.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("member")
@@ -16,13 +15,11 @@ fn runner() -> crate::TestRunner {
 }
 
 mod inaccessible {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("inaccessible")
     }
 
     mod nested {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("nested")
         }

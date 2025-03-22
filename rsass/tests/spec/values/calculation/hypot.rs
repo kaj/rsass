@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/hypot.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("hypot")
 }
@@ -15,7 +14,6 @@ fn case_insensitive() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -58,7 +56,6 @@ mod error {
         );
     }
     mod syntax {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -88,11 +85,9 @@ mod error {
         );
     }
     mod units {
-        #[allow(unused)]
         use super::runner;
 
         mod incompatible {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -170,7 +165,6 @@ mod error {
     }
 }
 mod infinity {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -214,7 +208,6 @@ fn simplification() {
     );
 }
 mod units {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/identifiers/if.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("if")
 }

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1418/dynamic.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("dynamic")
 }

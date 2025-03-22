@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1441/sibling.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("sibling")
 }

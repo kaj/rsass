@@ -24,12 +24,21 @@ fn main() -> Result<(), Error> {
         "spec",
         &[
             "directives/extend", // `@extend` is not supported at all
+            "libsass-closed-issues/issue_2446", // non-utf8 input
+            "libsass-closed-issues/issue_245443", // non-utf8 input
             "libsass-todo-issues/issue_221260.hrx", // stack overflow
             "libsass-todo-issues/issue_221262.hrx", // stack overflow
             "libsass-todo-issues/issue_221264.hrx", // stack overflow
+            "libsass-todo-issues/issue_221267", // non-utf8 input
+            "libsass-todo-issues/issue_221286", // non-utf8 input
+            "libsass-todo-issues/issue_221286", // non-utf8 input
             "libsass-todo-issues/issue_221292.hrx", // stack overflow
+            "libsass-todo-issues/issue_245442", // non-utf8 input
+            "libsass-todo-issues/issue_245446", // non-utf8 input
+            "libsass-todo-tests/errors/unicode", // non-utf8 input
             "libsass/unicode-bom/utf-16-big", // rsass only handles utf8
             "libsass/unicode-bom/utf-16-little", // rsass only handles utf8
+            "non_conformant/sass", // Nothing relevant
             "non_conformant/scss/huge.hrx", // stack overflow in debug mode
             "non_conformant/scss/multiline-var.hrx", // duplicate rust name
         ],
@@ -97,43 +106,33 @@ fn handle_entries(
         } else if entry.file_type()?.is_file()
             && entry.file_name().to_string_lossy().ends_with(".hrx")
         {
-            let name = fn_name_os(&entry.file_name());
-            writeln!(rs, "\nmod {};", name)?;
-            let mut rs = create(&rssuitedir.join(format!("{name}.rs")))?;
-            writeln!(
-                rs,
-                "//! Tests auto-converted from {:?}\n",
-                suitedir.strip_prefix("..")?.join(entry.file_name()),
-            )?;
-            spec_hrx_to_test(&mut rs, &entry.path(), precision).map_err(
-                |e| {
+            let buf =
+                spec_hrx_to_test(&entry.path(), precision).map_err(|e| {
                     Error(format!(
                         "Failed to handle {:?}: {}",
                         entry.path(),
                         e
                     ))
-                },
-            )?;
-        } else if entry.file_type()?.is_dir() {
-            if entry.path().join("error").is_file() {
-                ignore(
+                })?;
+            if !buf.is_empty() {
+                let name = fn_name_os(&entry.file_name());
+                writeln!(rs, "\nmod {};", name)?;
+                let mut rs = create(&rssuitedir.join(format!("{name}.rs")))?;
+                writeln!(
                     rs,
-                    &entry.file_name(),
-                    "tests with expected error not implemented yet",
+                    "//! Tests auto-converted from {:?}\n",
+                    suitedir.strip_prefix("..")?.join(entry.file_name()),
                 )?;
-            } else {
-                eprintln!(
-                    "Should handle {}",
-                    entry.path().strip_prefix(root)?.display()
-                );
-                let input = entry.path().join("input.scss");
-                if input.exists() {
-                    spec_dir_to_test(
-                        rs,
-                        suitedir,
-                        &entry.file_name(),
-                        precision,
-                    )
+                rs.write_all(&buf)?;
+            }
+        } else if entry.file_type()?.is_dir() {
+            eprintln!(
+                "Should handle {}",
+                entry.path().strip_prefix(root)?.display()
+            );
+            let input = entry.path().join("input.scss");
+            if input.exists() {
+                spec_dir_to_test(rs, suitedir, &entry.file_name(), precision)
                     .map_err(|e| {
                         Error(format!(
                             "Failed to handle {:?}: {}",
@@ -141,56 +140,50 @@ fn handle_entries(
                             e,
                         ))
                     })?;
+            } else {
+                let options = load_options(&entry.path())?;
+                if let Some(ref reason) = options.should_skip {
+                    ignore(rs, &entry.file_name(), reason)?;
                 } else {
-                    let options = load_options(&entry.path())?;
-                    if let Some(ref reason) = options.should_skip {
-                        ignore(rs, &entry.file_name(), reason)?;
-                    } else {
-                        let name = fn_name_os(&entry.file_name());
-                        writeln!(rs, "\nmod {};", name)?;
-                        let rssuitedir = rssuitedir.join(name);
-                        let _may_exist = create_dir(&rssuitedir);
-                        let mut rs = create(&rssuitedir.join("mod.rs"))?;
-                        writeln!(
-                            rs,
-                            "//! Tests auto-converted from {:?}\n",
-                            suitedir
-                                .strip_prefix("..")?
-                                .join(entry.file_name()),
-                        )?;
-                        writeln!(
-                            rs,
-                            "#[allow(unused)]\
-                             \nfn runner() -> crate::TestRunner {{\
+                    let name = fn_name_os(&entry.file_name());
+                    writeln!(rs, "\nmod {};", name)?;
+                    let rssuitedir = rssuitedir.join(name);
+                    let _may_exist = create_dir(&rssuitedir);
+                    let mut rs = create(&rssuitedir.join("mod.rs"))?;
+                    writeln!(
+                        rs,
+                        "//! Tests auto-converted from {:?}\n",
+                        suitedir.strip_prefix("..")?.join(entry.file_name()),
+                    )?;
+                    writeln!(
+                        rs,
+                        "fn runner() -> crate::TestRunner {{\
                              \n    super::runner()",
-                        )?;
-                        writeln!(
-                            rs,
-                            "        .with_cwd({:?})",
-                            entry.file_name()
-                        )?;
-                        if let Some(p) = options.precision {
-                            writeln!(rs, "    .set_precision({})\n", p)?;
-                        }
-                        writeln!(rs, "\n}}\n")?;
-                        let precision = options.precision.or(precision);
-                        let tt = format!(
-                            "{}/",
-                            entry.file_name().to_string_lossy(),
-                        );
-                        let ignored: Vec<&str> = ignored
-                            .iter()
-                            .filter_map(|p| p.strip_prefix(&tt))
-                            .collect();
-                        handle_entries(
-                            &mut rs,
-                            root,
-                            &entry.path(),
-                            &rssuitedir,
-                            precision,
-                            &ignored,
-                        )?;
+                    )?;
+                    writeln!(
+                        rs,
+                        "        .with_cwd({:?})",
+                        entry.file_name()
+                    )?;
+                    if let Some(p) = options.precision {
+                        writeln!(rs, "    .set_precision({})\n", p)?;
                     }
+                    writeln!(rs, "\n}}\n")?;
+                    let precision = options.precision.or(precision);
+                    let tt =
+                        format!("{}/", entry.file_name().to_string_lossy());
+                    let ignored: Vec<&str> = ignored
+                        .iter()
+                        .filter_map(|p| p.strip_prefix(&tt))
+                        .collect();
+                    handle_entries(
+                        &mut rs,
+                        root,
+                        &entry.path(),
+                        &rssuitedir,
+                        precision,
+                        &ignored,
+                    )?;
                 }
             }
         }
@@ -225,21 +218,22 @@ fn spec_dir_to_test(
 }
 
 fn spec_hrx_to_test(
-    rs: &mut dyn Write,
     suite: &Path,
     precision: Option<usize>,
-) -> Result<(), Error> {
+) -> Result<Vec<u8>, Error> {
     let archive = Archive::load(suite)
         .map_err(|e| Error(format!("Failed to load hrx: {e}")))?;
 
     eprintln!("Handle {}", suite.display());
-    rs.write_all(
-        b"#[allow(unused)]\
-          \nfn runner() -> crate::TestRunner {\
+
+    let mut top = Vec::new();
+
+    top.write_all(
+        b"fn runner() -> crate::TestRunner {\
           \n    super::runner()\n",
     )?;
     let mut runner = if let Some(stem) = suite.file_stem() {
-        writeln!(rs, "        .with_cwd({:?})", stem)?;
+        writeln!(top, "        .with_cwd({:?})", stem)?;
         let base = suite
             .strip_prefix("../sass-spec/spec")?
             .parent()
@@ -249,28 +243,9 @@ fn spec_hrx_to_test(
     } else {
         runner()
     };
-    for (name, content) in archive.entries() {
-        if ![
-            "README.md",
-            "input.scss",
-            "input.sass",
-            "output.css",
-            "output-libsass.css",
-            "output-dart-sass.css",
-            "error",
-            "error-libsass",
-            "error-dart-sass",
-            "warning",
-            "warning-libsass",
-            "warning-dart-sass",
-            "options.yml",
-        ]
-        .iter()
-        .any(|n| name.ends_with(n))
-        {
-            writeln!(rs, "        .mock_file({:?}, {:#?})", name, content)?;
-            runner = runner.mock_file(name, content);
-        }
+    for (name, content) in archive.entries().filter(|(n, _)| !skip_mock(n)) {
+        writeln!(top, "        .mock_file({:?}, {:#?})", name, content)?;
+        runner = runner.mock_file(name, content);
     }
     for (name, content) in archive.entries() {
         if let Some(base) = name.strip_suffix("input.scss") {
@@ -280,7 +255,7 @@ fn spec_hrx_to_test(
                 })
             {
                 writeln!(
-                    rs,
+                    top,
                     "        .mock_file({:?}, {:#?})",
                     name, content
                 )?;
@@ -289,10 +264,34 @@ fn spec_hrx_to_test(
         }
     }
     if let Some(p) = precision {
-        writeln!(rs, "        .set_precision({})", p)?;
+        writeln!(top, "        .set_precision({})", p)?;
     }
-    rs.write_all(b"}\n\n")?;
-    handle_hrx_part(rs, suite, &archive, "", precision, runner)
+    top.write_all(b"}\n\n")?;
+    let mut buff = Vec::new();
+    handle_hrx_part(&mut buff, suite, &archive, "", precision, runner)?;
+    if buff.is_empty() {
+        Ok(Vec::new())
+    } else {
+        top.extend(buff);
+        Ok(top)
+    }
+}
+
+fn skip_mock(name: &str) -> bool {
+    [
+        "README.md",
+        "input.scss",
+        "input.sass",
+        "output.css",
+        "output-libsass.css",
+        "error",
+        "error-libsass",
+        "warning",
+        "warning-libsass",
+        "options.yml",
+    ]
+    .iter()
+    .any(|n| name.ends_with(n))
 }
 
 fn references_input(content: &str) -> bool {
@@ -347,14 +346,24 @@ fn handle_hrx_part(
     } else if let Some(ref reason) = options.should_skip {
         ignore(rs, &suite.file_name(), reason).map_err(|e| e.into())
     } else {
-        if !tests.is_empty() {
+        let mut buff = Vec::new();
+        for name in tests {
+            handle_hrx_part(
+                &mut buff,
+                suite,
+                archive,
+                &format!("{prefix}{name}"),
+                options.precision,
+                runner.clone().with_cwd(name),
+            )?;
+        }
+        if !buff.is_empty() {
             if let Some(ref name) = name {
                 writeln!(rs, "mod {} {{", fn_name(name))?;
                 if options.precision.is_some() || runner.has_files() {
                     write!(
                         rs,
-                        "    #[allow(unused)]\
-                         \n    fn runner() -> crate::TestRunner {{\
+                        "    fn runner() -> crate::TestRunner {{\
                          \n        super::runner().with_cwd({:?})",
                         name
                     )?;
@@ -363,21 +372,10 @@ fn handle_hrx_part(
                     }
                     writeln!(rs, "\n}}\n")?;
                 } else {
-                    rs.write_all(
-                        b"#[allow(unused)]\nuse super::runner;\n\n",
-                    )?;
+                    rs.write_all(b"use super::runner;\n\n")?;
                 }
             }
-            for name in tests {
-                handle_hrx_part(
-                    rs,
-                    suite,
-                    archive,
-                    &format!("{prefix}{name}"),
-                    options.precision,
-                    runner.clone().with_cwd(name),
-                )?;
-            }
+            rs.write_all(&buff)?;
             if name.is_some() {
                 writeln!(rs, "}}")?;
             }

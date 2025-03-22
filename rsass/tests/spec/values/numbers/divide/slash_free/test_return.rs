@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/divide/slash_free/return.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("return")
 }

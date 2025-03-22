@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/operators/slash.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("slash")
@@ -19,19 +18,16 @@ fn namespaced_variables() {
     );
 }
 mod separator {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("separator")
     }
 
     mod calculation {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("calculation")
         }
 
         mod preserved {
-            #[allow(unused)]
             fn runner() -> crate::TestRunner {
                 super::runner().with_cwd("preserved")
             }
@@ -68,7 +64,6 @@ mod separator {
             }
         }
         mod simplified {
-            #[allow(unused)]
             fn runner() -> crate::TestRunner {
                 super::runner().with_cwd("simplified")
             }
@@ -107,7 +102,6 @@ mod separator {
     }
 }
 mod without_intermediate {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("without_intermediate")
     }

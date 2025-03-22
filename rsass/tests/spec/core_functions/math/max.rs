@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/max.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("max")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -40,7 +38,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -91,7 +88,6 @@ mod error {
     }
 }
 mod global {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -157,7 +153,6 @@ fn two_args() {
     );
 }
 mod units {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

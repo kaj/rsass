@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/load_css/error/with.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("with")
@@ -73,13 +72,11 @@ fn core_module() {
     );
 }
 mod multi_configuration {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("multi_configuration")
     }
 
     mod double_load {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("double_load")
         }
@@ -151,7 +148,6 @@ mod multi_configuration {
         }
     }
     mod use_and_load {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("use_and_load")
         }
@@ -315,7 +311,6 @@ fn repeated_variable() {
     );
 }
 mod through_forward {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("through_forward")
     }

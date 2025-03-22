@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/custom_properties/indentation.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("indentation")
 }

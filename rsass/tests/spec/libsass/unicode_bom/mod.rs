@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/unicode-bom"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("unicode-bom")
 }

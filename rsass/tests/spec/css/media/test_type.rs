@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/media/type.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("type")
 }

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/callable/arguments.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("arguments")
@@ -9,13 +8,11 @@ fn runner() -> crate::TestRunner {
 }
 
 mod function {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("function")
     }
 
     mod error {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("error")
         }
@@ -53,22 +50,8 @@ mod function {
          \n  input.scss 3:14  root stylesheet",
     );
         }
-        mod sass {
-            #[allow(unused)]
-            fn runner() -> crate::TestRunner {
-                super::runner().with_cwd("sass")
-            }
-
-            mod multi_line_arguments {
-                #[allow(unused)]
-                fn runner() -> crate::TestRunner {
-                    super::runner().with_cwd("multi-line-arguments")
-                }
-            }
-        }
     }
     mod trailing_comma {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("trailing_comma")
         }
@@ -86,7 +69,6 @@ mod function {
             );
         }
         mod named {
-            #[allow(unused)]
             fn runner() -> crate::TestRunner {
                 super::runner().with_cwd("named")
             }
@@ -129,7 +111,6 @@ mod function {
             );
         }
         mod rest {
-            #[allow(unused)]
             fn runner() -> crate::TestRunner {
                 super::runner().with_cwd("rest")
             }
@@ -186,13 +167,11 @@ mod function {
     }
 }
 mod mixin {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("mixin")
     }
 
     mod error {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("error")
         }
@@ -266,7 +245,6 @@ mod mixin {
         }
     }
     mod trailing_comma {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("trailing_comma")
         }
@@ -284,7 +262,6 @@ mod mixin {
             );
         }
         mod named {
-            #[allow(unused)]
             fn runner() -> crate::TestRunner {
                 super::runner().with_cwd("named")
             }
@@ -327,7 +304,6 @@ mod mixin {
             );
         }
         mod rest {
-            #[allow(unused)]
             fn runner() -> crate::TestRunner {
                 super::runner().with_cwd("rest")
             }

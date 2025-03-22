@@ -1,8 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec"
-//! version 1dafbb0a2, 2025-01-29 16:41:38 -0800.
+//! version 8d8f336f8, 2025-03-17 21:30:09 +0000.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["directives/extend", "libsass-todo-issues/issue_221260.hrx", "libsass-todo-issues/issue_221262.hrx", "libsass-todo-issues/issue_221264.hrx", "libsass-todo-issues/issue_221292.hrx", "libsass/unicode-bom/utf-16-big", "libsass/unicode-bom/utf-16-little", "non_conformant/scss/huge.hrx", "non_conformant/scss/multiline-var.hrx"]
+//! ["directives/extend", "libsass-closed-issues/issue_2446", "libsass-closed-issues/issue_245443", "libsass-todo-issues/issue_221260.hrx", "libsass-todo-issues/issue_221262.hrx", "libsass-todo-issues/issue_221264.hrx", "libsass-todo-issues/issue_221267", "libsass-todo-issues/issue_221286", "libsass-todo-issues/issue_221286", "libsass-todo-issues/issue_221292.hrx", "libsass-todo-issues/issue_245442", "libsass-todo-issues/issue_245446", "libsass-todo-tests/errors/unicode", "libsass/unicode-bom/utf-16-big", "libsass/unicode-bom/utf-16-little", "non_conformant/sass", "non_conformant/scss/huge.hrx", "non_conformant/scss/multiline-var.hrx"]
 mod testrunner;
 use testrunner::{runner, TestRunner};
 

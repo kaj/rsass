@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/round/strategy/down.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("down")
 }
@@ -15,7 +14,6 @@ fn infinity() {
     );
 }
 mod lower_multiple {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -66,7 +64,6 @@ fn negative_step() {
     );
 }
 mod negative_zero {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -109,7 +106,6 @@ fn positive_and_infinity() {
     );
 }
 mod positive_zero {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -152,7 +148,6 @@ fn step_is_zero() {
     );
 }
 mod upper_multiple {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

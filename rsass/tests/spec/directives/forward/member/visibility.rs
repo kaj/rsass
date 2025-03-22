@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/member/visibility.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("visibility")
@@ -56,7 +55,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod hide {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("hide")
     }
@@ -97,7 +95,6 @@ mod hide {
         );
     }
     mod wrong_type {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("wrong_type")
         }
@@ -127,7 +124,6 @@ mod hide {
     }
 }
 mod show {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("show")
     }

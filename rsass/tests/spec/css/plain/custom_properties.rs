@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/custom_properties.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("custom_properties")

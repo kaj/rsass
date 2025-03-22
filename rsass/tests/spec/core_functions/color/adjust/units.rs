@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/adjust/units.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("units")
 }
 
 mod alpha {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -41,7 +39,6 @@ mod alpha {
     }
 }
 mod hue {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -86,7 +83,6 @@ mod hue {
     }
 }
 mod lightness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -121,7 +117,6 @@ mod lightness {
     }
 }
 mod saturation {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

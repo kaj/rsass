@@ -1,20 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/precision.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("precision")
 }
 
 mod very_close_to_int {
-    #[allow(unused)]
     use super::runner;
 
     mod negative {
-        #[allow(unused)]
         use super::runner;
 
         mod above {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -69,7 +65,6 @@ mod very_close_to_int {
             }
         }
         mod below {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -125,11 +120,9 @@ mod very_close_to_int {
         }
     }
     mod positive {
-        #[allow(unused)]
         use super::runner;
 
         mod above {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -184,7 +177,6 @@ mod very_close_to_int {
             }
         }
         mod below {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -241,11 +233,9 @@ mod very_close_to_int {
     }
 }
 mod very_small {
-    #[allow(unused)]
     use super::runner;
 
     mod negative {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -300,7 +290,6 @@ mod very_small {
         }
     }
     mod positive {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

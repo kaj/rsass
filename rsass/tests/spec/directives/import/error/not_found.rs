@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/import/error/not_found.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("not_found")

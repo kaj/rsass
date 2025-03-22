@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/scale/out_of_gamut.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("out_of_gamut")
 }
 
 mod above_gamut {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -33,7 +31,6 @@ mod above_gamut {
     }
 }
 mod below_gamut {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

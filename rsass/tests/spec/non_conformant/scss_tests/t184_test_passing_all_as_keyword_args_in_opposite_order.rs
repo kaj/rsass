@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/184_test_passing_all_as_keyword_args_in_opposite_order.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("184_test_passing_all_as_keyword_args_in_opposite_order")

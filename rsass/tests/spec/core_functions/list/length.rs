@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/length.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("length")
 }
@@ -36,7 +35,6 @@ fn t2() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -89,7 +87,6 @@ fn many() {
     );
 }
 mod map {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

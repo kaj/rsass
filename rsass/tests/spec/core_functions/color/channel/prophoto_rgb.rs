@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/channel/prophoto-rgb.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("prophoto-rgb")
 }
 
 mod foreign {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -46,7 +44,6 @@ mod foreign {
     }
 }
 mod local {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

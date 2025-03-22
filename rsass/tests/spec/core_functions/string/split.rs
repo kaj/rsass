@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/string/split.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("split")
 }
@@ -70,7 +69,6 @@ fn empty_string() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -157,7 +155,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

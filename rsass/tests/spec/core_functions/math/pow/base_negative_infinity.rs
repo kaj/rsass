@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/pow/base_negative_infinity.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("base_negative_infinity")
 }
 
 mod with_exponent {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

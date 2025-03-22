@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/call.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("call")
 }
 
 mod args {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -43,7 +41,6 @@ mod args {
         );
     }
     mod splat {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -85,7 +82,6 @@ mod args {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -170,7 +166,6 @@ fn named() {
     );
 }
 mod string {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

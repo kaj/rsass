@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/extend/simple/pseudo/selector/idempotent/not.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("not")
 }
@@ -28,7 +27,6 @@ fn component() {
     );
 }
 mod is {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -98,7 +96,6 @@ fn list_in_not() {
     );
 }
 mod matches {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -169,7 +166,6 @@ fn simple() {
     );
 }
 mod test_where {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

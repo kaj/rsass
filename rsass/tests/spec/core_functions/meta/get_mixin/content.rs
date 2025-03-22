@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/get_mixin/content.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("content")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod denies_content {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -92,7 +89,6 @@ fn passes_empty_content() {
     );
 }
 mod scope {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -132,7 +128,6 @@ mod scope {
     );
     }
     mod redeclare {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

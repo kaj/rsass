@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/with/facade_contains_multiple_configured_forwards.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("facade_contains_multiple_configured_forwards")

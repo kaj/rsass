@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/constant.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("constant")
 }
 
 mod e {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -40,7 +38,6 @@ mod e {
     );
     }
     mod math {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -64,7 +61,6 @@ mod e {
     }
 }
 mod infinity {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -86,7 +82,6 @@ mod infinity {
         );
     }
     mod math {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -99,7 +94,6 @@ mod infinity {
             );
         }
         mod unsimplified {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -145,7 +139,6 @@ mod infinity {
     }
 }
 mod minus_infinity {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -167,7 +160,6 @@ mod minus_infinity {
         );
     }
     mod math {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -180,7 +172,6 @@ mod minus_infinity {
             );
         }
         mod unsimplified {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -226,7 +217,6 @@ mod minus_infinity {
     }
 }
 mod nan {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -248,7 +238,6 @@ mod nan {
         );
     }
     mod math {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -261,7 +250,6 @@ mod nan {
             );
         }
         mod unsimplified {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -307,7 +295,6 @@ mod nan {
     }
 }
 mod pi {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -341,7 +328,6 @@ mod pi {
     );
     }
     mod math {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -365,11 +351,9 @@ mod pi {
     }
 }
 mod precedence {
-    #[allow(unused)]
     use super::runner;
 
     mod after_divide {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -420,7 +404,6 @@ mod precedence {
     }
 }
 mod undefined {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

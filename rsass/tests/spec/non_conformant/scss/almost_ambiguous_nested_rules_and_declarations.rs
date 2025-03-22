@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/almost_ambiguous_nested_rules_and_declarations.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("almost_ambiguous_nested_rules_and_declarations")
 }

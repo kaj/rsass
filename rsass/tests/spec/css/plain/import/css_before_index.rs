@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/import/css_before_index.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("css_before_index")

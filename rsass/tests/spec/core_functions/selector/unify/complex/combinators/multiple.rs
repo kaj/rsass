@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/complex/combinators/multiple.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("multiple")
 }
 
 mod in_a_row {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -31,7 +29,6 @@ mod in_a_row {
         );
     }
     mod supersequence {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

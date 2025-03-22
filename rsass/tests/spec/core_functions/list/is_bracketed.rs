@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/is_bracketed.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("is_bracketed")
 }
 
 mod bracketed {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -41,7 +39,6 @@ mod bracketed {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -84,7 +81,6 @@ mod error {
     }
 }
 mod unbracketed {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

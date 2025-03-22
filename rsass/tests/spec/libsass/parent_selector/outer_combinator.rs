@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/parent-selector/outer-combinator.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("outer-combinator")
 }

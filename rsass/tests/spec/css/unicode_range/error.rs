@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/unicode_range/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
@@ -84,11 +83,9 @@ fn question_mark_after_minus() {
     );
 }
 mod too_many {
-    #[allow(unused)]
     use super::runner;
 
     mod after_minus {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -145,7 +142,6 @@ mod too_many {
         );
     }
     mod question_marks {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/is_superselector/list.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("list")
 }
 
 mod three {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -51,7 +49,6 @@ mod three {
     }
 }
 mod two {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -65,7 +62,6 @@ mod two {
         );
     }
     mod in_both {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

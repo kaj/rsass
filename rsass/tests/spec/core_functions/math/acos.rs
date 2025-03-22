@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/acos.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("acos")
 }
@@ -16,7 +15,6 @@ fn decimal() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

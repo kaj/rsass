@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/mix/hue_interpolation.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("hue_interpolation")
 }
@@ -19,7 +18,6 @@ fn case_insensitive() {
     );
 }
 mod decreasing {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -50,7 +48,6 @@ mod decreasing {
     }
 }
 mod default {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -81,7 +78,6 @@ mod default {
     }
 }
 mod increasing {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -112,7 +108,6 @@ mod increasing {
     }
 }
 mod longer {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -130,7 +125,6 @@ mod longer {
     }
 }
 mod shorter {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

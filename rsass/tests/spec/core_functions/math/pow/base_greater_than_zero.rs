@@ -1,20 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/pow/base_greater_than_zero.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("base_greater_than_zero")
 }
 
 mod base {
-    #[allow(unused)]
     use super::runner;
 
     mod greater_than_one {
-        #[allow(unused)]
         use super::runner;
 
         mod with_exponent {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -90,11 +86,9 @@ mod base {
         }
     }
     mod less_than_one {
-        #[allow(unused)]
         use super::runner;
 
         mod with_exponent {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -120,11 +114,9 @@ mod base {
         }
     }
     mod one {
-        #[allow(unused)]
         use super::runner;
 
         mod with_exponent {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -150,11 +142,9 @@ mod base {
         }
     }
     mod one_fuzzy {
-        #[allow(unused)]
         use super::runner;
 
         mod with_exponent {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

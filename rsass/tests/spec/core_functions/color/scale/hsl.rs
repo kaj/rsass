@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/scale/hsl.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("hsl")
 }
@@ -42,7 +41,6 @@ fn alpha_input() {
     );
 }
 mod lightness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -109,7 +107,6 @@ fn named() {
     );
 }
 mod saturation {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/directives/for/for.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("for")
 }
 
 mod empty {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -20,7 +18,6 @@ mod empty {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -97,7 +94,6 @@ mod error {
     }
 }
 mod exclusive_backward {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -162,7 +158,6 @@ fn inclusive_backward() {
     );
 }
 mod inclusive_forward {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -258,7 +253,6 @@ fn to_scope() {
     );
 }
 mod unit {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

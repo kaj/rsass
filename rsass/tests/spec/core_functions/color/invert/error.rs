@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/invert/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod bounds {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -41,7 +39,6 @@ mod bounds {
     }
 }
 mod global {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -59,7 +56,6 @@ mod global {
     );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -88,11 +84,9 @@ mod global {
     }
 }
 mod missing {
-    #[allow(unused)]
     use super::runner;
 
     mod legacy {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -142,7 +136,6 @@ mod missing {
     );
         }
         mod same {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -217,7 +210,6 @@ mod missing {
         }
     }
     mod modern {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -292,11 +284,9 @@ mod missing {
     }
 }
 mod space {
-    #[allow(unused)]
     use super::runner;
 
     mod missing {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -406,7 +396,6 @@ fn too_many_args() {
     );
 }
 mod test_type {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

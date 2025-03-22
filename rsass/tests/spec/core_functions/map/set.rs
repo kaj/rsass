@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/map/set.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("set")
 }
@@ -17,7 +16,6 @@ fn empty() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -99,7 +97,6 @@ fn named() {
     );
 }
 mod nested {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

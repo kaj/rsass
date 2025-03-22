@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/global/color/mix.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("mix")
 }

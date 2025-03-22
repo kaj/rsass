@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/with/variable_exists.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("variable_exists")

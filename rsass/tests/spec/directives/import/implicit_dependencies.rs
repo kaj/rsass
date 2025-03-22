@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/import/implicit_dependencies.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("implicit_dependencies")
@@ -81,7 +80,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod forwarded_first {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("forwarded_first")
     }
@@ -132,7 +130,6 @@ mod forwarded_first {
     }
 }
 mod no_forward {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("no_forward")
     }

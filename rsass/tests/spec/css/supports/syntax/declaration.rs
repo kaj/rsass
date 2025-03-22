@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/supports/syntax/declaration.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("declaration")
 }
 
 mod custom_prop {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -38,7 +36,6 @@ mod custom_prop {
     }
 }
 mod dynamic {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -71,7 +68,6 @@ fn nested() {
     );
 }
 mod plain {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

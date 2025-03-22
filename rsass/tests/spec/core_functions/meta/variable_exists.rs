@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/variable_exists.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("variable_exists")
@@ -56,7 +55,6 @@ fn conflict() {
     );
 }
 mod dash_insensitive {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("dash_insensitive")
     }
@@ -87,13 +85,11 @@ mod dash_insensitive {
     }
 }
 mod error {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("error")
     }
 
     mod argument {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("argument")
         }
@@ -207,7 +203,6 @@ fn non_existent() {
     );
 }
 mod through_forward {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("through_forward")
     }

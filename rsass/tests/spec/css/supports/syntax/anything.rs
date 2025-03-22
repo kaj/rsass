@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/supports/syntax/anything.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("anything")
 }
@@ -24,7 +23,6 @@ fn idents() {
     );
 }
 mod interpolated_any_value {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -48,7 +46,6 @@ mod interpolated_any_value {
     }
 }
 mod interpolated_ident {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

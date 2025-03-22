@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/style_rule.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("style_rule")
@@ -52,7 +51,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod nesting {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("nesting")
     }
@@ -97,7 +95,6 @@ mod nesting {
         );
     }
     mod parent {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("parent")
         }
@@ -156,7 +153,6 @@ mod nesting {
         }
     }
     mod through_import {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("through_import")
         }
@@ -200,7 +196,6 @@ mod nesting {
         }
     }
     mod through_load_css {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("through_load_css")
         }
@@ -262,7 +257,6 @@ mod nesting {
         );
     }
     mod with_declaration {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("with_declaration")
         }

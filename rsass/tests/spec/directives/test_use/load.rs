@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/load.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("load")
@@ -58,7 +57,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod explicit_extension {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("explicit_extension")
     }
@@ -86,7 +84,6 @@ mod explicit_extension {
     }
 }
 mod index {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("index")
     }
@@ -134,7 +131,6 @@ mod index {
     }
 }
 mod precedence {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("precedence")
     }

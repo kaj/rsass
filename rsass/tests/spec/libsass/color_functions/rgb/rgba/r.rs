@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/color-functions/rgb/rgba/r.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("r")
 }

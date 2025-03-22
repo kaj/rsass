@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/empty_block_directive.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("empty_block_directive")
 }

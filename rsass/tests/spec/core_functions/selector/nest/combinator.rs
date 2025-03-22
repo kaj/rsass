@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/nest/combinator.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("combinator")
 }
 
 mod leading {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -31,11 +29,9 @@ mod leading {
     }
 }
 mod multiple {
-    #[allow(unused)]
     use super::runner;
 
     mod leading {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -70,7 +66,6 @@ mod multiple {
         );
     }
     mod trailing {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -96,7 +91,6 @@ mod multiple {
     }
 }
 mod only {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -131,7 +125,6 @@ mod only {
     }
 }
 mod trailing {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/append.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("append")
 }
 
 mod classes {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -31,7 +29,6 @@ mod classes {
     }
 }
 mod combinator {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -55,7 +52,6 @@ mod combinator {
         );
     }
     mod multiple {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -91,11 +87,9 @@ mod combinator {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod combinator {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -267,11 +261,9 @@ mod error {
     }
 }
 mod format {
-    #[allow(unused)]
     use super::runner;
 
     mod input {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -332,7 +324,6 @@ fn one_arg() {
     );
 }
 mod suffix {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

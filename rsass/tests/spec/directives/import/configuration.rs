@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/import/configuration.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("configuration")
@@ -110,7 +109,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod import_twice {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("import_twice")
     }
@@ -172,7 +170,6 @@ mod import_twice {
     }
 }
 mod indirect {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("indirect")
     }
@@ -203,7 +200,6 @@ mod indirect {
     }
 }
 mod midstream_definition {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("midstream_definition")
     }

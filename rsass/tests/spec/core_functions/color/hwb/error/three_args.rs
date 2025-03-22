@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hwb/error/three_args.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("three_args")
 }
 
 mod blackness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -27,7 +25,6 @@ mod blackness {
     }
 }
 mod hue {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -48,7 +45,6 @@ mod hue {
     }
 }
 mod whiteness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

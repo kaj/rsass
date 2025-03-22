@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/error/statement/style_rule.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("style_rule")
@@ -43,7 +42,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod interpolation {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("interpolation")
     }
@@ -95,7 +93,6 @@ mod interpolation {
     }
 }
 mod leading_combinator {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("leading_combinator")
     }
@@ -161,7 +158,6 @@ mod leading_combinator {
     }
 }
 mod nested_property {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("nested_property")
     }
@@ -198,7 +194,6 @@ mod nested_property {
     }
 }
 mod parent_selector {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("parent_selector")
     }
@@ -235,7 +230,6 @@ fn placeholder_selector() {
     );
 }
 mod trailing_combinator {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("trailing_combinator")
     }

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/alpha.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("alpha")
 }
 
 mod color {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -51,11 +49,9 @@ mod color {
     }
 }
 mod css_overloads {
-    #[allow(unused)]
     use super::runner;
 
     mod alpha {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -91,7 +87,6 @@ mod css_overloads {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -170,7 +165,6 @@ mod error {
         );
     }
     mod unquoted_string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -206,7 +200,6 @@ mod error {
         }
     }
     mod with_module {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -228,7 +221,6 @@ mod error {
     }
 }
 mod filter {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -262,7 +254,6 @@ mod filter {
     }
 }
 mod opacity {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

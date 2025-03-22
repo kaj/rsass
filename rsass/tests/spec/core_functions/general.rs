@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/general.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("general")
@@ -39,7 +38,6 @@ fn test_as() {
     );
 }
 mod error {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("error")
     }
@@ -62,7 +60,6 @@ mod error {
     }
 }
 mod forward {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("forward")
     }
@@ -90,7 +87,6 @@ mod forward {
         );
     }
     mod error {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("error")
         }

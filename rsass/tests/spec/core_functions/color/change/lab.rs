@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/change/lab.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("lab")
 }
 
 mod a {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -94,7 +92,6 @@ fn alpha_input() {
     );
 }
 mod b {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -143,7 +140,6 @@ mod b {
     }
 }
 mod lightness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

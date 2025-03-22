@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hwb/error/five_args.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("five_args")
 }

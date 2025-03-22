@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/is_superselector/complex/adjacent_sibling.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("adjacent_sibling")
 }
 
 mod multiple {
-    #[allow(unused)]
     use super::runner;
 
     mod extra_middle {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -104,11 +101,9 @@ mod multiple {
     }
 }
 mod single {
-    #[allow(unused)]
     use super::runner;
 
     mod in_both {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

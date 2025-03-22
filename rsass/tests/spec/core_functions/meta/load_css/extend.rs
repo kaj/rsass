@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/load_css/extend.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("extend")
@@ -24,7 +23,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod in_input {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("in_input")
     }
@@ -57,7 +55,6 @@ mod in_input {
     }
 }
 mod in_other {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("in_other")
     }

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-todo-issues/issue_2023/class-selector-nr.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("class-selector-nr")
 }

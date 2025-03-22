@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/at-root/137_test_at_root_in_mixin.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("137_test_at_root_in_mixin")
 }

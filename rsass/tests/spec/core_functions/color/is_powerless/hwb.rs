@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/is_powerless/hwb.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("hwb")
 }
 
 mod hue {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -65,7 +63,6 @@ mod hue {
         );
     }
     mod out_of_gamut {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

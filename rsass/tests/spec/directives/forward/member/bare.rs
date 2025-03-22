@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/member/bare.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("bare")
@@ -69,7 +68,6 @@ fn mixin() {
     );
 }
 mod no_conflict {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("no_conflict")
     }
@@ -109,7 +107,6 @@ mod no_conflict {
     }
 }
 mod variable_assignment {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("variable_assignment")
     }

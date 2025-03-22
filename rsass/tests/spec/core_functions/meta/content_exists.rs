@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/content_exists.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("content_exists")
 }
 
 mod controls {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -55,7 +53,6 @@ mod controls {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -146,7 +143,6 @@ mod error {
     }
 }
 mod test_false {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -182,7 +178,6 @@ mod test_false {
     }
 }
 mod test_true {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

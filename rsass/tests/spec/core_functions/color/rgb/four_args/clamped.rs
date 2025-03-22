@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb/four_args/clamped.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("clamped")
 }
 
 mod alpha {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -28,7 +26,6 @@ mod alpha {
         );
     }
     mod degenerate {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -61,11 +58,9 @@ mod alpha {
     }
 }
 mod blue {
-    #[allow(unused)]
     use super::runner;
 
     mod degenerate {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -107,11 +102,9 @@ mod blue {
     }
 }
 mod green {
-    #[allow(unused)]
     use super::runner;
 
     mod degenerate {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -153,11 +146,9 @@ mod green {
     }
 }
 mod red {
-    #[allow(unused)]
     use super::runner;
 
     mod degenerate {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

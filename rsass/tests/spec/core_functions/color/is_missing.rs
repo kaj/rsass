@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/is_missing.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("is_missing")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod channel {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -103,7 +100,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -141,7 +137,6 @@ mod error {
     }
 }
 mod test_false {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -156,11 +151,9 @@ mod test_false {
         );
     }
     mod not_powerless {
-        #[allow(unused)]
         use super::runner;
 
         mod converted {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -191,7 +184,6 @@ mod test_false {
             }
         }
         mod direct {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -219,11 +211,9 @@ mod test_false {
         }
     }
     mod powerless {
-        #[allow(unused)]
         use super::runner;
 
         mod converted {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -241,7 +231,6 @@ mod test_false {
             }
         }
         mod direct {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -281,11 +270,9 @@ fn named() {
     );
 }
 mod test_true {
-    #[allow(unused)]
     use super::runner;
 
     mod explicit {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -312,11 +299,9 @@ mod test_true {
         }
     }
     mod powerless {
-        #[allow(unused)]
         use super::runner;
 
         mod converted {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

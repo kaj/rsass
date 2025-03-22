@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/atan.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("atan")
 }
@@ -15,7 +14,6 @@ fn case_insensitive() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -69,7 +67,6 @@ mod error {
         );
     }
     mod unit {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

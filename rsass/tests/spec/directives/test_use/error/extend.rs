@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/error/extend.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("extend")
@@ -18,7 +17,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod optional_and_mandatory {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("optional_and_mandatory")
     }
@@ -64,7 +62,6 @@ mod optional_and_mandatory {
     }
 }
 mod scope {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("scope")
     }

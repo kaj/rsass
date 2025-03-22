@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/space.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("space")
 }
 
 mod interpolation {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -38,7 +36,6 @@ mod interpolation {
     }
 }
 mod var {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -70,7 +67,6 @@ mod var {
     }
 }
 mod variable {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

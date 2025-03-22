@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/set_nth.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("set_nth")
 }
 
 mod t1 {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -37,7 +35,6 @@ mod t1 {
     }
 }
 mod t2 {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -72,11 +69,9 @@ fn bracketed() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod index {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -200,11 +195,9 @@ fn named() {
     );
 }
 mod negative {
-    #[allow(unused)]
     use super::runner;
 
     mod t1 {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -235,7 +228,6 @@ mod negative {
         }
     }
     mod t2 {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

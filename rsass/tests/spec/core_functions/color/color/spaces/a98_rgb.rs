@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/color/spaces/a98_rgb.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("a98_rgb")
 }
 
 mod percent {
-    #[allow(unused)]
     use super::runner;
 
     mod blue {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -41,7 +38,6 @@ mod percent {
         }
     }
     mod green {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -85,7 +81,6 @@ mod percent {
         );
     }
     mod red {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -117,11 +112,9 @@ mod percent {
     }
 }
 mod unitless {
-    #[allow(unused)]
     use super::runner;
 
     mod blue {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -152,7 +145,6 @@ mod unitless {
         }
     }
     mod green {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -196,7 +188,6 @@ mod unitless {
         );
     }
     mod red {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

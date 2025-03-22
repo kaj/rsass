@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/div.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("div")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -49,7 +47,6 @@ mod error {
     }
 }
 mod non_numeric {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -86,7 +83,6 @@ mod non_numeric {
     }
 }
 mod unit {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -151,7 +147,6 @@ mod unit {
     }
 }
 mod unitless {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

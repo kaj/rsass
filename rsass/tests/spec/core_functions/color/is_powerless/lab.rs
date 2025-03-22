@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/is_powerless/lab.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("lab")
 }
 
 mod a {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -33,7 +31,6 @@ mod a {
     }
 }
 mod b {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

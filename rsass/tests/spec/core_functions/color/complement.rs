@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/complement.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("complement")
 }
@@ -16,11 +15,9 @@ fn alpha() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod null_space {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -41,19 +38,15 @@ mod error {
         }
     }
     mod space {
-        #[allow(unused)]
         use super::runner;
 
         mod missing {
-            #[allow(unused)]
             use super::runner;
 
             mod legacy {
-                #[allow(unused)]
                 use super::runner;
 
                 mod analogous {
-                    #[allow(unused)]
                     use super::runner;
 
                     #[test]
@@ -92,7 +85,6 @@ mod error {
                     }
                 }
                 mod same {
-                    #[allow(unused)]
                     use super::runner;
 
                     #[test]
@@ -130,7 +122,6 @@ mod error {
                 }
             }
             mod modern {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -184,11 +175,9 @@ mod error {
             );
         }
         mod powerless {
-            #[allow(unused)]
             use super::runner;
 
             mod legacy {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -294,7 +283,6 @@ fn explicit_space() {
     );
 }
 mod grayscale {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -350,11 +338,9 @@ fn red() {
     );
 }
 mod space {
-    #[allow(unused)]
     use super::runner;
 
     mod legacy {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -381,15 +367,12 @@ mod space {
         }
     }
     mod missing {
-        #[allow(unused)]
         use super::runner;
 
         mod legacy {
-            #[allow(unused)]
             use super::runner;
 
             mod different {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -416,7 +399,6 @@ mod space {
                 }
             }
             mod same {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -444,7 +426,6 @@ mod space {
             }
         }
         mod modern {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -485,7 +466,6 @@ mod space {
         }
     }
     mod modern {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -512,11 +492,9 @@ mod space {
         }
     }
     mod powerless {
-        #[allow(unused)]
         use super::runner;
 
         mod legacy {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

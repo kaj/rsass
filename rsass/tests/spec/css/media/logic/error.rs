@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/media/logic/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod and_after {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -37,11 +35,9 @@ mod and_after {
     }
 }
 mod missing_whitespace {
-    #[allow(unused)]
     use super::runner;
 
     mod and {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -85,7 +81,6 @@ mod missing_whitespace {
         }
     }
     mod and_not {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -129,7 +124,6 @@ mod missing_whitespace {
         );
     }
     mod or {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -161,11 +155,9 @@ mod missing_whitespace {
     }
 }
 mod nothing_after {
-    #[allow(unused)]
     use super::runner;
 
     mod and {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -249,7 +241,6 @@ mod nothing_after {
     }
 }
 mod or_after {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

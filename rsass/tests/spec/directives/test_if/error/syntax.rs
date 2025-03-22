@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/directives/if/error/syntax.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("syntax")
 }
 
 mod test_else {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

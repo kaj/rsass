@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/color-functions/other/change-color/h.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("h")
 }

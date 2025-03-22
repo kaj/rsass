@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-todo-issues/issue_1096.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("issue_1096")
 }

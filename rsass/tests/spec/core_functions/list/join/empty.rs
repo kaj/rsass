@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/join/empty.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("empty")
 }
 
 mod both {
-    #[allow(unused)]
     use super::runner;
 
     mod comma {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -49,7 +46,6 @@ mod both {
         }
     }
     mod slash {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -90,7 +86,6 @@ mod both {
         }
     }
     mod space {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -151,7 +146,6 @@ mod both {
     }
 }
 mod first {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -188,7 +182,6 @@ mod first {
         );
     }
     mod undecided {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -224,11 +217,9 @@ mod first {
     }
 }
 mod map {
-    #[allow(unused)]
     use super::runner;
 
     mod first {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -283,7 +274,6 @@ mod map {
         }
     }
     mod second {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -339,7 +329,6 @@ mod map {
     }
 }
 mod second {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -376,7 +365,6 @@ mod second {
         );
     }
     mod undecided {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

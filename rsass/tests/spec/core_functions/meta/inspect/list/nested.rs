@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/inspect/list/nested.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("nested")
 }
 
 mod bracketed {
-    #[allow(unused)]
     use super::runner;
 
     mod in_comma {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -45,7 +42,6 @@ mod bracketed {
         }
     }
     mod in_slash {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -84,7 +80,6 @@ mod bracketed {
         }
     }
     mod in_space {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -120,11 +115,9 @@ mod bracketed {
     }
 }
 mod comma {
-    #[allow(unused)]
     use super::runner;
 
     mod in_comma {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -159,7 +152,6 @@ mod comma {
         }
     }
     mod in_slash {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -198,7 +190,6 @@ mod comma {
         }
     }
     mod in_space {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -234,11 +225,9 @@ mod comma {
     }
 }
 mod empty {
-    #[allow(unused)]
     use super::runner;
 
     mod in_comma {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -273,7 +262,6 @@ mod empty {
         }
     }
     mod in_slash {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -312,7 +300,6 @@ mod empty {
         }
     }
     mod in_space {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -348,7 +335,6 @@ mod empty {
     }
 }
 mod empty_bracketed {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -373,11 +359,9 @@ mod empty_bracketed {
     }
 }
 mod space {
-    #[allow(unused)]
     use super::runner;
 
     mod in_comma {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -412,7 +396,6 @@ mod space {
         }
     }
     mod in_slash {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -451,7 +434,6 @@ mod space {
         }
     }
     mod in_space {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

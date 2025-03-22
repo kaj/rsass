@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/229_test_extended_parent_and_child_redundancy_elimination.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("229_test_extended_parent_and_child_redundancy_elimination")

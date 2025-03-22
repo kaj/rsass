@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hsl/one_arg/no_alpha.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("no_alpha")
 }
 
 mod clamped {
-    #[allow(unused)]
     use super::runner;
 
     mod lightness {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -33,7 +30,6 @@ mod clamped {
         }
     }
     mod saturation {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -48,7 +44,6 @@ mod clamped {
     }
 }
 mod in_gamut {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -61,7 +56,6 @@ mod in_gamut {
         );
     }
     mod grayish {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -85,7 +79,6 @@ mod in_gamut {
     }
 }
 mod missing {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -129,11 +122,9 @@ fn named() {
     );
 }
 mod out_of_gamut {
-    #[allow(unused)]
     use super::runner;
 
     mod saturation {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -148,11 +139,9 @@ mod out_of_gamut {
     }
 }
 mod units {
-    #[allow(unused)]
     use super::runner;
 
     mod hue {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -166,7 +155,6 @@ mod units {
         }
     }
     mod lightness {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -180,7 +168,6 @@ mod units {
         }
     }
     mod saturation {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

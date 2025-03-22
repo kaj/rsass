@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/scale/error/units/srgb_linear.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("srgb_linear")
 }
 
 mod none {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -59,7 +57,6 @@ mod none {
     }
 }
 mod wrong {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/complex/combinators/sibling.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("sibling")
 }
@@ -26,7 +25,6 @@ fn and_descendant() {
     );
 }
 mod and_next_sibling {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -85,7 +83,6 @@ mod and_next_sibling {
     }
 }
 mod and_sibling {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

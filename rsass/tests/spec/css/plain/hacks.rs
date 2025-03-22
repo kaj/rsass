@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/hacks.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("hacks").mock_file(
         "plain.css",

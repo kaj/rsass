@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/get_mixin/equality.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("equality")
 }
 
 mod built_in {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -50,7 +48,6 @@ fn same_value() {
     );
 }
 mod user_defined {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

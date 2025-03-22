@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/css/order/use_and_import.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("use_and_import")
@@ -53,7 +52,6 @@ fn comments_and_imports() {
     );
 }
 mod import_into_use {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("import_into_use")
     }
@@ -105,7 +103,6 @@ mod import_into_use {
     }
 }
 mod use_into_import {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("use_into_import")
     }
@@ -157,7 +154,6 @@ mod use_into_import {
     }
 }
 mod use_into_use {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("use_into_use")
     }

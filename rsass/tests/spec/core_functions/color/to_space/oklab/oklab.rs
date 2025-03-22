@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/to_space/oklab/oklab.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("oklab")
 }
@@ -17,7 +16,6 @@ fn in_range() {
     );
 }
 mod missing {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

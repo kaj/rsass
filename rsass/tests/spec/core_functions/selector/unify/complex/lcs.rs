@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/complex/lcs.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("lcs")
 }
 
 mod non_contiguous {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

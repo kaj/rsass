@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/Sáss-UŢF8.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("Sáss-UŢF8")
 }

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/base-level-parent/nested/basic-postfix.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("basic-postfix")
 }

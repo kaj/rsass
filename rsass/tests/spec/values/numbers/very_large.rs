@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/very_large.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("very_large")
 }

@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/directives/for/comment.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("comment")
 }
 
 mod after_from {
-    #[allow(unused)]
     use super::runner;
 
     mod loud {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -22,7 +19,6 @@ mod after_from {
         }
     }
     mod silent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -36,11 +32,9 @@ mod after_from {
     }
 }
 mod after_through {
-    #[allow(unused)]
     use super::runner;
 
     mod loud {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -52,7 +46,6 @@ mod after_through {
         }
     }
     mod silent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -66,11 +59,9 @@ mod after_through {
     }
 }
 mod before_block {
-    #[allow(unused)]
     use super::runner;
 
     mod loud {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -82,7 +73,6 @@ mod before_block {
         }
     }
     mod silent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -96,11 +86,9 @@ mod before_block {
     }
 }
 mod before_from {
-    #[allow(unused)]
     use super::runner;
 
     mod loud {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -112,7 +100,6 @@ mod before_from {
         }
     }
     mod silent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -126,11 +113,9 @@ mod before_from {
     }
 }
 mod before_through {
-    #[allow(unused)]
     use super::runner;
 
     mod loud {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -142,7 +127,6 @@ mod before_through {
         }
     }
     mod silent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -156,11 +140,9 @@ mod before_through {
     }
 }
 mod before_var {
-    #[allow(unused)]
     use super::runner;
 
     mod loud {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -172,7 +154,6 @@ mod before_var {
         }
     }
     mod silent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -182,56 +163,6 @@ mod before_var {
              \n  $i from 1 through 10 {}\n"),
                 ""
             );
-        }
-    }
-}
-mod error {
-    #[allow(unused)]
-    use super::runner;
-
-    mod after_from {
-        #[allow(unused)]
-        use super::runner;
-
-        mod silent {
-            #[allow(unused)]
-            use super::runner;
-        }
-    }
-    mod after_through {
-        #[allow(unused)]
-        use super::runner;
-
-        mod silent {
-            #[allow(unused)]
-            use super::runner;
-        }
-    }
-    mod before_from {
-        #[allow(unused)]
-        use super::runner;
-
-        mod silent {
-            #[allow(unused)]
-            use super::runner;
-        }
-    }
-    mod before_through {
-        #[allow(unused)]
-        use super::runner;
-
-        mod silent {
-            #[allow(unused)]
-            use super::runner;
-        }
-    }
-    mod before_var {
-        #[allow(unused)]
-        use super::runner;
-
-        mod silent {
-            #[allow(unused)]
-            use super::runner;
         }
     }
 }

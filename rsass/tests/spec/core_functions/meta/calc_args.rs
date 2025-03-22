@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/calc_args.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("calc_args")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -64,7 +62,6 @@ mod error {
     }
 }
 mod multi_args {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -123,7 +120,6 @@ fn named() {
     );
 }
 mod one_arg {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -150,7 +146,6 @@ mod one_arg {
     }
 }
 mod test_type {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

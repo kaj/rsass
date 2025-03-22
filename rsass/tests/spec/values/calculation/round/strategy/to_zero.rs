@@ -1,20 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/round/strategy/to-zero.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("to-zero")
 }
 
 mod strategy {
-    #[allow(unused)]
     use super::runner;
 
     mod to_zero {
-        #[allow(unused)]
         use super::runner;
 
         mod lower_multiple {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -46,7 +42,6 @@ mod strategy {
             );
         }
         mod negative_zero {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -80,7 +75,6 @@ mod strategy {
             );
         }
         mod positive_zero {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -105,7 +99,6 @@ mod strategy {
             }
         }
         mod upper_multiple {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

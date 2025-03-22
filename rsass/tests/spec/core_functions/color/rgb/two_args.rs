@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb/two_args.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("two_args")
 }
 
 mod clamped {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -38,7 +36,6 @@ fn named() {
     );
 }
 mod opaque_to {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -70,7 +67,6 @@ mod opaque_to {
     }
 }
 mod partial_to {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -102,15 +98,12 @@ mod partial_to {
     }
 }
 mod special_functions {
-    #[allow(unused)]
     use super::runner;
 
     mod calc {
-        #[allow(unused)]
         use super::runner;
 
         mod string {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -126,11 +119,9 @@ mod special_functions {
         }
     }
     mod var {
-        #[allow(unused)]
         use super::runner;
 
         mod args {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -164,7 +155,6 @@ mod special_functions {
     }
 }
 mod transparent_to {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/grayscale.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("grayscale")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -63,7 +61,6 @@ mod error {
         );
     }
     mod with_module {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -84,7 +81,6 @@ mod error {
     }
 }
 mod global {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -128,7 +124,6 @@ mod global {
     }
 }
 mod legacy {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -173,7 +168,6 @@ mod legacy {
         );
     }
     mod no_saturation {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -208,7 +202,6 @@ mod legacy {
         }
     }
     mod powerless {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -235,7 +228,6 @@ mod legacy {
     }
 }
 mod modern {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

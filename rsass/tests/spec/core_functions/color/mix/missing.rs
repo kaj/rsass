@@ -1,20 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/mix/missing.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("missing")
 }
 
 mod explicit {
-    #[allow(unused)]
     use super::runner;
 
     mod analogous {
-        #[allow(unused)]
         use super::runner;
 
         mod legacy {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -58,7 +54,6 @@ mod explicit {
             }
         }
         mod modern {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -115,11 +110,9 @@ mod explicit {
         }
     }
     mod same {
-        #[allow(unused)]
         use super::runner;
 
         mod legacy {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -163,7 +156,6 @@ mod explicit {
             }
         }
         mod modern {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -221,11 +213,9 @@ mod explicit {
     }
 }
 mod powerless {
-    #[allow(unused)]
     use super::runner;
 
     mod legacy {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -269,7 +259,6 @@ mod powerless {
         }
     }
     mod modern {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

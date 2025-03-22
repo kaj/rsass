@@ -1,16 +1,57 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb/four_args/special_functions.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("special_functions")
 }
 
+mod attr {
+    use super::runner;
+
+    #[test]
+    #[ignore] // unexepected error
+    fn arg_1() {
+        assert_eq!(
+            runner().ok("a {b: rgb(attr(c, %), 2, 3, 0.4)}\n"),
+            "a {\
+         \n  b: rgb(attr(c, %), 2, 3, 0.4);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn arg_2() {
+        assert_eq!(
+            runner().ok("a {b: rgb(1, attr(c, %), 3, 0.4)}\n"),
+            "a {\
+         \n  b: rgb(1, attr(c, %), 3, 0.4);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn arg_3() {
+        assert_eq!(
+            runner().ok("a {b: rgb(1, 2, attr(c, %), 0.4)}\n"),
+            "a {\
+         \n  b: rgb(1, 2, attr(c, %), 0.4);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn arg_4() {
+        assert_eq!(
+            runner().ok("a {b: rgb(1, 2, 3, attr(c, %))}\n"),
+            "a {\
+         \n  b: rgb(1, 2, 3, attr(c, %));\
+         \n}\n"
+        );
+    }
+}
 mod calc {
-    #[allow(unused)]
     use super::runner;
 
     mod calculation {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -51,7 +92,6 @@ mod calc {
         }
     }
     mod string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -97,11 +137,9 @@ mod calc {
     }
 }
 mod clamp {
-    #[allow(unused)]
     use super::runner;
 
     mod string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -149,7 +187,6 @@ mod clamp {
     }
 }
 mod env {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -190,11 +227,9 @@ mod env {
     }
 }
 mod max {
-    #[allow(unused)]
     use super::runner;
 
     mod string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -240,11 +275,9 @@ mod max {
     }
 }
 mod min {
-    #[allow(unused)]
     use super::runner;
 
     mod string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -290,7 +323,6 @@ mod min {
     }
 }
 mod var {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

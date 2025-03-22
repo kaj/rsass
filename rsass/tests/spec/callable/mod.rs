@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/callable"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("callable")
 }
@@ -8,3 +7,5 @@ fn runner() -> crate::TestRunner {
 mod arguments;
 
 mod parameters;
+
+mod whitespace;

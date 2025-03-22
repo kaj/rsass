@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/modules/color/ie_hex_str.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("ie_hex_str")
 }

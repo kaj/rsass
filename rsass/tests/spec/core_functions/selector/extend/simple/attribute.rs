@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/extend/simple/attribute.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("attribute")
 }
@@ -16,7 +15,6 @@ fn equal() {
     );
 }
 mod unequal {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

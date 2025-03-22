@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/import/error/conflict.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("conflict")
@@ -89,7 +88,6 @@ fn extension() {
     );
 }
 mod import_only {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("import_only")
     }

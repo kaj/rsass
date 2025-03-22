@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/media/logic/not.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("not")
 }
 
 mod not {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/slash.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("slash")
@@ -26,7 +25,6 @@ fn with_intermediate() {
     );
 }
 mod without_intermediate {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("without_intermediate")
     }

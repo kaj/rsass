@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/properties-in-media.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("properties-in-media")
 }

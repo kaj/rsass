@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/get_function/same_module.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("same_module").mock_file(
         "through_import/other.scss",
@@ -21,7 +20,6 @@ fn built_in() {
     );
 }
 mod dash_insensitive {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("dash_insensitive")
     }

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/units/conversion/size.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("size")
 }

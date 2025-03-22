@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/atan2/y_non_zero_finite.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("y_non_zero_finite")
 }
 
 mod negative {
-    #[allow(unused)]
     use super::runner;
 
     mod with_x {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -96,11 +93,9 @@ mod negative {
     }
 }
 mod positive {
-    #[allow(unused)]
     use super::runner;
 
     mod with_x {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

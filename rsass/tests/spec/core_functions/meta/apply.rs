@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/apply.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("apply")
 }
 
 mod args {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -24,7 +22,6 @@ mod args {
         );
     }
     mod passes {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -52,7 +49,6 @@ mod args {
             );
         }
         mod rest {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -85,7 +81,6 @@ mod args {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -231,11 +226,9 @@ mod error {
     }
 }
 mod rest {
-    #[allow(unused)]
     use super::runner;
 
     mod includes_mixin {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -266,7 +259,6 @@ mod rest {
         }
     }
     mod mixin_separate {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

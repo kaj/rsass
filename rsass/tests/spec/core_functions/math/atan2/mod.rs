@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/atan2"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("atan2")
 }

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/with/some_unconfigured.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("some_unconfigured")

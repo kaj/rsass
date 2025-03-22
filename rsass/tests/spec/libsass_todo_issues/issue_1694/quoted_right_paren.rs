@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-todo-issues/issue_1694/quoted-right-paren.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("quoted-right-paren")
 }

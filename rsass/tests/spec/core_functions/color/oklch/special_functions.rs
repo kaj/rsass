@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/oklch/special_functions.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("special_functions")
 }
 
 mod calculation {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -61,11 +59,9 @@ mod calculation {
     }
 }
 mod multi_argument_var {
-    #[allow(unused)]
     use super::runner;
 
     mod t1_of_1 {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -122,7 +118,6 @@ mod multi_argument_var {
     }
 }
 mod var {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

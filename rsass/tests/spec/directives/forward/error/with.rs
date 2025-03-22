@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/error/with.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("with")
@@ -79,7 +78,6 @@ fn core_module() {
     );
 }
 mod invalid_expression {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("invalid_expression")
     }
@@ -129,7 +127,6 @@ mod invalid_expression {
     }
 }
 mod multi_configuration {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("multi_configuration")
     }
@@ -286,7 +283,6 @@ fn repeated_variable() {
     );
 }
 mod through_forward {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("through_forward")
     }

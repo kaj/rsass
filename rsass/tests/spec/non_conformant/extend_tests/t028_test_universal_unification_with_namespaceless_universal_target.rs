@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/028_test_universal_unification_with_namespaceless_universal_target.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd(
         "028_test_universal_unification_with_namespaceless_universal_target",

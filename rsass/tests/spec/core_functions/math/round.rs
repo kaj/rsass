@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/round.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("round")
 }
 
 mod down {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -55,7 +53,6 @@ mod down {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -143,7 +140,6 @@ fn preserves_units() {
     );
 }
 mod up {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

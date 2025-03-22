@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/010_test_multiple_extends_with_multiple_extenders_and_single_target.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd(
         "010_test_multiple_extends_with_multiple_extenders_and_single_target",

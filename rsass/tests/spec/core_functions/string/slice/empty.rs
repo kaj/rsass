@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/string/slice/empty.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("empty")
 }
 
 mod end {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -41,7 +39,6 @@ mod end {
     }
 }
 mod start {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

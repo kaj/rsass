@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/log.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("log")
 }
 
 mod base {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -91,7 +89,6 @@ mod base {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -189,7 +186,6 @@ fn infinity() {
     );
 }
 mod named_arg {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -204,7 +200,6 @@ mod named_arg {
     }
 }
 mod named_args {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

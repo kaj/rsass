@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/channel/rec2020.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("rec2020")
 }
 
 mod foreign {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -44,7 +42,6 @@ mod foreign {
     }
 }
 mod local {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

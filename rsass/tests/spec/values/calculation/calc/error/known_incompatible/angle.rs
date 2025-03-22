@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/error/known_incompatible/angle.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("angle")
 }
 
 mod deg {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -95,7 +93,6 @@ mod deg {
     }
 }
 mod grad {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -184,7 +181,6 @@ mod grad {
     }
 }
 mod rad {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -273,7 +269,6 @@ mod rad {
     }
 }
 mod turn {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,20 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/operators/modulo.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("modulo")
 }
 
 mod degenerate {
-    #[allow(unused)]
     use super::runner;
 
     mod modulus {
-        #[allow(unused)]
         use super::runner;
 
         mod infinity {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

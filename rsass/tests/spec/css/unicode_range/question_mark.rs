@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/unicode_range/question_mark.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("question_mark")
 }

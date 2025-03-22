@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/base-level-parent/root/at-root-prefix-itpl.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("at-root-prefix-itpl")
 }

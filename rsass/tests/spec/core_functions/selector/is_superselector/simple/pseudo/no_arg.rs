@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/is_superselector/simple/pseudo/no_arg.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("no_arg")
 }
 
 mod class {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -41,7 +39,6 @@ mod class {
     }
 }
 mod element {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/divide/slash_free/value.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("value")
 }
@@ -15,7 +14,6 @@ fn inner_math() {
     );
 }
 mod outer_math {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -38,7 +36,6 @@ mod outer_math {
     }
 }
 mod parentheses {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

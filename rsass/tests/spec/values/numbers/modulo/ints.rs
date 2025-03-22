@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/modulo/ints.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("ints")
 }
 
 mod larger {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

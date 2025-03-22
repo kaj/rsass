@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/color/no_alpha.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("no_alpha")
 }
@@ -34,7 +33,6 @@ fn named() {
     );
 }
 mod none {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

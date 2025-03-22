@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/base-level-parent/imported/at-root-postfix.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("at-root-postfix").mock_file(
         "include.scss",

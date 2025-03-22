@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/units/multiple/division_cancels_both.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("division_cancels_both")
 }

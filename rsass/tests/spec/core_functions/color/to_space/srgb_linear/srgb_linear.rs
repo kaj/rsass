@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/to_space/srgb_linear/srgb_linear.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("srgb_linear")
 }
@@ -19,7 +18,6 @@ fn in_range() {
     );
 }
 mod missing {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

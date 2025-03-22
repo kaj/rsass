@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/min.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("min")
 }
@@ -15,7 +14,6 @@ fn case_insensitive() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -34,7 +32,6 @@ mod error {
     );
     }
     mod known_incompatible {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -81,7 +78,6 @@ mod error {
         }
     }
     mod syntax {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -126,7 +122,6 @@ mod error {
         );
     }
     mod unitless_and_real {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -145,7 +140,6 @@ mod error {
     }
 }
 mod extra_whitespace {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -169,7 +163,6 @@ mod extra_whitespace {
     }
 }
 mod math {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -195,11 +188,9 @@ fn overridden() {
     );
 }
 mod preserved {
-    #[allow(unused)]
     use super::runner;
 
     mod math {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -231,11 +222,9 @@ mod preserved {
         }
     }
     mod operation {
-        #[allow(unused)]
         use super::runner;
 
         mod unitless_and_real {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -268,7 +257,6 @@ mod preserved {
         }
     }
     mod unit {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -311,7 +299,6 @@ mod preserved {
     }
 }
 mod simplified {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -342,7 +329,6 @@ mod simplified {
         );
     }
     mod operation {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

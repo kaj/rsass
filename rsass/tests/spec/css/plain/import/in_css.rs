@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/import/in_css.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("in_css")
@@ -15,7 +14,6 @@ fn string() {
     assert_eq!(runner.ok("@use \"plain\";\n"), "@import \"whatever\";\n");
 }
 mod url {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("url")
     }

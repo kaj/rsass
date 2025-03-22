@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/comment.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("comment")
@@ -27,7 +26,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod after_close_paren {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("after_close_paren")
     }
@@ -44,7 +42,6 @@ mod after_close_paren {
     }
 }
 mod after_colon {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("after_colon")
     }
@@ -65,7 +62,6 @@ mod after_colon {
     }
 }
 mod after_keyword {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("after_keyword")
     }
@@ -86,7 +82,6 @@ mod after_keyword {
     }
 }
 mod after_modifier {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("after_modifier")
     }
@@ -103,7 +98,6 @@ mod after_modifier {
     }
 }
 mod after_open_paren {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("after_open_paren")
     }
@@ -115,7 +109,6 @@ mod after_open_paren {
     }
 }
 mod after_paren {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("after_paren")
     }
@@ -131,7 +124,6 @@ mod after_paren {
     }
 }
 mod after_url {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("after_url")
     }
@@ -148,7 +140,6 @@ mod after_url {
     }
 }
 mod before_close_paren {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("before_close_paren")
     }
@@ -169,7 +160,6 @@ mod before_close_paren {
     }
 }
 mod before_colon {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("before_colon")
     }
@@ -190,7 +180,6 @@ mod before_colon {
     }
 }
 mod before_keyword {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("before_keyword")
     }
@@ -211,7 +200,6 @@ mod before_keyword {
     }
 }
 mod before_url {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("before_url")
     }

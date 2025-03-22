@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/css/order/use_only.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("use_only")
@@ -31,13 +30,11 @@ fn runner() -> crate::TestRunner {
 }
 
 mod comment_order {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("comment_order")
     }
 
     mod diamond {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("diamond")
         }
@@ -63,7 +60,6 @@ mod comment_order {
         }
     }
     mod sequence {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("sequence")
         }

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/atan.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("atan")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

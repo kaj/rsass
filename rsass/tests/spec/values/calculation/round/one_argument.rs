@@ -1,10 +1,21 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/round/one_argument.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("one_argument")
 }
 
+#[test]
+fn calc_unsafe_in_binary_operator() {
+    assert_eq!(
+        runner().ok("// Regression test for sass/dart-sass#2523\
+             \nb {\
+             \n  a: round(-(1) + 2);\
+             \n}\n"),
+        "b {\
+         \n  a: 1;\
+         \n}\n"
+    );
+}
 #[test]
 fn case_insensitive() {
     assert_eq!(
@@ -15,7 +26,6 @@ fn case_insensitive() {
     );
 }
 mod math {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -59,7 +69,6 @@ fn positive() {
     );
 }
 mod preserved {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

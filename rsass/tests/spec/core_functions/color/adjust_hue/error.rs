@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/adjust_hue/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
@@ -61,7 +60,6 @@ fn too_many_args() {
     );
 }
 mod test_type {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

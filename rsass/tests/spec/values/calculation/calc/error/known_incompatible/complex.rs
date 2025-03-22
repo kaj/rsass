@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/error/known_incompatible/complex.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("complex")
 }
@@ -76,7 +75,6 @@ fn numerator_and_numerators() {
     );
 }
 mod unitless {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

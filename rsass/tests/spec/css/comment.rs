@@ -1,39 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/css/comment.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("comment")
 }
 
-mod block {
-    #[allow(unused)]
-    use super::runner;
-
-    mod loud {
-        #[allow(unused)]
-        use super::runner;
-
-        mod sass {
-            #[allow(unused)]
-            use super::runner;
-
-            mod content_after_close {
-                #[allow(unused)]
-                use super::runner;
-            }
-        }
-    }
-}
 mod converts_newlines {
-    #[allow(unused)]
     use super::runner;
 
-    mod sass {
-        #[allow(unused)]
-        use super::runner;
-    }
     mod scss {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -55,15 +29,12 @@ mod converts_newlines {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod loud {
-        #[allow(unused)]
         use super::runner;
 
         mod interpolation {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -92,21 +63,7 @@ mod error {
                 );
             }
         }
-        mod multi_line {
-            #[allow(unused)]
-            use super::runner;
-        }
-        mod sass {
-            #[allow(unused)]
-            use super::runner;
-
-            mod content_after_close {
-                #[allow(unused)]
-                use super::runner;
-            }
-        }
         mod unterminated {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -130,11 +87,9 @@ mod error {
     }
 }
 mod inline {
-    #[allow(unused)]
     use super::runner;
 
     mod loud {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -150,7 +105,6 @@ mod inline {
         }
     }
     mod silent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -200,7 +154,6 @@ fn multiple_stars() {
     );
 }
 mod sourcemap {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

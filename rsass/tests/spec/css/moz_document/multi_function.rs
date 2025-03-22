@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/moz_document/multi_function.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("multi_function")
 }

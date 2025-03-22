@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/177_test_prop_name_interpolation_after_hyphen.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("177_test_prop_name_interpolation_after_hyphen")
 }

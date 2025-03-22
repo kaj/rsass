@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/variable-scoping/blead-global/functional/else.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("else")
 }

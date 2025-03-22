@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/to_space/xyz_d50/xyz-d50/a98_rgb.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("a98_rgb")
 }
@@ -17,7 +16,6 @@ fn in_range() {
     );
 }
 mod missing {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

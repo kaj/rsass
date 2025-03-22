@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/variable-scoping/root-scope.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("root-scope")
 }

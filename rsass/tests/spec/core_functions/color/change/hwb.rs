@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/change/hwb.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("hwb")
 }
@@ -42,7 +41,6 @@ fn alpha_input() {
     );
 }
 mod blackness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -123,7 +121,6 @@ fn out_of_range() {
     );
 }
 mod whiteness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

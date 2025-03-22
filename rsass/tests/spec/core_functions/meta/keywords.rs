@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/keywords.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("keywords")
@@ -22,7 +21,6 @@ fn dash_insensitive() {
     );
 }
 mod empty {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("empty")
     }
@@ -53,7 +51,6 @@ mod empty {
     }
 }
 mod error {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("error")
     }
@@ -99,7 +96,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("type")
         }
@@ -140,7 +136,6 @@ mod error {
     }
 }
 mod forwarded {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("forwarded")
     }

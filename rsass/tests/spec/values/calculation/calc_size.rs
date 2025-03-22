@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc-size.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("calc-size")
 }
@@ -16,7 +15,6 @@ fn case_insensitive() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -33,7 +31,6 @@ mod error {
         );
     }
     mod syntax {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

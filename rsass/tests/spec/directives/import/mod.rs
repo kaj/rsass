@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/import"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("import")
 }
@@ -20,3 +19,5 @@ mod implicit_dependencies;
 mod load;
 
 mod nested;
+
+mod whitespace;

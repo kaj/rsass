@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/directives/import/comment.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("comment")
 }
 
 mod after_comma {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -28,7 +26,6 @@ mod after_comma {
     }
 }
 mod after_url {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -47,7 +44,6 @@ mod after_url {
     }
 }
 mod before_comma {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -69,7 +65,6 @@ mod before_comma {
     }
 }
 mod before_url {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -89,15 +84,12 @@ mod before_url {
     }
 }
 mod modifier {
-    #[allow(unused)]
     use super::runner;
 
     mod args {
-        #[allow(unused)]
         use super::runner;
 
         mod after {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -116,7 +108,6 @@ mod modifier {
             }
         }
         mod after_open_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -135,7 +126,6 @@ mod modifier {
             }
         }
         mod before {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -155,7 +145,6 @@ mod modifier {
             }
         }
         mod before_close_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -176,11 +165,9 @@ mod modifier {
         }
     }
     mod no_args {
-        #[allow(unused)]
         use super::runner;
 
         mod after {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -199,7 +186,6 @@ mod modifier {
             }
         }
         mod before {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

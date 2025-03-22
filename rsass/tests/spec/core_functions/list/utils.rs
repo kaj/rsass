@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/utils.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("utils")
 }
 
 mod empty_map {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -21,11 +19,9 @@ mod empty_map {
     }
 }
 mod real_separator {
-    #[allow(unused)]
     use super::runner;
 
     mod empty {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -60,7 +56,6 @@ mod real_separator {
         }
     }
     mod multi {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -85,7 +80,6 @@ mod real_separator {
         }
     }
     mod single {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -111,11 +105,9 @@ mod real_separator {
     }
 }
 mod with_separator {
-    #[allow(unused)]
     use super::runner;
 
     mod multi {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -140,7 +132,6 @@ mod with_separator {
         }
     }
     mod single {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

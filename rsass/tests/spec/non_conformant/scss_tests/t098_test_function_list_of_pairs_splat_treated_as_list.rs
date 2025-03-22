@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/098_test_function_list_of_pairs_splat_treated_as_list.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("098_test_function_list_of_pairs_splat_treated_as_list")

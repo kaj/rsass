@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/no_operator.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("no_operator")
 }
 
 mod calculation {
-    #[allow(unused)]
     use super::runner;
 
     mod calc {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -33,7 +30,6 @@ mod calculation {
         }
     }
     mod clamp {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -56,7 +52,6 @@ mod calculation {
         }
     }
     mod max {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -79,7 +74,6 @@ mod calculation {
         }
     }
     mod min {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -121,7 +115,6 @@ fn extra_whitespace() {
     );
 }
 mod function {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -161,7 +154,6 @@ mod function {
         );
     }
     mod sass {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -187,7 +179,6 @@ mod function {
     }
 }
 mod interpolation {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -227,11 +218,9 @@ mod interpolation {
     }
 }
 mod number {
-    #[allow(unused)]
     use super::runner;
 
     mod decimal {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -300,11 +289,9 @@ mod number {
     }
 }
 mod syntax {
-    #[allow(unused)]
     use super::runner;
 
     mod extra_whitespace {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -337,7 +324,6 @@ mod syntax {
     }
 }
 mod var {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -351,7 +337,6 @@ mod var {
     }
 }
 mod variable {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -375,7 +360,6 @@ mod variable {
         );
     }
     mod not_parsed_as_interpolation {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -425,7 +409,6 @@ mod variable {
         }
     }
     mod number {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

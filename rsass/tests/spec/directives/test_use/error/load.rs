@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/error/load.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("load")
@@ -58,7 +57,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod conflict {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("conflict")
     }
@@ -86,7 +84,6 @@ mod conflict {
     );
     }
     mod extension {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("extension")
         }
@@ -154,7 +151,6 @@ mod conflict {
     }
 }
 mod conflicting_namespace {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("conflicting_namespace")
     }
@@ -251,7 +247,6 @@ fn dir_dot_scss() {
     );
 }
 mod test_loop {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("loop")
     }

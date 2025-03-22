@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/css/media/logic/nested.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("nested")
 }
 
 mod interpolated {
-    #[allow(unused)]
     use super::runner;
 
     mod and {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -38,7 +35,6 @@ mod interpolated {
         }
     }
     mod not {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -66,7 +62,6 @@ mod interpolated {
         }
     }
     mod or {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -95,11 +90,9 @@ mod interpolated {
     }
 }
 mod raw {
-    #[allow(unused)]
     use super::runner;
 
     mod and {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -137,7 +130,6 @@ mod raw {
         );
     }
     mod not {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -166,7 +158,6 @@ mod raw {
         }
     }
     mod or {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

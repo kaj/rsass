@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/extend/optional_and_mandatory.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("optional_and_mandatory")
@@ -32,7 +31,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod different_files {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("different_files")
     }

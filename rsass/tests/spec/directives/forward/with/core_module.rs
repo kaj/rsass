@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/with/core_module.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("core_module")
@@ -11,7 +10,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod indirect {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("indirect")
     }

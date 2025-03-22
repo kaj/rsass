@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/error/operator.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("operator")
 }
 
 mod greater_than {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -47,7 +45,6 @@ mod greater_than {
     }
 }
 mod greater_than_or_equals {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -90,7 +87,6 @@ mod greater_than_or_equals {
     }
 }
 mod less_than {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -131,7 +127,6 @@ mod less_than {
     }
 }
 mod less_than_or_equals {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -174,7 +169,6 @@ mod less_than_or_equals {
     }
 }
 mod minus {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -215,7 +209,6 @@ mod minus {
     }
 }
 mod test_mod {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -256,7 +249,6 @@ mod test_mod {
     }
 }
 mod plus {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -297,7 +289,6 @@ mod plus {
     }
 }
 mod times {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

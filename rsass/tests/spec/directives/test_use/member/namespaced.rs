@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/member/namespaced.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("namespaced")
@@ -54,7 +53,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod default {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("default")
     }
@@ -98,7 +96,6 @@ mod default {
         );
     }
     mod variable_assignment {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("variable_assignment")
         }
@@ -221,7 +218,6 @@ mod default {
     }
 }
 mod explicit {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("explicit")
     }

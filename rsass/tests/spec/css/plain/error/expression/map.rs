@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/error/expression/map.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("map")

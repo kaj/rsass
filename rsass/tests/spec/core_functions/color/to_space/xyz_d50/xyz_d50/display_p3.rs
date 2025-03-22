@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/to_space/xyz_d50/xyz-d50/display_p3.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("display_p3")
 }
 
 mod alpha {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -74,7 +72,6 @@ fn middle() {
     );
 }
 mod missing {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -118,7 +115,6 @@ mod missing {
     }
 }
 mod out_of_range {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

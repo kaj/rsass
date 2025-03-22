@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/round/strategy/nearest.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("nearest")
 }
 
 mod infinity {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -66,7 +64,6 @@ fn infinity_and_positive() {
     );
 }
 mod lower_multiple {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -184,7 +181,6 @@ fn step_is_zero() {
     );
 }
 mod upper_multiple {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

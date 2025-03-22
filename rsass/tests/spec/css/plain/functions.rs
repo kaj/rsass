@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/functions.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("functions")
@@ -56,13 +55,11 @@ fn empty_fallback_var() {
     );
 }
 mod error {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("error")
     }
 
     mod empty_fallback_var {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("empty_fallback_var")
         }

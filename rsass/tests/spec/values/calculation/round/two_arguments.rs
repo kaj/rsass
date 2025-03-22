@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/round/two_arguments.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("two_arguments")
 }
@@ -24,7 +23,6 @@ fn equals() {
     );
 }
 mod lower_multiple {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -47,7 +45,6 @@ mod lower_multiple {
     }
 }
 mod math {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -72,11 +69,9 @@ fn nan() {
     );
 }
 mod negative_step {
-    #[allow(unused)]
     use super::runner;
 
     mod lower_multiple {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -99,7 +94,6 @@ mod negative_step {
         }
     }
     mod upper_multiple {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -141,7 +135,6 @@ mod negative_step {
     }
 }
 mod negative_zero {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -176,7 +169,6 @@ fn overridden() {
     );
 }
 mod positive_zero {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -201,7 +193,6 @@ mod positive_zero {
     }
 }
 mod preserved {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -235,7 +226,6 @@ fn step_is_zero() {
     );
 }
 mod units {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -322,7 +312,6 @@ fn unknown_variable() {
     );
 }
 mod upper_multiple {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

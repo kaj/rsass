@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/error/member/inaccessible.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("inaccessible")
@@ -88,13 +87,11 @@ fn runner() -> crate::TestRunner {
 }
 
 mod hidden {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("hidden")
     }
 
     mod test_as {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("as")
         }
@@ -166,7 +163,6 @@ mod hidden {
     }
 }
 mod local {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("local")
     }
@@ -220,13 +216,11 @@ mod local {
     }
 }
 mod not_shown {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("not_shown")
     }
 
     mod test_as {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("as")
         }
@@ -281,7 +275,6 @@ mod not_shown {
         );
     }
     mod wrong_type {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("wrong_type")
         }
@@ -321,7 +314,6 @@ mod not_shown {
     }
 }
 mod private {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("private")
     }

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/extend/simple/pseudo/selector/match.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("match")
 }
 
 mod prefixed {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -25,7 +23,6 @@ mod prefixed {
         );
     }
     mod unequal {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -88,11 +85,9 @@ mod prefixed {
     }
 }
 mod unprefixed {
-    #[allow(unused)]
     use super::runner;
 
     mod element {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -108,7 +103,6 @@ mod unprefixed {
     );
         }
         mod unequal {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -150,11 +144,9 @@ mod unprefixed {
         }
     }
     mod is {
-        #[allow(unused)]
         use super::runner;
 
         mod class {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -170,7 +162,6 @@ mod unprefixed {
     );
             }
             mod unequal {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -213,11 +204,9 @@ mod unprefixed {
         }
     }
     mod matches {
-        #[allow(unused)]
         use super::runner;
 
         mod class {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -233,7 +222,6 @@ mod unprefixed {
     );
             }
             mod unequal {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -276,11 +264,9 @@ mod unprefixed {
         }
     }
     mod test_where {
-        #[allow(unused)]
         use super::runner;
 
         mod class {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -296,7 +282,6 @@ mod unprefixed {
     );
             }
             mod unequal {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/round/three_arguments.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("three_arguments")
 }
 
 mod step {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -22,7 +20,6 @@ mod step {
     }
 }
 mod strategy {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -49,7 +46,6 @@ mod strategy {
     }
 }
 mod units {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

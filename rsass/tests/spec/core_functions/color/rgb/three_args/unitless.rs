@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb/three_args/unitless.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("unitless")
 }
@@ -15,7 +14,6 @@ fn beaded() {
     );
 }
 mod clamped {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

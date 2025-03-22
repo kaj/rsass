@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/css/propset.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("propset")
 }
 
 mod comment {
-    #[allow(unused)]
     use super::runner;
 
     mod after_block {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -36,7 +33,6 @@ mod comment {
         }
     }
     mod before_block {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -82,15 +78,12 @@ fn custom_property_value() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod custom_property {
-        #[allow(unused)]
         use super::runner;
 
         mod nested {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

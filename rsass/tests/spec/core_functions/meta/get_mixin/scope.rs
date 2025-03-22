@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/get_mixin/scope.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("scope")
 }
@@ -31,7 +30,6 @@ fn captures_inner_scope() {
     );
 }
 mod scope {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

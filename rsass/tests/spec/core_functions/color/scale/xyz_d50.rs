@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/scale/xyz_d50.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("xyz_d50")
 }
@@ -67,7 +66,6 @@ fn named() {
     );
 }
 mod x {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -127,7 +125,6 @@ mod x {
     }
 }
 mod y {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -187,7 +184,6 @@ mod y {
     }
 }
 mod z {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

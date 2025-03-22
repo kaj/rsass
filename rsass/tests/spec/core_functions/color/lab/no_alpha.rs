@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/lab/no_alpha.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("no_alpha")
 }
@@ -19,7 +18,6 @@ fn named() {
     );
 }
 mod none {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -63,11 +61,9 @@ mod none {
     }
 }
 mod percent {
-    #[allow(unused)]
     use super::runner;
 
     mod ab {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -111,7 +107,6 @@ mod percent {
         }
     }
     mod lightness {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -156,15 +151,12 @@ mod percent {
     }
 }
 mod unitless {
-    #[allow(unused)]
     use super::runner;
 
     mod a {
-        #[allow(unused)]
         use super::runner;
 
         mod degenerate {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -209,7 +201,6 @@ mod unitless {
         }
     }
     mod ab {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -253,11 +244,9 @@ mod unitless {
         }
     }
     mod b {
-        #[allow(unused)]
         use super::runner;
 
         mod degenerate {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -302,7 +291,6 @@ mod unitless {
         }
     }
     mod lightness {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -332,7 +320,6 @@ mod unitless {
             );
         }
         mod degenerate {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

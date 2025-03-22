@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/is_powerless/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod channel {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -75,7 +73,6 @@ mod channel {
     }
 }
 mod space {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -152,7 +149,6 @@ fn too_many_args() {
     );
 }
 mod test_type {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

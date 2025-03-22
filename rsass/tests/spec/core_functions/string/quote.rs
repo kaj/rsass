@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/string/quote.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("quote")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -85,7 +83,6 @@ fn named() {
     );
 }
 mod quote_unquoted_quote {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

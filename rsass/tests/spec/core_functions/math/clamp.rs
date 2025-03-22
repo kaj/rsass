@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/clamp.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("clamp")
 }
@@ -36,11 +35,9 @@ fn chooses_number() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod incompatible_units {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -124,7 +121,6 @@ mod error {
         );
     }
     mod some_unitless {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -257,7 +253,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -361,7 +356,6 @@ fn named_args() {
     );
 }
 mod preserves_units {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

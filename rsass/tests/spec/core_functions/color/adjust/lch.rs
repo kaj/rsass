@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/adjust/lch.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("lch")
 }
@@ -45,7 +44,6 @@ fn alpha_input() {
     );
 }
 mod chroma {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -116,7 +114,6 @@ mod chroma {
     }
 }
 mod hue {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -143,7 +140,6 @@ mod hue {
     }
 }
 mod lightness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/extend/simple/pseudo/selector/non_idempotent.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("non_idempotent")
 }
 
 mod has {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -44,7 +42,6 @@ mod has {
     }
 }
 mod host {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -84,7 +81,6 @@ mod host {
     }
 }
 mod host_context {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -128,7 +124,6 @@ mod host_context {
     }
 }
 mod slotted {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

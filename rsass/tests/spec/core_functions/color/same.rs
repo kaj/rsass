@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/same.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("same")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -50,7 +48,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -88,11 +85,9 @@ mod error {
     }
 }
 mod test_false {
-    #[allow(unused)]
     use super::runner;
 
     mod different_space {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -129,7 +124,6 @@ mod test_false {
         }
     }
     mod same_space {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -173,11 +167,9 @@ fn named() {
     );
 }
 mod test_true {
-    #[allow(unused)]
     use super::runner;
 
     mod different_space {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -227,7 +219,6 @@ mod test_true {
         }
     }
     mod same_space {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hsl/three_args/bounds.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("bounds")
 }
 
 mod lightness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -37,7 +35,6 @@ mod lightness {
     }
 }
 mod saturation {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

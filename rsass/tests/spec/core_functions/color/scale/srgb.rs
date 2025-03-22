@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/scale/srgb.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("srgb")
 }
@@ -53,7 +52,6 @@ fn alpha_input() {
     );
 }
 mod blue {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -113,7 +111,6 @@ mod blue {
     }
 }
 mod green {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -189,7 +186,6 @@ fn named() {
     );
 }
 mod red {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

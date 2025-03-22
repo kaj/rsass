@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/css/selector/placeholder.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("placeholder")
 }
 
 mod pseudoselectors {
-    #[allow(unused)]
     use super::runner;
 
     mod is {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -38,7 +35,6 @@ mod pseudoselectors {
         }
     }
     mod matches {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -66,7 +62,6 @@ mod pseudoselectors {
         }
     }
     mod not {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -107,7 +102,6 @@ mod pseudoselectors {
         }
     }
     mod test_where {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

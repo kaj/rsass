@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/mix/both_weights.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("both_weights")
 }
@@ -21,7 +20,6 @@ fn contradiction() {
     );
 }
 mod mixed {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -50,7 +48,6 @@ mod mixed {
     }
 }
 mod transparent {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -75,7 +72,6 @@ mod transparent {
     }
 }
 mod weighted {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/complex/combinators/child.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("child")
 }
 
 mod and_child {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -56,7 +54,6 @@ mod and_child {
     }
 }
 mod and_descendant {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/base-level-parent/root/basic-alone-itpl.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("basic-alone-itpl")
 }

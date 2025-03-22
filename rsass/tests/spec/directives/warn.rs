@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/directives/warn.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("warn")
 }
 
 mod comment {
-    #[allow(unused)]
     use super::runner;
 
     mod after_expression {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -23,7 +20,6 @@ mod comment {
         }
     }
     mod before_expression {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -70,7 +66,6 @@ fn functions_in_stack() {
     );
 }
 mod position {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

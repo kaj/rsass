@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/functions/var.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("var")
@@ -8,13 +7,11 @@ fn runner() -> crate::TestRunner {
 }
 
 mod css_function {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("css_function")
     }
 
     mod single_argument {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("single_argument")
         }
@@ -52,7 +49,6 @@ mod css_function {
         );
     }
     mod two_argument {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("two_argument")
         }
@@ -68,7 +64,6 @@ mod css_function {
             );
         }
         mod empty {
-            #[allow(unused)]
             fn runner() -> crate::TestRunner {
                 super::runner().with_cwd("empty")
             }
@@ -147,7 +142,6 @@ mod css_function {
         }
     }
     mod zero_argument {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("zero_argument")
         }
@@ -165,7 +159,6 @@ mod css_function {
     }
 }
 mod error {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("error")
     }
@@ -220,13 +213,11 @@ mod error {
     }
 }
 mod sass_function {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("sass_function")
     }
 
     mod normal_trailing_comma_behavior {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("normal_trailing_comma_behavior")
         }
@@ -264,7 +255,6 @@ mod sass_function {
         }
     }
     mod single_argument {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("single_argument")
         }
@@ -317,7 +307,6 @@ mod sass_function {
         );
     }
     mod two_argument {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("two_argument")
         }

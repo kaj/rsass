@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/extend/extended.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("extended")
@@ -10,7 +9,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod extended {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("extended")
     }

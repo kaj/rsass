@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/error/member/inaccessible.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("inaccessible")
@@ -58,7 +57,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod private {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("private")
     }
@@ -115,7 +113,6 @@ mod private {
     }
 }
 mod transitive {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("transitive")
     }
@@ -172,7 +169,6 @@ mod transitive {
     }
 }
 mod transitive_from_import {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("transitive_from_import")
     }

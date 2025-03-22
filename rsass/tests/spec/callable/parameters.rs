@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/callable/parameters.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("parameters")
 }
 
 mod function {
-    #[allow(unused)]
     use super::runner;
 
     mod error {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -27,11 +24,9 @@ mod function {
         }
     }
     mod trailing_comma {
-        #[allow(unused)]
         use super::runner;
 
         mod default {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -72,7 +67,6 @@ mod function {
             );
         }
         mod rest {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -127,11 +121,9 @@ mod function {
     }
 }
 mod mixin {
-    #[allow(unused)]
     use super::runner;
 
     mod error {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -148,11 +140,9 @@ mod mixin {
         }
     }
     mod trailing_comma {
-        #[allow(unused)]
         use super::runner;
 
         mod default {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -193,7 +183,6 @@ mod mixin {
             );
         }
         mod rest {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

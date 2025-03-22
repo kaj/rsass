@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/ceil.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("ceil")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

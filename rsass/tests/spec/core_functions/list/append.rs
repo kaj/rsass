@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/append.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("append")
 }
@@ -26,7 +25,6 @@ fn bracketed() {
     );
 }
 mod comma {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -51,7 +49,6 @@ mod comma {
     }
 }
 mod empty {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -113,7 +110,6 @@ mod empty {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -155,7 +151,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -191,7 +186,6 @@ mod error {
     }
 }
 mod map {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -245,7 +239,6 @@ fn non_list() {
     );
 }
 mod single {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -281,7 +274,6 @@ mod single {
     }
 }
 mod slash {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -306,7 +298,6 @@ mod slash {
     }
 }
 mod space {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

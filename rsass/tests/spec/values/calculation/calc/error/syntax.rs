@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/error/syntax.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("syntax")
 }
@@ -56,7 +55,6 @@ fn hash() {
     );
 }
 mod interpolation {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -115,11 +113,9 @@ fn multiple_args() {
     );
 }
 mod no_whitespace {
-    #[allow(unused)]
     use super::runner;
 
     mod minus {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -169,7 +165,6 @@ mod no_whitespace {
         }
     }
     mod plus {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/selector/combinator/selector_pseudo.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("selector_pseudo")
 }
 
 mod leading {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -14,7 +12,6 @@ mod leading {
         assert_eq!(runner().ok(":is(+ ~ a) {b: c}\n"), "");
     }
     mod single {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -32,7 +29,6 @@ mod leading {
     }
 }
 mod middle {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -40,7 +36,6 @@ mod middle {
         assert_eq!(runner().ok(":is(a > + b) {c: d}\n"), "");
     }
     mod single {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -73,7 +68,6 @@ mod middle {
     }
 }
 mod trailing {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -81,7 +75,6 @@ mod trailing {
         assert_eq!(runner().ok(":is(a +) {b: c}\n"), "");
     }
     mod single {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

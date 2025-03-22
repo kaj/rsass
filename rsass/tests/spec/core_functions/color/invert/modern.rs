@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/invert/modern.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("modern")
 }
@@ -28,7 +27,6 @@ fn polar() {
     );
 }
 mod space {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -80,7 +78,6 @@ mod space {
         );
     }
     mod powerless {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -108,7 +105,6 @@ mod space {
     }
 }
 mod weight {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

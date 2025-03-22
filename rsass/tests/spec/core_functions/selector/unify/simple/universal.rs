@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/simple/universal.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("universal")
 }
 
 mod and_type {
-    #[allow(unused)]
     use super::runner;
 
     mod any {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -55,7 +52,6 @@ mod and_type {
         }
     }
     mod default {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -102,7 +98,6 @@ mod and_type {
         }
     }
     mod empty {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -149,7 +144,6 @@ mod and_type {
         }
     }
     mod explicit {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -185,7 +179,6 @@ mod and_type {
             );
         }
         mod and_explicit {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -213,11 +206,9 @@ mod and_type {
     }
 }
 mod and_universal {
-    #[allow(unused)]
     use super::runner;
 
     mod any {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -262,7 +253,6 @@ mod and_universal {
         }
     }
     mod default {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -309,7 +299,6 @@ mod and_universal {
         }
     }
     mod empty {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -356,7 +345,6 @@ mod and_universal {
         }
     }
     mod explicit {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

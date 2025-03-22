@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/ms_long_filter_syntax.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("ms_long_filter_syntax")
 }

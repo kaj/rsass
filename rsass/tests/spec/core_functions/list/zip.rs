@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/zip.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("zip")
 }
 
 mod map {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -61,7 +59,6 @@ fn non_list() {
     );
 }
 mod one_list {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -162,7 +159,6 @@ fn three_lists() {
     );
 }
 mod two_lists {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

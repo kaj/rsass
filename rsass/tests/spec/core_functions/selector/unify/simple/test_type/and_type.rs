@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/simple/type/and_type.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("and_type")
 }
 
 mod any {
-    #[allow(unused)]
     use super::runner;
 
     mod and_any {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -36,7 +33,6 @@ mod any {
         }
     }
     mod and_default {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -62,7 +58,6 @@ mod any {
         }
     }
     mod and_empty {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -88,7 +83,6 @@ mod any {
         }
     }
     mod and_explicit {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -115,11 +109,9 @@ mod any {
     }
 }
 mod default {
-    #[allow(unused)]
     use super::runner;
 
     mod and_any {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -145,7 +137,6 @@ mod default {
         }
     }
     mod and_default {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -194,11 +185,9 @@ mod default {
     }
 }
 mod empty {
-    #[allow(unused)]
     use super::runner;
 
     mod and_any {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -235,7 +224,6 @@ mod empty {
         );
     }
     mod and_empty {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -273,11 +261,9 @@ mod empty {
     }
 }
 mod explicit {
-    #[allow(unused)]
     use super::runner;
 
     mod and_any {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -325,11 +311,9 @@ mod explicit {
         );
     }
     mod and_explicit {
-        #[allow(unused)]
         use super::runner;
 
         mod different {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

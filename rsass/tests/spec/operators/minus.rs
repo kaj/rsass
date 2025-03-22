@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/operators/minus.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("minus")
 }
 
 mod syntax {
-    #[allow(unused)]
     use super::runner;
 
     mod comment {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -42,7 +39,6 @@ mod syntax {
         }
     }
     mod whitespace {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -55,7 +51,6 @@ mod syntax {
             );
         }
         mod left {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

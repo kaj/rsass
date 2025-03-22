@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/module_mixins.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("module_mixins")
@@ -94,7 +93,6 @@ fn empty() {
     );
 }
 mod error {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("error")
     }
@@ -267,7 +265,6 @@ fn named() {
     );
 }
 mod return_type {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("return_type")
     }
@@ -299,7 +296,6 @@ mod return_type {
     }
 }
 mod through_forward {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("through_forward")
     }

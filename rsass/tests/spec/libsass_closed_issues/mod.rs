@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("libsass-closed-issues")
 }
@@ -275,8 +274,6 @@ mod issue_1537;
 
 mod issue_154;
 
-mod issue_1546;
-
 mod issue_1550;
 
 mod issue_1557;
@@ -294,8 +291,6 @@ mod issue_1570;
 mod issue_1574;
 
 mod issue_1577;
-
-mod issue_1578;
 
 mod issue_1579;
 
@@ -463,8 +458,6 @@ mod issue_192;
 
 mod issue_1923;
 
-mod issue_1926;
-
 mod issue_1927;
 
 mod issue_1931;
@@ -569,8 +562,6 @@ mod issue_2169;
 
 mod issue_2175;
 
-mod issue_2177;
-
 mod issue_2179;
 
 mod issue_2185;
@@ -635,8 +626,6 @@ mod issue_2352;
 
 mod issue_2358;
 
-mod issue_2360;
-
 mod issue_2365;
 
 mod issue_2366;
@@ -659,9 +648,9 @@ mod issue_2429;
 
 mod issue_2444;
 
-// Ignoring "issue_2446", tests with expected error not implemented yet.
+// Ignoring "issue_2446", not expected to work yet.
 
-// Ignoring "issue_245443", tests with expected error not implemented yet.
+// Ignoring "issue_245443", not expected to work yet.
 
 mod issue_246;
 
@@ -936,8 +925,6 @@ mod issue_828;
 mod issue_829;
 
 mod issue_83;
-
-mod issue_845;
 
 mod issue_857;
 

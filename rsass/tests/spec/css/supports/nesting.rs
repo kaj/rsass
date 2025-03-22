@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/supports/nesting.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("nesting")
 }
@@ -37,7 +36,6 @@ fn loud_comment() {
     );
 }
 mod media {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

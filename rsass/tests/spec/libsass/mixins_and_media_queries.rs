@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/mixins-and-media-queries.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("mixins-and-media-queries")
 }

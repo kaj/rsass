@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/error/syntax.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("syntax")
 }
 
 mod after {
-    #[allow(unused)]
     use super::runner;
 
     mod at_rule {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -78,10 +75,6 @@ mod after {
     );
         }
     }
-    mod indented {
-        #[allow(unused)]
-        use super::runner;
-    }
     #[test]
     #[ignore] // wrong error
     fn style_rule() {
@@ -100,7 +93,6 @@ mod after {
     }
 }
 mod test_as {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -165,7 +157,6 @@ fn empty() {
     );
 }
 mod hide {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -230,7 +221,6 @@ mod hide {
     }
 }
 mod show {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -295,7 +285,6 @@ mod show {
     }
 }
 mod url {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -312,7 +301,6 @@ mod url {
     }
 }
 mod with {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -437,7 +425,6 @@ mod with {
     }
 }
 mod within {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

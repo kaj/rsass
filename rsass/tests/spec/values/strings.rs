@@ -1,20 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/values/strings.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("strings")
 }
 
 mod new_line {
-    #[allow(unused)]
     use super::runner;
 
-    mod sass {
-        #[allow(unused)]
-        use super::runner;
-    }
     mod scss {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

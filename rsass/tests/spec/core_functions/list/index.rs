@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/index.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("index")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -49,7 +47,6 @@ mod error {
     }
 }
 mod found {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -134,7 +131,6 @@ fn named() {
     );
 }
 mod not_found {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -149,7 +145,6 @@ mod not_found {
         );
     }
     mod map {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

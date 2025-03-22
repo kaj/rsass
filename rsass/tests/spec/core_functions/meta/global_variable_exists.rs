@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/global_variable_exists.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("global_variable_exists")
@@ -55,7 +54,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod dash_insensitive {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("dash_insensitive")
     }
@@ -86,7 +84,6 @@ mod dash_insensitive {
     }
 }
 mod different_module {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("different_module")
     }
@@ -116,7 +113,6 @@ mod different_module {
         );
     }
     mod through_forward {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("through_forward")
         }
@@ -208,13 +204,11 @@ mod different_module {
     }
 }
 mod error {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("error")
     }
 
     mod argument {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("argument")
         }
@@ -260,7 +254,6 @@ mod error {
     );
         }
         mod test_type {
-            #[allow(unused)]
             fn runner() -> crate::TestRunner {
                 super::runner().with_cwd("type")
             }
@@ -324,7 +317,6 @@ mod error {
         );
     }
     mod module {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("module")
         }
@@ -395,7 +387,6 @@ fn named() {
     );
 }
 mod same_module {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("same_module")
     }

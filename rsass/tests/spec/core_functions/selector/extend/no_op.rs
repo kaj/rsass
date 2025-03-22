@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/extend/no_op.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("no_op")
 }
 
 mod conflict {
-    #[allow(unused)]
     use super::runner;
 
     mod element {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -65,7 +62,6 @@ mod conflict {
         );
     }
     mod pseudo_element {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -92,7 +88,6 @@ mod conflict {
         }
     }
     mod universal {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -180,11 +175,9 @@ fn missing() {
     );
 }
 mod unification {
-    #[allow(unused)]
     use super::runner;
 
     mod additional {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -259,7 +252,6 @@ mod unification {
         );
     }
     mod specificity_modification {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -277,7 +269,6 @@ mod unification {
         }
     }
     mod subselector_of_target {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/media/logic/and_not.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("and_not")
 }
@@ -39,7 +38,6 @@ fn after_type_and_modifier() {
     );
 }
 mod comment_after {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

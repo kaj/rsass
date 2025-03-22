@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/extend/simple/pseudo/arg.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("arg")
 }
 
 mod class {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -20,7 +18,6 @@ mod class {
         );
     }
     mod unequal {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -56,7 +53,6 @@ mod class {
     }
 }
 mod element {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -70,7 +66,6 @@ mod element {
         );
     }
     mod unequal {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

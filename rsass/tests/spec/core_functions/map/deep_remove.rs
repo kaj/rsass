@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/map/deep_remove.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("deep_remove")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -45,11 +43,9 @@ mod error {
     }
 }
 mod found {
-    #[allow(unused)]
     use super::runner;
 
     mod nested {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -116,7 +112,6 @@ mod found {
     }
 }
 mod not_found {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/extend/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod extendee {
-    #[allow(unused)]
     use super::runner;
 
     mod complex {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -102,7 +99,6 @@ mod extendee {
     }
 }
 mod extender {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -163,7 +159,6 @@ mod extender {
     }
 }
 mod selector {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

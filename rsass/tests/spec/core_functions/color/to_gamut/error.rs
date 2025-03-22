@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/to_gamut/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod color {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -27,7 +25,6 @@ mod color {
     }
 }
 mod method {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -114,7 +111,6 @@ mod method {
     }
 }
 mod space {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

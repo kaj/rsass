@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/replace.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("replace")
 }
@@ -26,15 +25,12 @@ fn compound() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod extendee {
-        #[allow(unused)]
         use super::runner;
 
         mod complex {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -126,7 +122,6 @@ mod error {
         }
     }
     mod extender {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -187,7 +182,6 @@ mod error {
         }
     }
     mod selector {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -302,15 +296,12 @@ mod error {
     }
 }
 mod format {
-    #[allow(unused)]
     use super::runner;
 
     mod input {
-        #[allow(unused)]
         use super::runner;
 
         mod multiple_extendees {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -347,7 +338,6 @@ mod format {
             }
         }
         mod non_string {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -431,7 +421,6 @@ fn partial_no_op() {
     );
 }
 mod selector_pseudo {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

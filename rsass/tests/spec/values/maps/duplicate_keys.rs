@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/maps/duplicate-keys.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("duplicate-keys")
 }

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/adjust/no_channels.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("no_channels")
 }
 
 mod alpha {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

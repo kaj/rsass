@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/error/known_incompatible/time.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("time")
 }
 
 mod ms {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -71,7 +69,6 @@ mod ms {
     }
 }
 mod s {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/round/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod one_argument {
-    #[allow(unused)]
     use super::runner;
 
     mod sass_script {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -38,7 +35,6 @@ mod one_argument {
         }
     }
     mod syntax {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -80,7 +76,6 @@ mod one_argument {
     }
 }
 mod three_argument {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -116,7 +111,6 @@ mod three_argument {
         );
     }
     mod strategy {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -178,7 +172,6 @@ fn too_many_args() {
     );
 }
 mod two_argument {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -211,7 +204,6 @@ mod two_argument {
         );
     }
     mod units {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/member/nested_global_variable.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("nested_global_variable")

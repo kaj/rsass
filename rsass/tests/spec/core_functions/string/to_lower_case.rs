@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/string/to_lower_case.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("to_lower_case")
 }
@@ -28,7 +27,6 @@ fn empty() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

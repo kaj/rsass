@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/selector_interpolation_in_string.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("selector_interpolation_in_string")
 }

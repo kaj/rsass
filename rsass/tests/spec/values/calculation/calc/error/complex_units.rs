@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/error/complex_units.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("complex_units")
 }
 
 mod denominator {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -41,7 +39,6 @@ mod denominator {
     }
 }
 mod multiple_numerator {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -75,7 +72,6 @@ mod multiple_numerator {
     }
 }
 mod numerator_and_denominator {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/sin.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("sin")
 }
@@ -24,7 +23,6 @@ fn deg() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -41,7 +39,6 @@ mod error {
         );
     }
     mod syntax {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -96,7 +93,6 @@ mod error {
         );
     }
     mod units {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

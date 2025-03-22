@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/atan2/arguments.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("arguments")
 }
@@ -16,7 +15,6 @@ fn compatible_units() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

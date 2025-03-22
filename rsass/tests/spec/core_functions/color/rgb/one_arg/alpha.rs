@@ -1,20 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb/one_arg/alpha.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("alpha")
 }
 
 mod bounds {
-    #[allow(unused)]
     use super::runner;
 
     mod alpha {
-        #[allow(unused)]
         use super::runner;
 
         mod percent {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -45,7 +41,6 @@ mod bounds {
             }
         }
         mod unitless {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -77,7 +72,6 @@ mod bounds {
         }
     }
     mod blue {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -108,7 +102,6 @@ mod bounds {
         }
     }
     mod green {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -139,7 +132,6 @@ mod bounds {
         }
     }
     mod red {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -171,7 +163,6 @@ mod bounds {
     }
 }
 mod in_gamut {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -233,7 +224,6 @@ mod in_gamut {
     }
 }
 mod missing {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/at-root.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("at-root")
 }

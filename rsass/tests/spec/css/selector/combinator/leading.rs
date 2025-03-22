@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/selector/combinator/leading.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("leading")
 }
 
 mod multiple {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -19,7 +17,6 @@ mod multiple {
     }
 }
 mod single {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

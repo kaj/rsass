@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/maps/key_equality.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("key_equality")
 }
 
 mod infinity {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

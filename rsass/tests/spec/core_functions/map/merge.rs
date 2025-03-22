@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/map/merge.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("merge")
 }
@@ -17,7 +16,6 @@ fn different_keys() {
     );
 }
 mod empty {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -55,7 +53,6 @@ mod empty {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -74,7 +71,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -108,7 +104,6 @@ mod error {
             );
         }
         mod nested {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -192,7 +187,6 @@ fn named() {
     );
 }
 mod nested {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -209,7 +203,6 @@ mod nested {
     );
     }
     mod empty {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/lists/slash.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("slash")
 }
 
 mod functions {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -31,7 +29,6 @@ mod functions {
     }
 }
 mod output {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -49,11 +46,9 @@ mod output {
     );
     }
     mod nested {
-        #[allow(unused)]
         use super::runner;
 
         mod comma_in {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -68,7 +63,6 @@ mod output {
             }
         }
         mod test_in {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -103,7 +97,6 @@ mod output {
             }
         }
         mod outside {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

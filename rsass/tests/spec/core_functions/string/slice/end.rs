@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/string/slice/end.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("end")
 }
 
 mod negative {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -51,7 +49,6 @@ mod negative {
     }
 }
 mod positive {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/tan.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("tan")
 }
 
 mod asymptote {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -31,7 +29,6 @@ fn deg() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -134,7 +131,6 @@ fn named_arg() {
     );
 }
 mod negative_asymptote {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

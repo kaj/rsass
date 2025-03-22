@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/log.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("log")
 }
 
 mod base {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -65,7 +63,6 @@ fn case_insensitive() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -108,7 +105,6 @@ mod error {
         );
     }
     mod syntax {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -150,7 +146,6 @@ mod error {
         );
     }
     mod units {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

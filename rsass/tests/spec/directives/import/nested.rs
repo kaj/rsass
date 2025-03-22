@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/import/nested.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("nested")
@@ -17,7 +16,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod at_rule {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("at_rule")
     }
@@ -70,7 +68,6 @@ mod at_rule {
     }
 }
 mod scope {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("scope")
     }

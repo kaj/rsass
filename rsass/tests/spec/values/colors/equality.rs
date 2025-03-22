@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/colors/equality.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("equality")
 }
 
 mod test_false {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -30,7 +28,6 @@ mod test_false {
         );
     }
     mod legacy {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -43,11 +40,9 @@ mod test_false {
             );
         }
         mod same_space {
-            #[allow(unused)]
             use super::runner;
 
             mod hsl {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -74,7 +69,6 @@ mod test_false {
                 }
             }
             mod hwb {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -101,7 +95,6 @@ mod test_false {
                 }
             }
             mod rgb {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -129,7 +122,6 @@ mod test_false {
         }
     }
     mod same_space {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -166,7 +158,6 @@ mod test_false {
     }
 }
 mod test_true {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -181,11 +172,9 @@ mod test_true {
     );
     }
     mod legacy {
-        #[allow(unused)]
         use super::runner;
 
         mod different_space {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -212,11 +201,9 @@ mod test_true {
             }
         }
         mod same_space {
-            #[allow(unused)]
             use super::runner;
 
             mod hsl {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -255,7 +242,6 @@ mod test_true {
                 }
             }
             mod hwb {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -283,7 +269,6 @@ mod test_true {
                 }
             }
             mod rgb {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]

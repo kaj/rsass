@@ -1,20 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hwb/three_args/bounds.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("bounds")
 }
 
 mod blackness {
-    #[allow(unused)]
     use super::runner;
 
     mod above {
-        #[allow(unused)]
         use super::runner;
 
         mod whiteness {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -76,11 +72,9 @@ mod blackness {
         }
     }
     mod below {
-        #[allow(unused)]
         use super::runner;
 
         mod whiteness {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -143,15 +137,12 @@ mod blackness {
     }
 }
 mod whiteness {
-    #[allow(unused)]
     use super::runner;
 
     mod above {
-        #[allow(unused)]
         use super::runner;
 
         mod blackness {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -213,11 +204,9 @@ mod whiteness {
         }
     }
     mod below {
-        #[allow(unused)]
         use super::runner;
 
         mod blackness {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

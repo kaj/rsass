@@ -1,16 +1,47 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hsl/one_arg/special_functions/no_alpha.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("no_alpha")
 }
 
+mod attr {
+    use super::runner;
+
+    #[test]
+    #[ignore] // unexepected error
+    fn arg_1() {
+        assert_eq!(
+            runner().ok("a {b: hsl(attr(c, %) 2% 3%)}\n"),
+            "a {\
+         \n  b: hsl(attr(c, %), 2%, 3%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn arg_2() {
+        assert_eq!(
+            runner().ok("a {b: hsl(1 attr(c, %) 3%)}\n"),
+            "a {\
+         \n  b: hsl(1, attr(c, %), 3%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn arg_3() {
+        assert_eq!(
+            runner().ok("a {b: hsl(1 2% attr(c, %))}\n"),
+            "a {\
+         \n  b: hsl(1, 2%, attr(c, %));\
+         \n}\n"
+        );
+    }
+}
 mod calc {
-    #[allow(unused)]
     use super::runner;
 
     mod calculation {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -42,7 +73,6 @@ mod calc {
         }
     }
     mod string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -78,11 +108,9 @@ mod calc {
     }
 }
 mod clamp {
-    #[allow(unused)]
     use super::runner;
 
     mod string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -118,7 +146,6 @@ mod clamp {
     }
 }
 mod env {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -150,11 +177,9 @@ mod env {
     }
 }
 mod max {
-    #[allow(unused)]
     use super::runner;
 
     mod string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -190,11 +215,9 @@ mod max {
     }
 }
 mod min {
-    #[allow(unused)]
     use super::runner;
 
     mod string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -230,23 +253,18 @@ mod min {
     }
 }
 mod multi {
-    #[allow(unused)]
     use super::runner;
 
     mod argument {
-        #[allow(unused)]
         use super::runner;
 
         mod var {
-            #[allow(unused)]
             use super::runner;
 
             mod arg_1 {
-                #[allow(unused)]
                 use super::runner;
 
                 mod of {
-                    #[allow(unused)]
                     use super::runner;
 
                     #[test]
@@ -273,11 +291,9 @@ mod multi {
                 }
             }
             mod arg_2 {
-                #[allow(unused)]
                 use super::runner;
 
                 mod of {
-                    #[allow(unused)]
                     use super::runner;
 
                     #[test]
@@ -295,7 +311,6 @@ mod multi {
     }
 }
 mod var {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

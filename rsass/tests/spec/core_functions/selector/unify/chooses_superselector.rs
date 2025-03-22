@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/chooses_superselector.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("chooses_superselector")
 }
 
 mod parent {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -31,7 +29,6 @@ mod parent {
     }
 }
 mod whole_selector {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

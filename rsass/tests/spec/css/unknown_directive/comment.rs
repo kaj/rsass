@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/css/unknown_directive/comment.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("comment")
 }
 
 mod children {
-    #[allow(unused)]
     use super::runner;
 
     mod after_value {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -27,7 +24,6 @@ mod children {
         }
     }
     mod before_value {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -44,7 +40,6 @@ mod children {
         }
     }
     mod no_value {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -62,11 +57,9 @@ mod children {
     }
 }
 mod no_children {
-    #[allow(unused)]
     use super::runner;
 
     mod after_value {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -79,7 +72,6 @@ mod no_children {
         }
     }
     mod before_value {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -96,7 +88,6 @@ mod no_children {
         }
     }
     mod no_value {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

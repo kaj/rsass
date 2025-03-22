@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/member/as.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("as")
@@ -123,7 +122,6 @@ fn mixin() {
     );
 }
 mod no_conflict {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("no_conflict")
     }
@@ -163,7 +161,6 @@ mod no_conflict {
     }
 }
 mod show {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("show")
     }
@@ -192,7 +189,6 @@ mod show {
     }
 }
 mod variable_assignment {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("variable_assignment")
     }

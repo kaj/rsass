@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/inspect/color.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("color")
@@ -8,7 +7,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod generated {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("generated")
     }
@@ -99,7 +97,6 @@ mod generated {
     }
 }
 mod literal {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("literal")
     }

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hsl/error/three_args.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("three_args")
 }
 
 mod hue {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -27,7 +25,6 @@ mod hue {
     }
 }
 mod lightness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -48,7 +45,6 @@ mod lightness {
     }
 }
 mod saturation {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/boolean_operations.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("boolean_operations")

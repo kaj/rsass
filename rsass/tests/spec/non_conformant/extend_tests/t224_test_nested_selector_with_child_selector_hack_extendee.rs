@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/224_test_nested_selector_with_child_selector_hack_extendee.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd(
         "224_test_nested_selector_with_child_selector_hack_extendee",

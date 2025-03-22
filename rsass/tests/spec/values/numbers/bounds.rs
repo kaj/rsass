@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/bounds.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("bounds")
 }
 
 mod int {
-    #[allow(unused)]
     use super::runner;
 
     mod above_max {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -39,7 +36,6 @@ mod int {
         }
     }
     mod below_min {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -90,7 +86,6 @@ mod int {
     );
     }
     mod safe {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -136,11 +131,9 @@ mod int {
     }
 }
 mod precision_limit {
-    #[allow(unused)]
     use super::runner;
 
     mod at {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -186,7 +179,6 @@ mod precision_limit {
         }
     }
     mod over {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

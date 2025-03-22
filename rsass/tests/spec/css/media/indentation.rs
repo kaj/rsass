@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/media/indentation.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("indentation")
 }
@@ -27,11 +26,9 @@ fn media_nested_in_selector() {
     );
 }
 mod nested_selector {
-    #[allow(unused)]
     use super::runner;
 
     mod different_lines_parent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -76,7 +73,6 @@ mod nested_selector {
         }
     }
     mod same_lines_parent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

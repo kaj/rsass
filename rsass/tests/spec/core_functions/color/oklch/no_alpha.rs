@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/oklch/no_alpha.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("no_alpha")
 }
@@ -19,7 +18,6 @@ fn named() {
     );
 }
 mod none {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -63,11 +61,9 @@ mod none {
     }
 }
 mod percent {
-    #[allow(unused)]
     use super::runner;
 
     mod chroma {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -111,7 +107,6 @@ mod percent {
         );
     }
     mod lightness {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -143,11 +138,9 @@ mod percent {
     }
 }
 mod unitless {
-    #[allow(unused)]
     use super::runner;
 
     mod chroma {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -177,7 +170,6 @@ mod unitless {
             );
         }
         mod degenerate {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -222,7 +214,6 @@ mod unitless {
         }
     }
     mod hue {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -252,7 +243,6 @@ mod unitless {
             );
         }
         mod degenerate {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -310,7 +300,6 @@ mod unitless {
         );
     }
     mod lightness {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -340,7 +329,6 @@ mod unitless {
             );
         }
         mod degenerate {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

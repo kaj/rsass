@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/divide/slash_free/argument.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("argument")
 }
 
 mod function {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -30,7 +28,6 @@ mod function {
         );
     }
     mod rest {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -86,7 +83,6 @@ mod function {
     }
 }
 mod test_macro {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -118,7 +114,6 @@ mod test_macro {
     }
 }
 mod mixin {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb/three_args/percents.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("percents")
 }
 
 mod all {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -29,7 +27,6 @@ fn boundaries() {
     );
 }
 mod clamped {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -61,7 +58,6 @@ mod clamped {
     }
 }
 mod percent {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -75,7 +71,6 @@ mod percent {
     }
 }
 mod unitless {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

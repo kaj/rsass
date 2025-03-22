@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/fade_out.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("fade_out")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod bounds {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -141,7 +138,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

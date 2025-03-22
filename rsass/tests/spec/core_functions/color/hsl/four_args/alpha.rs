@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hsl/four_args/alpha.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("alpha")
 }
 
 mod percent {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -56,7 +54,6 @@ mod percent {
     }
 }
 mod unitless {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

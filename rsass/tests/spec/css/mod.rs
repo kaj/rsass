@@ -1,11 +1,12 @@
 //! Tests auto-converted from "sass-spec/spec/css"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("css")
 }
 
 mod blockless_directive_without_semicolon;
+
+mod charset;
 
 mod comment;
 
@@ -32,6 +33,8 @@ mod media;
 mod moz_document;
 
 mod ms_long_filter_syntax;
+
+mod percent;
 
 mod plain;
 

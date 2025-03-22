@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/operations/division.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("division")
 }
 
 mod slash {
-    #[allow(unused)]
     use super::runner;
 
     mod with_string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

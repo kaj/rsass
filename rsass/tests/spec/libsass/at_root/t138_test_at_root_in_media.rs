@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/at-root/138_test_at_root_in_media.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("138_test_at_root_in_media")
 }

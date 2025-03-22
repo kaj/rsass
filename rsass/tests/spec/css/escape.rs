@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/css/escape.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("escape")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod syntax {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

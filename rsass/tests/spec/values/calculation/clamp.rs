@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/clamp.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("clamp")
 }
@@ -15,7 +14,6 @@ fn case_insensitive() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -34,7 +32,6 @@ mod error {
     );
     }
     mod known_incompatible {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -81,7 +78,6 @@ mod error {
         }
     }
     mod syntax {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -161,11 +157,9 @@ mod error {
     }
 }
 mod preserved {
-    #[allow(unused)]
     use super::runner;
 
     mod math {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -197,7 +191,6 @@ mod preserved {
         }
     }
     mod single_arg {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -232,7 +225,6 @@ mod preserved {
         }
     }
     mod unit {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -265,7 +257,6 @@ mod preserved {
     }
 }
 mod simplified {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -287,7 +278,6 @@ mod simplified {
         );
     }
     mod lower_bound {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -310,7 +300,6 @@ mod simplified {
         }
     }
     mod upper_bound {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb/one_arg/relative_color.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("relative_color")
 }
 
 mod calc {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -29,7 +27,6 @@ mod calc {
     }
 }
 mod different_case {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -52,11 +49,9 @@ mod different_case {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod quoted {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -91,7 +86,6 @@ mod error {
         }
     }
     mod wrong_keyword {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -137,7 +131,6 @@ fn slash_list_alpha() {
     );
 }
 mod test_static {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -160,7 +153,6 @@ mod test_static {
     }
 }
 mod var {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

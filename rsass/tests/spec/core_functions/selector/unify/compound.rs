@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/compound.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("compound")
 }
 
 mod full_overlap {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -61,15 +59,12 @@ fn no_overlap() {
     );
 }
 mod order {
-    #[allow(unused)]
     use super::runner;
 
     mod do_not_cross_pseudo_element {
-        #[allow(unused)]
         use super::runner;
 
         mod pseudo_class_and_element {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -117,7 +112,6 @@ mod order {
             }
         }
         mod pseudo_element {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -133,7 +127,6 @@ mod order {
             }
         }
         mod simple {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -182,7 +175,6 @@ mod order {
         );
     }
     mod pseudo_element_after_pseudo_class {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/to_gamut/space.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("space")
 }
 
 mod clip {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -23,15 +21,12 @@ mod clip {
     );
     }
     mod missing {
-        #[allow(unused)]
         use super::runner;
 
         mod legacy {
-            #[allow(unused)]
             use super::runner;
 
             mod analogous {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -62,7 +57,6 @@ mod clip {
                 }
             }
             mod same {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -108,7 +102,6 @@ mod clip {
             }
         }
         mod modern {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -129,7 +122,6 @@ mod clip {
                 );
             }
             mod same {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -188,11 +180,9 @@ mod clip {
     );
     }
     mod powerless {
-        #[allow(unused)]
         use super::runner;
 
         mod legacy {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -223,7 +213,6 @@ mod clip {
             }
         }
         mod modern {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -256,7 +245,6 @@ mod clip {
     }
 }
 mod local_minde {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -273,15 +261,12 @@ mod local_minde {
     );
     }
     mod missing {
-        #[allow(unused)]
         use super::runner;
 
         mod legacy {
-            #[allow(unused)]
             use super::runner;
 
             mod analogous {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -316,7 +301,6 @@ mod local_minde {
                 }
             }
             mod same {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -364,7 +348,6 @@ mod local_minde {
             }
         }
         mod modern {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -385,7 +368,6 @@ mod local_minde {
                 );
             }
             mod same {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -448,11 +430,9 @@ mod local_minde {
     );
     }
     mod powerless {
-        #[allow(unused)]
         use super::runner;
 
         mod legacy {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -483,7 +463,6 @@ mod local_minde {
             }
         }
         mod modern {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

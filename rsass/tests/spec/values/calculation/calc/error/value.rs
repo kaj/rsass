@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/error/value.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("value")
 }
 
 mod function {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -118,7 +116,6 @@ mod function {
     }
 }
 mod variable {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

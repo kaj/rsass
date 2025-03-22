@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/is_superselector/simple/universal.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("universal")
 }
@@ -36,11 +35,9 @@ fn equal() {
     );
 }
 mod namespace {
-    #[allow(unused)]
     use super::runner;
 
     mod empty {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -54,7 +51,6 @@ mod namespace {
             );
         }
         mod and_type {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -89,7 +85,6 @@ mod namespace {
             }
         }
         mod and_universal {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -135,7 +130,6 @@ mod namespace {
         }
     }
     mod explicit {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -149,7 +143,6 @@ mod namespace {
             );
         }
         mod and_type {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -163,7 +156,6 @@ mod namespace {
                 );
             }
             mod explicit {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -199,7 +191,6 @@ mod namespace {
             }
         }
         mod and_universal {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -213,7 +204,6 @@ mod namespace {
                 );
             }
             mod explicit {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -260,7 +250,6 @@ mod namespace {
         }
     }
     mod universal {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -274,7 +263,6 @@ mod namespace {
             );
         }
         mod and_type {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -309,7 +297,6 @@ mod namespace {
             }
         }
         mod and_universal {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

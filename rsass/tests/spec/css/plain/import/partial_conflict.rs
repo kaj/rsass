@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/import/partial_conflict.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("partial_conflict")

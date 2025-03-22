@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/nest/parent.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("parent")
 }
@@ -16,7 +15,6 @@ fn alone() {
     );
 }
 mod complex {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -71,11 +69,9 @@ fn multiple() {
     );
 }
 mod selector_pseudo {
-    #[allow(unused)]
     use super::runner;
 
     mod complex_parent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -110,7 +106,6 @@ mod selector_pseudo {
         }
     }
     mod simple_parent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

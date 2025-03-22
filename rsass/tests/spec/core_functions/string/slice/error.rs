@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/string/slice/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod decimal {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -81,7 +79,6 @@ fn too_many_args() {
     );
 }
 mod test_type {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -131,7 +128,6 @@ mod test_type {
     }
 }
 mod unit {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

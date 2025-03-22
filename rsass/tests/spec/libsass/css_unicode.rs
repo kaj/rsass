@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/css_unicode.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("css_unicode")
 }

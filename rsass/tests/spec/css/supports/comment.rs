@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/supports/comment.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("comment")
 }
 
 mod after_query {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -35,11 +33,9 @@ mod after_query {
     }
 }
 mod anything {
-    #[allow(unused)]
     use super::runner;
 
     mod after_ident {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -70,7 +66,6 @@ mod anything {
         }
     }
     mod after_open_paren {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -98,7 +93,6 @@ mod anything {
         }
     }
     mod before_close_paren {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -129,7 +123,6 @@ mod anything {
     }
 }
 mod before_query {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -157,15 +150,12 @@ mod before_query {
     }
 }
 mod declaration {
-    #[allow(unused)]
     use super::runner;
 
     mod custom_prop {
-        #[allow(unused)]
         use super::runner;
 
         mod after_colon {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -194,7 +184,6 @@ mod declaration {
             }
         }
         mod after_open_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -223,7 +212,6 @@ mod declaration {
             }
         }
         mod before_close_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -252,7 +240,6 @@ mod declaration {
             }
         }
         mod before_colon {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -281,11 +268,9 @@ mod declaration {
         }
     }
     mod normal_prop {
-        #[allow(unused)]
         use super::runner;
 
         mod after_colon {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -314,7 +299,6 @@ mod declaration {
             }
         }
         mod after_open_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -343,7 +327,6 @@ mod declaration {
             }
         }
         mod before_close_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -372,7 +355,6 @@ mod declaration {
             }
         }
         mod before_colon {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -402,11 +384,9 @@ mod declaration {
     }
 }
 mod function {
-    #[allow(unused)]
     use super::runner;
 
     mod after_open_paren {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -436,7 +416,6 @@ mod function {
         }
     }
     mod before_close_paren {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

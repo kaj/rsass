@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb/one_arg/no_alpha.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("no_alpha")
 }
 
 mod missing {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -41,11 +39,9 @@ mod missing {
     }
 }
 mod percents {
-    #[allow(unused)]
     use super::runner;
 
     mod all {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -68,7 +64,6 @@ mod percents {
         );
     }
     mod clamped {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -100,7 +95,6 @@ mod percents {
         }
     }
     mod percent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -114,7 +108,6 @@ mod percents {
         }
     }
     mod unitless {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -129,7 +122,6 @@ mod percents {
     }
 }
 mod unitless {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -142,7 +134,6 @@ mod unitless {
         );
     }
     mod clamped {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

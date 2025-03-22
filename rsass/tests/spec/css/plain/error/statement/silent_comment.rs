@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/error/statement/silent_comment.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("silent_comment")

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/lists"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("lists")
 }
@@ -8,7 +7,5 @@ fn runner() -> crate::TestRunner {
 mod brackets;
 
 mod equality;
-
-mod sass;
 
 mod slash;

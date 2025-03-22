@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/error/load.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("load")
@@ -26,7 +25,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod test_loop {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("loop")
     }

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/member/import/import_to_forward/override.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("override")
@@ -43,7 +42,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod test_override {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("override")
     }

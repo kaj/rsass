@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/error/known_incompatible/frequency.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("frequency")
 }
 
 mod hz {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -47,7 +45,6 @@ mod hz {
     }
 }
 mod khz {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/adjust/display_p3.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("display_p3")
 }
@@ -45,7 +44,6 @@ fn alpha_input() {
     );
 }
 mod blue {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -128,7 +126,6 @@ mod blue {
     }
 }
 mod green {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -211,7 +208,6 @@ mod green {
     }
 }
 mod red {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

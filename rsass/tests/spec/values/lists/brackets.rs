@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/lists/brackets.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("brackets")
 }
@@ -24,7 +23,6 @@ fn multiple() {
     );
 }
 mod nested {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -55,7 +53,6 @@ mod nested {
         );
     }
     mod unbracketed {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/map/remove.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("remove")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -45,7 +43,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -81,7 +78,6 @@ mod error {
     }
 }
 mod found {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -118,7 +114,6 @@ mod found {
         );
     }
     mod multiple {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -172,7 +167,6 @@ fn named() {
     );
 }
 mod not_found {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

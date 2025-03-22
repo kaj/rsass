@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/format.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("format")
 }
 
 mod input {
-    #[allow(unused)]
     use super::runner;
 
     mod non_string {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

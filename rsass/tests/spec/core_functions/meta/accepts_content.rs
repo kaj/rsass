@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/accepts_content.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("accepts_content")
 }
 
 mod accepts {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -48,7 +46,6 @@ mod accepts {
     }
 }
 mod args {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -66,7 +63,6 @@ mod args {
     }
 }
 mod doesnt_accept {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -97,11 +93,9 @@ mod doesnt_accept {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod args {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

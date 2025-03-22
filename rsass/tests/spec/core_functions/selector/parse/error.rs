@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/parse/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
@@ -60,7 +59,6 @@ fn parent() {
     );
 }
 mod parse {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -105,7 +103,6 @@ mod parse {
     }
 }
 mod slash_list {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

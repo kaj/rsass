@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/090_test_function_splat_args_with_var_args_preserves_separator.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd(
         "090_test_function_splat_args_with_var_args_preserves_separator",

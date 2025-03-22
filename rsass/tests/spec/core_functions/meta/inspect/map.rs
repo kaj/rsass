@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/inspect/map.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("map")
 }
 
 mod list {
-    #[allow(unused)]
     use super::runner;
 
     mod key {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -45,7 +42,6 @@ mod list {
         }
     }
     mod value {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

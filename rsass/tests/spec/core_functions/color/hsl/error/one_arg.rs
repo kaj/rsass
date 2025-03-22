@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hsl/error/one_arg.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("one_arg")
 }
 
 mod list {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -130,11 +128,9 @@ fn quoted_var_slash() {
     );
 }
 mod slash_list {
-    #[allow(unused)]
     use super::runner;
 
     mod channels {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -268,7 +264,6 @@ mod slash_list {
     }
 }
 mod test_type {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

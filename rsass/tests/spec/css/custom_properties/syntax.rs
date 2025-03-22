@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/custom_properties/syntax.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("syntax")
 }
 
 mod double_dash {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -29,7 +27,6 @@ mod double_dash {
     }
 }
 mod initial_digit {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -52,7 +49,6 @@ mod initial_digit {
     }
 }
 mod triple_dash {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

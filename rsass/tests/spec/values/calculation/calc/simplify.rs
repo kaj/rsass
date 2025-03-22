@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/simplify.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("simplify")
 }
 
 mod divide {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -29,7 +27,6 @@ mod divide {
     }
 }
 mod invert {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -52,7 +49,6 @@ mod invert {
     }
 }
 mod minus {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -84,7 +80,6 @@ fn nested() {
     );
 }
 mod plus {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -107,7 +102,6 @@ mod plus {
     }
 }
 mod times {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

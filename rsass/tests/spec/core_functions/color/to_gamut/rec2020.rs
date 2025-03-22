@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/to_gamut/rec2020.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("rec2020")
 }
 
 mod clip {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -37,7 +35,6 @@ mod clip {
     }
 }
 mod local_minde {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

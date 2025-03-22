@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/map/deep_merge.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("deep_merge")
 }
 
 mod deep {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -23,7 +21,6 @@ mod deep {
     );
     }
     mod empty {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -90,7 +87,6 @@ mod deep {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -132,7 +128,6 @@ mod error {
         );
     }
     mod test_type {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -181,7 +176,6 @@ fn named() {
     );
 }
 mod shallow {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -198,7 +192,6 @@ mod shallow {
     );
     }
     mod empty {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

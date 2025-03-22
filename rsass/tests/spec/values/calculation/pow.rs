@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/pow.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("pow")
 }
 
 mod base {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -29,7 +27,6 @@ fn case_insensitive() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -72,7 +69,6 @@ mod error {
         );
     }
     mod syntax {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -114,7 +110,6 @@ mod error {
         );
     }
     mod units {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -156,7 +151,6 @@ mod error {
     }
 }
 mod exponent {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -198,7 +192,6 @@ fn simplification() {
     );
 }
 mod x_infinity {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -212,7 +205,6 @@ mod x_infinity {
     }
 }
 mod y_infinity {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

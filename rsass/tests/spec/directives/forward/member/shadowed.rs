@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/member/shadowed.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("shadowed")
@@ -37,7 +36,6 @@ fn mixin() {
     );
 }
 mod variable_assignment {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("variable_assignment")
     }

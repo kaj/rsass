@@ -1,20 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/css/functions/special.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("special")
 }
 
 mod comment {
-    #[allow(unused)]
     use super::runner;
 
     mod calc {
-        #[allow(unused)]
         use super::runner;
 
         mod after_open_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -41,7 +37,6 @@ mod comment {
             }
         }
         mod before_close_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -69,11 +64,9 @@ mod comment {
         }
     }
     mod element {
-        #[allow(unused)]
         use super::runner;
 
         mod after_open_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -100,7 +93,6 @@ mod comment {
             }
         }
         mod before_close_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -128,11 +120,9 @@ mod comment {
         }
     }
     mod expression {
-        #[allow(unused)]
         use super::runner;
 
         mod after_open_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -159,7 +149,6 @@ mod comment {
             }
         }
         mod before_close_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -187,11 +176,9 @@ mod comment {
         }
     }
     mod progid {
-        #[allow(unused)]
         use super::runner;
 
         mod after_open_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -218,7 +205,6 @@ mod comment {
             }
         }
         mod before_close_paren {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -247,11 +233,9 @@ mod comment {
     }
 }
 mod prefixed {
-    #[allow(unused)]
     use super::runner;
 
     mod calc {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

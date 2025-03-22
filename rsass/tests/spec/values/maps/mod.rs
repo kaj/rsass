@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/maps"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("maps")
 }

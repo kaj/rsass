@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/expressions/syntax.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("syntax")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

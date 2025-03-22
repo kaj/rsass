@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/invert/legacy.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("legacy")
 }
 
 mod no_space {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -78,7 +76,6 @@ mod no_space {
         );
     }
     mod weighted {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -144,15 +141,12 @@ mod no_space {
     }
 }
 mod space {
-    #[allow(unused)]
     use super::runner;
 
     mod hsl {
-        #[allow(unused)]
         use super::runner;
 
         mod missing {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -196,7 +190,6 @@ mod space {
         }
     }
     mod hwb {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -234,7 +227,6 @@ mod space {
         );
     }
     mod powerless {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -262,11 +254,9 @@ mod space {
     }
 }
 mod units {
-    #[allow(unused)]
     use super::runner;
 
     mod weight {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

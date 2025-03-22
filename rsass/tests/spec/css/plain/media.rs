@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/media.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("media")
@@ -56,13 +55,11 @@ fn runner() -> crate::TestRunner {
 }
 
 mod logic {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("logic")
     }
 
     mod and {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("and")
         }
@@ -117,7 +114,6 @@ mod logic {
         }
     }
     mod and_not {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("and_not")
         }
@@ -161,7 +157,6 @@ mod logic {
         }
     }
     mod not {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("not")
         }
@@ -193,7 +188,6 @@ mod logic {
         }
     }
     mod or {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("or")
         }

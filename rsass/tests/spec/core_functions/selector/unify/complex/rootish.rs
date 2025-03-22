@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/complex/rootish.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("rootish")
 }
@@ -39,11 +38,9 @@ fn mixed() {
     );
 }
 mod root {
-    #[allow(unused)]
     use super::runner;
 
     mod in_both {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -81,11 +78,9 @@ mod root {
         }
     }
     mod in_one {
-        #[allow(unused)]
         use super::runner;
 
         mod selector1 {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -110,7 +105,6 @@ mod root {
             }
         }
         mod selector2 {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

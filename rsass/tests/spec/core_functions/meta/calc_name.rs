@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/calc_name.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("calc_name")
 }
@@ -26,7 +25,6 @@ fn clamp() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

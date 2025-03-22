@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/load_css/twice.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("twice")
@@ -19,7 +18,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod load_css {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("load_css")
     }
@@ -80,7 +78,6 @@ fn shares_state() {
     );
 }
 mod test_use {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("use")
     }
@@ -117,7 +114,6 @@ mod test_use {
         );
     }
     mod runs_once {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("runs_once")
         }

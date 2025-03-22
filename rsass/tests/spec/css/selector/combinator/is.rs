@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/selector/combinator/is.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("is")
 }
 
 mod leading {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -14,7 +12,6 @@ mod leading {
         assert_eq!(runner().ok(":is(+ ~ a) {b: c}\n"), "");
     }
     mod single {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

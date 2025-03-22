@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/rem.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("rem")
 }
@@ -24,7 +23,6 @@ fn equals() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -67,7 +65,6 @@ mod error {
         );
     }
     mod syntax {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -109,7 +106,6 @@ mod error {
         );
     }
     mod units {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -254,7 +250,6 @@ fn simplification() {
     );
 }
 mod units {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -330,7 +325,6 @@ mod units {
     }
 }
 mod x_infinity {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -362,7 +356,6 @@ fn x_zero() {
     );
 }
 mod y_infinity {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

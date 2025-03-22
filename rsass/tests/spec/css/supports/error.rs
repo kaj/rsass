@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/css/supports/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod syntax {
-    #[allow(unused)]
     use super::runner;
 
     mod anything {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -54,11 +51,9 @@ mod syntax {
         }
     }
     mod declaration {
-        #[allow(unused)]
         use super::runner;
 
         mod custom_prop {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -116,7 +111,6 @@ mod syntax {
         }
     }
     mod function {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -147,7 +141,6 @@ mod syntax {
         }
     }
     mod ident {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -217,7 +210,6 @@ mod syntax {
         );
     }
     mod operator {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

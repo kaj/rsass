@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/functions/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod single_equals {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/atan2/y_zero.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("y_zero")
 }
 
 mod negative {
-    #[allow(unused)]
     use super::runner;
 
     mod with_x {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -96,11 +93,9 @@ mod negative {
     }
 }
 mod negative_fuzzy {
-    #[allow(unused)]
     use super::runner;
 
     mod with_x {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -166,11 +161,9 @@ mod negative_fuzzy {
     }
 }
 mod positive {
-    #[allow(unused)]
     use super::runner;
 
     mod with_x {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -256,11 +249,9 @@ mod positive {
     }
 }
 mod positive_fuzzy {
-    #[allow(unused)]
     use super::runner;
 
     mod with_x {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

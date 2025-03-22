@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/scale/space.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("space")
 }
 
 mod legacy {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -33,15 +31,12 @@ mod legacy {
     }
 }
 mod missing {
-    #[allow(unused)]
     use super::runner;
 
     mod legacy {
-        #[allow(unused)]
         use super::runner;
 
         mod analogous {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -70,7 +65,6 @@ mod missing {
             }
         }
         mod same {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -98,7 +92,6 @@ mod missing {
         }
     }
     mod modern {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -115,7 +108,6 @@ mod missing {
     );
         }
         mod same {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -146,7 +138,6 @@ mod missing {
     }
 }
 mod modern {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -177,7 +168,6 @@ mod modern {
     }
 }
 mod powerless {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

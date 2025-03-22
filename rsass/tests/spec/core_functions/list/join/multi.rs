@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/join/multi.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("multi")
 }
 
 mod auto {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -31,7 +29,6 @@ mod auto {
     }
 }
 mod bracketed {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -128,7 +125,6 @@ mod bracketed {
     }
 }
 mod comma {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -162,7 +158,6 @@ mod comma {
         );
     }
     mod separator {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -188,7 +183,6 @@ mod comma {
     }
 }
 mod map {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -202,7 +196,6 @@ mod map {
         );
     }
     mod first {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -238,7 +231,6 @@ mod map {
         }
     }
     mod second {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -290,7 +282,6 @@ fn named() {
     );
 }
 mod slash {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -324,7 +315,6 @@ mod slash {
         );
     }
     mod separator {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -352,7 +342,6 @@ mod slash {
     }
 }
 mod space {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -366,7 +355,6 @@ mod space {
         );
     }
     mod separator {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

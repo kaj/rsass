@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/unify/complex/combinators/initial.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("initial")
 }
@@ -19,7 +18,6 @@ fn different() {
     );
 }
 mod only_one {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -54,7 +52,6 @@ fn same() {
     );
 }
 mod supersequence {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

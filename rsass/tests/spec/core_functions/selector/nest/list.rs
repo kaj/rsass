@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/nest/list.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("list")
 }
 
 mod list {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -40,7 +38,6 @@ mod list {
         );
     }
     mod parent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -94,7 +91,6 @@ mod list {
             );
         }
         mod selector_pseudo {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

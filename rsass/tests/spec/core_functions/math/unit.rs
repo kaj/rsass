@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/unit.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("unit")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -104,7 +102,6 @@ fn none() {
     );
 }
 mod numerator_and_denominator {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

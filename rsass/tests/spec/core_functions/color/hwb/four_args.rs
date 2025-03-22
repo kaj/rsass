@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hwb/four_args.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("four_args")
 }
 
 mod alpha {
-    #[allow(unused)]
     use super::runner;
 
     mod degenerate {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -45,7 +42,6 @@ mod alpha {
         }
     }
     mod percent {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -100,7 +96,6 @@ mod alpha {
         }
     }
     mod unitless {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -167,7 +162,6 @@ mod alpha {
     }
 }
 mod blackness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -191,7 +185,6 @@ mod blackness {
         );
     }
     mod degenerate {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -238,11 +231,9 @@ mod blackness {
     }
 }
 mod hue {
-    #[allow(unused)]
     use super::runner;
 
     mod degenerate {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -304,7 +295,6 @@ fn named() {
     );
 }
 mod whiteness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -328,7 +318,6 @@ mod whiteness {
         );
     }
     mod degenerate {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

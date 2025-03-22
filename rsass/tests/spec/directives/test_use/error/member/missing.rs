@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/error/member/missing.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("missing")
@@ -13,7 +12,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod global {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("global")
     }
@@ -52,7 +50,6 @@ mod global {
     }
 }
 mod namespaced {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("namespaced")
     }

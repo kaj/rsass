@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hwb/one_arg.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("one_arg")
 }
 
 mod alpha {
-    #[allow(unused)]
     use super::runner;
 
     mod clamped {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -35,7 +32,6 @@ mod alpha {
         }
     }
     mod in_gamut {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -105,7 +101,6 @@ mod alpha {
     }
 }
 mod blackness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -129,7 +124,6 @@ mod blackness {
         );
     }
     mod var {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -157,7 +151,6 @@ mod blackness {
     }
 }
 mod hue {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -193,11 +186,9 @@ fn no_alpha() {
     );
 }
 mod relative_color {
-    #[allow(unused)]
     use super::runner;
 
     mod calc {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -221,7 +212,6 @@ mod relative_color {
         }
     }
     mod different_case {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -244,11 +234,9 @@ mod relative_color {
         }
     }
     mod error {
-        #[allow(unused)]
         use super::runner;
 
         mod quoted {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -283,7 +271,6 @@ mod relative_color {
             }
         }
         mod wrong_keyword {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -329,7 +316,6 @@ mod relative_color {
         );
     }
     mod test_static {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -352,7 +338,6 @@ mod relative_color {
         }
     }
     mod var {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -376,7 +361,6 @@ mod relative_color {
     }
 }
 mod whiteness {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

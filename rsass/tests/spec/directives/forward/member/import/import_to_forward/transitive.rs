@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/member/import/import_to_forward/transitive.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("transitive")
@@ -37,7 +36,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod transitive {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("transitive")
     }

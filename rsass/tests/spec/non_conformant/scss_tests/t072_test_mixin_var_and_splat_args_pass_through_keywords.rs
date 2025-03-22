@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/072_test_mixin_var_and_splat_args_pass_through_keywords.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("072_test_mixin_var_and_splat_args_pass_through_keywords")

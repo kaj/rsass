@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/unary-ops.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("unary-ops")
 }

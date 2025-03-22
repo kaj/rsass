@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/parens.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("parens")
 }
@@ -61,7 +60,6 @@ fn operation() {
     );
 }
 mod var {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

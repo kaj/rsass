@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-todo-issues"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("libsass-todo-issues")
 }
@@ -33,9 +32,9 @@ mod issue_2096;
 
 // Ignoring "issue_221264.hrx", not expected to work yet.
 
-// Ignoring "issue_221267", tests with expected error not implemented yet.
+// Ignoring "issue_221267", not expected to work yet.
 
-// Ignoring "issue_221286", tests with expected error not implemented yet.
+// Ignoring "issue_221286", not expected to work yet.
 
 // Ignoring "issue_221292.hrx", not expected to work yet.
 
@@ -45,8 +44,8 @@ mod issue_2295;
 
 mod issue_238764;
 
-// Ignoring "issue_245442", tests with expected error not implemented yet.
+// Ignoring "issue_245442", not expected to work yet.
 
-// Ignoring "issue_245446", tests with expected error not implemented yet.
+// Ignoring "issue_245446", not expected to work yet.
 
 mod issue_2818;

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/member/import/import_to_forward/top_level.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("top_level")
@@ -48,7 +47,6 @@ fn mixin() {
     );
 }
 mod post_facto {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("post_facto")
     }

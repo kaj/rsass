@@ -1,16 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/custom_properties/trailing_comment.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("trailing_comment")
 }
 
-mod sass {
-    #[allow(unused)]
-    use super::runner;
-}
 mod scss {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

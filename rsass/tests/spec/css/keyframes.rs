@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/css/keyframes.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("keyframes")
 }
 
 mod bubble {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -65,11 +63,9 @@ mod bubble {
     }
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod in_keyframe_block {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -92,7 +88,6 @@ mod error {
     }
 }
 mod in_keyframe_block {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -126,7 +121,6 @@ mod in_keyframe_block {
     }
 }
 mod name {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -163,7 +157,6 @@ mod name {
     }
 }
 mod selector {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -213,7 +206,6 @@ mod selector {
         );
     }
     mod percentage {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -247,7 +239,6 @@ mod selector {
             );
         }
         mod scientific {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

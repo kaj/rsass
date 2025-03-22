@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/variables.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("variables")
 }
 
 mod global {
-    #[allow(unused)]
     use super::runner;
 
     mod first_declaration {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

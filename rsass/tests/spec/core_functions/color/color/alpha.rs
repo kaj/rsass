@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/color/alpha.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("alpha")
 }
@@ -21,11 +20,9 @@ fn named() {
     );
 }
 mod none {
-    #[allow(unused)]
     use super::runner;
 
     mod slash {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -56,7 +53,6 @@ mod none {
         }
     }
     mod slash_list {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -133,7 +129,6 @@ fn percent() {
     );
 }
 mod relative_color {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

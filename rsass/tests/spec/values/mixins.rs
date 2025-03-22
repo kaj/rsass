@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/mixins.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("mixins")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

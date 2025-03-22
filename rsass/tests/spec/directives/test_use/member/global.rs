@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/member/global.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("global")
@@ -71,7 +70,6 @@ fn multiple() {
     );
 }
 mod no_conflict {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("no_conflict")
     }
@@ -114,13 +112,11 @@ mod no_conflict {
     }
 }
 mod variable_assignment {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("variable_assignment")
     }
 
     mod nested {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("nested")
         }

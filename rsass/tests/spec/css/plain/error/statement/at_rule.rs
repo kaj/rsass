@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/error/statement/at_rule.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("at_rule")
@@ -181,7 +180,6 @@ fn test_if() {
     );
 }
 mod import {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("import")
     }

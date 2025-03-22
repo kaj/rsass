@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/variables_in_media.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("variables_in_media")
 }

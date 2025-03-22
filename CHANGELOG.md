@@ -16,6 +16,7 @@ project adheres to
 * Avoid an unnecessary proc macro, making rsass the library
   [free of syn](https://github.com/fasterthanlime/free-of-syn)
   (Note; the cli and the proc macro still uses syn).
+* Updated sass-spec test suite to 2025-03-17.
 
 
 ## Release 0.29.0

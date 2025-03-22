@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/is_superselector/simple/pseudo/selector_arg/where.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("where")
 }
 
 mod both {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -35,7 +33,6 @@ mod both {
     }
 }
 mod complex {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -65,7 +62,6 @@ mod complex {
     }
 }
 mod compound {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -95,7 +91,6 @@ mod compound {
     }
 }
 mod list {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -125,7 +120,6 @@ mod list {
     }
 }
 mod not_superselector_of {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -154,7 +148,6 @@ mod not_superselector_of {
     }
 }
 mod prefix {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -184,7 +177,6 @@ mod prefix {
     }
 }
 mod simple {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

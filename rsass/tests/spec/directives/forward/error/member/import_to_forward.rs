@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/error/member/import_to_forward.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("import_to_forward")
@@ -22,7 +21,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod nested {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("nested")
     }

@@ -1,24 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/import/conditions.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("conditions")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod supports {
-        #[allow(unused)]
         use super::runner;
 
         mod declaration {
-            #[allow(unused)]
             use super::runner;
 
             mod custom_prop {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -39,7 +34,6 @@ mod error {
         }
     }
     mod wrong_order {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -123,7 +117,6 @@ mod error {
     }
 }
 mod media {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -136,7 +129,6 @@ mod media {
         );
     }
     mod list {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -171,7 +163,6 @@ mod media {
     }
 }
 mod multiple {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -184,7 +175,6 @@ mod multiple {
     );
     }
     mod supports_then {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -217,7 +207,6 @@ mod multiple {
         }
     }
     mod unknown_function_then {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -250,7 +239,6 @@ mod multiple {
         }
     }
     mod unknown_ident_then {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -284,7 +272,6 @@ mod multiple {
     }
 }
 mod supports {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -326,11 +313,9 @@ mod supports {
         );
     }
     mod declaration {
-        #[allow(unused)]
         use super::runner;
 
         mod custom_prop {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -376,11 +361,9 @@ mod supports {
     }
 }
 mod unknown {
-    #[allow(unused)]
     use super::runner;
 
     mod function {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -417,7 +400,6 @@ mod unknown {
         }
     }
     mod identifier {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/selector/attribute.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("attribute")
 }
@@ -43,11 +42,9 @@ fn empty_namespace() {
     );
 }
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod modifier {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -130,7 +127,6 @@ mod error {
     }
 }
 mod modifier {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -178,4 +174,56 @@ fn quoted_non_identifier() {
          \n  c: d;\
          \n}\n"
     );
+}
+mod scss {
+    use super::runner;
+
+    mod whitespace {
+        use super::runner;
+
+        #[test]
+        fn after_lbracket() {
+            assert_eq!(
+                runner().ok("a[\
+             \n  b]\
+             \n  {c: d}\n"),
+                "a[b] {\
+         \n  c: d;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn after_operator() {
+            assert_eq!(
+                runner().ok("a[b=\
+             \n  c]\
+             \n  {d: e}\n"),
+                "a[b=c] {\
+         \n  d: e;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn after_val() {
+            assert_eq!(
+                runner().ok("a[b\
+             \n  ]\
+             \n  {c: d}\n"),
+                "a[b] {\
+         \n  c: d;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn before_operator() {
+            assert_eq!(
+                runner().ok("a[b\
+             \n  =c]\
+             \n  {d: e}\n"),
+                "a[b=c] {\
+         \n  d: e;\
+         \n}\n"
+            );
+        }
+    }
 }

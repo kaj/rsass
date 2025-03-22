@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/degenerate.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("degenerate")
 }
 
 mod error {
-    #[allow(unused)]
     use super::runner;
 
     mod infinity {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -60,7 +57,6 @@ mod error {
         }
     }
     mod minus_infinity {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -110,7 +106,6 @@ mod error {
         }
     }
     mod nan {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -161,7 +156,6 @@ mod error {
     }
 }
 mod infinity {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -186,7 +180,6 @@ mod infinity {
     }
 }
 mod minus_infinity {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -211,7 +204,6 @@ mod minus_infinity {
     }
 }
 mod nan {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

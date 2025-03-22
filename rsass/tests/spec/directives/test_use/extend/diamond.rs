@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/extend/diamond.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("diamond")
@@ -14,7 +13,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod dependency {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("dependency")
     }

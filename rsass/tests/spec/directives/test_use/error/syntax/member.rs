@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/error/syntax/member.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("member")
 }
 
 mod function {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -81,7 +79,6 @@ fn identifier_only() {
     );
 }
 mod mixin {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -158,7 +155,6 @@ fn unused_private() {
     );
 }
 mod variable {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

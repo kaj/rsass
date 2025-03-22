@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
 
 mod trailing_dot {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

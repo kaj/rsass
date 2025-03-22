@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/parse/selector.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("selector")
 }
 
 mod complex {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -25,7 +23,6 @@ mod complex {
         );
     }
     mod bogus {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -44,7 +41,6 @@ mod complex {
             );
         }
         mod multiple {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -188,7 +184,6 @@ fn list() {
     );
 }
 mod simple {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -232,11 +227,9 @@ mod simple {
         );
     }
     mod pseudo {
-        #[allow(unused)]
         use super::runner;
 
         mod class {
-            #[allow(unused)]
             use super::runner;
 
             #[test]
@@ -278,7 +271,6 @@ mod simple {
                 );
             }
             mod selector_arg {
-                #[allow(unused)]
                 use super::runner;
 
                 #[test]
@@ -334,7 +326,6 @@ mod simple {
             }
         }
         mod element {
-            #[allow(unused)]
             use super::runner;
 
             #[test]

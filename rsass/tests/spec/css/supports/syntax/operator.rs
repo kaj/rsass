@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/supports/syntax/operator.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("operator")
 }
@@ -15,7 +14,6 @@ fn and() {
     );
 }
 mod mixed {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("non_conformant")
 }
@@ -25,7 +24,7 @@ mod operations;
 
 mod parser;
 
-mod sass;
+// Ignoring "sass", not expected to work yet.
 
 mod sass_4_0;
 

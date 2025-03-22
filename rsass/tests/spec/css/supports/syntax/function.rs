@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/supports/syntax/function.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("function")
 }
@@ -15,7 +14,6 @@ fn after_not() {
     );
 }
 mod interpolated_name {
-    #[allow(unused)]
     use super::runner;
 
     #[test]
@@ -38,7 +36,6 @@ mod interpolated_name {
     }
 }
 mod interpolated_value {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

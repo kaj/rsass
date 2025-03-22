@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/selectors/function-argument.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("function-argument")
 }

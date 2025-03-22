@@ -1,16 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/css/selector/combinator/has.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("has")
 }
 
 mod leading {
-    #[allow(unused)]
     use super::runner;
 
     mod multiple {
-        #[allow(unused)]
         use super::runner;
 
         #[test]
@@ -28,7 +25,6 @@ mod leading {
         }
     }
     mod single {
-        #[allow(unused)]
         use super::runner;
 
         #[test]

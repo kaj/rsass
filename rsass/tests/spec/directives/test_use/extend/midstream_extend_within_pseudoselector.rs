@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/extend/midstream_extend_within_pseudoselector.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("midstream_extend_within_pseudoselector")
@@ -13,7 +12,6 @@ fn runner() -> crate::TestRunner {
 }
 
 mod three_files {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("three_files")
     }
@@ -56,7 +54,6 @@ mod three_files {
     }
 }
 mod two_files {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("two_files")
     }

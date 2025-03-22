@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/132_test_nested_extender_with_child_selector_merges_with_same_selector.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("132_test_nested_extender_with_child_selector_merges_with_same_selector")

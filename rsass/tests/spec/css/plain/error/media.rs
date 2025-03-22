@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/error/media.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("media")
@@ -83,13 +82,11 @@ fn runner() -> crate::TestRunner {
 }
 
 mod logic {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("logic")
     }
 
     mod and_after {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("and_after")
         }
@@ -126,13 +123,11 @@ mod logic {
         }
     }
     mod nothing_after {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("nothing_after")
         }
 
         mod and {
-            #[allow(unused)]
             fn runner() -> crate::TestRunner {
                 super::runner().with_cwd("and")
             }
@@ -215,7 +210,6 @@ mod logic {
         }
     }
     mod or_after {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("or_after")
         }
@@ -283,13 +277,11 @@ mod logic {
     }
 }
 mod missing_whitespace {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("missing_whitespace")
     }
 
     mod and {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("and")
         }
@@ -341,7 +333,6 @@ mod missing_whitespace {
         }
     }
     mod and_not {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("and_not")
         }
@@ -393,7 +384,6 @@ mod missing_whitespace {
         );
     }
     mod or {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("or")
         }

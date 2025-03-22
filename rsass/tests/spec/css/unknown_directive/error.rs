@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css/unknown_directive/error.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner().with_cwd("error")
 }
@@ -43,7 +42,6 @@ fn in_function() {
     );
 }
 mod interpolation {
-    #[allow(unused)]
     use super::runner;
 
     #[test]

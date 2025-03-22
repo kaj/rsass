@@ -1,6 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/with/through_forward.hrx"
 
-#[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("through_forward")
@@ -103,13 +102,11 @@ fn transitive() {
     );
 }
 mod with {
-    #[allow(unused)]
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("with")
     }
 
     mod and_variable {
-        #[allow(unused)]
         fn runner() -> crate::TestRunner {
             super::runner().with_cwd("and_variable")
         }
