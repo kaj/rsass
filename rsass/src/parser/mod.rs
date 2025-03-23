@@ -477,17 +477,14 @@ fn custom_property(input: Span) -> PResult<Item> {
 }
 
 fn property_or_namespace_rule(input: Span) -> PResult<Item> {
-    let (start_val, name) = terminated(
-        alt((
-            map(preceded(tag("*"), sass_string), |mut s| {
-                s.prepend("*");
-                s
-            }),
-            sass_string,
-        )),
-        delimited(ignore_comments, char(':'), ignore_comments),
+    let (start_val, (star, mut name)) = terminated(
+        (opt(tag("*")), sass_string),
+        (ignore_comments, char(':'), ignore_comments),
     )
     .parse(input)?;
+    if star.is_some() {
+        name.prepend("*");
+    }
 
     let (input, val) = alt((
         map(peek(char('{')), |_| None),
