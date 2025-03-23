@@ -120,10 +120,12 @@ fn custom_value_paren(
 }
 
 pub fn sass_string_ext(input: Span) -> PResult<SassString> {
-    let (input, parts) =
+    verify(
         many1(alt((string_part_interpolation, extended_part)))
-            .parse(input)?;
-    Ok((input, SassString::new(parts, Quotes::None)))
+            .map(|parts| SassString::new(parts, Quotes::None)),
+        |s| s.single_raw() != Some("/"),
+    )
+    .parse(input)
 }
 
 fn unquoted_first_part(input: Span) -> PResult<String> {

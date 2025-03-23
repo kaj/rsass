@@ -13,6 +13,7 @@ project adheres to
   `_` characters.  Thanks `@purelinux@social.tchncs.de` for reporting.
 * Allow vendor prefixes when checking for css-allowed at rules
   (e.g. `@-moz-document` should be allowed).
+* Improved parsing of slash-separated lists.
 * Avoid an unnecessary proc macro, making rsass the library
   [free of syn](https://github.com/fasterthanlime/free-of-syn)
   (Note; the cli and the proc macro still uses syn).

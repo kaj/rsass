@@ -3,7 +3,7 @@ use crate::sass::{SassString, StringPart};
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::{char, multispace1};
-use nom::combinator::{eof, map, map_res, not, opt, peek};
+use nom::combinator::{eof, map, map_res, not, opt, peek, value};
 use nom::multi::{fold_many0, fold_many1, many0};
 use nom::sequence::{preceded, terminated};
 use nom::Parser;
@@ -49,9 +49,9 @@ pub fn opt_spacelike(input: Span) -> PResult<()> {
 pub fn ignore_comments(input: Span) -> PResult<bool> {
     fold_many0(
         alt((
-            map(ignore_space, |()| true),
-            map(ignore_lcomment, |()| true),
-            map(comment, |_| false),
+            value(true, ignore_space),
+            value(true, ignore_lcomment),
+            value(false, comment),
         )),
         || false,
         |a, b| a || b,

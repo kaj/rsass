@@ -29,7 +29,7 @@ use std::str::from_utf8;
 pub fn value_expression(input: Span) -> PResult<Value> {
     let (input, result) = separated_list1(
         preceded(tag(","), ignore_comments),
-        terminated(space_list, ignore_comments),
+        terminated(slash_list, ignore_comments),
     )
     .parse(input)?;
     let (input, trail) =
@@ -43,6 +43,37 @@ pub fn value_expression(input: Span) -> PResult<Value> {
             Value::List(result, Some(ListSeparator::Comma), false)
         },
     ))
+}
+
+pub fn slash_list(input: Span) -> PResult<Value> {
+    let (rest, (first, space)) =
+        (space_list, ignore_comments).parse(input)?;
+
+    let (end, mut list) = fold_many0(
+        delimited(
+            (tag("/"), ignore_comments),
+            opt(space_list),
+            ignore_comments,
+        ),
+        Vec::new,
+        |mut acc, item| {
+            acc.push(item.unwrap_or(Value::Null));
+            acc
+        },
+    )
+    .parse(rest)?;
+
+    if list.is_empty() {
+        Ok((rest, first))
+    } else {
+        list.insert(0, first);
+        let sep = if space {
+            ListSeparator::Slash
+        } else {
+            ListSeparator::SlashNoSpace
+        };
+        Ok((end, Value::List(list, Some(sep), false)))
+    }
 }
 
 pub fn space_list(input: Span) -> PResult<Value> {

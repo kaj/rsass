@@ -107,7 +107,6 @@ mod without_intermediate {
     }
 
     #[test]
-    #[ignore] // wrong result
     fn whitespace() {
         let runner = runner().with_cwd("whitespace");
         assert_eq!(
