@@ -33,7 +33,7 @@ pub fn create_module() -> Scope {
             .ok_or("At least one selector must be passed.")
             .named(name!(selectors))?;
         let first = CssSelectorSet::try_from(first)?;
-        Ok(v.fold(first, |b, e| b.nest(e)).into())
+        Ok(v.fold(first, |b, e| b.nest(e, &b)).into())
     });
     def!(f, parse(selector), |s| {
         CssSelectorSet::parse_value(s.get(name!(selector))?)

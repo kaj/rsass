@@ -26,13 +26,7 @@ impl SelectorCtx {
 
     /// Evaluate selectors inside this context.
     pub(crate) fn nest(&self, selectors: SelectorSet) -> CssSelectorSet {
-        if selectors.has_backref() {
-            CssSelectorSet {
-                s: selectors.resolve_ref(self.get_backref()),
-            }
-        } else {
-            self.s.nest(selectors)
-        }
+        self.s.nest(selectors, self.get_backref())
     }
     pub(crate) fn at_root(&self, selectors: SelectorSet) -> Self {
         let backref = self.get_backref();
