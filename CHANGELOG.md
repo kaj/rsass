@@ -7,7 +7,10 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.29.2
+
+Released 2025-04-18.
+Progress: 5988 of 13041 tests passed.
 
 * Improve the relation of file names to module names regarding `-` and
   `_` characters.  Thanks `@purelinux@social.tchncs.de` for reporting.
