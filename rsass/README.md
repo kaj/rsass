@@ -12,6 +12,7 @@ To use it, add `rsass` to your dependencies in a rust project.
 [![Crate](https://img.shields.io/crates/v/rsass.svg)](https://crates.io/crates/rsass)
 [![docs](https://docs.rs/rsass/badge.svg)](https://docs.rs/rsass)
 [![Github build](https://github.com/kaj/rsass/workflows/CI/badge.svg)](https://github.com/kaj/rsass/actions)
+[![free of syn](https://img.shields.io/badge/free%20of-syn-hotpink)](https://github.com/fasterthanlime/free-of-syn)
 
 ## Sass language and implementation status
 
