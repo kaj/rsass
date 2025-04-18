@@ -103,13 +103,17 @@ impl CssSelectorSet {
 
     /// Nest `other` selectors inside this as though they were nested
     /// within one another in the stylesheet.
-    pub(crate) fn nest(&self, other: SelectorSet) -> Self {
+    pub(crate) fn nest(
+        &self,
+        other: SelectorSet,
+        backref: &CssSelectorSet,
+    ) -> Self {
         let mut parts = other
             .s
             .into_iter()
             .map(|o| {
                 if o.has_backref() {
-                    o.resolve_ref(self)
+                    o.resolve_ref(backref)
                 } else {
                     self.s.s.iter().map(|s| s.nest(&o)).collect()
                 }

@@ -17,6 +17,8 @@ project adheres to
 * Avoid an unnecessary proc macro, making rsass the library
   [free of syn](https://github.com/fasterthanlime/free-of-syn)
   (Note; the cli and the proc macro still uses syn).
+* Fixed a regression where one but not all selectors in a selectorset
+  contained a backref (PR #212).
 * Updated sass-spec test suite to 2025-03-17.
 
 

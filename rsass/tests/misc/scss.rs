@@ -1,5 +1,20 @@
-//! Tests from spec/scss
+//! Some scss tests of my own.
 use rsass::compile_scss;
+
+/// This simple test don't seem to exist in the spec suite?
+#[test]
+fn backref_and_comma() {
+    check(
+        "body {\
+         \n  &.simple p, section {\
+         \n    margin: auto 2em;\
+         \n  }\
+         \n}\n",
+        "body.simple p, body section {\
+         \n  margin: auto 2em;\
+         \n}\n",
+    );
+}
 
 /// My own addition
 #[test]
