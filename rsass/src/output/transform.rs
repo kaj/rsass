@@ -364,10 +364,8 @@ fn handle_item(
         }
         Item::CustomProperty(ref name, ref value) => {
             let v = value.evaluate(scope.clone())?;
-            if !v.is_null() {
-                let name = name.evaluate(scope)?.take_value();
-                dest.push_custom_property(name, v).no_pos()?;
-            }
+            let name = name.evaluate(scope)?.take_value();
+            dest.push_custom_property(name, v).no_pos()?;
         }
         Item::NamespaceRule(ref name, ref value, ref body) => {
             check_body(body, BodyContext::NsRule)?;

@@ -4,6 +4,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("custom_properties")
 }
 
+mod empty;
+
 mod error;
 
 mod exclamation;

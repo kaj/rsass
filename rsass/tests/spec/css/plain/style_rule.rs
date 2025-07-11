@@ -174,9 +174,11 @@ mod nesting {
             let runner = runner().with_cwd("top_level_parent");
             assert_eq!(
                 runner.ok("a {@import \"plain\"}\n"),
-                "a & {\
-         \n  b {\
-         \n    c: d;\
+                "a {\
+         \n  & {\
+         \n    b {\
+         \n      c: d;\
+         \n    }\
          \n  }\
          \n}\n"
             );
@@ -219,9 +221,11 @@ mod nesting {
             assert_eq!(
                 runner.ok("@use \"sass:meta\";\n\
              \na {@include meta.load-css(\"plain\")}\n"),
-                "a & {\
-         \n  b {\
-         \n    c: d;\
+                "a {\
+         \n  & {\
+         \n    b {\
+         \n      c: d;\
+         \n    }\
          \n  }\
          \n}\n"
             );

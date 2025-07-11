@@ -8,7 +8,6 @@ use nom::character::complete::{alphanumeric1, char, one_of};
 use nom::combinator::{
     cut, map, map_opt, map_res, not, opt, peek, recognize, value, verify,
 };
-use nom::error::context;
 use nom::multi::{fold_many0, fold_many1, many0, many1, many_m_n};
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::Parser as _;
@@ -41,20 +40,20 @@ pub fn sass_string_allow_dash(input: Span) -> PResult<SassString> {
 }
 
 pub fn custom_value(input: Span) -> PResult<SassString> {
-    map(
-        context("Expected token.", custom_value_inner),
-        |mut parts| {
+    match opt(custom_value_inner).parse(input)? {
+        (rest, Some(mut parts)) => {
             if let Some(StringPart::Raw(last)) = parts.last_mut() {
                 if last.ends_with('\n') {
                     last.pop();
                     last.push(' ');
                 }
             }
-            SassString::new(parts, Quotes::None)
-        },
-    )
-    .parse(input)
+            Ok((rest, SassString::new(parts, Quotes::None)))
+        }
+        (rest, None) => Ok((rest, SassString::new(vec![], Quotes::None))),
+    }
 }
+
 pub fn custom_value_inner(input: Span) -> PResult<Vec<StringPart>> {
     fold_many1(
         alt((

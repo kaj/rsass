@@ -104,38 +104,3 @@ mod brackets {
         );
     }
 }
-#[test]
-fn empty() {
-    assert_eq!(
-        runner().err(
-            "// CSS requires at least one token in a custom property.\
-             \n.empty {\
-             \n  --property:;\
-             \n}\n"
-        ),
-        "Error: Expected token.\
-         \n  ,\
-         \n3 |   --property:;\
-         \n  |              ^\
-         \n  \'\
-         \n  input.scss 3:14  root stylesheet",
-    );
-}
-#[test]
-#[ignore] // missing error
-fn empty_interpolation() {
-    assert_eq!(
-        runner().err(
-            "// CSS requires at least one token in a custom property.\
-             \n.empty {\
-             \n  --property:#{\"\"};\
-             \n}\n"
-        ),
-        "Error: Custom property values may not be empty.\
-         \n  ,\
-         \n3 |   --property:#{\"\"};\
-         \n  |              ^^^^^\
-         \n  \'\
-         \n  input.scss 3:14  root stylesheet",
-    );
-}
