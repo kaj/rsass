@@ -129,7 +129,7 @@ impl CssString {
             // The following is only relevant in relative colors
             // but I don't see how to get that context to where its needed,
             // and I don't see any real harm in puttin them like this.
-            || ["h", "s", "l", "r", "g", "b"].iter().any(|s| value == *s)
+            || ["h", "s", "l", "r", "g", "b"].contains(&value)
     }
     /// Return true if this is a css special function call.
     pub(crate) fn is_css_calc(&self) -> bool {

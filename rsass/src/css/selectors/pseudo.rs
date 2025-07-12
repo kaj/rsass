@@ -161,7 +161,7 @@ fn name_in(name: &str, known: &[&str]) -> bool {
             name.strip_suffix(end).map_or(false, |s| s.ends_with('-'))
         })
     } else {
-        known.iter().any(|known| name == *known)
+        known.contains(&name)
     }
 }
 
