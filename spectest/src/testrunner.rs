@@ -53,9 +53,9 @@ fn url_join(p: &str, c: &str) -> String {
     } else if c.is_empty() {
         p.to_string()
     } else if p.ends_with('/') {
-        format!("{}{}", p, c)
+        format!("{p}{c}")
     } else {
-        format!("{}/{}", p, c)
+        format!("{p}/{c}")
     }
 }
 
@@ -114,7 +114,7 @@ impl TestRunner {
     pub fn ok(&self, input: &str) -> String {
         match self.run(input) {
             Ok(css) => css,
-            Err(err) => panic!("Unexpected error:\n{}\n", err),
+            Err(err) => panic!("Unexpected error:\n{err}\n"),
         }
     }
     #[allow(unused)] // only used while executing tests

@@ -59,7 +59,7 @@ impl TestFixture {
         let has_files = runner.has_files();
         rs.write_all(b"#[test]\n")?;
         if let Some(reason) = self.is_failure(runner) {
-            writeln!(rs, "#[ignore] // {}", reason)?;
+            writeln!(rs, "#[ignore] // {reason}")?;
         }
         let fname = self.name.as_deref().map(fn_name);
         writeln!(rs, "fn {}() {{", fname.as_deref().unwrap_or("test"))?;
@@ -68,11 +68,11 @@ impl TestFixture {
         {
             rs.write_all(b"    let runner = runner()")?;
             if let Some(p) = self.options.precision {
-                write!(rs, ".set_precision({});", p)?;
+                write!(rs, ".set_precision({p});")?;
             }
             if has_files {
                 if let Some(name) = &self.name {
-                    write!(rs, ".with_cwd({:?})", name)?;
+                    write!(rs, ".with_cwd({name:?})")?;
                 }
             }
             rs.write_all(b";\n")?;

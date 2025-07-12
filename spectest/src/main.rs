@@ -51,7 +51,7 @@ fn handle_suite(
     suite: &str,
     ignored: &[&str],
 ) -> Result<(), Error> {
-    eprintln!("Handle suite {:?}", suite);
+    eprintln!("Handle suite {suite:?}");
     let suitedir = base.join(suite);
     let rssuitedir = PathBuf::from("tests").join(fn_name(suite));
     let _may_exist = create_dir(&rssuitedir);
@@ -74,8 +74,7 @@ fn handle_suite(
         writeln!(
             rs,
             "//! The following tests are excluded from conversion:\
-             \n//! {:?}",
-            ignored,
+             \n//! {ignored:?}",
         )?;
     }
     rs.write_all(
@@ -116,7 +115,7 @@ fn handle_entries(
                 })?;
             if !buf.is_empty() {
                 let name = fn_name_os(&entry.file_name());
-                writeln!(rs, "\nmod {};", name)?;
+                writeln!(rs, "\nmod {name};")?;
                 let mut rs = create(&rssuitedir.join(format!("{name}.rs")))?;
                 writeln!(
                     rs,
@@ -146,7 +145,7 @@ fn handle_entries(
                     ignore(rs, &entry.file_name(), reason)?;
                 } else {
                     let name = fn_name_os(&entry.file_name());
-                    writeln!(rs, "\nmod {};", name)?;
+                    writeln!(rs, "\nmod {name};")?;
                     let rssuitedir = rssuitedir.join(name);
                     let _may_exist = create_dir(&rssuitedir);
                     let mut rs = create(&rssuitedir.join("mod.rs"))?;
@@ -166,7 +165,7 @@ fn handle_entries(
                         entry.file_name()
                     )?;
                     if let Some(p) = options.precision {
-                        writeln!(rs, "    .set_precision({})\n", p)?;
+                        writeln!(rs, "    .set_precision({p})\n")?;
                     }
                     writeln!(rs, "\n}}\n")?;
                     let precision = options.precision.or(precision);
@@ -196,8 +195,8 @@ fn ignore<T: std::fmt::Debug>(
     name: &T,
     reason: &str,
 ) -> Result<(), io::Error> {
-    eprintln!("Ignoring {:?}, {}.", name, reason);
-    writeln!(rs, "\n// Ignoring {:?}, {}.", name, reason)
+    eprintln!("Ignoring {name:?}, {reason}.");
+    writeln!(rs, "\n// Ignoring {name:?}, {reason}.")
 }
 
 fn spec_dir_to_test(
@@ -233,7 +232,7 @@ fn spec_hrx_to_test(
           \n    super::runner()\n",
     )?;
     let mut runner = if let Some(stem) = suite.file_stem() {
-        writeln!(top, "        .with_cwd({:?})", stem)?;
+        writeln!(top, "        .with_cwd({stem:?})")?;
         let base = suite
             .strip_prefix("../sass-spec/spec")?
             .parent()
@@ -244,7 +243,7 @@ fn spec_hrx_to_test(
         runner()
     };
     for (name, content) in archive.entries().filter(|(n, _)| !skip_mock(n)) {
-        writeln!(top, "        .mock_file({:?}, {:#?})", name, content)?;
+        writeln!(top, "        .mock_file({name:?}, {content:#?})")?;
         runner = runner.mock_file(name, content);
     }
     for (name, content) in archive.entries() {
@@ -254,17 +253,13 @@ fn spec_hrx_to_test(
                     path.starts_with(base) && references_input(content)
                 })
             {
-                writeln!(
-                    top,
-                    "        .mock_file({:?}, {:#?})",
-                    name, content
-                )?;
+                writeln!(top, "        .mock_file({name:?}, {content:#?})",)?;
                 runner = runner.mock_file(name, content);
             }
         }
     }
     if let Some(p) = precision {
-        writeln!(top, "        .set_precision({})", p)?;
+        writeln!(top, "        .set_precision({p})")?;
     }
     top.write_all(b"}\n\n")?;
     let mut buff = Vec::new();
@@ -364,11 +359,10 @@ fn handle_hrx_part(
                     write!(
                         rs,
                         "    fn runner() -> crate::TestRunner {{\
-                         \n        super::runner().with_cwd({:?})",
-                        name
+                         \n        super::runner().with_cwd({name:?})"
                     )?;
                     if let Some(p) = options.precision {
-                        write!(rs, ".set_precision({})", p)?;
+                        write!(rs, ".set_precision({p})")?;
                     }
                     writeln!(rs, "\n}}\n")?;
                 } else {
