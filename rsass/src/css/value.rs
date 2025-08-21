@@ -267,7 +267,7 @@ impl Value {
     ///     "42",
     /// );
     /// ```
-    pub fn format(&self, format: Format) -> Formatted<Self> {
+    pub fn format(&self, format: Format) -> Formatted<'_, Self> {
         Formatted {
             value: self,
             format,

@@ -11,10 +11,13 @@ type Result<T = ()> = std::result::Result<T, Invalid>;
 pub trait CssDestination {
     fn head(&mut self) -> &mut CssData;
 
-    fn start_rule(&mut self, selectors: CssSelectorSet) -> Result<RuleDest>;
-    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest;
-    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest;
-    fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest>;
+    fn start_rule(
+        &mut self,
+        selectors: CssSelectorSet,
+    ) -> Result<RuleDest<'_>>;
+    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest<'_>;
+    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest<'_>;
+    fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest<'_>>;
 
     fn push_import(&mut self, import: Import);
     fn push_comment(&mut self, c: Comment);
@@ -68,10 +71,13 @@ impl CssDestination for RuleDest<'_> {
     fn head(&mut self) -> &mut CssData {
         self.parent.head()
     }
-    fn start_rule(&mut self, selectors: CssSelectorSet) -> Result<RuleDest> {
+    fn start_rule(
+        &mut self,
+        selectors: CssSelectorSet,
+    ) -> Result<RuleDest<'_>> {
         Ok(RuleDest::new(self, selectors))
     }
-    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
+    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest<'_> {
         let selectors = self.rule.selectors.clone();
         AtMediaDest {
             parent: self,
@@ -80,7 +86,7 @@ impl CssDestination for RuleDest<'_> {
             body: Vec::new(),
         }
     }
-    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
+    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest<'_> {
         let rule = if is_flat_rule(&name) {
             None
         } else {
@@ -94,7 +100,7 @@ impl CssDestination for RuleDest<'_> {
             body: Vec::new(),
         }
     }
-    fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest> {
+    fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest<'_>> {
         Ok(NsRuleDest { parent: self, name })
     }
 
@@ -141,13 +147,16 @@ impl CssDestination for NsRuleDest<'_> {
     fn head(&mut self) -> &mut CssData {
         self.parent.head()
     }
-    fn start_rule(&mut self, _selectors: CssSelectorSet) -> Result<RuleDest> {
+    fn start_rule(
+        &mut self,
+        _selectors: CssSelectorSet,
+    ) -> Result<RuleDest<'_>> {
         Err(Invalid::InNsRule)
     }
-    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
+    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest<'_> {
         AtMediaDest::new(self, args)
     }
-    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
+    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest<'_> {
         AtRuleDest {
             parent: self,
             name,
@@ -156,7 +165,7 @@ impl CssDestination for NsRuleDest<'_> {
             body: Vec::new(),
         }
     }
-    fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest> {
+    fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest<'_>> {
         Ok(NsRuleDest { parent: self, name })
     }
 
@@ -220,10 +229,13 @@ impl CssDestination for AtRuleDest<'_> {
     fn head(&mut self) -> &mut CssData {
         self.parent.head()
     }
-    fn start_rule(&mut self, selectors: CssSelectorSet) -> Result<RuleDest> {
+    fn start_rule(
+        &mut self,
+        selectors: CssSelectorSet,
+    ) -> Result<RuleDest<'_>> {
         Ok(RuleDest::new(self, selectors))
     }
-    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
+    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest<'_> {
         let rule = self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()));
         AtMediaDest {
             parent: self,
@@ -232,7 +244,7 @@ impl CssDestination for AtRuleDest<'_> {
             body: Vec::new(),
         }
     }
-    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
+    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest<'_> {
         let rule = if is_flat_rule(&name) {
             None
         } else {
@@ -246,7 +258,7 @@ impl CssDestination for AtRuleDest<'_> {
             body: Vec::new(),
         }
     }
-    fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest> {
+    fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest<'_>> {
         Ok(NsRuleDest { parent: self, name })
     }
 
@@ -339,10 +351,13 @@ impl CssDestination for AtMediaDest<'_> {
         self.parent.head()
     }
 
-    fn start_rule(&mut self, selectors: CssSelectorSet) -> Result<RuleDest> {
+    fn start_rule(
+        &mut self,
+        selectors: CssSelectorSet,
+    ) -> Result<RuleDest<'_>> {
         Ok(RuleDest::new(self, selectors))
     }
-    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
+    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest<'_> {
         let rule = self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()));
         AtMediaDest {
             parent: self,
@@ -351,7 +366,7 @@ impl CssDestination for AtMediaDest<'_> {
             body: Vec::new(),
         }
     }
-    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
+    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest<'_> {
         let rule = if is_flat_rule(&name) {
             None
         } else {
@@ -365,7 +380,7 @@ impl CssDestination for AtMediaDest<'_> {
             body: Vec::new(),
         }
     }
-    fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest> {
+    fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest<'_>> {
         Ok(NsRuleDest { parent: self, name })
     }
 

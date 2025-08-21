@@ -21,7 +21,7 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
         self.0.push((key, value));
         None
     }
-    pub fn iter(&self) -> Iter<(K, V)> {
+    pub fn iter(&self) -> Iter<'_, (K, V)> {
         self.0.iter()
     }
     pub fn keys(&self) -> impl Iterator<Item = &'_ K> {

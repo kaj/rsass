@@ -413,13 +413,13 @@ fn selector_plain_part(input: Span) -> PResult<String> {
     .parse(input)
 }
 
-fn str_plain_part(input: Span) -> PResult<&str> {
+fn str_plain_part(input: Span<'_>) -> PResult<'_, &str> {
     // TODO: This should probably be based on unicode alphanumeric.
     map_res(is_not("\r\n\t %<>$\"'\\#+*/()[]{}:;,=!&@~"), input_to_str)
         .parse(input)
 }
 
-fn hash_no_interpolation(input: Span) -> PResult<&str> {
+fn hash_no_interpolation(input: Span<'_>) -> PResult<'_, &str> {
     map_res(terminated(tag("#"), peek(not(tag("{")))), input_to_str)
         .parse(input)
 }

@@ -742,7 +742,7 @@ mod test {
 
     // test helper
     fn parse_call(
-        expr: Span,
+        expr: Span<'_>,
     ) -> Result<(SassString, CallArgs, &[u8]), String> {
         let (rest, value) =
             value_expression(expr).map_err(|e| e.to_string())?;

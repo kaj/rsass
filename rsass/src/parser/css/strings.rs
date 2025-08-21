@@ -137,7 +137,7 @@ fn selector_plain_part(input: Span) -> PResult<String> {
     .parse(input)
 }
 
-fn hash_no_interpolation(input: Span) -> PResult<&str> {
+fn hash_no_interpolation(input: Span<'_>) -> PResult<'_, &str> {
     let (next, hash) = tag("#")(input)?;
     if let Ok((end, _)) = interpolation_block(next) {
         Err(nom_err(

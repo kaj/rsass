@@ -57,7 +57,7 @@ impl Color {
     ///
     /// If this color is a rgba value, return a borrow of it.
     /// Otherwise, do the conversion and return an owned value.
-    pub fn to_rgba(&self) -> Cow<Rgba> {
+    pub fn to_rgba(&self) -> Cow<'_, Rgba> {
         match self {
             Self::Rgba(rgba) => Cow::Borrowed(rgba),
             Self::Hsla(hsla) => Cow::Owned(Rgba::from(hsla)),
@@ -68,7 +68,7 @@ impl Color {
     ///
     /// If this color is a hsla value, return a borrow of it.
     /// Otherwise, do the conversion and return an owned value.
-    pub fn to_hsla(&self) -> Cow<Hsla> {
+    pub fn to_hsla(&self) -> Cow<'_, Hsla> {
         match self {
             Self::Rgba(rgba) => Cow::Owned(Hsla::from(rgba)),
             Self::Hsla(ref hsla) => Cow::Borrowed(hsla),
@@ -79,7 +79,7 @@ impl Color {
     ///
     /// If this color is a hwba value, return a borrow of it.
     /// Otherwise, do the conversion and return an owned value.
-    pub fn to_hwba(&self) -> Cow<Hwba> {
+    pub fn to_hwba(&self) -> Cow<'_, Hwba> {
         match self {
             Self::Rgba(rgba) => Cow::Owned(Hwba::from(rgba)),
             Self::Hsla(hsla) => Cow::Owned(Hwba::from(hsla)),
@@ -154,7 +154,7 @@ impl Color {
         }
     }
     /// Get a reference to this `Value` bound to an output format.
-    pub fn format(&self, format: Format) -> Formatted<Self> {
+    pub fn format(&self, format: Format) -> Formatted<'_, Self> {
         Formatted {
             value: self,
             format,

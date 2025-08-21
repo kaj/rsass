@@ -86,16 +86,19 @@ impl CssDestination for CssData {
         self
     }
 
-    fn start_rule(&mut self, selectors: CssSelectorSet) -> Result<RuleDest> {
+    fn start_rule(
+        &mut self,
+        selectors: CssSelectorSet,
+    ) -> Result<RuleDest<'_>> {
         Ok(RuleDest::new(self, selectors))
     }
-    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
+    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest<'_> {
         AtMediaDest::new(self, args)
     }
-    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
+    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest<'_> {
         AtRuleDest::new(self, name, args)
     }
-    fn start_nsrule(&mut self, _name: String) -> Result<NsRuleDest> {
+    fn start_nsrule(&mut self, _name: String) -> Result<NsRuleDest<'_>> {
         Err(Invalid::GlobalNsProperty)
     }
 

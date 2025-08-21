@@ -72,7 +72,7 @@ impl Hsla {
     }
 
     /// Get a reference to this `Value` bound to an output format.
-    pub fn format(&self, format: Format) -> Formatted<Self> {
+    pub fn format(&self, format: Format) -> Formatted<'_, Self> {
         Formatted {
             value: self,
             format,

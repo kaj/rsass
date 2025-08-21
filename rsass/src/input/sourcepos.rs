@@ -25,7 +25,7 @@ impl SourcePos {
             source,
         }
     }
-    pub(crate) fn borrow(&self) -> Span {
+    pub(crate) fn borrow(&self) -> Span<'_> {
         Span::new_range(&self.source, self.range())
     }
     fn range(&self) -> Range<usize> {

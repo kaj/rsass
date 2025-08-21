@@ -40,7 +40,7 @@ pub fn global(global: &mut FunctionMap) {
             (NumOrSpecial::Num(base), NumOrSpecial::Num(exponent)) => {
                 Ok(Value::scalar(
                     unitless(base)
-                        .and_then(|b| unitless(exponent).map(|e| (b.powf(e))))
+                        .and_then(|b| unitless(exponent).map(|e| b.powf(e)))
                         .map_err(CallError::msg)?,
                 ))
             }
