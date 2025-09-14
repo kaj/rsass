@@ -5,19 +5,12 @@ fn runner() -> crate::TestRunner {
         .with_cwd("multi_load")
         .mock_file("forward/_midstream.scss", "@forward \"upstream\";\n")
         .mock_file("forward/_upstream.scss", "$a: original !default;\n")
-        .mock_file(
-            "transitive/_midstream1.scss",
-            "@use \"upstream\";\n$a: default 1 !default;\n",
-        )
-        .mock_file(
-            "transitive/_midstream2.scss",
-            "@use \"upstream\";\n$a: default 2 !default;\n",
-        )
+        .mock_file("transitive/_midstream1.scss", "@use \"upstream\";\n$a: default 1 !default;\n")
+        .mock_file("transitive/_midstream2.scss", "@use \"upstream\";\n$a: default 2 !default;\n")
         .mock_file("transitive/_upstream.scss", "c {d: e}\n")
-        .mock_file(
-            "use/_midstream.scss",
-            "@use \"upstream\";\nb {c: upstream.$a}\n",
-        )
+        .mock_file("unused_configuration/_forwarded.scss", "// This file defines no variables, so it's allowed to be loaded with and without\n// configuration.\n")
+        .mock_file("unused_configuration/_midstream.scss", "@forward \"forwarded\";\n\n$a: default !default;\n")
+        .mock_file("use/_midstream.scss", "@use \"upstream\";\nb {c: upstream.$a}\n")
         .mock_file("use/_upstream.scss", "$a: original !default;\n")
 }
 
@@ -50,6 +43,20 @@ fn transitive() {
          \nb {\
          \n  midstream1: overridden 1;\
          \n  midstream2: overridden 2;\
+         \n}\n"
+    );
+}
+#[test]
+fn unused_configuration() {
+    let runner = runner().with_cwd("unused_configuration");
+    assert_eq!(
+        runner.ok("@use \"forwarded\";\
+             \n@use \"midstream\" with ($a: overridden);\n\
+             \nb {\
+             \n  midstream: midstream.$a;\
+             \n}\n"),
+        "b {\
+         \n  midstream: overridden;\
          \n}\n"
     );
 }

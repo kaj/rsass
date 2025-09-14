@@ -3,8 +3,14 @@
 fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("multi_load")
+        .mock_file("already_configred_empty/_downstream.scss", "@use \"upstream\";\n@forward \"midstream\" with ($a: overridden);\n")
+        .mock_file("already_configred_empty/_midstream.scss", "$a: default !default;\n@forward \"upstream\";\n")
+        .mock_file("already_configred_empty/_upstream.scss", "// This file defines no variables, so it's allowed to be loaded with and without\n// configuration.\n")
         .mock_file("forward/_midstream.scss", "@forward \"upstream\";\n")
         .mock_file("forward/_upstream.scss", "$a: original !default;\n")
+        .mock_file("through_forward/_downstream.scss", "@use \"upstream\";\n@forward \"midstream\" with ($a: overridden);\n")
+        .mock_file("through_forward/_midstream.scss", "@forward \"upstream\";\n\n$a: default !default;\n")
+        .mock_file("through_forward/_upstream.scss", "// This file defines no variables, so it's allowed to be loaded with and without\n// configuration.\n")
         .mock_file("transitive/_downstream.scss", "// Regression test for sass/dart-sass#854.\n@forward \"midstream1\" as m1-* with ($a: overridden 1);\n@forward \"midstream2\" as m2-* with ($a: overridden 2);\n")
         .mock_file("transitive/_midstream1.scss", "@use \"upstream\";\n$a: default 1 !default;\n")
         .mock_file("transitive/_midstream2.scss", "@use \"upstream\";\n$a: default 2 !default;\n")
@@ -14,6 +20,20 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+fn already_configred_empty() {
+    let runner = runner().with_cwd("already_configred_empty");
+    assert_eq!(
+        runner.ok("// Regression test for sass/dart-sass#2598\
+             \n@use \"downstream\";\n\
+             \nb {\
+             \n  midstream: downstream.$a;\
+             \n}\n"),
+        "b {\
+         \n  midstream: overridden;\
+         \n}\n"
+    );
+}
+#[test]
 fn forward() {
     let runner = runner().with_cwd("forward");
     assert_eq!(
@@ -22,6 +42,19 @@ fn forward() {
              \nb {c: midstream.$a}\n"),
         "b {\
          \n  c: configured;\
+         \n}\n"
+    );
+}
+#[test]
+fn through_forward() {
+    let runner = runner().with_cwd("through_forward");
+    assert_eq!(
+        runner.ok("@use \"downstream\";\n\
+             \nb {\
+             \n  midstream: downstream.$a;\
+             \n}\n"),
+        "b {\
+         \n  midstream: overridden;\
          \n}\n"
     );
 }

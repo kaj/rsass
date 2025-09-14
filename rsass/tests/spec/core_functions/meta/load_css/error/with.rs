@@ -7,14 +7,14 @@ fn runner() -> crate::TestRunner {
         .mock_file("conflict/_midstream.scss", "@use \"left\" as *;\n@use \"right\" as *;\n\n$a: c !default;\n")
         .mock_file("conflict/_right.scss", "$a: right;\n")
         .mock_file("multi_configuration/double_load/both_configured/_other.scss", "$a: c !default;\n")
-        .mock_file("multi_configuration/double_load/through_forward/_forwarded.scss", "// This file defines no variables, but it still may not be loaded both with and\n// without configuration.\n")
-        .mock_file("multi_configuration/double_load/through_forward/_midstream.scss", "@forward \"forwarded\";\n\n$a: c !default;\n")
+        .mock_file("multi_configuration/double_load/through_forward/_forwarded.scss", "// This only throws an error because it defines a configurable variable.\n$c: f !default;\n")
+        .mock_file("multi_configuration/double_load/through_forward/_midstream.scss", "@forward \"forwarded\";\n\n$a: e !default;\n")
         .mock_file("multi_configuration/double_load/unconfigured_first/_other.scss", "$a: c !default;\n")
         .mock_file("multi_configuration/use_and_load/both_configured/_other.scss", "$a: c !default;\n")
         .mock_file("multi_configuration/use_and_load/load_first/_loads.scss", "@use \"sass:meta\";\n@include meta.load-css(\"other\", $with: (a: b));\n")
         .mock_file("multi_configuration/use_and_load/load_first/_other.scss", "$a: c !default;\n")
-        .mock_file("multi_configuration/use_and_load/through_forward/_forwarded.scss", "// This file defines no variables, but it still may not be loaded both with and\n// without configuration.\n")
-        .mock_file("multi_configuration/use_and_load/through_forward/_midstream.scss", "@forward \"forwarded\";\n\n$a: c !default;\n")
+        .mock_file("multi_configuration/use_and_load/through_forward/_forwarded.scss", "// This only throws an error because it defines a configurable variable.\n$c: f !default;\n")
+        .mock_file("multi_configuration/use_and_load/through_forward/_midstream.scss", "@forward \"forwarded\";\n\n$a: e !default;\n")
         .mock_file("multi_configuration/use_and_load/unconfigured_first/_other.scss", "$a: c !default;\n")
         .mock_file("namespace/_midstream.scss", "@use \"upstream\";\nupstream.$a: c !default;\n")
         .mock_file("namespace/_upstream.scss", "$a: d;\n")
@@ -109,7 +109,7 @@ mod multi_configuration {
         runner.err(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"forwarded\");\
-             \n@include meta.load-css(\"midstream\", $with: (a: b));\n"
+             \n@include meta.load-css(\"midstream\", $with: (a: b, c: d));\n"
         ),
         "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,--> _midstream.scss\
@@ -119,8 +119,8 @@ mod multi_configuration {
          \n  ,--> input.scss\
          \n2 | @include meta.load-css(\"forwarded\");\
          \n  | =================================== original load\
-         \n3 | @include meta.load-css(\"midstream\", $with: (a: b));\
-         \n  | ================================================== configuration\
+         \n3 | @include meta.load-css(\"midstream\", $with: (a: b, c: d));\
+         \n  | ======================================================== configuration\
          \n  \'\
          \n  _midstream.scss 1:1  load-css()\
          \n  input.scss 3:1       root stylesheet",
@@ -203,7 +203,7 @@ mod multi_configuration {
         runner.err(
             "@use \"sass:meta\";\
              \n@use \"forwarded\";\
-             \n@include meta.load-css(\"midstream\", $with: (a: b));\n"
+             \n@include meta.load-css(\"midstream\", $with: (a: b, c: d));\n"
         ),
         "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,--> _midstream.scss\
@@ -213,8 +213,8 @@ mod multi_configuration {
          \n  ,--> input.scss\
          \n2 | @use \"forwarded\";\
          \n  | ================ original load\
-         \n3 | @include meta.load-css(\"midstream\", $with: (a: b));\
-         \n  | ================================================== configuration\
+         \n3 | @include meta.load-css(\"midstream\", $with: (a: b, c: d));\
+         \n  | ======================================================== configuration\
          \n  \'\
          \n  _midstream.scss 1:1  load-css()\
          \n  input.scss 3:1       root stylesheet",

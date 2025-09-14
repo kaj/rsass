@@ -19,8 +19,8 @@ fn runner() -> crate::TestRunner {
         .mock_file("multi_configuration/multi_file/_other.scss", "$a: c !default;\n")
         .mock_file("multi_configuration/multi_file/_right.scss", "@forward \"other\" with ($a: b);\n")
         .mock_file("multi_configuration/one_file/_other.scss", "$a: c !default;\n")
-        .mock_file("multi_configuration/through_forward/_midstream.scss", "@forward \"upstream\";\n\n$a: c !default;\n")
-        .mock_file("multi_configuration/through_forward/_upstream.scss", "// This file defines no variables, but it still may not be loaded both with and\n// without configuration.\n")
+        .mock_file("multi_configuration/through_forward/_midstream.scss", "@forward \"upstream\";\n\n$a: e !default;\n")
+        .mock_file("multi_configuration/through_forward/_upstream.scss", "// This only throws an error because it defines a configurable variable.\n$c: f !default;\n")
         .mock_file("multi_configuration/unconfigured_first/_other.scss", "$a: c !default;\n")
         .mock_file("namespace/_downstream.scss", "@forward \"midstream\" with ($a: b);\n")
         .mock_file("namespace/_midstream.scss", "@use \"upstream\";\nupstream.$a: c !default;\n")
@@ -179,7 +179,7 @@ mod multi_configuration {
         assert_eq!(
         runner.err(
             "@use \"upstream\";\
-             \n@forward \"midstream\" with ($a: b);\n"
+             \n@forward \"midstream\" with ($a: b, $c: d);\n"
         ),
         "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,--> _midstream.scss\
@@ -189,8 +189,8 @@ mod multi_configuration {
          \n  ,--> input.scss\
          \n1 | @use \"upstream\";\
          \n  | =============== original load\
-         \n2 | @forward \"midstream\" with ($a: b);\
-         \n  | ================================= configuration\
+         \n2 | @forward \"midstream\" with ($a: b, $c: d);\
+         \n  | ======================================== configuration\
          \n  \'\
          \n  _midstream.scss 1:1  @forward\
          \n  input.scss 2:1       root stylesheet",
