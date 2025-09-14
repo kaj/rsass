@@ -68,7 +68,7 @@ impl CallArgs {
             named,
             trailing_comma: self.trailing_comma,
         };
-        for arg in &self.positional {
+        for arg in self.positional.as_ref() {
             match is_splat(arg) {
                 Some([one]) => match one.do_evaluate(scope.clone(), true)? {
                     css::Value::ArgList(args) => {
@@ -132,7 +132,7 @@ impl CallArgs {
             return v.do_evaluate(scope, true);
         }
         let mut i = 0;
-        for a in &self.positional {
+        for a in self.positional.as_ref() {
             match is_splat(a) {
                 Some([one]) => match one.do_evaluate(scope.clone(), true)? {
                     css::Value::ArgList(args) => {

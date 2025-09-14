@@ -137,7 +137,7 @@ fn handle_item(
             scope.forward().do_use(module, &name, as_n, expose)?;
         }
         Item::Import(ref names, ref args, ref pos) => {
-            'name: for name in names {
+            'name: for name in names.as_ref() {
                 let name = name.evaluate(scope.clone())?;
                 if args.is_null() {
                     let x = name.value();
