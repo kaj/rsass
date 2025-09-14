@@ -3,7 +3,7 @@ macro_rules! test_size {
         #[test]
         #[allow(non_snake_case)]
         fn $what() {
-            assert_eq!(size_of::<$what>(), $size);
+            assert_eq!(std::mem::size_of::<$what>(), $size);
         }
     };
 }
