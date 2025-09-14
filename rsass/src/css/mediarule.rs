@@ -38,7 +38,7 @@ pub enum MediaArgs {
     /// A named media, such as `all` or `screen`.
     Name(String),
     /// `(cond: value)` media.
-    Condition(String, Value),
+    Condition(String, Box<Value>),
     /// A condition / range, such as `(witdh < 14em)` or
     /// `(14em <= width < 80em)`.
     Range(Vec<(Operator, Value)>),
@@ -136,4 +136,17 @@ impl TryFrom<Value> for MediaArgs {
         let value = value.format(Format::default()).to_string();
         Ok(ParseError::check(media::args(input_span(value).borrow()))?)
     }
+}
+
+/// Check some sizes.
+///
+/// The exact sizes are not important and may vary between architectures.
+/// I just want to keep track that things don't grow too big.
+#[cfg(test)]
+mod test_sizes {
+    use super::*;
+    use crate::testutil::test_size;
+
+    test_size!(MediaArgs, 40);
+    test_size!(MediaRule, 64);
 }

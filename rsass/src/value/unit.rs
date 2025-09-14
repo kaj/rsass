@@ -72,7 +72,19 @@ pub enum Unit {
     None,
 
     /// An unknown (but named) unit.
+    // Note: I tried using a Box<str> (16 bytes, instead of 24), but
+    // the niche optimization is better for String, so a Unit is 24
+    // bytes in both cases, at least with Rust 1.89.0).
     Unknown(String),
+}
+
+#[cfg(all(test, target_pointer_width = "64"))]
+mod test_sizes {
+    use super::Unit;
+    use crate::testutil::test_size;
+    // Se above about `Unit::Unknown`.
+    // Maybe I should bring this down by interning?
+    test_size!(Unit, 24);
 }
 
 /// Dimension of a unit.

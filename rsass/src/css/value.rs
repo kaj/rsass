@@ -48,6 +48,17 @@ pub enum Value {
     ArgList(super::CallArgs),
 }
 
+#[cfg(test)]
+mod test_sizes {
+    use super::*;
+    use crate::testutil::test_size;
+
+    test_size!(CssString, 32);
+    test_size!(CallArgs, 56);
+    test_size!(Color, 48);
+    test_size!(Value, 80);
+}
+
 /// An `OrderMap` where both the keys and the values are css values.
 pub type ValueMap = OrderMap<Value, Value>;
 

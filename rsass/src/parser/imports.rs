@@ -37,7 +37,11 @@ pub fn import2(input: Span) -> PResult<Item> {
         ),
         |(import, args, end)| {
             let pos = input.up_to(&end).to_owned();
-            Item::Import(import, args.unwrap_or(Value::Null), pos)
+            Item::Import(
+                import.into_boxed_slice(),
+                args.unwrap_or(Value::Null),
+                pos,
+            )
         },
     )
     .parse(input)

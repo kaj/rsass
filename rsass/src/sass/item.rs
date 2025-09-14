@@ -10,18 +10,18 @@ use std::collections::BTreeSet;
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub enum Item {
     /// An `@import` directive.
-    Import(Vec<SassString>, Value, SourcePos),
+    Import(Box<[SassString]>, Value, SourcePos),
     /// A variable declaration.
     VariableDeclaration(VariableDeclaration),
 
     /// An `@at-root` directive.
-    AtRoot(Selectors, Vec<Item>),
+    AtRoot(Selectors, ItemBody),
     /// An `@media` directive.
     AtMedia {
         /// Any arguments
         args: Value,
         /// The directive may have a body.
-        body: Option<Vec<Item>>,
+        body: Option<ItemBody>,
         /// The source location of this at rule.
         pos: SourcePos,
     },
@@ -32,7 +32,7 @@ pub enum Item {
         /// Any arguments
         args: Value,
         /// The directive may have a body.
-        body: Option<Vec<Item>>,
+        body: Option<ItemBody>,
         /// The source location of this at rule.
         pos: SourcePos,
     },
@@ -56,15 +56,15 @@ pub enum Item {
     Return(Value, SourcePos),
 
     /// An `@if` conditional directive.
-    IfStatement(Value, Vec<Item>, Vec<Item>),
+    IfStatement(Value, ItemBody, ItemBody),
     /// An `@each` loop directive.
     ///
     /// The value may be or evaluate to a list.
-    Each(Vec<Name>, Value, Vec<Item>),
+    Each(Vec<Name>, Value, ItemBody),
     /// An `@for` loop directive.
-    For(Name, SrcRange, Vec<Item>),
+    For(Name, Box<SrcRange>, ItemBody),
     /// An `@while` loop directive.
-    While(Value, Vec<Item>),
+    While(Value, ItemBody),
 
     /// An `@use` directive.
     Use(SassString, UseAs, Vec<(Name, Value, bool)>, SourcePos),
@@ -81,9 +81,9 @@ pub enum Item {
     Extend(Selectors),
 
     /// A sass rule; selectors followed by a block of items.
-    Rule(Selectors, Vec<Item>),
+    Rule(Selectors, ItemBody),
     /// A sass namespace rule; a name followed by a block of properties.
-    NamespaceRule(SassString, Value, Vec<Item>),
+    NamespaceRule(SassString, Value, ItemBody),
     /// A sass property; a name and a value.
     /// The position is the full value.
     Property(SassString, Value, SourcePos),
@@ -93,6 +93,60 @@ pub enum Item {
     Comment(SassString),
     /// Nothing
     None,
+}
+
+/// A body of items.
+///
+/// This might represent the body of a rule, a source file, etc.
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
+pub struct ItemBody {
+    items: Box<[Item]>,
+}
+impl ItemBody {
+    /// Create an empty `ItemBody`.
+    pub fn empty() -> Self {
+        Self {
+            items: Box::new([]),
+        }
+    }
+    /// Create an `ItemBody` of a single `Item`.
+    pub fn single(item: Item) -> Self {
+        Self {
+            items: Box::new([item]),
+        }
+    }
+}
+
+impl AsRef<[Item]> for ItemBody {
+    fn as_ref(&self) -> &[Item] {
+        &self.items
+    }
+}
+impl From<Vec<Item>> for ItemBody {
+    fn from(value: Vec<Item>) -> Self {
+        Self {
+            items: value.into_boxed_slice(),
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::testutil::test_size;
+
+    test_size!(ItemBody, 16);
+    test_size!(Item, 176);
+    test_size!(Value, 72);
+    test_size!(SrcRange, 200);
+    test_size!(SassString, 32);
+    test_size!(VariableDeclaration, 128);
+    test_size!(SourcePos, 24);
+    test_size!(CallArgs, 48);
+    test_size!(Callable, 80);
+    test_size!(Selectors, 24);
+    test_size!(UseAs, 32);
+    test_size!(Expose, 56);
 }
 
 impl From<VariableDeclaration> for Item {

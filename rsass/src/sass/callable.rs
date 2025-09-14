@@ -1,4 +1,4 @@
-use super::{CallError, FormalArgs, Item};
+use super::{CallError, FormalArgs, ItemBody};
 use crate::css::{CallArgs, Value};
 use crate::input::SourcePos;
 use crate::{Error, ScopeRef};
@@ -7,17 +7,17 @@ use crate::{Error, ScopeRef};
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Callable {
     pub(crate) args: FormalArgs,
-    pub(crate) body: Vec<Item>,
+    pub(crate) body: ItemBody,
     pub(crate) decl: SourcePos,
 }
 
 impl Callable {
     /// Create a new callable.
-    pub fn new(args: FormalArgs, body: Vec<Item>, decl: SourcePos) -> Self {
+    pub fn new(args: FormalArgs, body: ItemBody, decl: SourcePos) -> Self {
         Self { args, body, decl }
     }
     /// Create a new callable without arguments.
-    pub fn no_args(body: Vec<Item>, decl: SourcePos) -> Self {
+    pub fn no_args(body: ItemBody, decl: SourcePos) -> Self {
         Self {
             args: FormalArgs::none(),
             body,

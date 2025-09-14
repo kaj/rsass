@@ -48,6 +48,9 @@ pub mod sass;
 pub mod value;
 mod variablescope;
 
+#[cfg(test)]
+mod testutil;
+
 pub use crate::error::{Error, Invalid};
 pub use crate::parser::{parse_value_data, ParseError};
 pub use crate::variablescope::{Scope, ScopeError, ScopeRef};

@@ -34,7 +34,7 @@ use crate::sass::parser::{
     src_range, variable_declaration2, variable_declaration_mod,
 };
 use crate::sass::{
-    Callable, FormalArgs, Item, Name, Selectors, SrcValue, Value,
+    Callable, FormalArgs, Item, ItemBody, Name, Selectors, SrcValue, Value,
 };
 use crate::value::ListSeparator;
 #[cfg(test)]
@@ -88,16 +88,16 @@ fn test_parse_value_data_2() -> Result<(), Error> {
     Ok(())
 }
 
-pub(crate) fn sassfile(input: Span) -> PResult<Vec<Item>> {
+pub(crate) fn sassfile(input: Span) -> PResult<ItemBody> {
     preceded(
         opt(tag("\u{feff}".as_bytes())),
-        map(
+        into(map(
             many_till(
                 preceded(opt_spacelike, top_level_item),
                 all_consuming(opt_spacelike),
             ),
             |(v, _eof)| v,
-        ),
+        )),
     )
     .parse(input)
 }
@@ -375,15 +375,18 @@ fn if_statement2(input: Span) -> PResult<Item> {
     match word.as_ref().map(AsRef::as_ref) {
         Some("else") => {
             let (input2, else_body) =
-                alt((map(if_statement_inner, |s| vec![s]), body_block))
+                alt((map(if_statement_inner, ItemBody::single), body_block))
                     .parse(input2)?;
             Ok((input2, Item::IfStatement(cond, body, else_body)))
         }
         Some("elseif") => {
             let (input2, else_body) = if_statement2(input2)?;
-            Ok((input2, Item::IfStatement(cond, body, vec![else_body])))
+            Ok((
+                input2,
+                Item::IfStatement(cond, body, ItemBody::single(else_body)),
+            ))
         }
-        _ => Ok((input, Item::IfStatement(cond, body, vec![]))),
+        _ => Ok((input, Item::IfStatement(cond, body, ItemBody::empty()))),
     }
 }
 
@@ -410,7 +413,7 @@ fn for_loop2(input: Span) -> PResult<Item> {
         delimited(tag("$"), name, ignore_comments).parse(input)?;
     let (input, range) = src_range(input)?;
     let (input, body) = body_block(input)?;
-    Ok((input, Item::For(name.into(), range, body)))
+    Ok((input, Item::For(name.into(), Box::new(range), body)))
 }
 
 /// A single `SrcValue`.
@@ -506,7 +509,7 @@ use crate::sass::SassString;
 fn ns_or_prop_item(
     name: SassString,
     value: Option<Value>,
-    body: Option<Vec<Item>>,
+    body: Option<ItemBody>,
     pos: SourcePos,
 ) -> Item {
     if let Some(body) = body {
@@ -518,11 +521,11 @@ fn ns_or_prop_item(
     }
 }
 
-fn body_block(input: Span) -> PResult<Vec<Item>> {
+fn body_block(input: Span) -> PResult<ItemBody> {
     preceded(char('{'), body_block2).parse(input)
 }
 
-fn body_block2(input: Span) -> PResult<Vec<Item>> {
+fn body_block2(input: Span) -> PResult<ItemBody> {
     let (input, (v, _end)) = preceded(
         opt_spacelike,
         many_till(
@@ -531,7 +534,7 @@ fn body_block2(input: Span) -> PResult<Vec<Item>> {
         ),
     )
     .parse(input)?;
-    Ok((input, v))
+    Ok((input, v.into()))
 }
 
 pub(crate) fn input_to_str(s: Span<'_>) -> Result<&str, Utf8Error> {

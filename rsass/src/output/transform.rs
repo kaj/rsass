@@ -3,10 +3,10 @@
 
 use super::cssdest::CssDestination;
 use super::CssData;
-use crate::css::{self, AtRule, Import, SelectorCtx, Value};
+use crate::css::{self, AtRule, Import, SelectorCtx};
 use crate::error::ResultPos;
 use crate::input::{Context, Loader, Parsed, SourceKind};
-use crate::sass::{get_global_module, Expose, Item, UseAs};
+use crate::sass::{get_global_module, Expose, Item, ItemBody, UseAs};
 use crate::{Error, Invalid, ScopeRef};
 
 pub fn handle_parsed(
@@ -22,12 +22,12 @@ pub fn handle_parsed(
 }
 
 fn handle_body(
-    items: &[Item],
+    items: &ItemBody,
     dest: &mut dyn CssDestination,
     scope: ScopeRef,
     file_context: &mut Context<impl Loader>,
 ) -> Result<(), Error> {
-    for b in items {
+    for b in items.as_ref() {
         handle_item(b, dest, scope.clone(), file_context)?;
     }
     Ok(())
@@ -197,7 +197,7 @@ fn handle_item(
                     }
                 }
                 let args = args.evaluate(scope.clone())?;
-                dest.push_import(Import::new(Value::Literal(name), args));
+                dest.push_import(Import::new(name, args));
             }
         }
         Item::AtRoot(ref selectors, ref body) => {
@@ -396,8 +396,8 @@ enum BodyContext {
     NsRule,
 }
 
-fn check_body(body: &[Item], context: BodyContext) -> Result<(), Error> {
-    for item in body {
+fn check_body(body: &ItemBody, context: BodyContext) -> Result<(), Error> {
+    for item in body.as_ref() {
         match item {
             Item::Forward(_, _, _, _, pos) => {
                 return Err(Invalid::AtRule.at(pos.clone()));

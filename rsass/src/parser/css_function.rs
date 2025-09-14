@@ -27,7 +27,7 @@ pub fn css_function(input: Span) -> PResult<Value> {
     let pos = input.up_to(&rest).to_owned();
     Ok((
         rest,
-        Value::Call("calc".into(), CallArgs::new_single(arg), pos),
+        Value::Call("calc".into(), Box::new(CallArgs::new_single(arg)), pos),
     ))
 }
 
@@ -127,5 +127,5 @@ fn paren(input: Span) -> PResult<Value> {
 fn function_call(input: Span) -> PResult<Value> {
     let (rest, (name, args)) = pair(sass_string, call_args).parse(input)?;
     let pos = input.up_to(&rest).to_owned();
-    Ok((rest, Value::Call(name, args, pos)))
+    Ok((rest, Value::Call(name, Box::new(args), pos)))
 }

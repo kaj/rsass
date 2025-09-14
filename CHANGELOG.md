@@ -10,6 +10,7 @@ project adheres to
 ## Unreleased
 
 * Refined custom-property handling for new tests.
+* Refactored to get items and values smaller in memory.
 * Updated sass-spec test suite to 2025-05-15.
 
 ## Release 0.29.2

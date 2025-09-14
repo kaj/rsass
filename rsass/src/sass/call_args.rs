@@ -10,7 +10,7 @@ use std::default::Default;
 /// If the optional name is None, the argument is positional.
 #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd)]
 pub struct CallArgs {
-    positional: Vec<Value>,
+    positional: Box<[Value]>,
     // Ordered for formattig.
     named: OrderMap<Name, Value>,
     trailing_comma: bool,
@@ -38,7 +38,7 @@ impl CallArgs {
             }
         }
         Ok(Self {
-            positional,
+            positional: positional.into_boxed_slice(),
             named,
             trailing_comma,
         })
@@ -47,7 +47,7 @@ impl CallArgs {
     /// Create a new `CallArgs` from one single unnamed argument.
     pub fn new_single(value: Value) -> Self {
         Self {
-            positional: vec![value],
+            positional: Box::new([value]),
             named: Default::default(),
             trailing_comma: false,
         }

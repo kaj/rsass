@@ -48,7 +48,7 @@ pub fn unit(input: Span) -> PResult<Unit> {
             // Special units
             "fr" => Unit::Fr,
 
-            name => Unit::Unknown(name.to_string()),
+            name => Unit::Unknown(name.into()),
         }),
         value(Unit::None, tag("")),
     ))

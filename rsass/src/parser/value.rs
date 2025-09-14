@@ -517,7 +517,7 @@ fn function_call_or_string_real(
         match call_args(rest) {
             Ok((rest, args)) => {
                 let pos = input.up_to(&rest).to_owned();
-                return Ok((rest, Value::Call(name, args, pos)));
+                return Ok((rest, Value::Call(name, Box::new(args), pos)));
             }
             Err(error) => {
                 if let Ok((rest, lit)) = sass_string_ext(rest) {
@@ -747,7 +747,7 @@ mod test {
         let (rest, value) =
             value_expression(expr).map_err(|e| e.to_string())?;
         if let Value::Call(name, args, _) = value {
-            Ok((name, args, rest.fragment()))
+            Ok((name, *args, rest.fragment()))
         } else {
             Err(format!("Not a call parse result: {:?} {:?}", value, rest))
         }

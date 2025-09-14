@@ -154,5 +154,5 @@ pub enum Parsed {
     /// Raw css data.
     Css(Vec<crate::css::Item>),
     /// Sass (scss) data.
-    Scss(Vec<crate::sass::Item>),
+    Scss(crate::sass::ItemBody),
 }

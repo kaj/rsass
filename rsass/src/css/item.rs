@@ -1,4 +1,4 @@
-use super::{AtRule, Comment, MediaRule, Rule, Value};
+use super::{AtRule, Comment, CssString, MediaRule, Rule, Value};
 use crate::output::CssBuf;
 use std::io::{self, Write};
 
@@ -17,6 +17,22 @@ pub enum Item {
     AtRule(AtRule),
     /// An extra newline for grouping (unless compressed format).
     Separator,
+}
+
+/// Check some sizes.
+///
+/// The exact sizes are not important and may vary between architectures.
+/// I just want to make sure that `Item` don't grow too big.
+#[cfg(test)]
+mod test_sizes {
+    use super::*;
+    use crate::testutil::test_size;
+
+    test_size!(Comment, 24);
+    test_size!(Import, 112);
+    test_size!(Rule, 48);
+    test_size!(AtRule, 128);
+    test_size!(Item, 128);
 }
 
 impl Item {
@@ -62,20 +78,20 @@ impl From<MediaRule> for Item {
 /// An `@import` rule in css.
 #[derive(Clone, Debug)]
 pub struct Import {
-    name: Value,
+    name: CssString,
     args: Value,
 }
 
 impl Import {
     /// Create a new `@import`.
-    pub fn new(name: Value, args: Value) -> Self {
+    pub fn new(name: CssString, args: Value) -> Self {
         Self { name, args }
     }
 
     /// Write this comment to a css output buffer.
     pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
         buf.do_indent_no_nl();
-        write!(buf, "@import {}", &self.name.format(buf.format()))?;
+        write!(buf, "@import {}", &self.name)?;
         if !self.args.is_null() {
             write!(buf, " {}", self.args.format(buf.format()))?;
         }

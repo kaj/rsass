@@ -12,7 +12,7 @@ pub enum Value {
     /// A special kind of escape.  Only really used for !important.
     Bang(String),
     /// A call has a name and an argument (which may be multi).
-    Call(SassString, CallArgs, SourcePos),
+    Call(SassString, Box<CallArgs>, SourcePos),
     /// A literal string value (quoted or not).
     Literal(SassString),
     /// A comma- or space separated list of values, with or without brackets.
@@ -48,6 +48,17 @@ pub enum Value {
     /// A unicode range for font selections. U+NN, U+N?, U+NN-MM.
     /// The string is the entire value, including the "U+" tag.
     UnicodeRange(String),
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::testutil::test_size;
+
+    test_size!(SassString, 32);
+    test_size!(CallArgs, 48);
+    test_size!(SourcePos, 24);
+    test_size!(Value, 72);
 }
 
 impl Value {

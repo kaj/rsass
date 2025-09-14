@@ -86,7 +86,7 @@ fn media_args_one(input: Span) -> PResult<MediaArgs> {
                         terminated(strings::css_string, tag(": ")),
                         values::any,
                     ),
-                    |(k, v)| MediaArgs::Condition(k, v),
+                    |(k, v)| MediaArgs::Condition(k, Box::new(v)),
                 ),
                 map(media_relation, MediaArgs::Range),
                 map(args, |v| MediaArgs::Paren(Box::new(v))),

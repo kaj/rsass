@@ -11,24 +11,24 @@ type Result<T> = std::result::Result<T, ArgsError>;
 /// The arguments are ordered (so they have a position).
 /// Each argument also has a name and may have a default value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct FormalArgs(Vec<(Name, Option<Value>)>, Option<Name>);
+pub struct FormalArgs(Box<[(Name, Option<Value>)]>, Option<Name>);
 
 impl FormalArgs {
     /// Create a new `FormalArgs`.
     ///
     /// The given arg-pairs each have a name and an optional default value.
     pub fn new(args: Vec<(Name, Option<Value>)>) -> Self {
-        Self(args, None)
+        Self(args.into_boxed_slice(), None)
     }
     /// Create a new set of varargs arguments
     pub fn new_va(args: Vec<(Name, Option<Value>)>) -> Self {
         let mut args = args;
         let va = args.pop().map(|(name, _)| name);
-        Self(args, va)
+        Self(args.into_boxed_slice(), va)
     }
     /// Create an empty set of arguments.
     pub fn none() -> Self {
-        Self(vec![], None)
+        Self(Box::new([]), None)
     }
 
     /// Return true if this formalarg is varargs.

@@ -114,11 +114,18 @@ fn import2(input: Span) -> PResult<Import> {
     map(
         delimited(
             opt_spacelike,
+            // TODO: Have string_or_call return a more specific type?
             values::string_or_call,
             // TODO: Media arguments!
             opt(terminated(opt_spacelike, tag(";"))),
         ),
-        |uri| Import::new(uri, Value::Null),
+        |uri| {
+            let uri = match uri {
+                Value::Literal(css_string) => css_string,
+                v => v.format(Default::default()).to_string().into(),
+            };
+            Import::new(uri, Value::Null)
+        },
     )
     .parse(input)
 }

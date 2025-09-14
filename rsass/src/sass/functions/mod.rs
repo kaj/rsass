@@ -34,7 +34,7 @@ type BuiltinFn =
 /// "user defined" (implemented in scss).
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Function {
-    body: FuncImpl,
+    body: Box<FuncImpl>,
 }
 
 #[derive(Clone, PartialEq, Eq, PartialOrd)]
@@ -136,14 +136,14 @@ impl Function {
     ) -> Self {
         let pos = SourcePos::mock_function(name, &args, module);
         Self {
-            body: FuncImpl::Builtin(Builtin { args, pos, body }),
+            body: Box::new(FuncImpl::Builtin(Builtin { args, pos, body })),
         }
     }
 
     /// Call the function from a given scope and with a given set of
     /// arguments.
     pub fn call(&self, call: Call) -> Result<Value, CallError> {
-        let result = match self.body {
+        let result = match &*self.body {
             FuncImpl::Builtin(ref builtin) => builtin.eval_value(call),
             FuncImpl::UserDefined(ref closure) => closure.eval_value(call),
         };
@@ -163,7 +163,7 @@ impl Function {
 impl From<Closure> for Function {
     fn from(c: Closure) -> Self {
         Self {
-            body: FuncImpl::UserDefined(c),
+            body: Box::new(FuncImpl::UserDefined(c)),
         }
     }
 }

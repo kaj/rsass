@@ -2,7 +2,7 @@
 use crate::css::{CssString, SelectorCtx, Value};
 use crate::input::SourcePos;
 use crate::output::Format;
-use crate::sass::{Expose, Function, Item, MixinDecl, Name, UseAs};
+use crate::sass::{Expose, Function, Item, ItemBody, MixinDecl, Name, UseAs};
 use crate::{Error, Invalid};
 use arc_swap::ArcSwapOption;
 use lazy_static::lazy_static;
@@ -52,11 +52,11 @@ impl ScopeRef {
     }
 
     /// Evaluate a body of items in this scope.
-    pub fn eval_body(self, body: &[Item]) -> Result<Option<Value>, Error>
+    pub fn eval_body(self, body: &ItemBody) -> Result<Option<Value>, Error>
     where
         Self: Sized,
     {
-        for b in body {
+        for b in body.as_ref() {
             let result = match *b {
                 Item::IfStatement(ref cond, ref do_if, ref do_else) => {
                     if cond.evaluate(self.clone())?.is_true() {
