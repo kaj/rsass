@@ -78,6 +78,7 @@ pub enum Unit {
     Unknown(String),
 }
 
+#[rustversion::since(1.89)]
 #[cfg(all(test, target_pointer_width = "64"))]
 mod test_sizes {
     use super::Unit;

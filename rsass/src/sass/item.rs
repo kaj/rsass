@@ -136,6 +136,7 @@ mod test {
     use crate::testutil::test_size;
 
     test_size!(ItemBody, 16);
+    #[rustversion::since(1.89)]
     test_size!(Item, 176);
     test_size!(Value, 72);
     test_size!(SrcRange, 200);
@@ -143,6 +144,7 @@ mod test {
     test_size!(VariableDeclaration, 128);
     test_size!(SourcePos, 24);
     test_size!(CallArgs, 48);
+    #[rustversion::since(1.89)]
     test_size!(Callable, 80);
     test_size!(Selectors, 24);
     test_size!(UseAs, 32);
