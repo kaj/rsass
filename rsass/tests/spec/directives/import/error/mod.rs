@@ -9,3 +9,5 @@ mod conflict;
 mod member;
 
 mod not_found;
+
+mod top_level_declaration;

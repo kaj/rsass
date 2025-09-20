@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok(
@@ -59,13 +60,15 @@ fn test() {
          \n  hey: 4;\
          \n  ho: hello;\
          \n  hee: fudge;\
-         \n  fudge: walnut;\
          \n}\
          \n@media (-webkit-min-device-pixel-ratio: 2), (-moz-min-device-pixel-ratio: 2) {\
          \n  div {\
          \n    background-image: image-url(\"test@2x.png\");\
          \n    -webkit-background-size: 100px 300px;\
          \n  }\
+         \n}\
+         \ndiv {\
+         \n  fudge: walnut;\
          \n}\
          \nspan {\
          \n  blah: \"foo bar\";\

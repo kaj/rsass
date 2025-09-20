@@ -60,7 +60,6 @@ fn test() {
         "@fudge hux bloo;\
          \ndiv {\
          \n  color: red;\
-         \n  height: 20px;\
          \n}\
          \n@fudge {\
          \n  div span {\
@@ -69,6 +68,9 @@ fn test() {
          \n  div span a {\
          \n    font: whatever;\
          \n  }\
+         \n}\
+         \ndiv {\
+         \n  height: 20px;\
          \n}\
          \n@-webkit-keyframes SOMETHING {\
          \n  0% {\
@@ -89,15 +91,15 @@ fn test() {
          \n    left: 200px;\
          \n  }\
          \n}\
+         \ndiv span {\
+         \n  font: whatever;\
+         \n}\
          \ndiv {\
          \n  border-upper-left: 10px;\
          \n  border-upper-right: 9px;\
          \n  border-lower-left: 8px;\
          \n  border-lower-right: 7px;\
          \n  background: gray;\
-         \n}\
-         \ndiv span {\
-         \n  font: whatever;\
          \n}\
          \n@fudge HEY, HOO, HA:first-child {\
          \n  color: blue;\

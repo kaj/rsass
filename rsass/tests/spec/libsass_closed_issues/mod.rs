@@ -140,8 +140,6 @@ mod issue_1255;
 
 mod issue_1257;
 
-mod issue_1259;
-
 mod issue_1260;
 
 mod issue_1263;

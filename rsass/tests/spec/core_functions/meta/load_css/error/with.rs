@@ -20,6 +20,9 @@ fn runner() -> crate::TestRunner {
         .mock_file("namespace/_upstream.scss", "$a: d;\n")
         .mock_file("nested/_other.scss", "c {$a: d !default}\n")
         .mock_file("not_default/_other.scss", "$a: c;\n")
+        .mock_file("private/different/_other.scss", "$_a: c !default;\nd {e: $_a}\n")
+        .mock_file("private/matching/dash/_other.scss", "$-a: c !default;\nd {e: $-a}\n")
+        .mock_file("private/matching/underscore/_other.scss", "$_a: c !default;\nd {e: $_a}\n")
         .mock_file("repeated_variable/_other.scss", "$a-b: c !default;\n")
         .mock_file("through_forward/as/_forwarded.scss", "$a: d !default;\n")
         .mock_file("through_forward/as/_used.scss", "@forward \"forwarded\" as c-*;\n")
@@ -292,6 +295,51 @@ fn not_default() {
          \n  \'\
          \n  input.scss 2:1  root stylesheet",
     );
+}
+mod private {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("private")
+    }
+
+    #[test]
+    fn different() {
+        let runner = runner().with_cwd("different");
+        assert_eq!(
+            runner.ok("@use \"sass:meta\";\
+             \n@include meta.load-css(\"other\", $with: (\"-a\": b));\n"),
+            "d {\
+         \n  e: b;\
+         \n}\n"
+        );
+    }
+    mod matching {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("matching")
+        }
+
+        #[test]
+        fn dash() {
+            let runner = runner().with_cwd("dash");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@include meta.load-css(\"other\", $with: (\"-a\": b));\n"),
+                "d {\
+         \n  e: b;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn underscore() {
+            let runner = runner().with_cwd("underscore");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@include meta.load-css(\"other\", $with: (\"_a\": b));\n"),
+                "d {\
+         \n  e: b;\
+         \n}\n"
+            );
+        }
+    }
 }
 #[test]
 #[ignore] // missing error

@@ -7,6 +7,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("$foo: foo !global !default;\n\
@@ -21,13 +22,13 @@ fn test() {
         "default {\
          \n  foo: foo;\
          \n}\
-         \nafter {\
-         \n  foo: bar;\
-         \n}\
          \nafter import-before {\
          \n  foo: bar;\
          \n}\
          \nafter import-after {\
+         \n  foo: bar;\
+         \n}\
+         \nafter {\
          \n  foo: bar;\
          \n}\n"
     );

@@ -12,6 +12,8 @@ mod name_interpolation;
 
 mod plain;
 
+mod semicolon;
+
 mod value_interpolation;
 
 mod whitespace;

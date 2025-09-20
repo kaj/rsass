@@ -270,3 +270,41 @@ mod prefixed {
         }
     }
 }
+mod unprefixed {
+    use super::runner;
+
+    mod test_type {
+        use super::runner;
+
+        #[test]
+        fn interpolation() {
+            assert_eq!(
+                runner().ok("a {b: type(#{0})}\n"),
+                "a {\
+         \n  b: type(0);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn number() {
+            assert_eq!(
+                runner().ok("a {b: type(0)}\n"),
+                "a {\
+         \n  b: type(0);\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn punctuation() {
+            assert_eq!(
+                runner().ok(
+                    "a {b: type(@#$%^&*({[]})_-+=|\\\\:\"\"\'\'<>,.?/)}\n"
+                ),
+                "a {\
+         \n  b: type(@#$%^&*({[]})_-+=|\\\\:\"\"\"\"<>,.?/);\
+         \n}\n"
+            );
+        }
+    }
+}

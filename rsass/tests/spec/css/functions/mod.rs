@@ -6,6 +6,8 @@ fn runner() -> crate::TestRunner {
 
 mod error;
 
+mod not_special;
+
 mod special;
 
 mod url;

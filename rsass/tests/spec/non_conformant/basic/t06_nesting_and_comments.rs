@@ -63,20 +63,22 @@ fn test() {
          \n  /* another comment that should be preserved */\
          \n  color: red;\
          \n  background: blue;\
-         \n  /* the next selector should be indented two spaces */\
-         \n  /* comment after close brace goes out */\
-         \n  margin: 10px 5px;\
          \n}\
          \ndiv span {\
          \n  font-weight: bold;\
-         \n  /* yet another comment that should be preserved */\
-         \n  display: inline-block;\
          \n}\
          \ndiv span a {\
          \n  text-decoration: none; /* where will this comment go? */\
          \n  color: green;\
          \n  /* what about this comment? */\
          \n  border: 1px bloo blee red;\
+         \n}\
+         \ndiv span {\
+         \n  /* yet another comment that should be preserved */\
+         \n  display: inline-block;\
+         \n}\
+         \ndiv {\
+         \n  /* the next selector should be indented two spaces */\
          \n}\
          \ndiv empty not_empty {\
          \n  blah: blah;\
@@ -85,6 +87,10 @@ fn test() {
          \ndiv p { /* comment after open brace goes in */\
          \n  padding: 10px 8%;\
          \n  -webkit-box-sizing: hux;\
+         \n}\
+         \ndiv {\
+         \n  /* comment after close brace goes out */\
+         \n  margin: 10px 5px;\
          \n}\
          \ndiv h1 {\
          \n  color: \"a \'red\' and \\\"blue\\\" value\";\

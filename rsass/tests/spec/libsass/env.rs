@@ -54,10 +54,12 @@ fn test() {
          \n  font: 0;\
          \n  /* 1 */\
          \n  font: 1;\
+         \n}\
+         \ndiv span {\
          \n  /* 2 */\
          \n  font: 2;\
          \n}\
-         \ndiv span {\
+         \ndiv {\
          \n  /* 2 */\
          \n  font: 2;\
          \n}\

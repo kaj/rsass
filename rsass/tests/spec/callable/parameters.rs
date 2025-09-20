@@ -22,6 +22,22 @@ mod function {
          \n  input.scss 1:14  root stylesheet",
             );
         }
+        mod splat {
+            use super::runner;
+
+            #[test]
+            fn before_final() {
+                assert_eq!(
+                    runner().err("@function a($b..., $c) {@return null}\n"),
+                    "Error: expected \")\".\
+         \n  ,\
+         \n1 | @function a($b..., $c) {@return null}\
+         \n  |                    ^\
+         \n  \'\
+         \n  input.scss 1:20  root stylesheet",
+                );
+            }
+        }
     }
     mod trailing_comma {
         use super::runner;
@@ -137,6 +153,22 @@ mod mixin {
          \n  \'\
          \n  input.scss 1:11  root stylesheet",
             );
+        }
+        mod splat {
+            use super::runner;
+
+            #[test]
+            fn before_final() {
+                assert_eq!(
+                    runner().err("@mixin a($b..., $c) {}\n"),
+                    "Error: expected \")\".\
+         \n  ,\
+         \n1 | @mixin a($b..., $c) {}\
+         \n  |                 ^\
+         \n  \'\
+         \n  input.scss 1:17  root stylesheet",
+                );
+            }
         }
     }
     mod trailing_comma {

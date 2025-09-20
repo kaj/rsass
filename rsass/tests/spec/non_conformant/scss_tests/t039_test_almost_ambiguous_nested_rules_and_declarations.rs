@@ -6,6 +6,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok(
@@ -14,14 +15,14 @@ fn test() {
              \n  bar:baz bang bop biddle woo look at all these elems {a: b};\
              \n  bar:baz bang bop biddle woo look at all these elems; }\n"
         ),
-        "foo {\
-         \n  bar: baz bang bop biddle woo look at all these elems;\
-         \n}\
-         \nfoo bar:baz:bang:bop:biddle:woo:look:at:all:these:pseudoclasses {\
+        "foo bar:baz:bang:bop:biddle:woo:look:at:all:these:pseudoclasses {\
          \n  a: b;\
          \n}\
          \nfoo bar:baz bang bop biddle woo look at all these elems {\
          \n  a: b;\
+         \n}\
+         \nfoo {\
+         \n  bar: baz bang bop biddle woo look at all these elems;\
          \n}\n"
     );
 }

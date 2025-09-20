@@ -5,16 +5,17 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("foo {\
              \n  bar {c: d}\
              \n  a: b}\n"),
-        "foo {\
-         \n  a: b;\
-         \n}\
-         \nfoo bar {\
+        "foo bar {\
          \n  c: d;\
+         \n}\
+         \nfoo {\
+         \n  a: b;\
          \n}\n"
     );
 }

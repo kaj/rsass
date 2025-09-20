@@ -10,6 +10,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("@import \"a.scss\";\n\
@@ -30,7 +31,6 @@ fn test() {
          \n}\
          \nfoo goo {\
          \n  blee: blee;\
-         \n  hello: world;\
          \n}\
          \nfoo goo hoo {\
          \n  mux: scooba-dee-doo;\
@@ -38,6 +38,9 @@ fn test() {
          \n}\
          \nfoo goo hoo d {\
          \n  inside: d now;\
+         \n}\
+         \nfoo goo {\
+         \n  hello: world;\
          \n}\
          \nfoo blux {\
          \n  hey: another thing;\

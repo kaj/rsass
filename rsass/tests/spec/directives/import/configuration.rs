@@ -89,13 +89,29 @@ fn runner() -> crate::TestRunner {
             "same_file/_upstream.scss",
             "$a: original !default;\nb {c: $a}\n",
         )
-        .mock_file("separate_file/_config.scss", "$a: configured;\n")
+        .mock_file("separate_file/direct/_config.scss", "$a: configured;\n")
         .mock_file(
-            "separate_file/_midstream.scss",
+            "separate_file/direct/_midstream.scss",
             "@forward \"upstream\";\n",
         )
         .mock_file(
-            "separate_file/_upstream.scss",
+            "separate_file/direct/_upstream.scss",
+            "$a: original !default;\nb {c: $a}\n",
+        )
+        .mock_file(
+            "separate_file/through_forward/_config.scss",
+            "$a: configured;\n",
+        )
+        .mock_file(
+            "separate_file/through_forward/_config_wrapper.scss",
+            "@forward \"config\";\n",
+        )
+        .mock_file(
+            "separate_file/through_forward/_midstream.scss",
+            "@forward \"upstream\";\n",
+        )
+        .mock_file(
+            "separate_file/through_forward/_upstream.scss",
             "$a: original !default;\nb {c: $a}\n",
         )
         .mock_file(
@@ -265,17 +281,36 @@ fn same_file() {
          \n}\n"
     );
 }
-#[test]
-#[ignore] // wrong result
-fn separate_file() {
-    let runner = runner().with_cwd("separate_file");
-    assert_eq!(
-        runner.ok("@import \"config\";\
+mod separate_file {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("separate_file")
+    }
+
+    #[test]
+    #[ignore] // wrong result
+    fn direct() {
+        let runner = runner().with_cwd("direct");
+        assert_eq!(
+            runner.ok("@import \"config\";\
              \n@import \"midstream\";\n"),
-        "b {\
+            "b {\
          \n  c: configured;\
          \n}\n"
-    );
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn through_forward() {
+        let runner = runner().with_cwd("through_forward");
+        assert_eq!(
+            runner.ok("// Regression test for sass/dart-sass#2641\
+             \n@import \"config_wrapper\";\
+             \n@import \"midstream\";\n"),
+            "b {\
+         \n  c: configured;\
+         \n}\n"
+        );
+    }
 }
 #[test]
 #[ignore] // wrong result

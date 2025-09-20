@@ -19,15 +19,16 @@ mod bubble {
     }
 
     #[test]
+    #[ignore] // wrong result
     fn deeply_nested() {
         let runner = runner().with_cwd("deeply-nested");
         assert_eq!(
             runner.ok("a { b { c { @font-face { e: f } g: h; } } }\n"),
-            "a b c {\
-         \n  g: h;\
-         \n}\
-         \n@font-face {\
+            "@font-face {\
          \n  e: f;\
+         \n}\
+         \na b c {\
+         \n  g: h;\
          \n}\n"
         );
     }
@@ -66,6 +67,7 @@ mod bubble {
         }
 
         #[test]
+        #[ignore] // wrong result
         fn import() {
             let runner = runner().with_cwd("import");
             assert_eq!(
@@ -73,15 +75,16 @@ mod bubble {
              \n  @import \'upstream\';\
              \n  d: e;\
              \n}\n"),
-                "c {\
-         \n  d: e;\
-         \n}\
-         \n@font-face {\
+                "@font-face {\
          \n  a: b;\
+         \n}\
+         \nc {\
+         \n  d: e;\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn meta_load_css() {
             let runner = runner().with_cwd("meta-load-css");
             assert_eq!(
@@ -90,11 +93,11 @@ mod bubble {
              \n  @include meta.load-css(\'upstream\');\
              \n  d: e;\
              \n}\n"),
-                "c {\
-         \n  d: e;\
-         \n}\
-         \n@font-face {\
+                "@font-face {\
          \n  a: b;\
+         \n}\
+         \nc {\
+         \n  d: e;\
          \n}\n"
             );
         }

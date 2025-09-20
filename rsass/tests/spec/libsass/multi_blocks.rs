@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok(
@@ -106,26 +107,32 @@ fn test() {
          \n  /* a */\
          \n  blee: blee;\
          \n  /* b */\
-         \n  /* c */\
-         \n  /* d */\
-         \n  blah: blah;\
          \n}\
          \na b c d e f {\
          \n  blah: blah;\
          \n  bloo: bloo;\
+         \n}\
+         \na b c {\
+         \n  /* c */\
          \n}\
          \n@media print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen {\
          \n  a b c g h, a b c i j {\
          \n    /* aa */\
          \n    hey: ho;\
          \n    /* bb */\
-         \n    /* cc */\
-         \n    haa: hoo;\
-         \n    /* dd */\
          \n  }\
          \n  a b c g h k l m, a b c i j k l m {\
          \n    hee: fee;\
          \n  }\
+         \n  a b c g h, a b c i j {\
+         \n    /* cc */\
+         \n    haa: hoo;\
+         \n    /* dd */\
+         \n  }\
+         \n}\
+         \na b c {\
+         \n  /* d */\
+         \n  blah: blah;\
          \n}\n"
     );
 }

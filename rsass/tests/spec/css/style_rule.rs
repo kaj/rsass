@@ -122,11 +122,11 @@ mod declaration {
              \n  e: f;\
              \n}\n\
              \n:where(.g) {@extend .b}\n"),
-                    ".a {\
-         \n  e: f;\
-         \n}\
-         \n.a .b, .a :where(.g) {\
+                    ".a .b, .a :where(.g) {\
          \n  c: d;\
+         \n}\
+         \n.a {\
+         \n  e: f;\
          \n}\n"
                 );
             }
@@ -139,76 +139,81 @@ mod declaration {
              \n  e: f;\
              \n}\n\
              \n:where(.g) {@extend .a}\n"),
-                    ".a, :where(.g) {\
-         \n  e: f;\
-         \n}\
-         \n.a .b, :where(.g) .b {\
+                    ".a .b, :where(.g) .b {\
          \n  c: d;\
+         \n}\
+         \n.a, :where(.g) {\
+         \n  e: f;\
          \n}\n"
                 );
             }
             #[test]
+            #[ignore] // wrong result
             fn higher_specificity() {
                 assert_eq!(
                     runner().ok(".a {\
              \n  .b {c: d}\
              \n  e: f;\
              \n}\n"),
-                    ".a {\
-         \n  e: f;\
-         \n}\
-         \n.a .b {\
+                    ".a .b {\
          \n  c: d;\
+         \n}\
+         \n.a {\
+         \n  e: f;\
          \n}\n"
                 );
             }
             #[test]
+            #[ignore] // wrong result
             fn mixed_specificity_child() {
                 assert_eq!(
                     runner().ok(".a {\
              \n  .b, :where(.b) {c: d}\
              \n  e: f;\
              \n}\n"),
-                    ".a {\
-         \n  e: f;\
-         \n}\
-         \n.a .b, .a :where(.b) {\
+                    ".a .b, .a :where(.b) {\
          \n  c: d;\
+         \n}\
+         \n.a {\
+         \n  e: f;\
          \n}\n"
                 );
             }
             #[test]
+            #[ignore] // wrong result
             fn mixed_specificity_parent() {
                 assert_eq!(
                     runner().ok(".a, :where(.a) {\
              \n  .b {c: d}\
              \n  e: f;\
              \n}\n"),
-                    ".a, :where(.a) {\
-         \n  e: f;\
-         \n}\
-         \n.a .b, :where(.a) .b {\
+                    ".a .b, :where(.a) .b {\
          \n  c: d;\
+         \n}\
+         \n.a, :where(.a) {\
+         \n  e: f;\
          \n}\n"
                 );
             }
             #[test]
+            #[ignore] // wrong result
             fn same_specificity() {
                 assert_eq!(
                     runner().ok(".a {\
              \n  :where(.b) {c: d}\
              \n  e: f;\
              \n}\n"),
-                    ".a {\
-         \n  e: f;\
-         \n}\
-         \n.a :where(.b) {\
+                    ".a :where(.b) {\
          \n  c: d;\
+         \n}\
+         \n.a {\
+         \n  e: f;\
          \n}\n"
                 );
             }
         }
         #[test]
+        #[ignore] // wrong result
         fn around_style_rule() {
             assert_eq!(
                 runner().ok(".a {\
@@ -218,10 +223,12 @@ mod declaration {
              \n}\n"),
                 ".a {\
          \n  b: c;\
-         \n  g: h;\
          \n}\
          \n.a .d {\
          \n  e: f;\
+         \n}\
+         \n.a {\
+         \n  g: h;\
          \n}\n"
             );
         }
@@ -241,6 +248,7 @@ mod declaration {
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn in_at_rule() {
             assert_eq!(
                 runner().ok("@a {\
@@ -250,11 +258,11 @@ mod declaration {
              \n  }\
              \n}\n"),
                 "@a {\
-         \n  .b {\
-         \n    f: g;\
-         \n  }\
          \n  .b .c {\
          \n    d: e;\
+         \n  }\
+         \n  .b {\
+         \n    f: g;\
          \n  }\
          \n}\n"
             );

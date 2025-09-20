@@ -50,11 +50,13 @@ fn test() {
          \n  foo: 99;\
          \n  foo: 999;\
          \n  foo: 999;\
-         \n  baz: 9999;\
          \n}\
          \ndiv div {\
          \n  bar: 9999;\
          \n  bar: 999;\
+         \n}\
+         \ndiv {\
+         \n  baz: 9999;\
          \n}\
          \ndiv {\
          \n  asd: 99;\

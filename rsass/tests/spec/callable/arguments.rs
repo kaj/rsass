@@ -50,6 +50,39 @@ mod function {
          \n  input.scss 3:14  root stylesheet",
     );
         }
+        mod splat {
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("splat")
+            }
+
+            #[test]
+            fn before_named() {
+                let runner = runner().with_cwd("before_named");
+                assert_eq!(
+        runner.ok(
+            "// TODO - https://github.com/sass/sass-spec/issues/2073: This will be an error in Dart Sass 2\
+             \na {b: rgb([1, 2]..., $blue: 3)}\n"
+        ),
+        "a {\
+         \n  b: rgb(1, 2, 3);\
+         \n}\n"
+    );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn before_positional() {
+                let runner = runner().with_cwd("before_positional");
+                assert_eq!(
+        runner.ok(
+            "// TODO - https://github.com/sass/sass-spec/issues/2073: This will be an error in Dart Sass 2\
+             \na {b: rgb([1, 2]..., 3)}\n"
+        ),
+        "a {\
+         \n  b: rgb(3, 1, 2);\
+         \n}\n"
+    );
+            }
+        }
     }
     mod trailing_comma {
         fn runner() -> crate::TestRunner {
@@ -242,6 +275,36 @@ mod mixin {
          \n  \'\
          \n  input.scss 3:19  root stylesheet",
     );
+        }
+        mod splat {
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("splat")
+            }
+
+            #[test]
+            fn before_named() {
+                let runner = runner().with_cwd("before_named");
+                assert_eq!(
+        runner.ok(
+            "// TODO - https://github.com/sass/sass-spec/issues/2073: This will be an error in Dart Sass 2\
+             \n@mixin a($a, $b, $c) {}\
+             \n@include a([1, 2]..., $c: 3);\n"
+        ),
+        ""
+    );
+            }
+            #[test]
+            fn before_positional() {
+                let runner = runner().with_cwd("before_positional");
+                assert_eq!(
+        runner.ok(
+            "// TODO - https://github.com/sass/sass-spec/issues/2073: This will be an error in Dart Sass 2\
+             \n@mixin a($b, $args...) {}\
+             \n@include a([1, 2]..., 3);\n"
+        ),
+        ""
+    );
+            }
         }
     }
     mod trailing_comma {

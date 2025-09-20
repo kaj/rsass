@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("@mixin foo() {\
@@ -87,8 +88,6 @@ fn test() {
          \n}\
          \nspan div {\
          \n  color: red;\
-         \n  background: blue;\
-         \n  width: 80%;\
          \n}\
          \n@media fudge {\
          \n  span div p {\
@@ -98,6 +97,10 @@ fn test() {
          \n  span div p a {\
          \n    text-decoration: underline;\
          \n  }\
+         \n}\
+         \nspan div {\
+         \n  background: blue;\
+         \n  width: 80%;\
          \n}\
          \nspan div form {\
          \n  color: orange;\

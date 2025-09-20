@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("$color: blue;\
@@ -22,12 +23,14 @@ fn test() {
              \n}\n"),
         ".parent {\
          \n  background-color: red;\
-         \n  border-color: red;\
          \n}\
          \n.parent .child {\
          \n  background-color: yellow;\
          \n  color: blue;\
          \n  border-color: yellow;\
+         \n}\
+         \n.parent {\
+         \n  border-color: red;\
          \n}\n"
     );
 }

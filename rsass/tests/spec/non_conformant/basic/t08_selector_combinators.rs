@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("a   +   b  >  c {\
@@ -15,13 +16,13 @@ fn test() {
              \n  color: red;\
              \n  background: gray;\
              \n}"),
-        "a + b > c {\
-         \n  color: red;\
-         \n  background: gray;\
-         \n}\
-         \na + b > c d e {\
+        "a + b > c d e {\
          \n  color: blue;\
          \n  background: white;\
+         \n}\
+         \na + b > c {\
+         \n  color: red;\
+         \n  background: gray;\
          \n}\n"
     );
 }

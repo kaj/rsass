@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("@mixin foo {\
@@ -12,11 +13,11 @@ fn test() {
              \nbar {\
              \n  @include foo;\
              \n  c: d; }\n"),
-        "bar {\
-         \n  c: d;\
-         \n}\
-         \nbar .foo {\
+        "bar .foo {\
          \n  a: b;\
+         \n}\
+         \nbar {\
+         \n  c: d;\
          \n}\n"
     );
 }

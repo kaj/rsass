@@ -30,11 +30,11 @@ fn test() {
         "a b {\
          \n  color: red;\
          \n}\
-         \na b :first-child, a b :nth-of-type(-2n+1) {\
-         \n  blah: bloo;\
-         \n}\
          \na b :first-child .foo#bar:nth-child(even), a b :nth-of-type(-2n+1) .foo#bar:nth-child(even) {\
          \n  hoo: goo;\
+         \n}\
+         \na b :first-child, a b :nth-of-type(-2n+1) {\
+         \n  blah: bloo;\
          \n}\
          \na b :first-child ::after, a b :nth-of-type(-2n+1) ::after {\
          \n  content: \"glux\";\

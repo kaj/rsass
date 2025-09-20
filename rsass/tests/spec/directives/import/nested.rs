@@ -10,9 +10,16 @@ fn runner() -> crate::TestRunner {
         .mock_file("scope/function/other.scss", "x {\n  function: local();\n}\n")
         .mock_file("scope/mixin/other.scss", "@include local;\n")
         .mock_file("scope/variable/other.scss", "x {\n  var: $var;\n}\n")
+        .mock_file("top_level_declaration/include/with_use/_midstream.scss", "@use 'upstream';\n@mixin b { c: d }\n@include b;\n")
+        .mock_file("top_level_declaration/include/with_use/_upstream.scss", "// Intentionally empty.\n")
+        .mock_file("top_level_declaration/include/with_use_two_levels_deep/_midstream1.scss", "@import 'midstream2';\n")
+        .mock_file("top_level_declaration/include/with_use_two_levels_deep/_midstream2.scss", "@use 'upstream';\n@mixin b { c: d }\n@include b;\n")
+        .mock_file("top_level_declaration/include/with_use_two_levels_deep/_upstream.scss", "// Intentionally empty.\n")
+        .mock_file("top_level_declaration/include/without_use/_upstream.scss", "@mixin b { c: d }\n@include b;\n")
+        .mock_file("top_level_declaration/parent_selector/_upstream.scss", "& { b: c }\n")
         .mock_file("with_comment/_a.scss", "/* Y */\n")
-        .mock_file("with_comment/_b.scss", "@import 'a'\n")
-        .mock_file("with_comment/_c.scss", "@import 'a'\n")
+        .mock_file("with_comment/_b.scss", "@import 'a';\n")
+        .mock_file("with_comment/_c.scss", "@import 'a';\n")
 }
 
 mod at_rule {
@@ -126,6 +133,66 @@ mod scope {
          \n  var: value;\
          \n}\n"
     );
+    }
+}
+mod top_level_declaration {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("top_level_declaration")
+    }
+
+    mod include {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("include")
+        }
+
+        #[test]
+        fn with_use() {
+            let runner = runner().with_cwd("with_use");
+            assert_eq!(
+                runner.ok(".a {\
+             \n  @import \'midstream\';\
+             \n}\n"),
+                ".a {\
+         \n  c: d;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn with_use_two_levels_deep() {
+            let runner = runner().with_cwd("with_use_two_levels_deep");
+            assert_eq!(
+                runner.ok(".a {\
+             \n  @import \'midstream1\';\
+             \n}\n"),
+                ".a {\
+         \n  c: d;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn without_use() {
+            let runner = runner().with_cwd("without_use");
+            assert_eq!(
+                runner.ok(".a {\
+             \n  @import \'upstream\';\
+             \n}\n"),
+                ".a {\
+         \n  c: d;\
+         \n}\n"
+            );
+        }
+    }
+    #[test]
+    fn parent_selector() {
+        let runner = runner().with_cwd("parent_selector");
+        assert_eq!(
+            runner.ok(".a {\
+             \n  @import \'upstream\';\
+             \n}\n"),
+            ".a {\
+         \n  b: c;\
+         \n}\n"
+        );
     }
 }
 #[test]

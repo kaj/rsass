@@ -120,6 +120,68 @@ mod inline {
         }
     }
 }
+mod loud {
+    use super::runner;
+
+    mod interleaved {
+        use super::runner;
+
+        #[test]
+        #[ignore] // wrong result
+        fn before_declaration() {
+            assert_eq!(
+                runner().ok("a {\
+             \n  b {c: d}\
+             \n  /* */\
+             \n  e: f;\
+             \n}\n"),
+                "a b {\
+         \n  c: d;\
+         \n}\
+         \na {\
+         \n  /* */\
+         \n  e: f;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn before_rule() {
+            assert_eq!(
+                runner().ok("a {\
+             \n  b {c: d}\
+             \n  /* */\
+             \n  e {f: g}\
+             \n}\n"),
+                "a b {\
+         \n  c: d;\
+         \n}\
+         \na {\
+         \n  /* */\
+         \n}\
+         \na e {\
+         \n  f: g;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn test_final() {
+            assert_eq!(
+                runner().ok("a {\
+             \n  b {c: d}\
+             \n  /* */\
+             \n}\n"),
+                "a b {\
+         \n  c: d;\
+         \n}\
+         \na {\
+         \n  /* */\
+         \n}\n"
+            );
+        }
+    }
+}
 #[test]
 fn multiple() {
     assert_eq!(

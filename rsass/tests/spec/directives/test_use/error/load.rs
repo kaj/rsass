@@ -50,6 +50,14 @@ fn runner() -> crate::TestRunner {
         .mock_file("loop/use_to_import/other.scss", "@import \"input\";\n")
         .mock_file("loop/use_to_use/other.scss", "@use \"input\";\n")
         .mock_file("no_extension/other", "a {b: c}\n")
+        .mock_file(
+            "top_level_include_declaration/input_mixin/_upstream.scss",
+            "// Intentionally empty.\n",
+        )
+        .mock_file(
+            "top_level_include_declaration/upstream_mixin/_upstream.scss",
+            "@mixin a { b: c }\n",
+        )
         .mock_file("loop/import_to_use/input.scss", "@import \"other\";\n")
         .mock_file("loop/use_self/input.scss", "@use \"input\";\n")
         .mock_file("loop/use_to_import/input.scss", "@use \"other\";\n")
@@ -353,6 +361,49 @@ fn no_extension() {
          \n  \'\
          \n  input.scss 1:1  root stylesheet",
     );
+}
+mod top_level_include_declaration {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("top_level_include_declaration")
+    }
+
+    #[test]
+    #[ignore] // wrong error
+    fn input_mixin() {
+        let runner = runner().with_cwd("input_mixin");
+        assert_eq!(
+            runner.err(
+                "@use \'upstream\';\
+             \n@mixin a { b: c }\
+             \n@include a;\n"
+            ),
+            "Error: Declarations may only be used within style rules.\
+         \n  ,\
+         \n2 | @mixin a { b: c }\
+         \n  |            ^^^^^\
+         \n  \'\
+         \n  input.scss 2:12  a()\
+         \n  input.scss 3:1   root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn upstream_mixin() {
+        let runner = runner().with_cwd("upstream_mixin");
+        assert_eq!(
+            runner.err(
+                "@use \"upstream\";\
+             \n@include upstream.a;\n"
+            ),
+            "Error: Declarations may only be used within style rules.\
+         \n  ,\
+         \n1 | @mixin a { b: c }\
+         \n  |            ^^^^^\
+         \n  \'\
+         \n  _upstream.scss 1:12  a()\
+         \n  input.scss 2:1       root stylesheet",
+        );
+    }
 }
 #[test]
 fn unknown_scheme() {

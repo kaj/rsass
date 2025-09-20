@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("hey, ho {\
@@ -13,11 +14,11 @@ fn test() {
              \n  }\
              \n  blah: blah;\
              \n}"),
-        "hey, ho {\
-         \n  blah: blah;\
-         \n}\
-         \nhey > boo, foo hey.goo, ho > boo, foo ho.goo {\
+        "hey > boo, foo hey.goo, ho > boo, foo ho.goo {\
          \n  bloo: bloo;\
+         \n}\
+         \nhey, ho {\
+         \n  blah: blah;\
          \n}\n"
     );
 }

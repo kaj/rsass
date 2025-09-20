@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok(
@@ -101,40 +102,48 @@ fn test() {
         "div {\
          \n  /* begin foo */\
          \n  margin: 1 2;\
+         \n}\
+         \ndiv blip {\
+         \n  hey: now;\
+         \n}\
+         \ndiv {\
          \n  /* end foo */\
          \n  /* begin foo */\
          \n  margin: 1 3;\
+         \n}\
+         \ndiv blip {\
+         \n  hey: now;\
+         \n}\
+         \ndiv {\
          \n  /* end foo */\
          \n  margin: 1 2 zee;\
          \n  margin: 1 kwd-y kwd-z;\
-         \n}\
-         \ndiv blip {\
-         \n  hey: now;\
-         \n}\
-         \ndiv blip {\
-         \n  hey: now;\
          \n}\
          \ndiv {\
          \n  /* begin hux */\
          \n  color: global-y;\
          \n  /* begin foo */\
          \n  margin: called-from-hux global-y;\
-         \n  /* end foo */\
-         \n  /* end hux */\
          \n}\
          \ndiv blip {\
          \n  hey: now;\
+         \n}\
+         \ndiv {\
+         \n  /* end foo */\
+         \n  /* end hux */\
          \n}\
          \ndiv {\
          \n  /* begin hux */\
          \n  color: calling-hux-again;\
          \n  /* begin foo */\
          \n  margin: called-from-hux calling-hux-again;\
-         \n  /* end foo */\
-         \n  /* end hux */\
          \n}\
          \ndiv blip {\
          \n  hey: now;\
+         \n}\
+         \ndiv {\
+         \n  /* end foo */\
+         \n  /* end hux */\
          \n}\
          \ndiv {\
          \n  blah: original-bung;\
@@ -149,10 +158,12 @@ fn test() {
          \ndiv {\
          \n  /* begin foo */\
          \n  margin: kwdarg1 kwdarg2;\
-         \n  /* end foo */\
          \n}\
          \ndiv blip {\
          \n  hey: now;\
+         \n}\
+         \ndiv {\
+         \n  /* end foo */\
          \n}\
          \nhoo {\
          \n  color: boo;\

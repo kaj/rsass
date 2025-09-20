@@ -29,6 +29,9 @@ fn runner() -> crate::TestRunner {
         .mock_file("nested/_upstream.scss", "c {$a: d !default}\n")
         .mock_file("not_default/_midstream.scss", "@forward \"upstream\" with ($a: b);\n")
         .mock_file("not_default/_upstream.scss", "$a: c;\n")
+        .mock_file("private/different/_other.scss", "$_a: c !default;\nd {e: $_a}\n")
+        .mock_file("private/matching/dash/_other.scss", "$-a: c !default;\nd {e: $-a}\n")
+        .mock_file("private/matching/underscore/_other.scss", "$_a: c !default;\nd {e: $_a}\n")
         .mock_file("repeated_variable/_other.scss", "@forward \"upstream\" with ($a: b, $a: c);\n")
         .mock_file("through_forward/as/_midstream.scss", "@forward \"upstream\" as c-*;\n")
         .mock_file("through_forward/as/_upstream.scss", "$a: d !default;\n")
@@ -266,6 +269,48 @@ fn not_default() {
          \n  _midstream.scss 1:27  @use\
          \n  input.scss 1:1        root stylesheet",
     );
+}
+mod private {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("private")
+    }
+
+    #[test]
+    fn different() {
+        let runner = runner().with_cwd("different");
+        assert_eq!(
+            runner.ok("@forward \"other\" with ($-a: b);\n"),
+            "d {\
+         \n  e: b;\
+         \n}\n"
+        );
+    }
+    mod matching {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("matching")
+        }
+
+        #[test]
+        fn dash() {
+            let runner = runner().with_cwd("dash");
+            assert_eq!(
+                runner.ok("@forward \"other\" with ($-a: b);\n"),
+                "d {\
+         \n  e: b;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn underscore() {
+            let runner = runner().with_cwd("underscore");
+            assert_eq!(
+                runner.ok("@forward \"other\" with ($_a: b);\n"),
+                "d {\
+         \n  e: b;\
+         \n}\n"
+            );
+        }
+    }
 }
 #[test]
 #[ignore] // wrong error

@@ -132,6 +132,42 @@ mod error {
          \n  input.scss 1:1  root stylesheet",
             );
         }
+        mod test_type {
+            use super::runner;
+
+            #[test]
+            #[ignore] // missing error
+            fn lowercase() {
+                assert_eq!(
+        runner().err(
+            "@function type() {@return 1}\
+             \na {b: type()}\n"
+        ),
+        "Error: This name is reserved for the plain-CSS function.\
+         \n  ,\
+         \n1 | @function type() {@return 1}\
+         \n  |           ^^^^\
+         \n  \'\
+         \n  input.scss 1:11  root stylesheet",
+    );
+            }
+            #[test]
+            #[ignore] // missing error
+            fn uppercase() {
+                assert_eq!(
+        runner().err(
+            "@function TYPE() {@return 1}\
+             \na {b: TYPE()}\n"
+        ),
+        "Error: This name is reserved for the plain-CSS function.\
+         \n  ,\
+         \n1 | @function TYPE() {@return 1}\
+         \n  |           ^^^^\
+         \n  \'\
+         \n  input.scss 1:11  root stylesheet",
+    );
+            }
+        }
         #[test]
         fn url() {
             assert_eq!(
@@ -142,34 +178,6 @@ mod error {
          \n  | ^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:1  root stylesheet",
-            );
-        }
-    }
-}
-mod special {
-    use super::runner;
-
-    mod test_type {
-        use super::runner;
-
-        #[test]
-        fn lowercase() {
-            assert_eq!(
-                runner().ok("@function type() {@return 1}\
-             \na {b: type()}\n"),
-                "a {\
-         \n  b: 1;\
-         \n}\n"
-            );
-        }
-        #[test]
-        fn uppercase() {
-            assert_eq!(
-                runner().ok("@function TYPE() {@return 1}\
-             \na {b: TYPE()}\n"),
-                "a {\
-         \n  b: 1;\
-         \n}\n"
             );
         }
     }
