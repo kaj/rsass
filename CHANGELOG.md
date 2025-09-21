@@ -9,6 +9,7 @@ project adheres to
 
 ## Unreleased
 
+* Output for nested rules now conserves order, as by sass/sass#3846 .
 * Refined custom-property handling for new tests.
 * Refactored to get items and values smaller in memory.
 * Updated sass-spec test suite to 2025-09-11.

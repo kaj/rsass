@@ -127,7 +127,6 @@ mod loud {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn before_declaration() {
             assert_eq!(
                 runner().ok("a {\
@@ -145,7 +144,6 @@ mod loud {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn before_rule() {
             assert_eq!(
                 runner().ok("a {\
@@ -165,7 +163,6 @@ mod loud {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn test_final() {
             assert_eq!(
                 runner().ok("a {\

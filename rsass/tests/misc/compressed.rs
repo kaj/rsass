@@ -95,12 +95,13 @@ fn t06_nesting_and_comments() {
             empty {\n    span {\n      a: b;\n    }\n  }\n  \
             empty_with_comment {\n    /* hey now */\n    \
             span {\n      c: d;\n    }\n  }\n}",
-        "div{color:red;background:blue;margin:10px 5px}\
-         div span{font-weight:bold;display:inline-block}\
-         div span a{text-decoration:none;color:green;\
-         border:1px bloo blee red}\
+        "div{color:red;background:blue}\
+         div span{font-weight:bold}\
+         div span a{text-decoration:none;color:green;border:1px bloo blee red}\
+         div span{display:inline-block}\
          div empty not_empty{blah:blah;bloo:bloo}\
          div p{padding:10px 8%;-webkit-box-sizing:hux}\
+         div{margin:10px 5px}\
          div h1{color:\"a 'red' and \\\"blue\\\" value\"}\
          div{f:g}div empty span{a:b}div empty_with_comment span{c:d}\n",
     )
@@ -117,14 +118,17 @@ fn t07_nested_simple_selector_groups() {
             m, n, o {\n        wow: we are far inside;\n        \
             but: it still works;\n      }\n      \
             hoo: boo;\n    }\n  }\n}",
-        "a,b{color:red;background:blue}c,d{color:gray}\
+        "a,b{color:red;background:blue}\
+         c,d{color:gray}\
          c e,c f,d e,d f{background:blue;padding:10px 5px}\
-         c g,c h,d g,d h{blah:blah;bloo:bloo}c i,c j,d i,d j{foo:goo}\
-         c i k,c i l,c j k,c j l,d i k,d i l,d j k,d j l{hoo:boo}\
-         c i k m,c i k n,c i k o,c i l m,c i l n,c i l o,c j k m,c j k n,\
-         c j k o,c j l m,c j l n,c j l o,d i k m,d i k n,d i k o,d i l m,\
-         d i l n,d i l o,d j k m,d j k n,d j k o,d j l m,d j l n,d j l o\
-         {wow:we are far inside;but:it still works}\n",
+         c g,c h,d g,d h{blah:blah;bloo:bloo}\
+         c i,c j,d i,d j{foo:goo}\
+         c i k m,c i k n,c i k o,c i l m,c i l n,c i l o,\
+         c j k m,c j k n,c j k o,c j l m,c j l n,c j l o,\
+         d i k m,d i k n,d i k o,d i l m,d i l n,d i l o,\
+         d j k m,d j k n,d j k o,d j l m,d j l n,d j l o\
+         {wow:we are far inside;but:it still works}\
+         c i k,c i l,c j k,c j l,d i k,d i l,d j k,d j l{hoo:boo}\n",
     )
 }
 
@@ -134,8 +138,8 @@ fn t08_selector_combinators() {
         b"a   +   b  >  c {\n  \
             d e {\n    color: blue;\n    background: white;\n  }\n  \
             color: red;\n  background: gray;\n}",
-        "a+b>c{color:red;background:gray}\
-         a+b>c d e{color:blue;background:white}\n",
+        "a+b>c d e{color:blue;background:white}\
+         a+b>c{color:red;background:gray}\n",
     )
 }
 
@@ -214,17 +218,25 @@ fn t19_full_mixin_craziness() {
             @mixin set-x($x) {\n  $x: changed local x;\n  arg: $x;\n  \
             $y: changed global y !global;\n  blarg: $y;\n}\n\n\
             div {\n  @include set-x(blah);\n  a: $x;\n  b: $y;\n}\n",
-        "div{margin:1 2;margin:1 3;margin:1 2 zee;margin:1 kwd-y kwd-z}\
-         div blip{hey:now}div blip{hey:now}div{color:global-y;\
-         margin:called-from-hux global-y}div blip{hey:now}\
-         div{color:calling-hux-again;margin:called-from-hux \
-         calling-hux-again}div blip{hey:now}div{blah:original-bung}\
-         div{blah:redefined-bung}div{blah:redefined-bung}\
-         div{margin:kwdarg1 kwdarg2}div blip{hey:now}hoo{color:boo}\
-         div{blah:boogoo some other default}div{value:original}\
+        "div{margin:1 2}\
+         div blip{hey:now}\
+         div{margin:1 3}\
+         div blip{hey:now}\
+         div{margin:1 2 zee;margin:1 kwd-y kwd-z}\
+         div{color:global-y;margin:called-from-hux global-y}\
+         div blip{hey:now}\
+         div{color:calling-hux-again;margin:called-from-hux calling-hux-again}\
+         div blip{hey:now}\
+         div{blah:original-bung}\
+         div{blah:redefined-bung}\
+         div{blah:redefined-bung}\
+         div{margin:kwdarg1 kwdarg2}\
+         div blip{hey:now}\
+         hoo{color:boo}\
+         div{blah:boogoo some other default}\
+         div{value:original}\
          div{value:no longer original}\
-         div{arg:changed local x;blarg:changed global y;a:global-x;\
-         b:changed global y}\n",
+         div{arg:changed local x;blarg:changed global y;a:global-x;b:changed global y}\n",
     )
 }
 
@@ -238,10 +250,13 @@ fn t27_media_queries() {
             not screen {\n      hey: ho;\n      \
             k l m {\n        hee: fee;\n      }\n    }\n  }\n\
             blah: blah;\n}\n",
-        "a b c{blee:blee;blah:blah}a b c d e f{blah:blah;bloo:bloo}\
+        "a b c{blee:blee}\
+         a b c d e f{blah:blah;bloo:bloo}\
          @media print and (foo: 1 2 3),(bar: 3px hux(muz)),not screen{\
-         a b c g h,a b c i j{hey:ho}a b c g h k l m,a b c i j k l m{hee:fee}\
-         }\n",
+         a b c g h,a b c i j{hey:ho}\
+         a b c g h k l m,a b c i j k l m{hee:fee}\
+         }\
+         a b c{blah:blah}\n",
     )
 }
 

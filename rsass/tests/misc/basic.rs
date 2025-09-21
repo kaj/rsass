@@ -86,10 +86,10 @@ fn t14_imports() {
         .unwrap(),
         "div span {\n  moo: goo;\n}\n\n\
          foo {\n  blah: blah;\n}\n\
-         foo goo {\n  blee: blee;\n  hello: world;\n}\n\
-         foo goo hoo {\n  mux: scooba-dee-doo;\n  \
-         flux: gooboo boo;\n}\n\
-         foo goo hoo d {\n  inside: d now;\n}\n\n\
+         foo goo {\n  blee: blee;\n}\n\
+         foo goo hoo {\n  mux: scooba-dee-doo;\n  flux: gooboo boo;\n}\n\
+         foo goo hoo d {\n  inside: d now;\n}\n\
+         foo goo {\n  hello: world;\n}\n\
          foo blux {\n  hey: another thing;\n  \
          ho: will this work;\n}\n"
     )

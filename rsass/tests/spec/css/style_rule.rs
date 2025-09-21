@@ -148,7 +148,6 @@ mod declaration {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn higher_specificity() {
                 assert_eq!(
                     runner().ok(".a {\
@@ -164,7 +163,6 @@ mod declaration {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn mixed_specificity_child() {
                 assert_eq!(
                     runner().ok(".a {\
@@ -180,7 +178,6 @@ mod declaration {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn mixed_specificity_parent() {
                 assert_eq!(
                     runner().ok(".a, :where(.a) {\
@@ -196,7 +193,6 @@ mod declaration {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn same_specificity() {
                 assert_eq!(
                     runner().ok(".a {\
@@ -213,7 +209,6 @@ mod declaration {
             }
         }
         #[test]
-        #[ignore] // wrong result
         fn around_style_rule() {
             assert_eq!(
                 runner().ok(".a {\
@@ -248,7 +243,6 @@ mod declaration {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn in_at_rule() {
             assert_eq!(
                 runner().ok("@a {\

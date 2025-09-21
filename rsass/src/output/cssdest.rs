@@ -36,7 +36,6 @@ pub trait CssDestination {
 pub struct RuleDest<'a> {
     parent: &'a mut dyn CssDestination,
     rule: Rule,
-    trail: Vec<Item>,
 }
 
 impl<'a> RuleDest<'a> {
@@ -47,23 +46,23 @@ impl<'a> RuleDest<'a> {
         RuleDest {
             parent,
             rule: Rule::new(selectors.into()),
-            trail: Default::default(),
         }
+    }
+    fn commit_rule(&mut self) -> Result<()> {
+        if !self.rule.body.is_empty() {
+            let mut rule = Rule::new(self.rule.selectors.clone());
+            std::mem::swap(&mut rule, &mut self.rule);
+            self.parent.push_item(rule.into())?;
+        }
+        Ok(())
     }
 }
 impl Drop for RuleDest<'_> {
     fn drop(&mut self) {
-        fn end(dest: &mut RuleDest) -> Result<()> {
-            dest.parent.push_item(dest.rule.clone().into())?;
-            for item in std::mem::take(&mut dest.trail) {
-                dest.parent.push_item(item)?;
-            }
-            dest.parent.separate();
-            Ok(())
-        }
-        if let Err(err) = end(self) {
+        if let Err(err) = self.commit_rule() {
             eprintln!("Error in ending RuleDest: {err}");
         }
+        self.parent.separate();
     }
 }
 
@@ -114,11 +113,18 @@ impl CssDestination for RuleDest<'_> {
 
     fn push_item(&mut self, item: Item) -> Result {
         match item {
+            Item::Separator => (),
             Item::AtRule(r) => match r.try_into() {
                 Ok(item) => self.rule.push(item),
-                Err(r) => self.trail.push(r.into()),
+                Err(r) => {
+                    self.commit_rule()?;
+                    self.parent.push_item(r.into())?;
+                }
             },
-            item => self.trail.push(item),
+            item => {
+                self.commit_rule()?;
+                self.parent.push_item(item)?;
+            }
         }
         Ok(())
     }

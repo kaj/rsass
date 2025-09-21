@@ -19,7 +19,6 @@ mod bubble {
     }
 
     #[test]
-    #[ignore] // wrong result
     fn deeply_nested() {
         let runner = runner().with_cwd("deeply-nested");
         assert_eq!(
@@ -67,7 +66,6 @@ mod bubble {
         }
 
         #[test]
-        #[ignore] // wrong result
         fn import() {
             let runner = runner().with_cwd("import");
             assert_eq!(
@@ -84,7 +82,6 @@ mod bubble {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn meta_load_css() {
             let runner = runner().with_cwd("meta-load-css");
             assert_eq!(

@@ -11,7 +11,6 @@ mod nested {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn before_declaration() {
             assert_eq!(
                 runner().ok("a {\
@@ -29,7 +28,6 @@ mod nested {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn before_rule() {
             assert_eq!(
                 runner().ok("a {\
@@ -49,7 +47,6 @@ mod nested {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn test_final() {
             assert_eq!(
                 runner().ok("a {\
