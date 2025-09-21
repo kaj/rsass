@@ -17,7 +17,7 @@ use syn::{parse_macro_input, Error, LitStr};
 /// ````
 /// use rsass_macros::scss;
 /// const CSS: &str = scss!("p { em { font-style: italic; } font: serif; }");
-/// assert_eq!(CSS, "p{font:serif}p em{font-style:italic}\n");
+/// assert_eq!(CSS, "p em{font-style:italic}p{font:serif}\n");
 /// ````
 #[proc_macro]
 pub fn scss(tokens: TokenStream) -> TokenStream {
