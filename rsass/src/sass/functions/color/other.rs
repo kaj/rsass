@@ -194,17 +194,7 @@ pub fn register(f: &mut Scope) {
         let whi = take_opt(&mut args, name!(whiteness), check_expl_pct)?;
         no_more_in_space(&args, "rgb")?;
 
-        if bla.is_none() && whi.is_none() {
-            let hsla = rgba.to_hsla();
-            Ok(Hsla::new(
-                hue.unwrap_or_else(|| hsla.hue()),
-                sat.unwrap_or_else(|| hsla.sat()),
-                lig.unwrap_or_else(|| hsla.lum()),
-                alp.unwrap_or_else(|| hsla.alpha()),
-                false, // hsla.hsla_format,
-            )
-            .into())
-        } else {
+        if bla.is_some() || whi.is_some() {
             let hwba = rgba.to_hwba();
             let hwba = Hwba::new(
                 hue.unwrap_or_else(|| hwba.hue()),
@@ -213,6 +203,22 @@ pub fn register(f: &mut Scope) {
                 alp.unwrap_or_else(|| hwba.alpha()),
             );
             Ok(Rgba::from(&hwba).into())
+        } else if hue.is_some() || sat.is_some() || lig.is_some() {
+            let hsla = rgba.to_hsla();
+            Ok(Hsla::new(
+                hue.unwrap_or_else(|| hsla.hue()),
+                sat.unwrap_or_else(|| hsla.sat()),
+                lig.unwrap_or_else(|| hsla.lum()),
+                alp.unwrap_or_else(|| hsla.alpha()),
+                hsla.hsla_format,
+            )
+            .into())
+        } else if let Some(alp) = alp {
+            let mut col = rgba;
+            col.set_alpha(alp);
+            Ok(col.into())
+        } else {
+            Ok(rgba.into())
         }
     });
     def!(f, ie_hex_str(color), |s| {
