@@ -1,8 +1,9 @@
 /// The difference between a comma-separated and a
 /// whitespace-separated list.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ListSeparator {
     /// The list is space-separated.
+    #[default]
     Space,
     /// The list is slash-separated.
     Slash,
@@ -27,12 +28,6 @@ impl ListSeparator {
     /// Return true for slash (with or without space).
     pub fn is_slash(&self) -> bool {
         matches!(self, Self::Slash | Self::SlashNoSpace)
-    }
-}
-
-impl Default for ListSeparator {
-    fn default() -> Self {
-        Self::Space
     }
 }
 

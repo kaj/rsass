@@ -123,8 +123,9 @@ fn fallback(
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 enum Strategy {
+    #[default]
     Nearest,
     Up,
     ToZero,
@@ -139,12 +140,6 @@ impl Strategy {
             Self::ToZero => val.trunc(),
             Self::Down => val.floor(),
         }
-    }
-}
-
-impl Default for Strategy {
-    fn default() -> Self {
-        Self::Nearest
     }
 }
 
