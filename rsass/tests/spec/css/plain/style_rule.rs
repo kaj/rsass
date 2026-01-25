@@ -158,7 +158,6 @@ mod nesting {
         }
 
         #[test]
-        #[ignore] // wrong result
         fn one_level() {
             let runner = runner().with_cwd("one_level");
             assert_eq!(
@@ -203,7 +202,6 @@ mod nesting {
         }
 
         #[test]
-        #[ignore] // wrong result
         fn one_level() {
             let runner = runner().with_cwd("one_level");
             assert_eq!(

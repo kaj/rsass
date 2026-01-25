@@ -16,8 +16,32 @@ pub fn handle_parsed(
     file_context: &mut Context<impl Loader>,
 ) -> Result<(), Error> {
     match items {
+        Parsed::Css(items) => handle_css(items, dest, scope),
         Parsed::Scss(items) => handle_body(&items, dest, scope, file_context),
-        Parsed::Css(items) => push_items(dest, items).no_pos(),
+    }
+}
+
+fn handle_css(
+    items: Vec<css::Item>,
+    dest: &mut dyn CssDestination,
+    scope: ScopeRef,
+) -> Result<(), Error> {
+    let scopesel = scope.get_selectors();
+    if scopesel.is_root() {
+        push_items(dest, items).no_pos()
+    } else {
+        for item in items {
+            match item {
+                css::Item::Rule(rule) => {
+                    let css::Rule { selectors, body } = rule;
+                    let selectors = scopesel.nest(selectors).into();
+                    dest.push_item(css::Rule { selectors, body }.into())
+                        .no_pos()?;
+                }
+                item => dest.push_item(item).no_pos()?,
+            }
+        }
+        Ok(())
     }
 }
 
@@ -176,8 +200,8 @@ fn handle_item(
                                     &Expose::All,
                                 )?;
                             }
-                            Parsed::Css(items) => {
-                                push_items(dest, items).at(pos)?;
+                            Parsed::Css(css) => {
+                                handle_css(css, dest, scope.clone())?
                             }
                         }
                         file_context.unlock_loading(&sourcefile);
