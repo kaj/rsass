@@ -8,8 +8,6 @@ mod comment;
 
 mod custom_ident_include;
 
-mod custom_ident_name;
-
 mod double_underscore_name;
 
 mod whitespace;

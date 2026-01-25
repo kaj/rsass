@@ -8,6 +8,8 @@ mod calculation;
 
 mod function;
 
+mod test_if;
+
 mod interpolation;
 
 mod list;

@@ -5,7 +5,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok(
@@ -16,7 +15,7 @@ fn test() {
              \n}\n"
         ),
         ".foo {\
-         \n  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src=\"foo\", sizingMethod=\"scale\");\
+         \n  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src=\"foo\", sizingMethod=\'scale\');\
          \n}\n"
     );
 }

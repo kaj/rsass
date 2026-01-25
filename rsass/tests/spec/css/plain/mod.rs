@@ -14,9 +14,13 @@ mod error;
 
 mod extend;
 
+mod function;
+
 mod functions;
 
 mod hacks;
+
+mod test_if;
 
 mod import;
 

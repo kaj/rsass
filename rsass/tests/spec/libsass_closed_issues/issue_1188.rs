@@ -5,7 +5,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok(
@@ -17,7 +16,7 @@ fn test() {
              \n}"
         ),
         "foo {\
-         \n  *width: expression((this.parentNode.clientWidth/120px*2 - parseInt(this.currentStyle[\"paddingLeft\"]) - parseInt(this.currentStyle[\"paddingRight\"])) + \"px\");\
+         \n  *width: expression((this.parentNode.clientWidth/120px*2 - parseInt(this.currentStyle[\'paddingLeft\']) - parseInt(this.currentStyle[\'paddingRight\'])) + \'px\');\
          \n}\n"
     );
 }

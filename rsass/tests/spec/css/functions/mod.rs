@@ -10,6 +10,8 @@ mod not_special;
 
 mod special;
 
+mod special_variable;
+
 mod url;
 
 mod var;

@@ -5,12 +5,19 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // missing error
 fn test() {
     assert_eq!(
-        runner().ok("@mixin __a() {b: c}\
-             \nd {@include --a}\n"),
-        "d {\
-         \n  b: c;\
-         \n}\n"
+        runner().err(
+            "@mixin __a() {b: c}\
+             \nd {@include --a}\n"
+        ),
+        "Error: Sass @mixin names beginning with -- are forbidden for forward-compatibility with plain CSS mixins.\n\
+         \nFor details, see https://sass-lang.com/d/css-function-mixin\
+         \n  ,\
+         \n2 | d {@include --a}\
+         \n  |             ^^^\
+         \n  \'\
+         \n  input.scss 2:13  root stylesheet",
     );
 }

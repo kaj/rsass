@@ -20,6 +20,8 @@ mod escape;
 
 mod font_face;
 
+mod function;
+
 mod function_name_identifiers;
 
 mod functions;
@@ -29,6 +31,8 @@ mod important;
 mod keyframes;
 
 mod media;
+
+mod mixin;
 
 mod moz_document;
 

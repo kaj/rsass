@@ -96,7 +96,7 @@ mod error {
         "Error: Declarations whose names begin with \"--\" may not be nested.\
          \n  ,\
          \n1 | a { b: { --d: e {--f: g} } }\
-         \n  |          ^^^^^^^^^^^^^^^\
+         \n  |          ^^^\
          \n  \'\
          \n  input.scss 1:10  root stylesheet",
     );
@@ -111,7 +111,7 @@ mod error {
         "Error: Declarations whose names begin with \"--\" may not be nested.\
          \n  ,\
          \n1 | a { b: { --d: {e: f} } }\
-         \n  |          ^^^^^^^^^^^\
+         \n  |          ^^^\
          \n  \'\
          \n  input.scss 1:10  root stylesheet",
     );
@@ -127,7 +127,7 @@ mod error {
         "Error: Declarations whose names begin with \"--\" may not be nested.\
          \n  ,\
          \n1 | a { b: { --d: e } }\
-         \n  |          ^^^^^^^\
+         \n  |          ^^^\
          \n  \'\
          \n  input.scss 1:10  root stylesheet",
     );

@@ -5,19 +5,14 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong error
+#[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().err(
-            "foo {\
+        runner().ok("foo {\
              \n  bar: #{(2px*5in)};\
-             \n}\n"
-        ),
-        "Error: calc(10px * 1in) isn\'t a valid CSS value.\
-         \n  ,\
-         \n2 |   bar: #{(2px*5in)};\
-         \n  |          ^^^^^^^^^\
-         \n  \'\
-         \n  input.scss 2:10  root stylesheet",
+             \n}\n"),
+        "foo {\
+         \n  bar: calc(10px * 1in);\
+         \n}\n"
     );
 }

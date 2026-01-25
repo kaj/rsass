@@ -4,4 +4,6 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("expressions")
 }
 
+mod test_if;
+
 mod syntax;

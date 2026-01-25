@@ -8,6 +8,8 @@ mod a98_rgb;
 
 mod display_p3;
 
+mod display_p3_linear;
+
 mod prophoto_rgb;
 
 mod rec2020;

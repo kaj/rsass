@@ -5,7 +5,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok(
@@ -19,7 +18,7 @@ fn test() {
              \n}"
         ),
         "test {\
-         \n  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=\"#223344\", endColorstr=\"#112233\",GradientType=0 );\
+         \n  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#223344\', endColorstr=\'#112233\',GradientType=0 );\
          \n}\n"
     );
 }

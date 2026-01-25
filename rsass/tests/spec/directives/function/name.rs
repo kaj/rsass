@@ -8,22 +8,13 @@ mod custom_ident {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn call() {
         assert_eq!(
             runner().ok("@function __a() {@return 1}\
              \nb {c: --a()}\n"),
             "b {\
-         \n  c: 1;\
-         \n}\n"
-        );
-    }
-    #[test]
-    fn define() {
-        assert_eq!(
-            runner().ok("@function --a() {@return 1}\
-             \nb {c: --a()}\n"),
-            "b {\
-         \n  c: 1;\
+         \n  c: --a();\
          \n}\n"
         );
     }

@@ -30,6 +30,20 @@ fn display_p3() {
          \n}\n"
     );
 }
+#[test]
+#[ignore] // unexepected error
+fn display_p3_linear() {
+    let runner = runner().with_cwd("display_p3_linear");
+    assert_eq!(
+        runner.ok(
+            "@use \"sass:color\";\
+             \na {b: color.space(color(display-p3-linear 0.515 0.35 0.3 / 1))}\n"
+        ),
+        "a {\
+         \n  b: display-p3-linear;\
+         \n}\n"
+    );
+}
 mod error {
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("error")

@@ -65,7 +65,7 @@ fn test() {
          \n  left: expression(document.body.clientWidth/2-oDiv.offsetWidth/2);\
          \n  flop: expression(document.body.clientHeight/2-oDiv.offsetHeight/2);\
          \n  left: expression(document.body.clientWidth/4);\
-         \n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=\"#FFFF0000\", endColorstr=\"#FF008000\", GradientType=1);\
+         \n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#FFFF0000\', endColorstr=\'#FF008000\', GradientType=1);\
          \n}\
          \n.parser {\
          \n  filter: progid:DXImageTransform.Microsoft.Alpha(opacity=20);\
@@ -73,9 +73,9 @@ fn test() {
          \n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#550000FF, endColorstr=#55FFFF00);\
          \n  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1) progid:DXImageTransform.Microsoft.Alpha(opacity=50) progid:DXImageTransform.Microsoft.Blur(strength=10);\
          \n  filter: progid:DXImageTransform.Microsoft.Wave(strength=100) progid:DXImageTransform.Microsoft.CheckerBoard(duration=4);\
-         \n  filter: progid:DXImageTransform.Microsoft.Wave(strength=100) progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1) progid:DXImageTransform.Microsoft.Iris(irisstyle=\"STAR\", duration=4);\
+         \n  filter: progid:DXImageTransform.Microsoft.Wave(strength=100) progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1) progid:DXImageTransform.Microsoft.Iris(irisstyle=\'STAR\', duration=4);\
          \n  filter: progid:DXImageTransform.Microsoft.MotionBlur(strength=13, direction=310) progid:DXImageTransform.Microsoft.Blur(pixelradius=2) progid:DXImageTransform.Microsoft.Wheel(duration=3);\
-         \n  filter: progid:DXImageTransform.Microsoft.gradient(enabled=\"false\", startColorstr=#550000FF, endColorstr=#55FFFF00);\
+         \n  filter: progid:DXImageTransform.Microsoft.gradient(enabled=\'false\', startColorstr=#550000FF, endColorstr=#55FFFF00);\
          \n}\n"
     );
 }

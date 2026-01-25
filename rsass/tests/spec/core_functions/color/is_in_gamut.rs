@@ -32,6 +32,18 @@ fn color_keyword() {
 }
 #[test]
 #[ignore] // unexepected error
+fn display_p3_linear() {
+    let runner = runner().with_cwd("display-p3-linear");
+    assert_eq!(
+        runner.ok("@use \"sass:color\";\
+             \na {b: color.is-in-gamut(color(display-p3-linear 0 2 0))}\n"),
+        "a {\
+         \n  b: false;\
+         \n}\n"
+    );
+}
+#[test]
+#[ignore] // unexepected error
 fn display_p3() {
     let runner = runner().with_cwd("display-p3");
     assert_eq!(

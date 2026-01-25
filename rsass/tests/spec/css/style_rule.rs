@@ -279,4 +279,19 @@ mod declaration {
             );
         }
     }
+    #[test]
+    fn result() {
+        assert_eq!(
+        runner().ok(
+            "a {\
+             \n  // Outside of a plain CSS `@function`, `result` is parsed like any other\
+             \n  // declaration.\
+             \n  result: 1 + 1;\
+             \n}\n"
+        ),
+        "a {\
+         \n  result: 2;\
+         \n}\n"
+    );
+    }
 }
