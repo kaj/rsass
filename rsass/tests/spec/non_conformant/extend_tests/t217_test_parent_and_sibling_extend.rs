@@ -8,8 +8,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok(
-            "%foo %bar%baz {c: d}\n\
+        runner().ok("%foo %bar%baz {c: d}\n\
              \n.parent1 {\
              \n@extend %foo;\
              \n.child1 {@extend %bar}\
@@ -17,8 +16,7 @@ fn test() {
              \n.parent2 {\
              \n@extend %foo;\
              \n.child2 {@extend %baz}\
-             \n}\n"
-        ),
+             \n}\n"),
         ".parent1 .parent2 .child1.child2, .parent2 .parent1 .child1.child2 {\
          \n  c: d;\
          \n}\n"

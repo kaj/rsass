@@ -21,17 +21,17 @@ mod error {
     #[ignore] // wrong error
     fn non_legacy() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.hue(lch(0% 0 0deg))}\n"
-        ),
-        "Error: color.hue() is only supported for legacy colors. Please use color.channel() instead with an explicit $space argument.\
+            ),
+            "Error: color.hue() is only supported for legacy colors. Please use color.channel() instead with an explicit $space argument.\
          \n  ,\
          \n2 | a {b: color.hue(lch(0% 0 0deg))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn too_few_args() {

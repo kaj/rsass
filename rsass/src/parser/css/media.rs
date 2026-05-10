@@ -1,13 +1,13 @@
 use super::super::util::ignore_comments;
-use super::{opt_spacelike, spacelike, strings, values, PResult, Span};
+use super::{PResult, Span, opt_spacelike, spacelike, strings, values};
 use crate::css::{MediaArgs, Value};
 use crate::value::{ListSeparator, Operator};
+use nom::Parser as _;
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::combinator::{map, value};
 use nom::multi::{fold_many0, fold_many1, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::Parser as _;
 use std::str::from_utf8;
 
 pub fn args(input: Span) -> PResult<MediaArgs> {

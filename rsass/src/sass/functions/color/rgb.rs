@@ -1,13 +1,13 @@
 use super::channels::Channels;
 use super::{
+    CallError, CheckedArg, FunctionMap, NumOrSpecial, ResolvedArgs,
     check_alpha, check_channel, check_pct_range, eval_inner, is_not,
-    is_special, relative_color, CallError, CheckedArg, FunctionMap,
-    NumOrSpecial, ResolvedArgs,
+    is_special, relative_color,
 };
+use crate::Scope;
 use crate::css::{CallArgs, Value};
 use crate::sass::{ArgsError, FormalArgs, Name};
 use crate::value::{Color, RgbFormat, Rgba};
-use crate::Scope;
 
 pub fn register(f: &mut Scope) {
     def_va!(f, _rgb(kwargs), |s| do_rgba(&name!(rgb), s));
@@ -38,7 +38,7 @@ pub fn register(f: &mut Scope) {
             if divis == 0. {
                 w
             } else {
-                (((w2 + wa) / divis) + 1.) / 2.
+                f64::midpoint((w2 + wa) / divis, 1.)
             }
         };
         let w_b = 1. - w_a;
@@ -69,7 +69,9 @@ pub fn register(f: &mut Scope) {
                         v => Err(is_not(&v, "a color")).named(name!(color)),
                     }
                 } else {
-                    Err(CallError::msg("Only one argument may be passed to the plain-CSS invert() function."))
+                    Err(CallError::msg(
+                        "Only one argument may be passed to the plain-CSS invert() function.",
+                    ))
                 }
             }
         }
@@ -102,7 +104,9 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
                         .named(name!(color))
                         .map(|v| Value::call("invert", [v]))
                 } else {
-                    Err(CallError::msg("Only one argument may be passed to the plain-CSS invert() function."))
+                    Err(CallError::msg(
+                        "Only one argument may be passed to the plain-CSS invert() function.",
+                    ))
                 }
             }
         }

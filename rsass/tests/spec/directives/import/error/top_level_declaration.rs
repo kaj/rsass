@@ -42,9 +42,7 @@ fn include() {
 fn parent_selector() {
     let runner = runner().with_cwd("parent_selector");
     assert_eq!(
-        runner.err(
-            "@import \'upstream\';\n"
-        ),
+        runner.err("@import \'upstream\';\n"),
         "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -66,9 +64,7 @@ fn parent_selector() {
 fn root() {
     let runner = runner().with_cwd("root");
     assert_eq!(
-        runner.err(
-            "@import \'upstream\';\n"
-        ),
+        runner.err("@import \'upstream\';\n"),
         "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\

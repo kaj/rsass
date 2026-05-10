@@ -1,12 +1,12 @@
 //! This module provides `handle_body` (and internally `handle_item`),
 //! that does most of the work for [`crate::input::Context::transform`].
 
-use super::cssdest::CssDestination;
 use super::CssData;
+use super::cssdest::CssDestination;
 use crate::css::{self, AtRule, Import, SelectorCtx};
 use crate::error::ResultPos;
 use crate::input::{Context, Loader, Parsed, SourceKind};
-use crate::sass::{get_global_module, Expose, Item, ItemBody, UseAs};
+use crate::sass::{Expose, Item, ItemBody, UseAs, get_global_module};
 use crate::{Error, Invalid, ScopeRef};
 
 pub fn handle_parsed(
@@ -64,7 +64,7 @@ fn handle_item(
     file_context: &mut Context<impl Loader>,
 ) -> Result<(), Error> {
     match item {
-        Item::Use(ref name, ref as_n, ref with, ref pos) => {
+        Item::Use(name, as_n, with, pos) => {
             let name = name.evaluate(scope.clone())?.take_value();
             let module = if let Some(module) = get_global_module(&name) {
                 if !with.is_empty() {
@@ -114,7 +114,7 @@ fn handle_item(
             };
             scope.do_use(module, &name, as_n, &Expose::All)?;
         }
-        Item::Forward(ref name, ref as_n, ref expose, ref with, ref pos) => {
+        Item::Forward(name, as_n, expose, with, pos) => {
             let name = name.evaluate(scope.clone())?.take_value();
             let module = if let Some(module) = get_global_module(&name) {
                 if !with.is_empty() {
@@ -160,7 +160,7 @@ fn handle_item(
             };
             scope.forward().do_use(module, &name, as_n, expose)?;
         }
-        Item::Import(ref names, ref args, ref pos) => {
+        Item::Import(names, args, pos) => {
             'name: for name in names.as_ref() {
                 let name = name.evaluate(scope.clone())?;
                 if args.is_null() {
@@ -224,7 +224,7 @@ fn handle_item(
                 dest.push_import(Import::new(name, args));
             }
         }
-        Item::AtRoot(ref selectors, ref body) => {
+        Item::AtRoot(selectors, body) => {
             let selectors = selectors.eval(scope.clone())?;
             let ctx = scope.get_selectors().at_root(selectors);
             let selectors = ctx.real();
@@ -239,7 +239,7 @@ fn handle_item(
         Item::AtMedia { args, body, pos: _ } => {
             let args = args.evaluate(scope.clone())?;
             let mut atmedia = dest.start_atmedia(args.try_into()?);
-            if let Some(ref body) = *body {
+            if let Some(body) = body {
                 let local = ScopeRef::sub(scope);
                 handle_body(body, &mut atmedia, local, file_context)?;
             }
@@ -252,7 +252,7 @@ fn handle_item(
         } => {
             let name = name.evaluate(scope.clone())?.take_value();
             let args = args.evaluate(scope.clone())?;
-            if let Some(ref body) = *body {
+            if let Some(body) = body {
                 let mut atrule = dest.start_atrule(name.clone(), args);
                 let local = if name == "keyframes" {
                     ScopeRef::sub_selectors(scope, SelectorCtx::root())
@@ -265,10 +265,10 @@ fn handle_item(
                     .at(pos)?;
             }
         }
-        Item::VariableDeclaration(ref var) => {
+        Item::VariableDeclaration(var) => {
             var.evaluate(&scope)?;
         }
-        Item::FunctionDeclaration(ref name, ref body) => {
+        Item::FunctionDeclaration(name, body) => {
             if name == "calc"
                 || name == "element"
                 || name == "expression"
@@ -281,15 +281,15 @@ fn handle_item(
             check_body(&body.body, BodyContext::Function)?;
             scope.define_function(name.into(), body.closure(&scope).into());
         }
-        Item::Return(_, ref pos) => {
+        Item::Return(_, pos) => {
             return Err(Invalid::AtRule.at(pos.clone()));
         }
 
-        Item::MixinDeclaration(ref name, ref body) => {
+        Item::MixinDeclaration(name, body) => {
             check_body(&body.body, BodyContext::Mixin)?;
             scope.define_mixin(name.into(), body.closure(&scope).into());
         }
-        Item::MixinCall(ref name, ref args, ref body, ref pos) => {
+        Item::MixinCall(name, args, body, pos) => {
             if let Some(mixin) = scope.get_mixin(&name.into()) {
                 let mixin = mixin
                     .get(scope.clone(), args, pos, file_context)
@@ -323,13 +323,13 @@ fn handle_item(
             }
         }
 
-        Item::IfStatement(ref cond, ref do_if, ref do_else) => {
+        Item::IfStatement(cond, do_if, do_else) => {
             let cond = cond.evaluate(scope.clone())?.is_true();
             let items = if cond { do_if } else { do_else };
             check_body(items, BodyContext::Control)?;
             handle_body(items, dest, scope, file_context)?;
         }
-        Item::Each(ref names, ref values, ref body) => {
+        Item::Each(names, values, body) => {
             check_body(body, BodyContext::Control)?;
             let pushed = scope.store_local_values(names);
             for value in values.evaluate(scope.clone())?.iter_items() {
@@ -338,7 +338,7 @@ fn handle_item(
             }
             scope.restore_local_values(pushed);
         }
-        Item::For(ref name, ref range, ref body) => {
+        Item::For(name, range, body) => {
             let range = range.evaluate(scope.clone())?;
             check_body(body, BodyContext::Control)?;
             for value in range {
@@ -347,7 +347,7 @@ fn handle_item(
                 handle_body(body, dest, scope, file_context)?;
             }
         }
-        Item::While(ref cond, ref body) => {
+        Item::While(cond, body) => {
             check_body(body, BodyContext::Control)?;
             let scope = ScopeRef::sub(scope);
             while cond.evaluate(scope.clone())?.is_true() {
@@ -355,13 +355,13 @@ fn handle_item(
             }
         }
 
-        Item::Debug(ref value) => {
+        Item::Debug(value) => {
             eprintln!("DEBUG: {}", value.evaluate(scope)?.introspect());
         }
-        Item::Warn(ref value) => {
+        Item::Warn(value) => {
             eprintln!("WARNING: {}", value.evaluate(scope)?.introspect());
         }
-        Item::Error(ref value, ref pos) => {
+        Item::Error(value, pos) => {
             let msg = value.evaluate(scope)?.introspect();
             return Err(Invalid::AtError(msg).at(pos.clone()));
         }
@@ -369,7 +369,7 @@ fn handle_item(
             return Err(Error::S("@extend is not supported yet".to_string()));
         }
 
-        Item::Rule(ref selectors, ref body) => {
+        Item::Rule(selectors, body) => {
             check_body(body, BodyContext::Rule)?;
             let selectors = selectors.eval(scope.clone())?;
             let selectors = scope.get_selectors().nest(selectors);
@@ -377,7 +377,7 @@ fn handle_item(
             let scope = ScopeRef::sub_selectors(scope, selectors.into());
             handle_body(body, &mut dest, scope, file_context)?;
         }
-        Item::Property(ref name, ref value, ref pos) => {
+        Item::Property(name, value, pos) => {
             let v = value.evaluate(scope.clone())?;
             if !v.is_null() {
                 let name = name.evaluate(scope)?.take_value();
@@ -386,12 +386,12 @@ fn handle_item(
                 dest.push_property(name, v.valid_css().at(pos)?).at(pos)?;
             }
         }
-        Item::CustomProperty(ref name, ref value) => {
+        Item::CustomProperty(name, value) => {
             let v = value.evaluate(scope.clone())?;
             let name = name.evaluate(scope)?.take_value();
             dest.push_custom_property(name, v).no_pos()?;
         }
-        Item::NamespaceRule(ref name, ref value, ref body) => {
+        Item::NamespaceRule(name, value, body) => {
             check_body(body, BodyContext::NsRule)?;
             let value = value.evaluate(scope.clone())?;
             let name = name.evaluate(scope.clone())?.take_value();
@@ -401,7 +401,7 @@ fn handle_item(
             let mut dest = dest.start_nsrule(name).no_pos()?;
             handle_body(body, &mut dest, scope, file_context)?;
         }
-        Item::Comment(ref c) => {
+        Item::Comment(c) => {
             if !scope.get_format().is_compressed() {
                 dest.push_comment(c.evaluate(scope)?.take_value().into());
             }
@@ -429,7 +429,7 @@ fn check_body(body: &ItemBody, context: BodyContext) -> Result<(), Error> {
             Item::Use(_, _, _, pos) => {
                 return Err(Invalid::AtRule.at(pos.clone()));
             }
-            Item::MixinDeclaration(.., ref decl) => {
+            Item::MixinDeclaration(.., decl) => {
                 let pos = decl.decl.clone().opt_back("@mixin ");
                 match context {
                     BodyContext::Mixin => {
@@ -444,7 +444,7 @@ fn check_body(body: &ItemBody, context: BodyContext) -> Result<(), Error> {
                     }
                 }
             }
-            Item::FunctionDeclaration(_, ref body) => {
+            Item::FunctionDeclaration(_, body) => {
                 let pos = body.decl.clone().opt_back("@function ");
                 match context {
                     BodyContext::Mixin => {
@@ -459,12 +459,12 @@ fn check_body(body: &ItemBody, context: BodyContext) -> Result<(), Error> {
                     }
                 }
             }
-            Item::Return(_, ref pos) if context != BodyContext::Function => {
+            Item::Return(_, pos) if context != BodyContext::Function => {
                 return Err(Invalid::AtRule.at(pos.clone()));
             }
             Item::AtRule { name, pos, .. }
                 if context != BodyContext::Rule
-                    && !name.single_raw().map_or(false, |name| {
+                    && !name.single_raw().is_some_and(|name| {
                         name_in(name, &CSS_AT_RULES[..])
                     }) =>
             {
@@ -508,7 +508,7 @@ fn push_items(
 fn name_in(name: &str, known: &[&str]) -> bool {
     if name.starts_with('-') {
         known.iter().any(|end| {
-            name.strip_suffix(end).map_or(false, |s| s.ends_with('-'))
+            name.strip_suffix(end).is_some_and(|s| s.ends_with('-'))
         })
     } else {
         known.contains(&name)

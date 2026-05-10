@@ -2,10 +2,10 @@ use super::{
     CallArgs, CallError, Callable, Closure, FormalArgs, Name, ResolvedArgs,
     Value,
 };
+use crate::ScopeRef;
 use crate::css::{self, CssString, ValueToMapError};
 use crate::input::{Context, Loader, Parsed, SourceKind, SourcePos};
 use crate::ordermap::OrderMap;
-use crate::ScopeRef;
 
 /// A declared mixin
 #[derive(Clone)]

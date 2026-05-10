@@ -86,17 +86,17 @@ mod interpolation {
     #[test]
     fn space_after_at() {
         assert_eq!(
-        runner().err(
-            "// No whitespace is allowed between the @ and the rule name.\
+            runner().err(
+                "// No whitespace is allowed between the @ and the rule name.\
              \n@ #{\"unknown\"};\n"
-        ),
-        "Error: Expected identifier.\
+            ),
+            "Error: Expected identifier.\
          \n  ,\
          \n2 | @ #{\"unknown\"};\
          \n  |  ^\
          \n  \'\
          \n  input.scss 2:2  root stylesheet",
-    );
+        );
     }
 }
 #[test]

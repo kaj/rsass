@@ -1,16 +1,16 @@
-use super::super::{input_to_str, input_to_string, PResult, Span};
+use super::super::{PResult, Span, input_to_str, input_to_string};
 use super::{nom_err, opt_spacelike};
 use crate::css::CssString;
 use crate::value::Quotes;
+use nom::Parser as _;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, take};
 use nom::character::complete::{char, one_of};
 use nom::combinator::{
     into, map, map_opt, map_res, opt, recognize, value, verify,
 };
-use nom::multi::{fold_many0, fold_many1, many0, many_m_n};
+use nom::multi::{fold_many0, fold_many1, many_m_n, many0};
 use nom::sequence::{delimited, preceded, terminated};
-use nom::Parser as _;
 use std::str::from_utf8;
 
 pub fn css_string_any(input: Span) -> PResult<CssString> {

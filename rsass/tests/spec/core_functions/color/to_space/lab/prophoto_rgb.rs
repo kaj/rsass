@@ -11,27 +11,23 @@ mod alpha {
     #[ignore] // unexepected error
     fn partial() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(lab(10% 20 30 / 0.4), prophoto-rgb)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lab(10% 20 30 / 0.4), prophoto-rgb)}\n"),
+            "a {\
          \n  b: color(prophoto-rgb 0.1181031255 0.0643408567 -0.0693072402 / 0.4);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error
     fn transparent() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(lab(10% 20 30 / 0.0), prophoto-rgb)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lab(10% 20 30 / 0.0), prophoto-rgb)}\n"),
+            "a {\
          \n  b: color(prophoto-rgb 0.1181031255 0.0643408567 -0.0693072402 / 0);\
          \n}\n"
-    );
+        );
     }
 }
 #[test]
@@ -111,14 +107,12 @@ mod out_of_range {
     #[ignore] // unexepected error
     fn far() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(lab(50% -999999 0), prophoto-rgb)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lab(50% -999999 0), prophoto-rgb)}\n"),
+            "a {\
          \n  b: color(prophoto-rgb -25.2096957329 15.2674513494 0.3906698633);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error

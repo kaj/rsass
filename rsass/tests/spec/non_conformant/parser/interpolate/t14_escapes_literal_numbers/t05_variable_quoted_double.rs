@@ -7,8 +7,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(
-            "$input: \\1\\2\\3\\4\\5\\6\\7\\8\\9;\
+        runner().ok("$input: \\1\\2\\3\\4\\5\\6\\7\\8\\9;\
              \n.result {\
              \n  dquoted: \"#{#{$input}}\";\
              \n  dquoted: \"#{\"[#{$input}]\"}\";\
@@ -20,8 +19,7 @@ fn test() {
              \n  squoted: \'#{\"#{$input}\"}\';\
              \n  squoted: \'#{\'#{$input}\'}\';\
              \n  squoted: \'#{\"[\'#{$input}\']\"}\';\
-             \n}\n"
-        ),
+             \n}\n"),
         ".result {\
          \n  dquoted: \"\\\\1 \\\\2 \\\\3 \\\\4 \\\\5 \\\\6 \\\\7 \\\\8 \\\\9 \";\
          \n  dquoted: \"[\\\\1 \\\\2 \\\\3 \\\\4 \\\\5 \\\\6 \\\\7 \\\\8 \\\\9 ]\";\

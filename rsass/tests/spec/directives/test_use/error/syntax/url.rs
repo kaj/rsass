@@ -8,9 +8,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong error
 fn empty() {
     assert_eq!(
-        runner().err(
-            "@use \"\";\n"
-        ),
+        runner().err("@use \"\";\n"),
         "Error: The default namespace \"\" is not a valid Sass identifier.\n\
          \nRecommendation: add an \"as\" clause to define an explicit namespace.\
          \n  ,\
@@ -24,9 +22,7 @@ fn empty() {
 #[ignore] // wrong error
 fn non_identifier() {
     assert_eq!(
-        runner().err(
-            "@use \"123\";\n"
-        ),
+        runner().err("@use \"123\";\n"),
         "Error: The default namespace \"123\" is not a valid Sass identifier.\n\
          \nRecommendation: add an \"as\" clause to define an explicit namespace.\
          \n  ,\

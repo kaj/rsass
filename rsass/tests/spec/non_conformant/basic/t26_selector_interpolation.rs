@@ -7,8 +7,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:list\";\
+        runner().ok("@use \"sass:list\";\
              \n$x: oo, ba;\
              \n$y: az, hu;\n\
              \nf#{$x}r {\
@@ -19,8 +18,7 @@ fn test() {
              \n      r: 3;\
              \n    }\
              \n  }\
-             \n}"
-        ),
+             \n}"),
         "foo, bar {\
          \n  p: 1;\
          \n}\

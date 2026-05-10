@@ -1,4 +1,4 @@
-use super::{is_not, Value};
+use super::{Value, is_not};
 use crate::ordermap::OrderMap;
 use crate::sass::{ArgsError, Name};
 use crate::value::ListSeparator;

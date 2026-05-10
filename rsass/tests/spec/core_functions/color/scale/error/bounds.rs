@@ -10,32 +10,32 @@ mod legacy {
     #[test]
     fn too_high() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.scale(red, $whiteness: 100.001%)}\n"
-        ),
-        "Error: $whiteness: Expected 100.001% to be within -100% and 100%.\
+            ),
+            "Error: $whiteness: Expected 100.001% to be within -100% and 100%.\
          \n  ,\
          \n2 | a {b: color.scale(red, $whiteness: 100.001%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn too_low() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.scale(red, $saturation: -100.001%)}\n"
-        ),
-        "Error: $saturation: Expected -100.001% to be within -100% and 100%.\
+            ),
+            "Error: $saturation: Expected -100.001% to be within -100% and 100%.\
          \n  ,\
          \n2 | a {b: color.scale(red, $saturation: -100.001%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 mod modern {

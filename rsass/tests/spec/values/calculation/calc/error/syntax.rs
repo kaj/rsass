@@ -122,46 +122,40 @@ mod no_whitespace {
         #[ignore] // wrong error
         fn after() {
             assert_eq!(
-        runner().err(
-            "a {b: calc(1 -1)}\n"
-        ),
-        "Error: \"+\" and \"-\" must be surrounded by whitespace in calculations.\
+                runner().err("a {b: calc(1 -1)}\n"),
+                "Error: \"+\" and \"-\" must be surrounded by whitespace in calculations.\
          \n  ,\
          \n1 | a {b: calc(1 -1)}\
          \n  |              ^\
          \n  \'\
          \n  input.scss 1:14  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
         fn before() {
             assert_eq!(
-        runner().err(
-            "a {b: calc(1- 1)}\n"
-        ),
-        "Error: \"+\" and \"-\" must be surrounded by whitespace in calculations.\
+                runner().err("a {b: calc(1- 1)}\n"),
+                "Error: \"+\" and \"-\" must be surrounded by whitespace in calculations.\
          \n  ,\
          \n1 | a {b: calc(1- 1)}\
          \n  |             ^\
          \n  \'\
          \n  input.scss 1:13  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
         fn both() {
             assert_eq!(
-        runner().err(
-            "a {b: calc(1-1)}\n"
-        ),
-        "Error: \"+\" and \"-\" must be surrounded by whitespace in calculations.\
+                runner().err("a {b: calc(1-1)}\n"),
+                "Error: \"+\" and \"-\" must be surrounded by whitespace in calculations.\
          \n  ,\
          \n1 | a {b: calc(1-1)}\
          \n  |             ^\
          \n  \'\
          \n  input.scss 1:13  root stylesheet",
-    );
+            );
         }
     }
     mod plus {
@@ -171,10 +165,8 @@ mod no_whitespace {
         #[ignore] // missing error
         fn after() {
             assert_eq!(
-        runner().err(
-            "a {b: calc(1 +1)}\n"
-        ),
-        "DEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
+                runner().err("a {b: calc(1 +1)}\n"),
+                "DEPRECATION WARNING [strict-unary]: This operation is parsed as:\n\
          \n    1 + 1\n\
          \nbut you may have intended it to mean:\n\
          \n    1 (+1)\n\
@@ -193,37 +185,33 @@ mod no_whitespace {
          \n  |              ^\
          \n  \'\
          \n  input.scss 1:14  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
         fn before() {
             assert_eq!(
-        runner().err(
-            "a {b: calc(1+ 1)}\n"
-        ),
-        "Error: \"+\" and \"-\" must be surrounded by whitespace in calculations.\
+                runner().err("a {b: calc(1+ 1)}\n"),
+                "Error: \"+\" and \"-\" must be surrounded by whitespace in calculations.\
          \n  ,\
          \n1 | a {b: calc(1+ 1)}\
          \n  |             ^\
          \n  \'\
          \n  input.scss 1:13  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
         fn both() {
             assert_eq!(
-        runner().err(
-            "a {b: calc(1+1)}\n"
-        ),
-        "Error: \"+\" and \"-\" must be surrounded by whitespace in calculations.\
+                runner().err("a {b: calc(1+1)}\n"),
+                "Error: \"+\" and \"-\" must be surrounded by whitespace in calculations.\
          \n  ,\
          \n1 | a {b: calc(1+1)}\
          \n  |             ^\
          \n  \'\
          \n  input.scss 1:13  root stylesheet",
-    );
+            );
         }
     }
 }

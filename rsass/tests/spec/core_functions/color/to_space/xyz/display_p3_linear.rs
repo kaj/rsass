@@ -148,10 +148,8 @@ mod out_of_range {
 #[ignore] // unexepected error
 fn white() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz 1 1 1), display-p3-linear)}\n"
-        ),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(color(xyz 1 1 1), display-p3-linear)}\n"),
         "a {\
          \n  b: color(display-p3-linear 1.1594025096 0.9567997766 0.916557965);\
          \n}\n"

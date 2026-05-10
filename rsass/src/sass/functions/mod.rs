@@ -1,10 +1,9 @@
 use super::{Call, Closure, FormalArgs, Name};
-use crate::css::{is_not, Value};
+use crate::css::{Value, is_not};
 use crate::input::SourcePos;
 use crate::{Scope, ScopeRef};
-use lazy_static::lazy_static;
 use std::collections::BTreeMap;
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
 use std::{cmp, fmt};
 
 #[macro_use]
@@ -144,8 +143,8 @@ impl Function {
     /// arguments.
     pub fn call(&self, call: Call) -> Result<Value, CallError> {
         let result = match &*self.body {
-            FuncImpl::Builtin(ref builtin) => builtin.eval_value(call),
-            FuncImpl::UserDefined(ref closure) => closure.eval_value(call),
+            FuncImpl::Builtin(builtin) => builtin.eval_value(call),
+            FuncImpl::UserDefined(closure) => closure.eval_value(call),
         };
         // The result of a calc function is either a calc function call or an
         // "atomic" number, i.e. one that is _not_ marked as "calculated".
@@ -168,8 +167,8 @@ impl From<Closure> for Function {
     }
 }
 
-lazy_static! {
-    static ref MODULES: BTreeMap<&'static str, Scope> = {
+static MODULES: LazyLock<BTreeMap<&'static str, Scope>> =
+    LazyLock::new(|| {
         let mut modules = BTreeMap::new();
         modules.insert("sass:color", color::create_module());
         modules.insert("sass:list", list::create_module());
@@ -179,8 +178,7 @@ lazy_static! {
         modules.insert("sass:selector", selector::create_module());
         modules.insert("sass:string", string::create_module());
         modules
-    };
-}
+    });
 
 /// Get a global module (e.g. `sass:math`) by name.
 pub fn get_global_module(name: &str) -> Option<ScopeRef> {
@@ -200,26 +198,24 @@ impl Functions for FunctionMap {
     }
 }
 
-lazy_static! {
-    static ref FUNCTIONS: FunctionMap = {
-        let mut f = BTreeMap::new();
-        def!(f, if(condition, if_true, if_false), |s| {
-            if Value::is_true(&s.get(name!(condition))?) {
-                Ok(s.get(name!(if_true))?)
-            } else {
-                Ok(s.get(name!(if_false))?)
-            }
-        });
-        color::expose(MODULES.get("sass:color").unwrap(), &mut f);
-        list::expose(MODULES.get("sass:list").unwrap(), &mut f);
-        map::expose(MODULES.get("sass:map").unwrap(), &mut f);
-        math::expose(MODULES.get("sass:math").unwrap(), &mut f);
-        meta::expose(MODULES.get("sass:meta").unwrap(), &mut f);
-        selector::expose(MODULES.get("sass:selector").unwrap(), &mut f);
-        string::expose(MODULES.get("sass:string").unwrap(), &mut f);
-        f
-    };
-}
+static FUNCTIONS: LazyLock<FunctionMap> = LazyLock::new(|| {
+    let mut f = BTreeMap::new();
+    def!(f, if(condition, if_true, if_false), |s| {
+        if Value::is_true(&s.get(name!(condition))?) {
+            Ok(s.get(name!(if_true))?)
+        } else {
+            Ok(s.get(name!(if_false))?)
+        }
+    });
+    color::expose(MODULES.get("sass:color").unwrap(), &mut f);
+    list::expose(MODULES.get("sass:list").unwrap(), &mut f);
+    map::expose(MODULES.get("sass:map").unwrap(), &mut f);
+    math::expose(MODULES.get("sass:math").unwrap(), &mut f);
+    meta::expose(MODULES.get("sass:meta").unwrap(), &mut f);
+    selector::expose(MODULES.get("sass:selector").unwrap(), &mut f);
+    string::expose(MODULES.get("sass:string").unwrap(), &mut f);
+    f
+});
 
 // argument helpers for the actual functions
 

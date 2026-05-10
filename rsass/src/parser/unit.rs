@@ -1,8 +1,8 @@
 use super::strings::unitname;
 use super::{PResult, Span};
 use crate::value::Unit;
-use nom::combinator::{map, value};
 use nom::Parser as _;
+use nom::combinator::{map, value};
 use nom::{branch::alt, bytes::complete::tag};
 
 pub fn unit(input: Span) -> PResult<Unit> {

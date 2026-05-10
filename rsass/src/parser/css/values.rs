@@ -1,9 +1,10 @@
+use super::{PResult, Span, opt_spacelike};
 use super::{nom_err, strings};
-use super::{opt_spacelike, PResult, Span};
 use crate::css::{BinOp, CallArgs, Value};
 use crate::parser::input_to_str;
 use crate::parser::value::{numeric, unicode_range_inner};
 use crate::value::{ListSeparator, Operator};
+use nom::Parser;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::{char, none_of, one_of};
@@ -13,7 +14,6 @@ use nom::combinator::{
 use nom::error::context;
 use nom::multi::{fold_many0, many0, separated_list0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::Parser;
 use nom_language::error::VerboseError;
 
 pub fn any(input: Span) -> PResult<Value> {
@@ -239,7 +239,7 @@ fn single_arg(input: Span) -> PResult<Value> {
 
 fn ext_arg_as_string(input: Span) -> PResult<String> {
     map_opt(is_not("\"\\;{}()[] ,"), |s: Span| {
-        if s.first().map_or(true, u8::is_ascii_digit) {
+        if s.first().is_none_or(u8::is_ascii_digit) {
             None
         } else {
             Some(input_to_str(s).ok()?.to_owned())

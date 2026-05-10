@@ -207,12 +207,12 @@ mod error {
     #[ignore] // wrong error
     fn wrong_named_arg() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:meta\";\n\
+            runner().err(
+                "@use \"sass:meta\";\n\
              \n@mixin a($a) {b: $a}\n\
              \na {@include meta.apply(meta.get-mixin(\"a\"), $b: c)}\n"
-        ),
-        "Error: Missing argument $a.\
+            ),
+            "Error: Missing argument $a.\
          \n    ,\
          \n3   | @mixin a($a) {b: $a}\
          \n    |        ===== declaration\
@@ -222,7 +222,7 @@ mod error {
          \n    \'\
          \n  input.scss 5:4  a()\
          \n  input.scss 5:4  root stylesheet",
-    );
+        );
     }
 }
 mod rest {

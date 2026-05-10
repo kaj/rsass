@@ -8,8 +8,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok(
-            ":not(.thing) {\
+        runner().ok(":not(.thing) {\
              \n    color: red;\
              \n}\
              \n:not(.thing[disabled]) {\
@@ -19,8 +18,7 @@ fn test() {
              \n:has(:not(.thing[disabled])) {\
              \n    @extend .thing;\
              \n    background: blue;\
-             \n}\n"
-        ),
+             \n}\n"),
         ":not(.thing):not(:not(.thing[disabled]):not([disabled]:has(:not(.thing[disabled]):not([disabled]:not(.thing[disabled]))))) {\
          \n  color: red;\
          \n}\

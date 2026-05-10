@@ -11,14 +11,12 @@ mod alpha {
     #[ignore] // unexepected error
     fn partial() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(lab(10% 20 30 / 0.4), srgb-linear)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lab(10% 20 30 / 0.4), srgb-linear)}\n"),
+            "a {\
          \n  b: color(srgb-linear 0.040800043 0.0039575505 -0.01079925 / 0.4);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error
@@ -109,14 +107,12 @@ mod out_of_range {
     #[ignore] // unexepected error
     fn far() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(lab(50% -999999 0), srgb-linear)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lab(50% -999999 0), srgb-linear)}\n"),
+            "a {\
          \n  b: color(srgb-linear -776.4261256147 242.720788708 -17.6457042383);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error

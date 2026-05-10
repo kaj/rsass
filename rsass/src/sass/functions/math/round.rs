@@ -1,6 +1,6 @@
 use super::super::CheckedArg as _;
 use super::css::required_arg;
-use super::{known_dim, CallArgs, CallError, NumOrSpecial, ResolvedArgs};
+use super::{CallArgs, CallError, NumOrSpecial, ResolvedArgs, known_dim};
 use crate::css::{CssString, Value};
 use crate::output::Format;
 use crate::sass::functions::color::eval_inner;
@@ -33,7 +33,7 @@ pub fn css_round(s: &ResolvedArgs) -> Result<Value, CallError> {
         (Ok(_), Some(num), None) if num.type_name() == "number" => {
             return Err(CallError::msg(
                 "If strategy is not null, step is required.",
-            ))
+            ));
         }
         (Ok(s), Some(num), None) => (Some(s), num, None),
         (Ok(s), Some(num), Some(step)) => (Some(s), num, Some(step)),

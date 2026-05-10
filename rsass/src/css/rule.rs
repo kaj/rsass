@@ -1,5 +1,5 @@
 use super::{
-    selectors::Opt, AtRule, Comment, CssString, Import, SelectorSet, Value,
+    AtRule, Comment, CssString, Import, SelectorSet, Value, selectors::Opt,
 };
 use crate::output::CssBuf;
 use std::io;

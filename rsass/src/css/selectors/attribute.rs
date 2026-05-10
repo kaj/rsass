@@ -39,13 +39,13 @@ pub(super) mod parser {
     use super::Attribute;
     use crate::parser::css::strings::css_string_any;
     use crate::parser::util::term_opt_space;
-    use crate::parser::{input_to_str, PResult, Span};
+    use crate::parser::{PResult, Span, input_to_str};
+    use nom::Parser as _;
     use nom::branch::alt;
     use nom::bytes::complete::tag;
     use nom::character::complete::one_of;
     use nom::combinator::{map, map_res, opt};
     use nom::sequence::{delimited, pair};
-    use nom::Parser as _;
 
     pub(crate) fn attribute(input: Span) -> PResult<Attribute> {
         map(

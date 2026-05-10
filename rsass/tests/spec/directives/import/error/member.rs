@@ -40,11 +40,11 @@ mod inaccessible {
         fn mixin() {
             let runner = runner().with_cwd("mixin");
             assert_eq!(
-        runner.err(
-            "a {@import \"other\"}\n\
+                runner.err(
+                    "a {@import \"other\"}\n\
              \nb {@include c}\n"
-        ),
-        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+                ),
+                "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | a {@import \"other\"}\
@@ -57,18 +57,18 @@ mod inaccessible {
          \n  |    ^^^^^^^^^^\
          \n  \'\
          \n  input.scss 3:4  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn variable() {
             let runner = runner().with_cwd("variable");
             assert_eq!(
-        runner.err(
-            "a {@import \"other\"}\n\
+                runner.err(
+                    "a {@import \"other\"}\n\
              \nb {c: $d}\n"
-        ),
-        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+                ),
+                "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | a {@import \"other\"}\
@@ -81,7 +81,7 @@ mod inaccessible {
          \n  |       ^^\
          \n  \'\
          \n  input.scss 3:7  root stylesheet",
-    );
+            );
         }
     }
 }

@@ -14,17 +14,15 @@ mod error {
         #[ignore] // missing error
         fn mixin() {
             assert_eq!(
-        runner().err(
-            "@mixin --a {}\n"
-        ),
-        "Error: Sass @mixin names beginning with -- are forbidden for forward-compatibility with plain CSS mixins.\n\
+                runner().err("@mixin --a {}\n"),
+                "Error: Sass @mixin names beginning with -- are forbidden for forward-compatibility with plain CSS mixins.\n\
          \nFor details, see https://sass-lang.com/d/css-function-mixin\
          \n  ,\
          \n1 | @mixin --a {}\
          \n  |        ^^^\
          \n  \'\
          \n  input.scss 1:8  root stylesheet",
-    );
+            );
         }
     }
 }

@@ -1,5 +1,5 @@
 use super::{LoadError, SourceName};
-use crate::parser::{css, sassfile, Span};
+use crate::parser::{Span, css, sassfile};
 use crate::{Error, ParseError};
 use std::io::Read;
 use std::sync::Arc;

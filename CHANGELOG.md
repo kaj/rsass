@@ -13,7 +13,8 @@ project adheres to
 * Refined custom-property handling for new tests.
 * Refactored to get items and values smaller in memory.
 * Updated sass-spec test suite to 2026-01-21.
-* Msrv is now 1.68.0 for rsass and rsass-macros (and 1.74 for rsass-cli).
+* Use rust edition 2024, so msrv is now 1.85.0.
+* Removed dependency `lazy-static`.
 
 
 ## Release 0.29.2

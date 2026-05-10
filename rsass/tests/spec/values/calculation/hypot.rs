@@ -152,16 +152,14 @@ mod error {
     #[ignore] // wrong error
     fn unsimplifiable() {
         assert_eq!(
-        runner().err(
-            "a {b: hypot(-7px / 4em)}\n"
-        ),
-        "Error: Number calc(-1.75px / 1em) isn\'t compatible with CSS calculations.\
+            runner().err("a {b: hypot(-7px / 4em)}\n"),
+            "Error: Number calc(-1.75px / 1em) isn\'t compatible with CSS calculations.\
          \n  ,\
          \n1 | a {b: hypot(-7px / 4em)}\
          \n  |             ^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:13  root stylesheet",
-    );
+        );
     }
 }
 mod infinity {

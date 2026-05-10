@@ -1,8 +1,8 @@
+use crate::ScopeRef;
 use crate::css::CssString;
 use crate::error::{Error, ResultPos};
 use crate::sass::Value;
 use crate::value::Quotes;
-use crate::ScopeRef;
 use std::fmt::{self, Write};
 
 /// A string that may contain interpolations.
@@ -54,8 +54,8 @@ impl SassString {
     pub fn evaluate(&self, scope: ScopeRef) -> Result<CssString, Error> {
         let mut result = String::new();
         for part in &self.parts {
-            match *part {
-                StringPart::Interpolation(ref v) => {
+            match part {
+                StringPart::Interpolation(v) => {
                     let v = v.evaluate(scope.clone())?.unquote();
                     if self.quotes == Quotes::None {
                         let v = v
@@ -96,7 +96,7 @@ impl SassString {
                         }
                     }
                 }
-                StringPart::Raw(ref s) => {
+                StringPart::Raw(s) => {
                     result.push_str(s);
                 }
             }
@@ -120,21 +120,21 @@ impl SassString {
     /// If so, return a reference to it.
     pub fn single_raw(&self) -> Option<&str> {
         if self.parts.len() == 1 {
-            if let StringPart::Raw(ref s) = self.parts[0] {
+            if let StringPart::Raw(s) = &self.parts[0] {
                 return Some(s);
             }
         }
         None
     }
     pub(crate) fn prepend(&mut self, data: &str) {
-        if let Some(StringPart::Raw(ref mut first)) = self.parts.get_mut(0) {
+        if let Some(StringPart::Raw(first)) = self.parts.get_mut(0) {
             first.insert_str(0, data);
         } else {
             self.parts.insert(0, data.into());
         }
     }
     pub(crate) fn append_str(&mut self, data: &str) {
-        if let Some(StringPart::Raw(ref mut last)) = self.parts.last_mut() {
+        if let Some(StringPart::Raw(last)) = self.parts.last_mut() {
             last.push_str(data);
         } else {
             self.parts.push(data.into());
@@ -152,9 +152,9 @@ impl fmt::Display for SassString {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         self.quotes.fmt(out)?;
         for part in &self.parts {
-            match *part {
-                StringPart::Raw(ref s) => s.fmt(out)?,
-                StringPart::Interpolation(ref v) => {
+            match part {
+                StringPart::Raw(s) => s.fmt(out)?,
+                StringPart::Interpolation(v) => {
                     panic!("Interpolation should be evaluated: {v:?}")
                 }
             }

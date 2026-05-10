@@ -1,5 +1,5 @@
-use super::{is_not, CallError, FunctionMap, ResolvedArgs};
-use crate::css::{is_calc_name, CallArgs, CssString, Value};
+use super::{CallError, FunctionMap, ResolvedArgs, is_not};
+use crate::css::{CallArgs, CssString, Value, is_calc_name};
 use crate::sass::{Call, Function, MixinDecl, Name};
 use crate::value::Quotes;
 use crate::{Format, Scope, ScopeRef};

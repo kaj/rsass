@@ -6,15 +6,15 @@ use super::value::{
     self, any_additive_expr, any_product, bracket_list, dictionary,
     function_call_or_string_rulearg, variable,
 };
-use super::{body_block, list_or_single, PResult};
+use super::{PResult, body_block, list_or_single};
 use crate::sass::{BinOp, Item, Value};
 use crate::value::ListSeparator;
+use nom::Parser as _;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{into, map, opt, value};
 use nom::multi::{many0, separated_list0};
 use nom::sequence::{delimited, preceded, terminated};
-use nom::Parser as _;
 
 #[cfg(test)]
 use super::check_parse;

@@ -7,10 +7,11 @@ use super::strings::{
 use super::unit::unit;
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
 use super::{
-    input_to_string, list_or_single, position, sass_string, PResult, Span,
+    PResult, Span, input_to_string, list_or_single, position, sass_string,
 };
 use crate::sass::{BinOp, SassString, Value};
 use crate::value::{ListSeparator, Numeric, Operator, Rgba};
+use nom::Parser as _;
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
@@ -21,9 +22,8 @@ use nom::combinator::{
     verify,
 };
 use nom::error::context;
-use nom::multi::{fold_many0, many0, many_m_n, separated_list1};
+use nom::multi::{fold_many0, many_m_n, many0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::Parser as _;
 use std::str::from_utf8;
 
 pub fn value_expression(input: Span) -> PResult<Value> {
@@ -83,11 +83,9 @@ pub fn space_list(input: Span) -> PResult<Value> {
         move || vec![first.clone()],
         |mut list: Vec<Value>, (s, item)| {
             match (list.last_mut(), s.fragment(), &item) {
-                (
-                    Some(Value::Literal(ref mut s1)),
-                    b"",
-                    Value::Literal(ref s2),
-                ) if s1.is_unquoted() && s2.is_unquoted() => {
+                (Some(Value::Literal(s1)), b"", Value::Literal(s2))
+                    if s1.is_unquoted() && s2.is_unquoted() =>
+                {
                     s1.append(s2);
                 }
                 _ => {
@@ -505,7 +503,7 @@ fn function_call_or_string_real(
             "NaN" => return Ok((rest, Value::scalar(f64::NAN))),
             "infinity" => return Ok((rest, Value::scalar(f64::INFINITY))),
             "-infinity" => {
-                return Ok((rest, Value::scalar(f64::NEG_INFINITY)))
+                return Ok((rest, Value::scalar(f64::NEG_INFINITY)));
             }
 
             /* TODO: true, false and null should end up here, but can't as long as '.' is a normal part of a string.
@@ -588,9 +586,9 @@ pub fn dictionary_inner(input: Span) -> PResult<Value> {
 mod test {
     use super::super::{code_span, parse_value_data};
     use super::*;
+    use crate::ScopeRef;
     use crate::sass::CallArgs;
     use crate::sass::Value::{Color, List, Literal, Map, Paren};
-    use crate::ScopeRef;
 
     #[test]
     fn simple_number() {

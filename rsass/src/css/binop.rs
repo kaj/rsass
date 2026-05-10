@@ -1,4 +1,4 @@
-use super::{is_function_name, InvalidCss, Value};
+use super::{InvalidCss, Value, is_function_name};
 use crate::output::{Format, Formatted};
 use crate::value::{CssDimensionSet, Numeric, Operator};
 use std::fmt::{self, Display, Write};
@@ -180,8 +180,8 @@ impl Display for Formatted<'_, BinOp> {
 fn add_as_join(v: &Value) -> bool {
     match v {
         Value::List(..) | Value::True | Value::False => true,
-        Value::Literal(ref s) => !s.is_css_fn(),
-        Value::Call(ref name, _) => !is_function_name(name),
+        Value::Literal(s) => !s.is_css_fn(),
+        Value::Call(name, _) => !is_function_name(name),
         Value::BinOp(op) => op.add_as_join(),
         _ => false,
     }

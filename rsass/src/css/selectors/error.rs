@@ -1,6 +1,6 @@
-use crate::css::{is_not, Value};
-use crate::input::SourcePos;
 use crate::ParseError;
+use crate::css::{Value, is_not};
+use crate::input::SourcePos;
 use std::fmt;
 
 pub(super) enum BadSelector0 {

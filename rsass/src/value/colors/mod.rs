@@ -72,7 +72,7 @@ impl Color {
     pub fn to_hsla(&self) -> Cow<'_, Hsla> {
         match self {
             Self::Rgba(rgba) => Cow::Owned(Hsla::from(rgba)),
-            Self::Hsla(ref hsla) => Cow::Borrowed(hsla),
+            Self::Hsla(hsla) => Cow::Borrowed(hsla),
             Self::Hwba(hwba) => Cow::Owned(Hsla::from(hwba)),
         }
     }
@@ -104,9 +104,9 @@ impl Color {
     pub fn set_alpha(&mut self, alpha: f64) {
         let alpha = alpha.clamp(0., 1.);
         match self {
-            Self::Rgba(ref mut rgba) => rgba.set_alpha(alpha),
-            Self::Hsla(ref mut hsla) => hsla.set_alpha(alpha),
-            Self::Hwba(ref mut hwba) => hwba.set_alpha(alpha),
+            Self::Rgba(rgba) => rgba.set_alpha(alpha),
+            Self::Hsla(hsla) => hsla.set_alpha(alpha),
+            Self::Hwba(hwba) => hwba.set_alpha(alpha),
         }
     }
     /// Rotate the hue of this color by a specific number of degrees.

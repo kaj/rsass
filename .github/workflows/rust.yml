@@ -36,7 +36,7 @@ jobs:
       matrix:
         rust:
           - stable
-          - 1.74.1
+          - 1.85.0
           - beta
           - nightly
     steps:
@@ -55,7 +55,7 @@ jobs:
       matrix:
         rust:
           - stable
-          - 1.74.1
+          - 1.85.0
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -71,7 +71,7 @@ jobs:
       matrix:
         rust:
           - stable
-          - 1.74.1
+          - 1.85.0
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -79,19 +79,19 @@ jobs:
           toolchain: ${{ matrix.rust }}
       - run: cargo test -q
 
-  test-old:
-    name: Old rust
-    needs: [clippy, rustfmt]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust:
-          - 1.70.0
-          - 1.68.2
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          toolchain: ${{ matrix.rust }}
-      - run: sed -i 's/"rsass-cli",/# \0/' Cargo.toml
-      - run: cargo test --package rsass-macros -q
+#  test-old:
+#    name: Old rust
+#    needs: [clippy, rustfmt]
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        rust:
+#          - 1.70.0
+#          - 1.68.2
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: actions-rust-lang/setup-rust-toolchain@v1
+#        with:
+#          toolchain: ${{ matrix.rust }}
+#      - run: sed -i 's/"rsass-cli",/# \0/' Cargo.toml
+#      - run: cargo test --package rsass-macros -q

@@ -42,9 +42,7 @@ fn directory_dot_import() {
 fn no_extension() {
     let runner = runner().with_cwd("no_extension");
     assert_eq!(
-        runner.err(
-            "@import \"other\";\n"
-        ),
+        runner.err("@import \"other\";\n"),
         "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\

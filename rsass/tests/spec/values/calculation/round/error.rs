@@ -14,10 +14,8 @@ mod one_argument {
         #[ignore] // wrong error
         fn variable_named_argument() {
             assert_eq!(
-        runner().err(
-            "a {b: round($number: var(--c))}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: round($number: var(--c))}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse math.round instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -31,7 +29,7 @@ mod one_argument {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
     mod syntax {
@@ -55,10 +53,8 @@ mod one_argument {
     #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
-        runner().err(
-            "a {b: round(\"0\")}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner().err("a {b: round(\"0\")}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse math.round instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -72,7 +68,7 @@ mod one_argument {
          \n  |       ^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
 }
 mod three_argument {
@@ -210,16 +206,14 @@ mod two_argument {
         #[ignore] // wrong error
         fn complex_and_unknown() {
             assert_eq!(
-        runner().err(
-            "a {b: round(1px*2px, 10%)}\n"
-        ),
-        "Error: Number calc(2px * 1px) isn\'t compatible with CSS calculations.\
+                runner().err("a {b: round(1px*2px, 10%)}\n"),
+                "Error: Number calc(2px * 1px) isn\'t compatible with CSS calculations.\
          \n  ,\
          \n1 | a {b: round(1px*2px, 10%)}\
          \n  |             ^^^^^^^\
          \n  \'\
          \n  input.scss 1:13  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error

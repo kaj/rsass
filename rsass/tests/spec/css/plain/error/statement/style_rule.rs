@@ -102,10 +102,8 @@ mod leading_combinator {
     fn through_import() {
         let runner = runner().with_cwd("through_import");
         assert_eq!(
-        runner.err(
-            "a {@import \"plain\"}\n"
-        ),
-        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+            runner.err("a {@import \"plain\"}\n"),
+            "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | a {@import \"plain\"}\
@@ -119,42 +117,40 @@ mod leading_combinator {
          \n  \'\
          \n  plain.css 1:1    @import\
          \n  input.scss 1:12  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn through_load_css() {
         let runner = runner().with_cwd("through_load_css");
         assert_eq!(
-        runner.err(
-            "@use \"sass:meta\";\n\
+            runner.err(
+                "@use \"sass:meta\";\n\
              \na {@include meta.load-css(\"plain\")}\n"
-        ),
-        "Error: Top-level leading combinators aren\'t allowed in plain CSS.\
+            ),
+            "Error: Top-level leading combinators aren\'t allowed in plain CSS.\
          \n  ,\
          \n1 | > b {c: d}\
          \n  | ^\
          \n  \'\
          \n  plain.css 1:1   load-css()\
          \n  input.scss 3:4  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn top_level() {
         let runner = runner().with_cwd("top_level");
         assert_eq!(
-        runner.err(
-            "@use \'plain\';\n"
-        ),
-        "Error: Top-level leading combinators aren\'t allowed in plain CSS.\
+            runner.err("@use \'plain\';\n"),
+            "Error: Top-level leading combinators aren\'t allowed in plain CSS.\
          \n  ,\
          \n1 | > a {b: c}\
          \n  | ^\
          \n  \'\
          \n  plain.css 1:1   @use\
          \n  input.scss 1:1  root stylesheet",
-    );
+        );
     }
 }
 mod nested_property {

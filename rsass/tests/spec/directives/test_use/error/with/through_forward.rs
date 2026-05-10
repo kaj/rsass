@@ -21,9 +21,7 @@ fn runner() -> crate::TestRunner {
 fn test_as() {
     let runner = runner().with_cwd("as");
     assert_eq!(
-        runner.err(
-            "@use \"used\" with ($a: b);\n"
-        ),
+        runner.err("@use \"used\" with ($a: b);\n"),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"used\" with ($a: b);\
@@ -37,9 +35,7 @@ fn test_as() {
 fn hide() {
     let runner = runner().with_cwd("hide");
     assert_eq!(
-        runner.err(
-            "@use \"used\" with ($a: b);\n"
-        ),
+        runner.err("@use \"used\" with ($a: b);\n"),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"used\" with ($a: b);\
@@ -53,9 +49,7 @@ fn hide() {
 fn show() {
     let runner = runner().with_cwd("show");
     assert_eq!(
-        runner.err(
-            "@use \"used\" with ($a: b);\n"
-        ),
+        runner.err("@use \"used\" with ($a: b);\n"),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"used\" with ($a: b);\
@@ -69,9 +63,7 @@ fn show() {
 fn with() {
     let runner = runner().with_cwd("with");
     assert_eq!(
-        runner.err(
-            "@use \"used\" with ($a: b);\n"
-        ),
+        runner.err("@use \"used\" with ($a: b);\n"),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"used\" with ($a: b);\

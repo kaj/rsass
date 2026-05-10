@@ -1,9 +1,9 @@
-use super::atrule::AtRuleBodyItem;
 use super::Value;
+use super::atrule::AtRuleBodyItem;
+use crate::ParseError;
 use crate::output::{CssBuf, Format};
 use crate::parser::{css::media, input_span};
 use crate::value::Operator;
-use crate::ParseError;
 use std::io::{self, Write};
 
 /// An `@media` rule in css.

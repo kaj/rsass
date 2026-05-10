@@ -83,10 +83,8 @@ mod index {
     fn dir_dot_scss() {
         let runner = runner().with_cwd("dir_dot_scss");
         assert_eq!(
-        runner.err(
-            "@import \"dir.scss\";\n"
-        ),
-        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+            runner.err("@import \"dir.scss\";\n"),
+            "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | @import \"dir.scss\";\
@@ -99,7 +97,7 @@ mod index {
          \n  |         ^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:9  root stylesheet",
-    );
+        );
     }
     #[test]
     fn partial() {

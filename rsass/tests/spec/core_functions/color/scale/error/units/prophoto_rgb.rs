@@ -43,17 +43,17 @@ mod none {
     #[ignore] // wrong error
     fn red() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.scale(color(prophoto-rgb 0.2 0.5 0.7), $red: 1)}\n"
-        ),
-        "Error: $red: Expected 1 to have unit \"%\".\
+            ),
+            "Error: $red: Expected 1 to have unit \"%\".\
          \n  ,\
          \n2 | a {b: color.scale(color(prophoto-rgb 0.2 0.5 0.7), $red: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 mod wrong {

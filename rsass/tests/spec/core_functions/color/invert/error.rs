@@ -44,16 +44,14 @@ mod global {
     #[test]
     fn number_with_weight() {
         assert_eq!(
-        runner().err(
-            "a {b: invert(1, 50%)}\n"
-        ),
-        "Error: Only one argument may be passed to the plain-CSS invert() function.\
+            runner().err("a {b: invert(1, 50%)}\n"),
+            "Error: Only one argument may be passed to the plain-CSS invert() function.\
          \n  ,\
          \n1 | a {b: invert(1, 50%)}\
          \n  |       ^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     mod test_type {
         use super::runner;
@@ -62,10 +60,8 @@ mod global {
         #[ignore] // wrong error
         fn color() {
             assert_eq!(
-        runner().err(
-            "a {b: invert(c)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: invert(c)}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.invert instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -79,7 +75,7 @@ mod global {
          \n  |       ^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
 }
@@ -93,10 +89,8 @@ mod missing {
         #[ignore] // wrong error
         fn analogous() {
             assert_eq!(
-        runner().err(
-            "a {b: invert(rgb(10 none 20), $space: xyz)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: invert(rgb(10 none 20), $space: xyz)}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.invert instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -110,16 +104,14 @@ mod missing {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn powerless() {
             assert_eq!(
-        runner().err(
-            "a {b: invert(grey, $space: hsl)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: invert(grey, $space: hsl)}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.invert instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -133,7 +125,7 @@ mod missing {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         mod same {
             use super::runner;
@@ -142,10 +134,9 @@ mod missing {
             #[ignore] // wrong error
             fn explicit() {
                 assert_eq!(
-        runner().err(
-            "a {b: invert(hsl(0 40% none), $space: hsl)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                    runner()
+                        .err("a {b: invert(hsl(0 40% none), $space: hsl)}\n"),
+                    "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.invert instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -159,16 +150,16 @@ mod missing {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+                );
             }
             #[test]
             #[ignore] // wrong error
             fn hwb_hue() {
                 assert_eq!(
-        runner().err(
-            "a {b: invert(hwb(none 10% 20%), $space: hwb)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                    runner().err(
+                        "a {b: invert(hwb(none 10% 20%), $space: hwb)}\n"
+                    ),
+                    "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.invert instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -182,16 +173,14 @@ mod missing {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+                );
             }
             #[test]
             #[ignore] // wrong error
             fn implicit() {
                 assert_eq!(
-        runner().err(
-            "a {b: invert(rgb(none 10 20))}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                    runner().err("a {b: invert(rgb(none 10 20))}\n"),
+                    "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.invert instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -205,7 +194,7 @@ mod missing {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+                );
             }
         }
     }
@@ -239,10 +228,10 @@ mod missing {
         #[ignore] // wrong error
         fn powerless() {
             assert_eq!(
-        runner().err(
-            "a {b: invert(color(rec2020 0.4 0.4 0.4), $space: lch)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err(
+                    "a {b: invert(color(rec2020 0.4 0.4 0.4), $space: lch)}\n"
+                ),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.invert instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -256,16 +245,16 @@ mod missing {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn same() {
             assert_eq!(
-        runner().err(
-            "a {b: invert(color(srgb none 0.1 0.2), $space: srgb)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err(
+                    "a {b: invert(color(srgb none 0.1 0.2), $space: srgb)}\n"
+                ),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.invert instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -279,7 +268,7 @@ mod missing {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
 }
@@ -293,33 +282,33 @@ mod space {
         #[ignore] // wrong error
         fn default_weight() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+                runner().err(
+                    "@use \"sass:color\";\
              \na {b: color.invert(lab(50% -10 10))}\n"
-        ),
-        "Error: $color: To use color.invert() with non-legacy color lab(50% -10 10), you must provide a $space.\
+                ),
+                "Error: $color: To use color.invert() with non-legacy color lab(50% -10 10), you must provide a $space.\
          \n  ,\
          \n2 | a {b: color.invert(lab(50% -10 10))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn zero_weight() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+                runner().err(
+                    "@use \"sass:color\";\
              \na {b: color.invert(lab(50% -10 10), 0%)}\n"
-        ),
-        "Error: $color: To use color.invert() with non-legacy color lab(50% -10 10), you must provide a $space.\
+                ),
+                "Error: $color: To use color.invert() with non-legacy color lab(50% -10 10), you must provide a $space.\
          \n  ,\
          \n2 | a {b: color.invert(lab(50% -10 10), 0%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
     }
     #[test]

@@ -7,8 +7,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:list\";\
+        runner().ok("@use \"sass:list\";\
              \n@use \"sass:map\";\
              \n@use \"sass:meta\";\n\
              \n@function test () {\
@@ -21,8 +20,7 @@ fn test() {
              \n}\n\
              \ntest {\
              \n  content: meta.inspect(test());\
-             \n}"
-        ),
+             \n}"),
         "test {\
          \n  content: (a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9, j: 10, k: 11);\
          \n}\n"

@@ -28,7 +28,7 @@ pub use self::call_args::CallArgs;
 pub use self::callable::{Call, Callable, Closure};
 pub use self::formal_args::{ArgsError, FormalArgs};
 pub use self::functions::{
-    get_global_module, CallError, Function, ResolvedArgs,
+    CallError, Function, ResolvedArgs, get_global_module,
 };
 pub use self::item::{Expose, Item, ItemBody, UseAs};
 pub use self::mixin::{Mixin, MixinDecl};

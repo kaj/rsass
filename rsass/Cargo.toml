@@ -9,13 +9,12 @@ documentation = "https://docs.rs/rsass"
 repository = "https://github.com/kaj/rsass"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
-edition = "2021"
-rust-version = "1.68.0"
+edition = "2024"
+rust-version = "1.85.0"
 
 [dependencies]
 arc-swap = "1.5.0"
 fastrand = "2.0"
-lazy_static = "1.0"
 nom = "8.0"
 nom-language = "0.1.0"
 tracing = { version = "0.1.34", default-features = false }

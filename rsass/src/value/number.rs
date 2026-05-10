@@ -205,11 +205,7 @@ impl Rem for &Number {
         let result = a % b;
         let result =
             if a != 0. && (b.is_sign_negative() != a.is_sign_negative()) {
-                if b.is_finite() {
-                    result + b
-                } else {
-                    f64::NAN
-                }
+                if b.is_finite() { result + b } else { f64::NAN }
             } else {
                 result
             };

@@ -157,14 +157,12 @@ mod lightness {
     #[ignore] // unexepected error
     fn out_of_range() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.change(oklab(50% 0.2 -0.3), $lightness: 1.2)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.change(oklab(50% 0.2 -0.3), $lightness: 1.2)}\n"),
+            "a {\
          \n  b: color-mix(in oklab, color(xyz 2.3267922825 1.5626810145 5.2743251916) 100%, black);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error

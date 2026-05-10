@@ -8,8 +8,8 @@ keywords = ["scss", "sass", "css", "web"]
 repository = "https://github.com/kaj/rsass"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
-edition = "2021"
-rust-version = "1.74.0"
+edition = "2024"
+rust-version = "1.85.0"
 
 [[bin]]
 name = "rsass"

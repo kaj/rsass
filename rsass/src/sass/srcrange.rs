@@ -51,12 +51,12 @@ impl SrcRange {
 pub mod parser {
     use super::SrcRange;
     use crate::parser::util::ignore_comments;
-    use crate::parser::{single_value_p, PResult, Span};
+    use crate::parser::{PResult, Span, single_value_p};
+    use nom::Parser as _;
     use nom::branch::alt;
     use nom::bytes::complete::tag;
     use nom::combinator::value;
     use nom::sequence::{delimited, terminated};
-    use nom::Parser as _;
 
     pub fn src_range(input: Span) -> PResult<SrcRange> {
         let (input, from) = delimited(

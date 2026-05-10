@@ -7,8 +7,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(
-            "a, b {\
+        runner().ok("a, b {\
              \n  color: red;\
              \n  background: blue;\
              \n}\n\
@@ -32,8 +31,7 @@ fn test() {
              \n      hoo: boo;\
              \n    }\
              \n  }\
-             \n}"
-        ),
+             \n}"),
         "a, b {\
          \n  color: red;\
          \n  background: blue;\

@@ -11,17 +11,17 @@ mod error {
     #[ignore] // wrong error
     fn non_legacy() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.saturation(color(srgb 1 1 1))}\n"
-        ),
-        "Error: color.saturation() is only supported for legacy colors. Please use color.channel() instead with an explicit $space argument.\
+            ),
+            "Error: color.saturation() is only supported for legacy colors. Please use color.channel() instead with an explicit $space argument.\
          \n  ,\
          \n2 | a {b: color.saturation(color(srgb 1 1 1))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn too_few_args() {

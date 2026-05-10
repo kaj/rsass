@@ -99,16 +99,16 @@ mod or {
     #[ignore] // missing error
     fn and() {
         assert_eq!(
-        runner().err(
-            "a {b: if(css(1) or css(2) var(--or) vss(3) and css(4): c)}\n"
-        ),
-        "Error: expected \":\".\
+            runner().err(
+                "a {b: if(css(1) or css(2) var(--or) vss(3) and css(4): c)}\n"
+            ),
+            "Error: expected \":\".\
          \n  ,\
          \n1 | a {b: if(css(1) or css(2) var(--or) vss(3) and css(4): c)}\
          \n  |                                            ^\
          \n  \'\
          \n  input.scss 1:44  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
@@ -196,33 +196,30 @@ mod with_sass {
                 #[ignore] // missing error
                 fn direct() {
                     assert_eq!(
-        runner().err(
-            "a {b: if(var(--not) sass(true): c)}\n"
-        ),
-        "Error: if() conditions with arbitrary substitutions may not contain sass() expressions.\
+                        runner().err("a {b: if(var(--not) sass(true): c)}\n"),
+                        "Error: if() conditions with arbitrary substitutions may not contain sass() expressions.\
          \n  ,\
          \n1 | a {b: if(var(--not) sass(true): c)}\
          \n  |          ^^^^^^^^^^ arbitrary substitution\
          \n  |                     ========== sass() expression\
          \n  \'\
          \n  input.scss 1:10  root stylesheet",
-    );
+                    );
                 }
                 #[test]
                 #[ignore] // missing error
                 fn nested() {
                     assert_eq!(
-        runner().err(
-            "a {b: if(var(--not) (sass(true)): c)}\n"
-        ),
-        "Error: if() conditions with arbitrary substitutions may not contain sass() expressions.\
+                        runner()
+                            .err("a {b: if(var(--not) (sass(true)): c)}\n"),
+                        "Error: if() conditions with arbitrary substitutions may not contain sass() expressions.\
          \n  ,\
          \n1 | a {b: if(var(--not) (sass(true)): c)}\
          \n  |          ^^^^^^^^^^ arbitrary substitution\
          \n  |                      ========== sass() expression\
          \n  \'\
          \n  input.scss 1:10  root stylesheet",
-    );
+                    );
                 }
             }
             mod t2 {
@@ -269,33 +266,32 @@ mod with_sass {
             #[ignore] // missing error
             fn direct() {
                 assert_eq!(
-        runner().err(
-            "a {b: if(sass(true) var(--and-clause): c)}\n"
-        ),
-        "Error: if() conditions with arbitrary substitutions may not contain sass() expressions.\
+                    runner()
+                        .err("a {b: if(sass(true) var(--and-clause): c)}\n"),
+                    "Error: if() conditions with arbitrary substitutions may not contain sass() expressions.\
          \n  ,\
          \n1 | a {b: if(sass(true) var(--and-clause): c)}\
          \n  |                     ^^^^^^^^^^^^^^^^^ arbitrary substitution\
          \n  |          ========== sass() expression\
          \n  \'\
          \n  input.scss 1:21  root stylesheet",
-    );
+                );
             }
             #[test]
             #[ignore] // missing error
             fn nested() {
                 assert_eq!(
-        runner().err(
-            "a {b: if((sass(true)) var(--and-clause): c)}\n"
-        ),
-        "Error: if() conditions with arbitrary substitutions may not contain sass() expressions.\
+                    runner().err(
+                        "a {b: if((sass(true)) var(--and-clause): c)}\n"
+                    ),
+                    "Error: if() conditions with arbitrary substitutions may not contain sass() expressions.\
          \n  ,\
          \n1 | a {b: if((sass(true)) var(--and-clause): c)}\
          \n  |                       ^^^^^^^^^^^^^^^^^ arbitrary substitution\
          \n  |           ========== sass() expression\
          \n  \'\
          \n  input.scss 1:23  root stylesheet",
-    );
+                );
             }
         }
     }

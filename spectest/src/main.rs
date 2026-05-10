@@ -3,17 +3,18 @@ use hrx_get::Archive;
 use lazy_regex::regex_is_match;
 use std::env::set_current_dir;
 use std::ffi::OsStr;
-use std::fs::{create_dir, read_to_string, DirEntry, File};
+use std::fs::{DirEntry, File, create_dir, read_to_string};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::LazyLock;
 
 mod options;
 use options::Options;
 mod testfixture;
 use testfixture::TestFixture;
 mod testrunner;
-use testrunner::{runner, TestRunner};
+use testrunner::{TestRunner, runner};
 mod writestr;
 
 fn main() -> Result<(), Error> {
@@ -68,7 +69,8 @@ fn handle_suite(
                 .current_dir(base)
                 .output()?
                 .stdout
-        )?.trim(),
+        )?
+        .trim(),
     )?;
     if !ignored.is_empty() {
         writeln!(
@@ -382,14 +384,14 @@ fn fn_name_os(name: &OsStr) -> String {
     fn_name(&name.to_string_lossy())
 }
 fn fn_name(name: &str) -> String {
-    use lazy_static::lazy_static;
-    lazy_static! {
-        static ref RUST_WORDS: WordSet<20> = WordSet::new([
+    static RUST_WORDS: LazyLock<WordSet<20>> = LazyLock::new(|| {
+        WordSet::new([
             "as", "else", "false", "final", "for", "if", "in", "loop",
             "macro", "match", "mod", "override", "return", "static", "super",
             "true", "type", "use", "where", "while",
-        ]);
-    };
+        ])
+    });
+
     let t = deunicode(name)
         .to_lowercase()
         .replace(".hrx", "")

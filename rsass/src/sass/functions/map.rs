@@ -1,7 +1,7 @@
-use super::{is_not, CallError, CheckedArg, FunctionMap, ResolvedArgs};
+use super::{CallError, CheckedArg, FunctionMap, ResolvedArgs, is_not};
+use crate::Scope;
 use crate::css::{Value, ValueMap};
 use crate::value::ListSeparator;
-use crate::Scope;
 
 /// Create the `sass:map` standard module.
 ///
@@ -108,7 +108,7 @@ pub fn create_module() -> Scope {
                         map.remove(&key);
                     } else {
                         return Err(CallError::msg(
-                            "Argument $key was passed both by position and by name."
+                            "Argument $key was passed both by position and by name.",
                         ));
                     }
                 }
@@ -201,7 +201,7 @@ impl TryFrom<Value> for ValueMap {
         match v {
             Value::Map(m) => Ok(m),
             // An empty map and an empty list looks the same
-            Value::List(ref l, ..) if l.is_empty() => Ok(Self::new()),
+            Value::List(l, ..) if l.is_empty() => Ok(Self::new()),
             v => Err(is_not(&v, "a map")),
         }
     }
@@ -240,10 +240,10 @@ fn as_va_map(v: Value) -> Result<ValueMap, String> {
 fn do_deep_merge(map1: &mut ValueMap, map2: ValueMap) {
     for (key, value) in map2 {
         match (map1.get_mut(&key), value) {
-            (Some(Value::Map(ref mut m1)), Value::Map(m2)) => {
+            (Some(Value::Map(m1)), Value::Map(m2)) => {
                 do_deep_merge(m1, m2);
             }
-            (Some(Value::Map(_)), Value::List(ref l, ..)) if l.is_empty() => {
+            (Some(Value::Map(_)), Value::List(l, ..)) if l.is_empty() => {
                 // nop; empty list is same thing as empty map
             }
             (_, v2) => {
@@ -305,7 +305,7 @@ fn set(s: &ResolvedArgs) -> Result<Value, CallError> {
                 (Some(_), false) => {
                     return Err(CallError::msg(
                         "Got $keys both by name and by position.",
-                    ))
+                    ));
                 }
             };
             if let Some(key) = key {

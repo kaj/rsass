@@ -153,17 +153,17 @@ mod space {
             #[ignore] // wrong error
             fn analogous() {
                 assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+                    runner().err(
+                        "@use \"sass:color\";\
              \na {b: color.invert(hsl(30deg none 40%), $space: lch)}\n"
-        ),
-        "Error: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: lch(43.192289563% none none)).\
+                    ),
+                    "Error: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: lch(43.192289563% none none)).\
          \n  ,\
          \n2 | a {b: color.invert(hsl(30deg none 40%), $space: lch)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+                );
             }
             #[test]
             #[ignore] // unexepected error

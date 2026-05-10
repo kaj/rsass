@@ -47,37 +47,37 @@ mod error {
     #[ignore] // wrong error
     fn modulo() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:meta\";\
+            runner().err(
+                "@use \"sass:meta\";\
              \n@mixin a() {}\
              \n@mixin b() {}\
              \na {b: meta.get-mixin(a) % meta.get-mixin(b)}\n"
-        ),
-        "Error: Undefined operation \"get-mixin(\"a\") % get-mixin(\"b\")\".\
+            ),
+            "Error: Undefined operation \"get-mixin(\"a\") % get-mixin(\"b\")\".\
          \n  ,\
          \n4 | a {b: meta.get-mixin(a) % meta.get-mixin(b)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 4:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
     fn multiplication() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:meta\";\
+            runner().err(
+                "@use \"sass:meta\";\
              \n@mixin a() {}\
              \n@mixin b() {}\
              \na {b: meta.get-mixin(a) * meta.get-mixin(b)}\n"
-        ),
-        "Error: Undefined operation \"get-mixin(\"a\") * get-mixin(\"b\")\".\
+            ),
+            "Error: Undefined operation \"get-mixin(\"a\") * get-mixin(\"b\")\".\
          \n  ,\
          \n4 | a {b: meta.get-mixin(a) * meta.get-mixin(b)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 4:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error

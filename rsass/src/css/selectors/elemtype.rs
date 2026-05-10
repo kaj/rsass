@@ -75,11 +75,11 @@ pub(super) mod parser {
     use super::ElemType;
     use crate::parser::css::strings::css_string_nohash as css_string;
     use crate::parser::{PResult, Span};
+    use nom::Parser as _;
     use nom::branch::alt;
     use nom::bytes::complete::{is_a, tag};
     use nom::combinator::{map, opt, recognize, value};
     use nom::sequence::{pair, preceded};
-    use nom::Parser as _;
 
     pub(crate) fn elem_name(input: Span) -> PResult<ElemType> {
         map(name_opt_ns, |s| ElemType { s }).parse(input)

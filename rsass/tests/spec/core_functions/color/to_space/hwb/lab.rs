@@ -120,27 +120,23 @@ mod out_of_range {
     #[ignore] // unexepected error
     fn far() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(hwb(20deg 999999% -999950%), lab)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hwb(20deg 999999% -999950%), lab)}\n"),
+            "a {\
          \n  b: color-mix(in lab, color(xyz 3327825161.664072 3501247104.3035965 3812875110.896886) 100%, black);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error
     fn near() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(hwb(20deg 200% -125%), lab)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hwb(20deg 200% -125%), lab)}\n"),
+            "a {\
          \n  b: color-mix(in lab, color(xyz 5.5338099778 5.6426521513 5.4845096668) 100%, black);\
          \n}\n"
-    );
+        );
     }
 }
 #[test]

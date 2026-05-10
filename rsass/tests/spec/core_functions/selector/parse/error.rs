@@ -109,37 +109,37 @@ mod slash_list {
     #[ignore] // wrong error
     fn in_comma_list() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+            runner().err(
+                "@use \"sass:selector\";\
              \n@use \"sass:list\";\
              \na {b: selector.parse((list.slash(c, d), list.slash(e, f)))}\n"
-        ),
-        "Error: $selector: (c / d, e / f) is not a valid selector: it must be a string,\
+            ),
+            "Error: $selector: (c / d, e / f) is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
          \n3 | a {b: selector.parse((list.slash(c, d), list.slash(e, f)))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 3:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
     fn top_level() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+            runner().err(
+                "@use \"sass:selector\";\
              \n@use \"sass:list\";\
              \na {b: selector.parse(list.slash(c d, e f))}\n"
-        ),
-        "Error: $selector: (c d / e f) is not a valid selector: it must be a string,\
+            ),
+            "Error: $selector: (c d / e f) is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
          \n3 | a {b: selector.parse(list.slash(c d, e f))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 3:7  root stylesheet",
-    );
+        );
     }
 }
 #[test]

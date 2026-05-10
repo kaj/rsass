@@ -134,14 +134,12 @@ mod out_of_range {
     #[ignore] // unexepected error
     fn near() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(color(prophoto-rgb -1 0.4 2), lch)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(color(prophoto-rgb -1 0.4 2), lch)}\n"),
+            "a {\
          \n  b: color-mix(in lch, color(xyz -0.4478815578 -0.0732156915 3.8173184875) 100%, black);\
          \n}\n"
-    );
+        );
     }
 }
 #[test]

@@ -1,10 +1,10 @@
 use super::super::color::eval_inner;
 use super::super::{CallError, CheckedArg, FunctionMap, ResolvedArgs};
 use super::css::{check_excess_args, required_arg};
-use super::{css_fn_arg, diff_units_msg, NumOrSpecial};
-use crate::css::{is_not, CallArgs, Value};
-use crate::value::Numeric;
+use super::{NumOrSpecial, css_fn_arg, diff_units_msg};
 use crate::Scope;
+use crate::css::{CallArgs, Value, is_not};
+use crate::value::Numeric;
 
 pub fn in_module(module: &mut Scope) {
     def!(module, abs(number), sass_abs);

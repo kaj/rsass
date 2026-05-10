@@ -1,5 +1,5 @@
 use super::Value;
-use crate::{css, input::SourcePos, Error, Invalid, ScopeRef};
+use crate::{Error, Invalid, ScopeRef, css, input::SourcePos};
 
 /// A value with a specific source position
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]

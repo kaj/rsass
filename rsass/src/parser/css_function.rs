@@ -6,16 +6,16 @@
 use super::util::{opt_spacelike, spacelike2};
 use super::value::{numeric, special_function, variable};
 use super::{
-    call_args, ignore_comments, position, sass_string, PResult, Span,
+    PResult, Span, call_args, ignore_comments, position, sass_string,
 };
 use crate::sass::{BinOp, CallArgs, Value};
 use crate::value::Operator;
+use nom::Parser as _;
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::multispace0;
 use nom::combinator::{into, map, not, peek, value};
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::Parser as _;
 
 pub fn css_function(input: Span) -> PResult<Value> {
     let (rest, arg) = delimited(

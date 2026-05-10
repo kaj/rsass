@@ -2,15 +2,15 @@ use super::strings::{
     sass_string, sass_string_allow_dash, sass_string_dq, sass_string_sq,
 };
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
-use super::{input_to_string, PResult, Span};
+use super::{PResult, Span, input_to_string};
 use crate::sass::{Selector, SelectorPart, Selectors};
+use nom::Parser as _;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::one_of;
 use nom::combinator::{map, map_opt, map_res, opt, value};
 use nom::multi::{many1, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::Parser as _;
 
 pub fn selectors(input: Span) -> PResult<Selectors> {
     map_opt(

@@ -3,7 +3,7 @@ use super::{BadSelector, SelectorSet};
 use crate::css::Value;
 use crate::error::Invalid;
 use crate::output::CssBuf;
-use crate::parser::{input_span, ParseError};
+use crate::parser::{ParseError, input_span};
 use crate::sass::CallError;
 use crate::value::ListSeparator;
 use nom::Finish;

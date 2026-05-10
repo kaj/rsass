@@ -1,20 +1,16 @@
 use super::{
-    check_alpha_pm, check_alpha_range, check_channel_pm, check_channel_range,
-    check_expl_pct, check_hue, check_pct, check_pct_range, expected_to,
-    CallError, CheckedArg, FunctionMap, Name,
+    CallError, CheckedArg, FunctionMap, Name, check_alpha_pm,
+    check_alpha_range, check_channel_pm, check_channel_range, check_expl_pct,
+    check_hue, check_pct, check_pct_range, expected_to,
 };
+use crate::Scope;
 use crate::css::{CallArgs, Value};
 use crate::value::{Color, Hsla, Hwba, Numeric, RgbFormat, Rgba};
-use crate::Scope;
 
 pub fn register(f: &mut Scope) {
     def_va!(f, adjust(color, kwargs), |s| {
         fn opt_add(a: f64, b: Option<f64>) -> f64 {
-            if let Some(b) = b {
-                a + b
-            } else {
-                a
-            }
+            if let Some(b) = b { a + b } else { a }
         }
         let color: Color = s.get(name!(color))?;
         let mut args = s.get_map(name!(kwargs), CallArgs::from_value)?;
@@ -279,7 +275,9 @@ fn no_more_positional(args: &CallArgs) -> Result<(), CallError> {
 
 fn no_more_in_space(args: &CallArgs, space: &str) -> Result<(), CallError> {
     if let Some((name, _)) = args.named.iter().next() {
-        Err(CallError::msg(format!("${name}: Color space {space} doesn\'t have a channel with this name.")))
+        Err(CallError::msg(format!(
+            "${name}: Color space {space} doesn\'t have a channel with this name."
+        )))
     } else {
         Ok(())
     }
@@ -310,16 +308,15 @@ fn check_pct_expl_pm(v: Value) -> Result<f64, String> {
 
 fn ok_as_filterarg(v: &Value) -> bool {
     match v {
-        Value::Literal(ref s) if s.quotes().is_none() => {
+        Value::Literal(s) if s.quotes().is_none() => {
             use crate::parser::strings::unitname;
             use crate::parser::{code_span, util::opt_spacelike};
-            use nom::bytes::complete::tag;
             use nom::Parser as _;
+            use nom::bytes::complete::tag;
             let span = code_span(s.value().as_ref());
-            let b = (unitname, opt_spacelike, tag("="))
+            (unitname, opt_spacelike, tag("="))
                 .parse(span.borrow())
-                .is_ok();
-            b
+                .is_ok()
         }
         Value::List(..) => true,
         _ => false,

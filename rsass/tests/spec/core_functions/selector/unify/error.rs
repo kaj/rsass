@@ -50,18 +50,18 @@ mod selector1 {
     #[test]
     fn test_type() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+            runner().err(
+                "@use \"sass:selector\";\
              \na {b: selector.unify(1, \"c\")}\n"
-        ),
-        "Error: $selector1: 1 is not a valid selector: it must be a string,\
+            ),
+            "Error: $selector1: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
          \n2 | a {b: selector.unify(1, \"c\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 mod selector2 {
@@ -110,18 +110,18 @@ mod selector2 {
     #[test]
     fn test_type() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+            runner().err(
+                "@use \"sass:selector\";\
              \na {b: selector.unify(\"c\", 1)}\n"
-        ),
-        "Error: $selector2: 1 is not a valid selector: it must be a string,\
+            ),
+            "Error: $selector2: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
          \n2 | a {b: selector.unify(\"c\", 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 #[test]

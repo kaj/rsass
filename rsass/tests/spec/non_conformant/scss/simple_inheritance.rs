@@ -8,8 +8,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok(
-            "earth {\
+        runner().ok("earth {\
              \n  mammal, bird {\
              \n    blood: warm;\
              \n  }\
@@ -59,8 +58,7 @@ fn test() {
              \ng {\
              \n  @extend f;\
              \n  bloo: bloo;\
-             \n}"
-        ),
+             \n}"),
         "earth mammal, earth horse, earth naysayer, earth cat, earth dog, earth bird {\
          \n  blood: warm;\
          \n}\

@@ -89,12 +89,12 @@ mod multi_configuration {
         fn both_configured() {
             let runner = runner().with_cwd("both_configured");
             assert_eq!(
-        runner.err(
-            "@use \"sass:meta\";\
+                runner.err(
+                    "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (a: b));\
              \n@include meta.load-css(\"other\", $with: (a: b));\n"
-        ),
-        "Error: _other.scss was already loaded, so it can\'t be configured using \"with\".\
+                ),
+                "Error: _other.scss was already loaded, so it can\'t be configured using \"with\".\
          \n  ,\
          \n2 | @include meta.load-css(\"other\", $with: (a: b));\
          \n  | ============================================== original load\
@@ -102,19 +102,19 @@ mod multi_configuration {
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ new load\
          \n  \'\
          \n  input.scss 3:1  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
         fn through_forward() {
             let runner = runner().with_cwd("through_forward");
             assert_eq!(
-        runner.err(
-            "@use \"sass:meta\";\
+                runner.err(
+                    "@use \"sass:meta\";\
              \n@include meta.load-css(\"forwarded\");\
              \n@include meta.load-css(\"midstream\", $with: (a: b, c: d));\n"
-        ),
-        "Error: This module was already loaded, so it can\'t be configured using \"with\".\
+                ),
+                "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,--> _midstream.scss\
          \n1 | @forward \"forwarded\";\
          \n  | ^^^^^^^^^^^^^^^^^^^^ new load\
@@ -127,19 +127,19 @@ mod multi_configuration {
          \n  \'\
          \n  _midstream.scss 1:1  load-css()\
          \n  input.scss 3:1       root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
         fn unconfigured_first() {
             let runner = runner().with_cwd("unconfigured_first");
             assert_eq!(
-        runner.err(
-            "@use \"sass:meta\";\
+                runner.err(
+                    "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\");\
              \n@include meta.load-css(\"other\", $with: (a: b));\n"
-        ),
-        "Error: _other.scss was already loaded, so it can\'t be configured using \"with\".\
+                ),
+                "Error: _other.scss was already loaded, so it can\'t be configured using \"with\".\
          \n  ,\
          \n2 | @include meta.load-css(\"other\");\
          \n  | =============================== original load\
@@ -147,7 +147,7 @@ mod multi_configuration {
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ new load\
          \n  \'\
          \n  input.scss 3:1  root stylesheet",
-    );
+            );
         }
     }
     mod use_and_load {
@@ -160,12 +160,12 @@ mod multi_configuration {
         fn both_configured() {
             let runner = runner().with_cwd("both_configured");
             assert_eq!(
-        runner.err(
-            "@use \"sass:meta\";\
+                runner.err(
+                    "@use \"sass:meta\";\
              \n@use \"other\" with ($a: b);\
              \n@include meta.load-css(\"other\", $with: (a: b));\n"
-        ),
-        "Error: _other.scss was already loaded, so it can\'t be configured using \"with\".\
+                ),
+                "Error: _other.scss was already loaded, so it can\'t be configured using \"with\".\
          \n  ,\
          \n2 | @use \"other\" with ($a: b);\
          \n  | ========================= original load\
@@ -173,7 +173,7 @@ mod multi_configuration {
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ new load\
          \n  \'\
          \n  input.scss 3:1  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
@@ -203,12 +203,12 @@ mod multi_configuration {
         fn through_forward() {
             let runner = runner().with_cwd("through_forward");
             assert_eq!(
-        runner.err(
-            "@use \"sass:meta\";\
+                runner.err(
+                    "@use \"sass:meta\";\
              \n@use \"forwarded\";\
              \n@include meta.load-css(\"midstream\", $with: (a: b, c: d));\n"
-        ),
-        "Error: This module was already loaded, so it can\'t be configured using \"with\".\
+                ),
+                "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,--> _midstream.scss\
          \n1 | @forward \"forwarded\";\
          \n  | ^^^^^^^^^^^^^^^^^^^^ new load\
@@ -221,19 +221,19 @@ mod multi_configuration {
          \n  \'\
          \n  _midstream.scss 1:1  load-css()\
          \n  input.scss 3:1       root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
         fn unconfigured_first() {
             let runner = runner().with_cwd("unconfigured_first");
             assert_eq!(
-        runner.err(
-            "@use \"sass:meta\";\
+                runner.err(
+                    "@use \"sass:meta\";\
              \n@use \"other\";\
              \n@include meta.load-css(\"other\", $with: (a: b));\n"
-        ),
-        "Error: _other.scss was already loaded, so it can\'t be configured using \"with\".\
+                ),
+                "Error: _other.scss was already loaded, so it can\'t be configured using \"with\".\
          \n  ,\
          \n2 | @use \"other\";\
          \n  | ============ original load\
@@ -241,7 +241,7 @@ mod multi_configuration {
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ new load\
          \n  \'\
          \n  input.scss 3:1  root stylesheet",
-    );
+            );
         }
     }
 }

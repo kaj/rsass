@@ -7,8 +7,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(
-            "@font-face {\
+        runner().ok("@font-face {\
              \n  font-family: \'My Font\';\
              \n  font-style: normal;\
              \n  font-weight: 300;\
@@ -21,8 +20,7 @@ fn test() {
              \n    url(\'my-font.ttf\') format(\'truetype\'),\
              \n    /* from http://.... original source of .svg */\
              \n    url(\'my-font.svg#MyFont\') format(\'svg\');\
-             \n}\n"
-        ),
+             \n}\n"),
         "@font-face {\
          \n  font-family: \"My Font\";\
          \n  font-style: normal;\

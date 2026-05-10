@@ -8,9 +8,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        runner().err(
-            "a {b: if()}\n"
-        ),
+        runner().err("a {b: if()}\n"),
         "DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\
          \nMore info: https://sass-lang.com/d/if-function\n\
          \n  ,\

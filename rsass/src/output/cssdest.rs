@@ -1,10 +1,10 @@
 use super::CssData;
+use crate::Invalid;
 use crate::css::{
     AtRule, AtRuleBodyItem, Comment, CssSelectorSet, CssString,
     CustomProperty, Import, Item, MediaArgs, MediaRule, Property, Rule,
     Value,
 };
-use crate::Invalid;
 
 type Result<T = ()> = std::result::Result<T, Invalid>;
 

@@ -12,9 +12,7 @@ fn runner() -> crate::TestRunner {
 fn with() {
     let runner = runner().with_cwd("with");
     assert_eq!(
-        runner.err(
-            "@use \"used\" with ($a: input a);\n"
-        ),
+        runner.err("@use \"used\" with ($a: input a);\n"),
         "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,\
          \n1 | @forward \"forwarded\" with ($a: used a 1 !default);\

@@ -1,7 +1,6 @@
 use super::{Attribute, CssSelectorSet, ElemType, Opt, Pseudo, SelectorSet};
-use crate::{output::CssBuf, parser::input_span, ParseError};
-use lazy_static::lazy_static;
-use std::fmt;
+use crate::{ParseError, output::CssBuf, parser::input_span};
+use std::{fmt, sync::LazyLock};
 
 #[derive(Default, Clone, PartialEq, Eq)]
 pub(crate) struct CompoundSelector {
@@ -33,7 +32,7 @@ impl CompoundSelector {
     }
     pub(super) fn cant_append(&self) -> bool {
         self.is_empty()
-            || self.element.as_ref().map_or(false, ElemType::cant_append)
+            || self.element.as_ref().is_some_and(ElemType::cant_append)
     }
     pub(super) fn append(&self, other: &Self) -> Result<Self, ParseError> {
         let mut s = CssBuf::new(Default::default());
@@ -85,7 +84,7 @@ impl CompoundSelector {
 
     pub(super) fn dedup(&mut self, original: &Self) {
         if original.element == self.element
-            && !self.element.as_ref().map_or(true, ElemType::is_any)
+            && !self.element.as_ref().is_none_or(ElemType::is_any)
         {
             self.element = None;
         }
@@ -120,9 +119,7 @@ impl CompoundSelector {
 
     pub fn is_superselector(&self, sub: &Self) -> bool {
         fn elem_or_default(e: &Option<ElemType>) -> &ElemType {
-            lazy_static! {
-                static ref DEF: ElemType = ElemType::default();
-            }
+            static DEF: LazyLock<ElemType> = LazyLock::new(ElemType::default);
             e.as_ref().unwrap_or(&DEF)
         }
         elem_or_default(&self.element)
@@ -137,7 +134,7 @@ impl CompoundSelector {
                 |aa| {
                     sub.pseudo_element()
                         .as_ref()
-                        .map_or(false, |ba| aa.is_superselector(ba))
+                        .is_some_and(|ba| aa.is_superselector(ba))
                 },
             )
     }
@@ -324,10 +321,10 @@ pub(crate) mod parser {
     use super::CompoundSelector;
     use crate::parser::css::strings::css_string_nohash as css_string;
     use crate::parser::{PResult, Span};
+    use nom::Parser as _;
     use nom::bytes::complete::tag;
     use nom::combinator::{opt, value, verify};
     use nom::sequence::preceded;
-    use nom::Parser as _;
 
     pub(crate) fn compound_selector(
         input: Span,

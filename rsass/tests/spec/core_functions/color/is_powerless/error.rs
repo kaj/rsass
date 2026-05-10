@@ -11,17 +11,17 @@ mod channel {
     #[ignore] // wrong error
     fn unknown() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.is-powerless(black, \"c\")}\n"
-        ),
-        "Error: $channel: Color black doesn\'t have a channel named \"c\".\
+            ),
+            "Error: $channel: Color black doesn\'t have a channel named \"c\".\
          \n  ,\
          \n2 | a {b: color.is-powerless(black, \"c\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
@@ -43,33 +43,33 @@ mod channel {
     #[ignore] // wrong error
     fn wrong_case() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.is-powerless(black, \"RED\")}\n"
-        ),
-        "Error: $channel: Color black doesn\'t have a channel named \"RED\".\
+            ),
+            "Error: $channel: Color black doesn\'t have a channel named \"RED\".\
          \n  ,\
          \n2 | a {b: color.is-powerless(black, \"RED\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
     fn wrong_space() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.is-powerless(black, \"hue\")}\n"
-        ),
-        "Error: $channel: Color black doesn\'t have a channel named \"hue\".\
+            ),
+            "Error: $channel: Color black doesn\'t have a channel named \"hue\".\
          \n  ,\
          \n2 | a {b: color.is-powerless(black, \"hue\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 mod space {

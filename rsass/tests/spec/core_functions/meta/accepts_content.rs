@@ -143,17 +143,17 @@ mod error {
         #[ignore] // wrong error
         fn wrong_type() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:meta\";\n\
+                runner().err(
+                    "@use \"sass:meta\";\n\
              \na {b: meta.accepts-content(meta.get-function(\"red\"))}\n"
-        ),
-        "Error: $mixin: get-function(\"red\") is not a mixin reference.\
+                ),
+                "Error: $mixin: get-function(\"red\") is not a mixin reference.\
          \n  ,\
          \n3 | a {b: meta.accepts-content(meta.get-function(\"red\"))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 3:7  root stylesheet",
-    );
+            );
         }
     }
 }

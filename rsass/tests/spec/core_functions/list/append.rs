@@ -172,17 +172,17 @@ mod error {
     #[test]
     fn unknown_separator() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:list\";\
+            runner().err(
+                "@use \"sass:list\";\
              \na {b: list.append(c, d, $separator: e)}\n"
-        ),
-        "Error: $separator: Must be \"space\", \"comma\", \"slash\", or \"auto\".\
+            ),
+            "Error: $separator: Must be \"space\", \"comma\", \"slash\", or \"auto\".\
          \n  ,\
          \n2 | a {b: list.append(c, d, $separator: e)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 mod map {

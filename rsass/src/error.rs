@@ -1,8 +1,8 @@
-use crate::css::{is_not, InvalidCss};
+use crate::ScopeError;
+use crate::css::{InvalidCss, is_not};
 use crate::input::{LoadError, SourcePos};
 use crate::output::{Format, Formatted};
 use crate::parser::ParseError;
-use crate::ScopeError;
 use std::{fmt, io};
 
 /// Many functions in rsass that returns a Result uses this Error type.
@@ -100,7 +100,7 @@ impl From<io::Error> for Error {
 }
 impl From<fmt::Error> for Error {
     fn from(e: fmt::Error) -> Self {
-        Self::IoError(io::Error::new(io::ErrorKind::Other, e))
+        Self::IoError(io::Error::other(e))
     }
 }
 

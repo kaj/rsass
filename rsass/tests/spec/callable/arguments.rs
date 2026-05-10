@@ -38,17 +38,17 @@ mod function {
         fn positional_after_named() {
             let runner = runner().with_cwd("positional_after_named");
             assert_eq!(
-        runner.err(
-            "@function a($b, $c) {@return null}\n\
+                runner.err(
+                    "@function a($b, $c) {@return null}\n\
              \n$d: a($b: 1, 2);\n"
-        ),
-        "Error: Positional arguments must come before keyword arguments.\
+                ),
+                "Error: Positional arguments must come before keyword arguments.\
          \n  ,\
          \n3 | $d: a($b: 1, 2);\
          \n  |              ^\
          \n  \'\
          \n  input.scss 3:14  root stylesheet",
-    );
+            );
         }
         mod splat {
             fn runner() -> crate::TestRunner {
@@ -264,17 +264,17 @@ mod mixin {
         fn positional_after_named() {
             let runner = runner().with_cwd("positional_after_named");
             assert_eq!(
-        runner.err(
-            "@mixin a($b, $c) {}\n\
+                runner.err(
+                    "@mixin a($b, $c) {}\n\
              \n@include a($b: 1, 2) {}\n"
-        ),
-        "Error: Positional arguments must come before keyword arguments.\
+                ),
+                "Error: Positional arguments must come before keyword arguments.\
          \n  ,\
          \n3 | @include a($b: 1, 2) {}\
          \n  |                   ^\
          \n  \'\
          \n  input.scss 3:19  root stylesheet",
-    );
+            );
         }
         mod splat {
             fn runner() -> crate::TestRunner {

@@ -1,7 +1,7 @@
 use super::{Call, CallError, Name, Value};
 use crate::ordermap::OrderMap;
 use crate::value::ListSeparator;
-use crate::{css, Error, Invalid, ScopeRef};
+use crate::{Error, Invalid, ScopeRef, css};
 use std::default::Default;
 
 /// the actual arguments of a function or mixin call.

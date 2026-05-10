@@ -217,11 +217,11 @@ mod error {
         fn too_few() {
             let runner = runner().with_cwd("too_few");
             assert_eq!(
-        runner.err(
-            "@use \"sass:meta\";\
+                runner.err(
+                    "@use \"sass:meta\";\
              \na {b: meta.global-variable-exists()}\n"
-        ),
-        "Error: Missing argument $name.\
+                ),
+                "Error: Missing argument $name.\
          \n  ,--> input.scss\
          \n2 | a {b: meta.global-variable-exists()}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
@@ -231,17 +231,17 @@ mod error {
          \n  |           ============================================ declaration\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn too_many() {
             let runner = runner().with_cwd("too_many");
             assert_eq!(
-        runner.err(
-            "@use \"sass:meta\";\
+                runner.err(
+                    "@use \"sass:meta\";\
              \na {b: meta.global-variable-exists(c, d, e)}\n"
-        ),
-        "Error: Only 2 arguments allowed, but 3 were passed.\
+                ),
+                "Error: Only 2 arguments allowed, but 3 were passed.\
          \n  ,--> input.scss\
          \n2 | a {b: meta.global-variable-exists(c, d, e)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
@@ -251,7 +251,7 @@ mod error {
          \n  |           ============================================ declaration\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         mod test_type {
             fn runner() -> crate::TestRunner {

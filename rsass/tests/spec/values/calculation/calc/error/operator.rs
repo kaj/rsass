@@ -50,16 +50,14 @@ mod greater_than_or_equals {
     #[test]
     fn both() {
         assert_eq!(
-        runner().err(
-            "a {b: calc(var(--c)) >= calc(var(--d))}\n"
-        ),
-        "Error: Undefined operation \"calc(var(--c)) >= calc(var(--d))\".\
+            runner().err("a {b: calc(var(--c)) >= calc(var(--d))}\n"),
+            "Error: Undefined operation \"calc(var(--c)) >= calc(var(--d))\".\
          \n  ,\
          \n1 | a {b: calc(var(--c)) >= calc(var(--d))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn lhs() {
@@ -132,16 +130,14 @@ mod less_than_or_equals {
     #[test]
     fn both() {
         assert_eq!(
-        runner().err(
-            "a {b: calc(var(--c)) <= calc(var(--d))}\n"
-        ),
-        "Error: Undefined operation \"calc(var(--c)) <= calc(var(--d))\".\
+            runner().err("a {b: calc(var(--c)) <= calc(var(--d))}\n"),
+            "Error: Undefined operation \"calc(var(--c)) <= calc(var(--d))\".\
          \n  ,\
          \n1 | a {b: calc(var(--c)) <= calc(var(--d))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn lhs() {

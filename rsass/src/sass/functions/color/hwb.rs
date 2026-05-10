@@ -1,14 +1,14 @@
 use super::super::FunctionMap;
 use super::hsl::percentage;
 use super::{
-    check_alpha, check_expl_pct_norange, eval_inner, is_not, relative_color,
-    CallError, CheckedArg, ResolvedArgs,
+    CallError, CheckedArg, ResolvedArgs, check_alpha, check_expl_pct_norange,
+    eval_inner, is_not, relative_color,
 };
+use crate::Scope;
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::sass::FormalArgs;
 use crate::value::{Color, Hwba, ListSeparator, Numeric, Rgba, Unit};
-use crate::Scope;
 
 pub fn register(f: &mut Scope) {
     def_va!(f, hwb(kwargs), hwb);

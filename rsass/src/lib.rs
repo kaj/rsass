@@ -52,7 +52,7 @@ mod variablescope;
 mod testutil;
 
 pub use crate::error::{Error, Invalid};
-pub use crate::parser::{parse_value_data, ParseError};
+pub use crate::parser::{ParseError, parse_value_data};
 pub use crate::variablescope::{Scope, ScopeError, ScopeRef};
 
 use crate::input::{FsContext, SourceName};

@@ -11,14 +11,12 @@ mod alpha {
     #[ignore] // unexepected error
     fn partial() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(lab(10% 20 30 / 0.4), display-p3)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lab(10% 20 30 / 0.4), display-p3)}\n"),
+            "a {\
          \n  b: color(display-p3 0.2036678394 0.0627355423 -0.092163728 / 0.4);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error

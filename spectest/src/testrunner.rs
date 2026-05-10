@@ -1,8 +1,8 @@
+use rsass::Error;
 use rsass::input::{
     Context, FsLoader, LoadError, Loader, SourceFile, SourceName,
 };
 use rsass::output::Format;
-use rsass::Error;
 use std::collections::BTreeMap;
 use std::io::{Cursor, Read};
 use std::sync::Arc;

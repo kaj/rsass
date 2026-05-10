@@ -226,32 +226,32 @@ mod sass_function {
         fn empty_after_named() {
             let runner = runner().with_cwd("empty_after_named");
             assert_eq!(
-        runner.ok(
-            "@use \'css/functions/var/sass_function/list-info\' as *;\
+                runner.ok(
+                    "@use \'css/functions/var/sass_function/list-info\' as *;\
              \n@function var($arg) {@return [$arg]}\
              \na {@include list-info(var($arg: --c, ))}\n"
-        ),
-        "a {\
+                ),
+                "a {\
          \n  quoted: [\"--c\"];\
          \n  is-quoted: [false];\
          \n}\n"
-    );
+            );
         }
         #[test]
         fn empty_after_rest() {
             let runner = runner().with_cwd("empty_after_rest");
             assert_eq!(
-        runner.ok(
-            "@use \'css/functions/var/sass_function/list-info\' as *;\
+                runner.ok(
+                    "@use \'css/functions/var/sass_function/list-info\' as *;\
              \n@function var($args...) {@return $args}\n\
              \n$name: --c;\
              \na {@include list-info(var($name..., ))}\n"
-        ),
-        "a {\
+                ),
+                "a {\
          \n  quoted: [\"--c\"];\
          \n  is-quoted: [false];\
          \n}\n"
-    );
+            );
         }
     }
     mod single_argument {
@@ -263,32 +263,32 @@ mod sass_function {
         fn expression() {
             let runner = runner().with_cwd("expression");
             assert_eq!(
-        runner.ok(
-            "@use \'css/functions/var/sass_function/list-info\' as *;\
+                runner.ok(
+                    "@use \'css/functions/var/sass_function/list-info\' as *;\
              \n@function var($args...) {@return $args}\
              \na {@include list-info(var(--c))}\n"
-        ),
-        "a {\
+                ),
+                "a {\
          \n  quoted: [\"--c\"];\
          \n  is-quoted: [false];\
          \n}\n"
-    );
+            );
         }
         #[test]
         fn rest() {
             let runner = runner().with_cwd("rest");
             assert_eq!(
-        runner.ok(
-            "@use \'css/functions/var/sass_function/list-info\' as *;\
+                runner.ok(
+                    "@use \'css/functions/var/sass_function/list-info\' as *;\
              \n@function var($args...) {@return $args}\
              \n$name: --c;\
              \na {@include list-info(var($name...))}\n"
-        ),
-        "a {\
+                ),
+                "a {\
          \n  quoted: [\"--c\"];\
          \n  is-quoted: [false];\
          \n}\n"
-    );
+            );
         }
     }
     #[test]
@@ -327,62 +327,62 @@ mod sass_function {
         fn dynamic() {
             let runner = runner().with_cwd("dynamic");
             assert_eq!(
-        runner.ok(
-            "@use \'css/functions/var/sass_function/list-info\' as *;\
+                runner.ok(
+                    "@use \'css/functions/var/sass_function/list-info\' as *;\
              \n@function var($args...) {@return $args}\
              \na {@include list-info(var(--c, \"d\" + \"e\"))}\n"
-        ),
-        "a {\
+                ),
+                "a {\
          \n  quoted: [\"--c\", \"de\"];\
          \n  is-quoted: [false, true];\
          \n}\n"
-    );
+            );
         }
         #[test]
         fn empty() {
             let runner = runner().with_cwd("empty");
             assert_eq!(
-        runner.ok(
-            "@use \'css/functions/var/sass_function/list-info\' as *;\
+                runner.ok(
+                    "@use \'css/functions/var/sass_function/list-info\' as *;\
              \n@function var($args...) {@return $args}\
              \na {@include list-info(var(--c, ))}\n"
-        ),
-        "a {\
+                ),
+                "a {\
          \n  quoted: [\"--c\", \"\"];\
          \n  is-quoted: [false, false];\
          \n}\n"
-    );
+            );
         }
         #[test]
         fn expressions() {
             let runner = runner().with_cwd("expressions");
             assert_eq!(
-        runner.ok(
-            "@use \'css/functions/var/sass_function/list-info\' as *;\
+                runner.ok(
+                    "@use \'css/functions/var/sass_function/list-info\' as *;\
              \n@function var($args...) {@return $args}\
              \na {@include list-info(var(--c, d))}\n"
-        ),
-        "a {\
+                ),
+                "a {\
          \n  quoted: [\"--c\", \"d\"];\
          \n  is-quoted: [false, false];\
          \n}\n"
-    );
+            );
         }
         #[test]
         fn rest() {
             let runner = runner().with_cwd("rest");
             assert_eq!(
-        runner.ok(
-            "@use \'css/functions/var/sass_function/list-info\' as *;\
+                runner.ok(
+                    "@use \'css/functions/var/sass_function/list-info\' as *;\
              \n@function var($args...) {@return $args}\
              \n$args: --c, d;\
              \na {@include list-info(var($args...))}\n"
-        ),
-        "a {\
+                ),
+                "a {\
          \n  quoted: [\"--c\", \"d\"];\
          \n  is-quoted: [false, false];\
          \n}\n"
-    );
+            );
         }
     }
     #[test]

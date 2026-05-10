@@ -107,18 +107,18 @@ mod error {
         #[test]
         fn test_type() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+                runner().err(
+                    "@use \"sass:selector\";\
              \na {b: selector.replace(\"c\", 1, \"d\")}\n"
-        ),
-        "Error: $original: 1 is not a valid selector: it must be a string,\
+                ),
+                "Error: $original: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
          \n2 | a {b: selector.replace(\"c\", 1, \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
     }
     mod extender {
@@ -167,18 +167,18 @@ mod error {
         #[test]
         fn test_type() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+                runner().err(
+                    "@use \"sass:selector\";\
              \na {b: selector.replace(\"c\", \"d\", 1)}\n"
-        ),
-        "Error: $replacement: 1 is not a valid selector: it must be a string,\
+                ),
+                "Error: $replacement: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
          \n2 | a {b: selector.replace(\"c\", \"d\", 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
     }
     mod selector {
@@ -227,28 +227,28 @@ mod error {
         #[test]
         fn test_type() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+                runner().err(
+                    "@use \"sass:selector\";\
              \na {b: selector.replace(1, \"c\", \"d\")}\n"
-        ),
-        "Error: $selector: 1 is not a valid selector: it must be a string,\
+                ),
+                "Error: $selector: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
          \n2 | a {b: selector.replace(1, \"c\", \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
     }
     #[test]
     fn too_few_args() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+            runner().err(
+                "@use \"sass:selector\";\
              \na {b: selector.replace(\"c\", \"d\")}\n"
-        ),
-        "Error: Missing argument $replacement.\
+            ),
+            "Error: Missing argument $replacement.\
          \n  ,--> input.scss\
          \n2 | a {b: selector.replace(\"c\", \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
@@ -258,16 +258,16 @@ mod error {
          \n  |           =========================================== declaration\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn too_many_args() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+            runner().err(
+                "@use \"sass:selector\";\
              \na {b: selector.replace(\"c\", \"d\", \"e\", \"f\")}\n"
-        ),
-        "Error: Only 3 arguments allowed, but 4 were passed.\
+            ),
+            "Error: Only 3 arguments allowed, but 4 were passed.\
          \n  ,--> input.scss\
          \n2 | a {b: selector.replace(\"c\", \"d\", \"e\", \"f\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
@@ -277,7 +277,7 @@ mod error {
          \n  |           =========================================== declaration\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn wrong_name() {

@@ -58,10 +58,8 @@ mod argument {
     fn too_few() {
         let runner = runner().with_cwd("too_few");
         assert_eq!(
-        runner.err(
-            "a {b: get-function()}\n"
-        ),
-        "Error: Missing argument $name.\
+            runner.err("a {b: get-function()}\n"),
+            "Error: Missing argument $name.\
          \n  ,--> input.scss\
          \n1 | a {b: get-function()}\
          \n  |       ^^^^^^^^^^^^^^ invocation\
@@ -71,16 +69,14 @@ mod argument {
          \n  |           =============================================== declaration\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn too_many() {
         let runner = runner().with_cwd("too_many");
         assert_eq!(
-        runner.err(
-            "a {b: get-function(c, true, d, e)}\n"
-        ),
-        "Error: Only 3 arguments allowed, but 4 were passed.\
+            runner.err("a {b: get-function(c, true, d, e)}\n"),
+            "Error: Only 3 arguments allowed, but 4 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: get-function(c, true, d, e)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
@@ -90,7 +86,7 @@ mod argument {
          \n  |           =============================================== declaration\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     mod test_type {
         fn runner() -> crate::TestRunner {

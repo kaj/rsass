@@ -73,32 +73,32 @@ mod error {
     #[test]
     fn unitless_x() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+            runner().err(
+                "@use \"sass:math\";\
              \na {b: math.atan2(1px, 1)}\n"
-        ),
-        "Error: $x: 1 and $y: 1px have incompatible units (one has units and the other doesn\'t).\
+            ),
+            "Error: $x: 1 and $y: 1px have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.atan2(1px, 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn unitless_y() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+            runner().err(
+                "@use \"sass:math\";\
              \na {b: math.atan2(1, 1px)}\n"
-        ),
-        "Error: $x: 1px and $y: 1 have incompatible units (one has units and the other doesn\'t).\
+            ),
+            "Error: $x: 1px and $y: 1 have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.atan2(1, 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn x_type() {

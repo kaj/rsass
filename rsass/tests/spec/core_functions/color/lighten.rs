@@ -23,10 +23,8 @@ mod error {
         #[ignore] // wrong error
         fn too_high() {
             assert_eq!(
-        runner().err(
-            "a {b: lighten(red, 100.001)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: lighten(red, 100.001)}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -40,16 +38,14 @@ mod error {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn too_low() {
             assert_eq!(
-        runner().err(
-            "a {b: lighten(red, -0.001)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: lighten(red, -0.001)}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -63,17 +59,15 @@ mod error {
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
     #[test]
     #[ignore] // wrong error
     fn non_legacy() {
         assert_eq!(
-        runner().err(
-            "a {b: lighten(color(srgb 0 0 0), 10%)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner().err("a {b: lighten(color(srgb 0 0 0), 10%)}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -87,7 +81,7 @@ mod error {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn too_few_args() {
@@ -128,10 +122,8 @@ mod error {
         #[ignore] // wrong error
         fn color() {
             assert_eq!(
-        runner().err(
-            "a {b: lighten(1, 2)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: lighten(1, 2)}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -145,16 +137,14 @@ mod error {
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn lightness() {
             assert_eq!(
-        runner().err(
-            "a {b: lighten(red, blue)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: lighten(red, blue)}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -168,7 +158,7 @@ mod error {
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
 }

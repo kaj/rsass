@@ -8,9 +8,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong error
 fn non_legacy() {
     assert_eq!(
-        runner().err(
-            "a {b: adjust-hue(lch(0% 0 0deg), 10deg)}\n"
-        ),
+        runner().err("a {b: adjust-hue(lch(0% 0 0deg), 10deg)}\n"),
         "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
@@ -66,10 +64,8 @@ mod test_type {
     #[ignore] // wrong error
     fn color() {
         assert_eq!(
-        runner().err(
-            "a {b: adjust-hue(1, 2)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner().err("a {b: adjust-hue(1, 2)}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -83,16 +79,14 @@ mod test_type {
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
     fn hue() {
         assert_eq!(
-        runner().err(
-            "a {b: adjust-hue(red, blue)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner().err("a {b: adjust-hue(red, blue)}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -106,6 +100,6 @@ mod test_type {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
 }

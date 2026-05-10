@@ -84,18 +84,18 @@ mod extendee {
     #[test]
     fn test_type() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+            runner().err(
+                "@use \"sass:selector\";\
              \na {b: selector.extend(\"c\", 1, \"d\")}\n"
-        ),
-        "Error: $extendee: 1 is not a valid selector: it must be a string,\
+            ),
+            "Error: $extendee: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
          \n2 | a {b: selector.extend(\"c\", 1, \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 mod extender {
@@ -144,18 +144,18 @@ mod extender {
     #[test]
     fn test_type() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+            runner().err(
+                "@use \"sass:selector\";\
              \na {b: selector.extend(\"c\", \"d\", 1)}\n"
-        ),
-        "Error: $extender: 1 is not a valid selector: it must be a string,\
+            ),
+            "Error: $extender: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
          \n2 | a {b: selector.extend(\"c\", \"d\", 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 mod selector {
@@ -204,18 +204,18 @@ mod selector {
     #[test]
     fn test_type() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+            runner().err(
+                "@use \"sass:selector\";\
              \na {b: selector.extend(1, \"c\", \"d\")}\n"
-        ),
-        "Error: $selector: 1 is not a valid selector: it must be a string,\
+            ),
+            "Error: $selector: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
          \n2 | a {b: selector.extend(1, \"c\", \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 #[test]

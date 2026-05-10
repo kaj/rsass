@@ -14,65 +14,65 @@ mod after {
         #[ignore] // wrong error
         fn css() {
             assert_eq!(
-        runner().err(
-            "@keyframes a {};\
+                runner().err(
+                    "@keyframes a {};\
              \n@forward \"b\";\n"
-        ),
-        "Error: @forward rules must be written before any other rules.\
+                ),
+                "Error: @forward rules must be written before any other rules.\
          \n  ,\
          \n2 | @forward \"b\";\
          \n  | ^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:1  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn import() {
             assert_eq!(
-        runner().err(
-            "@import \"a\";\
+                runner().err(
+                    "@import \"a\";\
              \n@forward \"b\";\n"
-        ),
-        "Error: @forward rules must be written before any other rules.\
+                ),
+                "Error: @forward rules must be written before any other rules.\
          \n  ,\
          \n2 | @forward \"b\";\
          \n  | ^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:1  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn sass() {
             assert_eq!(
-        runner().err(
-            "@if true {};\
+                runner().err(
+                    "@if true {};\
              \n@forward \"a\";\n"
-        ),
-        "Error: @forward rules must be written before any other rules.\
+                ),
+                "Error: @forward rules must be written before any other rules.\
          \n  ,\
          \n2 | @forward \"a\";\
          \n  | ^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:1  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn unknown() {
             assert_eq!(
-        runner().err(
-            "@a;\
+                runner().err(
+                    "@a;\
              \n@forward \"b\";\n"
-        ),
-        "Error: @forward rules must be written before any other rules.\
+                ),
+                "Error: @forward rules must be written before any other rules.\
          \n  ,\
          \n2 | @forward \"b\";\
          \n  | ^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:1  root stylesheet",
-    );
+            );
         }
     }
     #[test]

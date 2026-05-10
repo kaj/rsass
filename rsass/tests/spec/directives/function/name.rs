@@ -130,33 +130,33 @@ mod error {
             #[ignore] // missing error
             fn lowercase() {
                 assert_eq!(
-        runner().err(
-            "@function type() {@return 1}\
+                    runner().err(
+                        "@function type() {@return 1}\
              \na {b: type()}\n"
-        ),
-        "Error: This name is reserved for the plain-CSS function.\
+                    ),
+                    "Error: This name is reserved for the plain-CSS function.\
          \n  ,\
          \n1 | @function type() {@return 1}\
          \n  |           ^^^^\
          \n  \'\
          \n  input.scss 1:11  root stylesheet",
-    );
+                );
             }
             #[test]
             #[ignore] // missing error
             fn uppercase() {
                 assert_eq!(
-        runner().err(
-            "@function TYPE() {@return 1}\
+                    runner().err(
+                        "@function TYPE() {@return 1}\
              \na {b: TYPE()}\n"
-        ),
-        "Error: This name is reserved for the plain-CSS function.\
+                    ),
+                    "Error: This name is reserved for the plain-CSS function.\
          \n  ,\
          \n1 | @function TYPE() {@return 1}\
          \n  |           ^^^^\
          \n  \'\
          \n  input.scss 1:11  root stylesheet",
-    );
+                );
             }
         }
         #[test]

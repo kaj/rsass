@@ -1,6 +1,6 @@
 use super::options::Options;
 use super::writestr::WriteStr;
-use super::{fn_name, ignore, Error, TestRunner};
+use super::{Error, TestRunner, fn_name, ignore};
 use lazy_regex::regex_replace_all;
 use std::io::Write;
 
@@ -121,9 +121,9 @@ impl TestFixture {
         } else {
             runner
         };
-        match (&self.expectation, runner.run(&self.input)) {
+        match (&self.expectation, &runner.run(&self.input)) {
             (ExpectedError(_), Ok(_)) => Some("missing error"),
-            (ExpectedError(ref expected), Err(ref actual)) => {
+            (ExpectedError(expected), Err(actual)) => {
                 // TODO: some flexibility in comparision?
                 if expected == actual {
                     None
@@ -131,7 +131,7 @@ impl TestFixture {
                     Some("wrong error")
                 }
             }
-            (ExpectedCSS(ref expected), Ok(ref actual)) => {
+            (ExpectedCSS(expected), Ok(actual)) => {
                 if expected == actual {
                     None
                 } else {

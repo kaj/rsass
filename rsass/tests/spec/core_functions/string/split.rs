@@ -49,10 +49,8 @@ fn empty() {
 #[test]
 fn empty_separator() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:string\";\
-             \na {b: string.split(\"Helvetica\", \"\")}\n"
-        ),
+        runner().ok("@use \"sass:string\";\
+             \na {b: string.split(\"Helvetica\", \"\")}\n"),
         "a {\
          \n  b: [\"H\", \"e\", \"l\", \"v\", \"e\", \"t\", \"i\", \"c\", \"a\"];\
          \n}\n"

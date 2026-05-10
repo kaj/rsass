@@ -8,9 +8,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        runner().err(
-            "& {}\n"
-        ),
+        runner().err("& {}\n"),
         "Error: Top-level selectors may not contain the parent selector \"&\".\
          \n  ,\
          \n1 | & {}\

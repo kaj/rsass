@@ -1,12 +1,12 @@
 use super::{PResult, Span};
 use crate::sass::{SassString, StringPart};
+use nom::Parser;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::{char, multispace1};
 use nom::combinator::{eof, map, map_res, not, opt, peek, value};
 use nom::multi::{fold_many0, fold_many1, many0};
 use nom::sequence::{preceded, terminated};
-use nom::Parser;
 use nom_language::error::VerboseError;
 use std::str::from_utf8;
 

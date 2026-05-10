@@ -62,10 +62,8 @@ fn float() {
 #[ignore] // unexepected error
 fn gray() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(hsl(0deg 0% 50%), display-p3-linear)}\n"
-        ),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hsl(0deg 0% 50%), display-p3-linear)}\n"),
         "a {\
          \n  b: color(display-p3-linear 0.2140411405 0.2140411405 0.2140411405);\
          \n}\n"

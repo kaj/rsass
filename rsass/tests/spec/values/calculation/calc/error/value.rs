@@ -151,18 +151,18 @@ mod variable {
     #[test]
     fn function() {
         assert_eq!(
-        runner().err(
-            "@use \'sass:meta\';\
+            runner().err(
+                "@use \'sass:meta\';\
              \n$a: meta.get-function(\"get-function\", $module: \"meta\");\
              \nb {c: calc($a)}\n"
-        ),
-        "Error: Value get-function(\"get-function\") can\'t be used in a calculation.\
+            ),
+            "Error: Value get-function(\"get-function\") can\'t be used in a calculation.\
          \n  ,\
          \n3 | b {c: calc($a)}\
          \n  |            ^^\
          \n  \'\
          \n  input.scss 3:12  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error

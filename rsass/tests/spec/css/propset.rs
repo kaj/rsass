@@ -90,47 +90,41 @@ mod error {
             #[ignore] // wrong error
             fn complex() {
                 assert_eq!(
-        runner().err(
-            "a { b: { --d: e {--f: g} } }\n"
-        ),
-        "Error: Declarations whose names begin with \"--\" may not be nested.\
+                    runner().err("a { b: { --d: e {--f: g} } }\n"),
+                    "Error: Declarations whose names begin with \"--\" may not be nested.\
          \n  ,\
          \n1 | a { b: { --d: e {--f: g} } }\
          \n  |          ^^^\
          \n  \'\
          \n  input.scss 1:10  root stylesheet",
-    );
+                );
             }
             #[test]
             #[ignore] // wrong error
             fn simple() {
                 assert_eq!(
-        runner().err(
-            "a { b: { --d: {e: f} } }\n"
-        ),
-        "Error: Declarations whose names begin with \"--\" may not be nested.\
+                    runner().err("a { b: { --d: {e: f} } }\n"),
+                    "Error: Declarations whose names begin with \"--\" may not be nested.\
          \n  ,\
          \n1 | a { b: { --d: {e: f} } }\
          \n  |          ^^^\
          \n  \'\
          \n  input.scss 1:10  root stylesheet",
-    );
+                );
             }
         }
         #[test]
         #[ignore] // wrong error
         fn simple() {
             assert_eq!(
-        runner().err(
-            "a { b: { --d: e } }\n"
-        ),
-        "Error: Declarations whose names begin with \"--\" may not be nested.\
+                runner().err("a { b: { --d: e } }\n"),
+                "Error: Declarations whose names begin with \"--\" may not be nested.\
          \n  ,\
          \n1 | a { b: { --d: e } }\
          \n  |          ^^^\
          \n  \'\
          \n  input.scss 1:10  root stylesheet",
-    );
+            );
         }
     }
     #[test]

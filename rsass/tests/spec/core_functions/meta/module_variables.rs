@@ -147,18 +147,18 @@ mod error {
     fn dash_sensitive() {
         let runner = runner().with_cwd("dash_sensitive");
         assert_eq!(
-        runner.err(
-            "@use \"sass:meta\";\
+            runner.err(
+                "@use \"sass:meta\";\
              \n@use \"other-module\";\n\
              \na {b: meta.inspect(meta.module-variables(\"other_module\"))}\n"
-        ),
-        "Error: There is no module with namespace \"other_module\".\
+            ),
+            "Error: There is no module with namespace \"other_module\".\
          \n  ,\
          \n4 | a {b: meta.inspect(meta.module-variables(\"other_module\"))}\
          \n  |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 4:20  root stylesheet",
-    );
+        );
     }
     #[test]
     fn global() {
@@ -217,11 +217,11 @@ mod error {
     fn too_many_args() {
         let runner = runner().with_cwd("too_many_args");
         assert_eq!(
-        runner.err(
-            "@use \"sass:meta\";\
+            runner.err(
+                "@use \"sass:meta\";\
              \na {b: meta.inspect(meta.module-variables(\"meta\", \"c\"))}\n"
-        ),
-        "Error: Only 1 argument allowed, but 2 were passed.\
+            ),
+            "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n2 | a {b: meta.inspect(meta.module-variables(\"meta\", \"c\"))}\
          \n  |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
@@ -231,7 +231,7 @@ mod error {
          \n  |           ========================= declaration\
          \n  \'\
          \n  input.scss 2:20  root stylesheet",
-    );
+        );
     }
     #[test]
     fn test_type() {

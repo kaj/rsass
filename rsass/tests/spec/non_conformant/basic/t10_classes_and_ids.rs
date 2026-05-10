@@ -7,16 +7,14 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(
-            "a + b, .class {\
+        runner().ok("a + b, .class {\
              \n  blah: blah;\
              \n  bleh: bleh;\
              \n  d #id, f ~ g.other + h, > i#grar {\
              \n    bloo: bloo;\
              \n    blee: blee;\
              \n  }\
-             \n}"
-        ),
+             \n}"),
         "a + b, .class {\
          \n  blah: blah;\
          \n  bleh: bleh;\

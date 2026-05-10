@@ -46,7 +46,7 @@ impl From<&Hwba> for Hsla {
     fn from(hwba: &Hwba) -> Self {
         let w = hwba.whiteness();
         let b = hwba.blackness();
-        let l = (1. - b + w) / 2.;
+        let l = f64::midpoint(1. - b, w);
         let s = if l == 0. || l == 1. {
             0.
         } else {

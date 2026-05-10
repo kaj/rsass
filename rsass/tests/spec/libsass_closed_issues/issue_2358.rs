@@ -7,8 +7,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(
-            ".outer {\r\
+        runner().ok(".outer {\r\
              \n  @at-root .root {\r\
              \n    .inner {\r\
              \n      .element {\r\
@@ -38,8 +37,7 @@ fn test() {
              \n      content: \"#{&}\";\r\
              \n    }\r\
              \n  }\r\
-             \n}\r\n"
-        ),
+             \n}\r\n"),
         ".root .inner .element --modifier.root .inner .element--another-modifier {\
          \n  content: \".root .inner .element --modifier.root .inner .element--another-modifier\";\
          \n}\

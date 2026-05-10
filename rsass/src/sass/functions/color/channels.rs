@@ -1,4 +1,4 @@
-use super::{is_special, CallError};
+use super::{CallError, is_special};
 use crate::css::Value;
 use crate::value::ListSeparator;
 

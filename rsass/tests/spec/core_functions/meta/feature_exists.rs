@@ -59,11 +59,11 @@ mod error {
     #[test]
     fn too_many_args() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:meta\";\
+            runner().err(
+                "@use \"sass:meta\";\
              \na {b: meta.feature-exists(at-error, custom-property)}\n"
-        ),
-        "Error: Only 1 argument allowed, but 2 were passed.\
+            ),
+            "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n2 | a {b: meta.feature-exists(at-error, custom-property)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
@@ -73,17 +73,17 @@ mod error {
          \n  |           ======================== declaration\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:meta\";\
+            runner().err(
+                "@use \"sass:meta\";\
              \na {b: meta.feature-exists(1)}\n"
-        ),
-        "DEPRECATION WARNING [feature-exists]: The feature-exists() function is deprecated.\n\
+            ),
+            "DEPRECATION WARNING [feature-exists]: The feature-exists() function is deprecated.\n\
          \nMore info: https://sass-lang.com/d/feature-exists\n\
          \n  ,\
          \n2 | a {b: meta.feature-exists(1)}\
@@ -96,7 +96,7 @@ mod error {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 #[test]

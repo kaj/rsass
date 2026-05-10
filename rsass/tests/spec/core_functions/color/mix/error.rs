@@ -11,10 +11,8 @@ mod bounds {
     #[ignore] // wrong error
     fn too_high() {
         assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, 100.001%)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner().err("a {b: mix(red, blue, 100.001%)}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -28,16 +26,14 @@ mod bounds {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
     fn too_low() {
         assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, -0.001%)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner().err("a {b: mix(red, blue, -0.001%)}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -51,16 +47,14 @@ mod bounds {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
 }
 #[test]
 #[ignore] // wrong error
 fn color_interpolation_method() {
     assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, $method: brighter)}\n"
-        ),
+        runner().err("a {b: mix(red, blue, $method: brighter)}\n"),
         "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
@@ -110,10 +104,8 @@ mod interpolation {
     #[ignore] // wrong error
     fn number() {
         assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, $method: hsl 1)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner().err("a {b: mix(red, blue, $method: hsl 1)}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -127,7 +119,7 @@ mod interpolation {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
 }
 mod interpolation_list {
@@ -137,10 +129,9 @@ mod interpolation_list {
     #[ignore] // wrong error
     fn quoted() {
         assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, $method: \"hsl longer hue\")}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner()
+                .err("a {b: mix(red, blue, $method: \"hsl longer hue\")}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -154,7 +145,7 @@ mod interpolation_list {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
@@ -173,10 +164,8 @@ mod interpolation_list {
     #[ignore] // wrong error
     fn slash() {
         assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, $method: hsl/longer/hue)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner().err("a {b: mix(red, blue, $method: hsl/longer/hue)}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -190,7 +179,7 @@ mod interpolation_list {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
 }
 mod invalid_method {
@@ -225,10 +214,9 @@ mod invalid_method {
     #[ignore] // wrong error
     fn wrong_hue_keyword() {
         assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, $method: hsl longer shade)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner()
+                .err("a {b: mix(red, blue, $method: hsl longer shade)}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -242,16 +230,14 @@ mod invalid_method {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
 }
 #[test]
 #[ignore] // wrong error
 fn missing_hue_string() {
     assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, $method: lch decreasing)}\n"
-        ),
+        runner().err("a {b: mix(red, blue, $method: lch decreasing)}\n"),
         "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
@@ -278,10 +264,8 @@ mod null_method {
         #[ignore] // wrong error
         fn color1() {
             assert_eq!(
-        runner().err(
-            "a {b: mix(lch(20% -20 0), red)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: mix(lch(20% -20 0), red)}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -295,16 +279,14 @@ mod null_method {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn color2() {
             assert_eq!(
-        runner().err(
-            "a {b: mix(red, lch(20% -20 0))}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: mix(red, lch(20% -20 0))}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -318,7 +300,7 @@ mod null_method {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
 }
@@ -326,9 +308,8 @@ mod null_method {
 #[ignore] // wrong error
 fn parentheses() {
     assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, $method: lch (decreasing hue))}\n"
-        ),
+        runner()
+            .err("a {b: mix(red, blue, $method: lch (decreasing hue))}\n"),
         "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
@@ -349,9 +330,7 @@ fn parentheses() {
 #[ignore] // wrong error
 fn rectangular_space_with_method() {
     assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, $method: srgb longer hue)}\n"
-        ),
+        runner().err("a {b: mix(red, blue, $method: srgb longer hue)}\n"),
         "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
@@ -372,9 +351,7 @@ fn rectangular_space_with_method() {
 #[ignore] // wrong error
 fn too_few_args() {
     assert_eq!(
-        runner().err(
-            "a {b: mix(red)}\n"
-        ),
+        runner().err("a {b: mix(red)}\n"),
         "Error: Missing argument $color2.\
          \n  ,--> input.scss\
          \n1 | a {b: mix(red)}\
@@ -391,9 +368,7 @@ fn too_few_args() {
 #[ignore] // wrong error
 fn too_many_args() {
     assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, 30%, lch, 1)}\n"
-        ),
+        runner().err("a {b: mix(red, blue, 30%, lch, 1)}\n"),
         "Error: Only 4 arguments allowed, but 5 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: mix(red, blue, 30%, lch, 1)}\
@@ -413,10 +388,8 @@ mod test_type {
     #[ignore] // wrong error
     fn color1() {
         assert_eq!(
-        runner().err(
-            "a {b: mix(1, blue)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner().err("a {b: mix(1, blue)}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -430,16 +403,14 @@ mod test_type {
          \n  |       ^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
     fn color2() {
         assert_eq!(
-        runner().err(
-            "a {b: mix(red, 1)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner().err("a {b: mix(red, 1)}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -453,16 +424,14 @@ mod test_type {
          \n  |       ^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
     fn weight() {
         assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, green)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner().err("a {b: mix(red, blue, green)}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -476,16 +445,14 @@ mod test_type {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
 }
 #[test]
 #[ignore] // wrong error
 fn unknown_interpolation() {
     assert_eq!(
-        runner().err(
-            "a {b: mix(red, blue, $method: lch longerhue)}\n"
-        ),
+        runner().err("a {b: mix(red, blue, $method: lch longerhue)}\n"),
         "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.mix instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\

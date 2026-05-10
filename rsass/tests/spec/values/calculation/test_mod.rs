@@ -112,16 +112,14 @@ mod error {
         #[ignore] // wrong error
         fn complex_and_unknown() {
             assert_eq!(
-        runner().err(
-            "a {b: mod(1px*2px, 10%)}\n"
-        ),
-        "Error: Number calc(2px * 1px) isn\'t compatible with CSS calculations.\
+                runner().err("a {b: mod(1px*2px, 10%)}\n"),
+                "Error: Number calc(2px * 1px) isn\'t compatible with CSS calculations.\
          \n  ,\
          \n1 | a {b: mod(1px*2px, 10%)}\
          \n  |           ^^^^^^^\
          \n  \'\
          \n  input.scss 1:11  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error

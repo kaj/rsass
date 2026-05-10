@@ -49,16 +49,14 @@ mod function {
     #[ignore] // wrong error
     fn private() {
         assert_eq!(
-        runner().err(
-            "a {a: namespace._member()}\n"
-        ),
-        "Error: Private members can\'t be accessed from outside their modules.\
+            runner().err("a {a: namespace._member()}\n"),
+            "Error: Private members can\'t be accessed from outside their modules.\
          \n  ,\
          \n1 | a {a: namespace._member()}\
          \n  |                 ^^^^^^^\
          \n  \'\
          \n  input.scss 1:17  root stylesheet",
-    );
+        );
     }
 }
 #[test]
@@ -123,16 +121,14 @@ mod mixin {
     #[ignore] // wrong error
     fn private() {
         assert_eq!(
-        runner().err(
-            "a {@include namespace._member}\n"
-        ),
-        "Error: Private members can\'t be accessed from outside their modules.\
+            runner().err("a {@include namespace._member}\n"),
+            "Error: Private members can\'t be accessed from outside their modules.\
          \n  ,\
          \n1 | a {@include namespace._member}\
          \n  |                       ^^^^^^^\
          \n  \'\
          \n  input.scss 1:23  root stylesheet",
-    );
+        );
     }
 }
 #[test]
@@ -198,15 +194,13 @@ mod variable {
     #[ignore] // wrong error
     fn private() {
         assert_eq!(
-        runner().err(
-            "a {a: namespace.$_member}\n"
-        ),
-        "Error: Private members can\'t be accessed from outside their modules.\
+            runner().err("a {a: namespace.$_member}\n"),
+            "Error: Private members can\'t be accessed from outside their modules.\
          \n  ,\
          \n1 | a {a: namespace.$_member}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
 }

@@ -11,14 +11,12 @@ mod alpha {
     #[ignore] // unexepected error
     fn partial() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(oklab(10% 0.2 0.3 / 0.4), rec2020)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(oklab(10% 0.2 0.3 / 0.4), rec2020)}\n"),
+            "a {\
          \n  b: color(rec2020 0.1199234985 -0.0200899779 -0.1691453967 / 0.4);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error
@@ -109,14 +107,12 @@ mod out_of_range {
     #[ignore] // unexepected error
     fn far() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(oklab(50% -999999 0), rec2020)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(oklab(50% -999999 0), rec2020)}\n"),
+            "a {\
          \n  b: color(rec2020 -56131666.27802762 38257475.9243856 10955270.093935277);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error

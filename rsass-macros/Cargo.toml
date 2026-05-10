@@ -9,8 +9,8 @@ documentation = "https://docs.rs/rsass-macros"
 repository = "https://github.com/kaj/rsass"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
-edition = "2021"
-rust-version = "1.68.0"
+edition = "2024"
+rust-version = "1.85.0"
 
 [lib]
 proc-macro = true

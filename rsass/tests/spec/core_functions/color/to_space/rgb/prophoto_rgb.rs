@@ -11,27 +11,23 @@ mod alpha {
     #[ignore] // unexepected error
     fn partial() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(rgb(10 20 30 / 0.4), prophoto-rgb)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(rgb(10 20 30 / 0.4), prophoto-rgb)}\n"),
+            "a {\
          \n  b: color(prophoto-rgb 0.0568847736 0.0623636876 0.0861178613 / 0.4);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error
     fn transparent() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(rgb(10 20 30 / 0.0), prophoto-rgb)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(rgb(10 20 30 / 0.0), prophoto-rgb)}\n"),
+            "a {\
          \n  b: color(prophoto-rgb 0.0568847736 0.0623636876 0.0861178613 / 0);\
          \n}\n"
-    );
+        );
     }
 }
 #[test]

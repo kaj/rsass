@@ -1,7 +1,7 @@
-use super::{check, CallError, FunctionMap};
+use super::{CallError, FunctionMap, check};
+use crate::Scope;
 use crate::css::Value;
 use crate::value::ListSeparator;
-use crate::Scope;
 
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:list");

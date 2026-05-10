@@ -8,8 +8,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok(
-            ".one-screen-page {\
+        runner().ok(".one-screen-page {\
              \n\t@extend %context-dark;\
              \n}\n\
              \n%context-dark {\
@@ -21,8 +20,7 @@ fn test() {
              \n\t\t\tcolor: #fca;\
              \n\t\t}\
              \n\t}\
-             \n}\n"
-        ),
+             \n}\n"),
         ".one-screen-page .button-secondary-outline:hover, .one-screen-page .button-secondary-outline:focus, .one-screen-page .button-secondary-outline:active {\
          \n  color: #fca;\
          \n}\n"

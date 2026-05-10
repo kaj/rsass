@@ -58,31 +58,27 @@ mod error {
         #[ignore] // missing error
         fn alpha() {
             assert_eq!(
-        runner().err(
-            "a {b: lab(\"from\" #aaa l a b / 25%)}\n"
-        ),
-        "Error: $channels: Expected lightness channel to be a number, was \"from\".\
+                runner().err("a {b: lab(\"from\" #aaa l a b / 25%)}\n"),
+                "Error: $channels: Expected lightness channel to be a number, was \"from\".\
          \n  ,\
          \n1 | a {b: lab(\"from\" #aaa l a b / 25%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
         fn no_alpha() {
             assert_eq!(
-        runner().err(
-            "a {b: lab(\"from\" #aaa l a b)}\n"
-        ),
-        "Error: $channels: Expected lightness channel to be a number, was \"from\".\
+                runner().err("a {b: lab(\"from\" #aaa l a b)}\n"),
+                "Error: $channels: Expected lightness channel to be a number, was \"from\".\
          \n  ,\
          \n1 | a {b: lab(\"from\" #aaa l a b)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
     mod wrong_keyword {
@@ -92,31 +88,27 @@ mod error {
         #[ignore] // missing error
         fn alpha() {
             assert_eq!(
-        runner().err(
-            "a {b: lab(c #aaa l a b / 25%)}\n"
-        ),
-        "Error: $channels: Expected lightness channel to be a number, was c.\
+                runner().err("a {b: lab(c #aaa l a b / 25%)}\n"),
+                "Error: $channels: Expected lightness channel to be a number, was c.\
          \n  ,\
          \n1 | a {b: lab(c #aaa l a b / 25%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
         fn no_alpha() {
             assert_eq!(
-        runner().err(
-            "a {b: lab(c #aaa l a b)}\n"
-        ),
-        "Error: $channels: Expected lightness channel to be a number, was c.\
+                runner().err("a {b: lab(c #aaa l a b)}\n"),
+                "Error: $channels: Expected lightness channel to be a number, was c.\
          \n  ,\
          \n1 | a {b: lab(c #aaa l a b)}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
 }

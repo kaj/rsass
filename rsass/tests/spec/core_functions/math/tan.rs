@@ -68,17 +68,17 @@ mod error {
     #[test]
     fn unit() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+            runner().err(
+                "@use \"sass:math\";\
              \na {b: math.tan(1px)}\n"
-        ),
-        "Error: $number: Expected 1px to have an angle unit (deg, grad, rad, turn).\
+            ),
+            "Error: $number: Expected 1px to have an angle unit (deg, grad, rad, turn).\
          \n  ,\
          \n2 | a {b: math.tan(1px)}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn zero_args() {

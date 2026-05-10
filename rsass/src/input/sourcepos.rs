@@ -150,7 +150,7 @@ impl SourcePos {
             .find(|i| data.get(*i) == Some(&b'\n'))
             .map_or(0, |n| n + 1);
         let end = (self.start..)
-            .find(|i| data.get(*i).map_or(true, |b| b == &b'\n'))
+            .find(|i| data.get(*i).is_none_or(|b| b == &b'\n'))
             .unwrap();
         let line = &data[start..end];
         let line_no = self.line_no();

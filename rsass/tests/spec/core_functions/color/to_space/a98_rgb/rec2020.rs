@@ -117,14 +117,12 @@ mod out_of_range {
     #[ignore] // unexepected error
     fn far() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(color(a98-rgb -999999 0 0), rec2020)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(color(a98-rgb -999999 0 0), rec2020)}\n"),
+            "a {\
          \n  b: color(rec2020 -898316.3792876494 -332882.1030921165 -174225.0344960701);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error

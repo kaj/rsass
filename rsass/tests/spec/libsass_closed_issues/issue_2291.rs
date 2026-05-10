@@ -8,8 +8,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok(
-            ".m__exhibit-header--medium {\
+        runner().ok(".m__exhibit-header--medium {\
              \n    @extend #{&}--plain;\
              \n    &--plain {\
              \n        font-size: 1em;\
@@ -41,8 +40,7 @@ fn test() {
              \n      }\
              \n    }\
              \n  }\
-             \n}"
-        ),
+             \n}"),
         ".m__exhibit-header--medium--plain, .m__exhibit-header--medium {\
          \n  font-size: 1em;\
          \n}\

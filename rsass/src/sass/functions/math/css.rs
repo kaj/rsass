@@ -1,7 +1,7 @@
 use super::{
+    CallError, CheckedArg, FunctionMap, NumOrSpecial, ResolvedArgs,
     css_fn_arg, deg_value, diff_units_msg, expected_to, known_dim,
-    known_dim_spec, num2radians, CallError, CheckedArg, FunctionMap,
-    NumOrSpecial, ResolvedArgs,
+    known_dim_spec, num2radians,
 };
 use crate::css::{self, BinOp, Value};
 use crate::sass::{ArgsError, Name};
@@ -210,7 +210,7 @@ pub fn global(global: &mut FunctionMap) {
         fn pre_calc(v: &Value) -> bool {
             match v {
                 Value::Numeric(..) => true,
-                Value::Call(ref name, _) => css::is_calc_name(name),
+                Value::Call(name, _) => css::is_calc_name(name),
                 Value::Literal(s) => s.is_css_calc(),
                 Value::Paren(s) => pre_calc(s),
                 _ => false,

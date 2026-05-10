@@ -14,9 +14,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        runner().err(
-            "@use \"midstream\" with ($a: b);\n"
-        ),
+        runner().err("@use \"midstream\" with ($a: b);\n"),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"midstream\" with ($a: b);\

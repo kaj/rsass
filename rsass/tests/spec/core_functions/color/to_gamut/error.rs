@@ -31,35 +31,35 @@ mod method {
     #[ignore] // wrong error
     fn absent() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.to-gamut(pink)}\n"
-        ),
-        "Error: $method: color.to-gamut() requires a $method argument for forwards-compatibility with changes in the CSS spec. Suggestion:\n\
+            ),
+            "Error: $method: color.to-gamut() requires a $method argument for forwards-compatibility with changes in the CSS spec. Suggestion:\n\
          \n$method: local-minde\
          \n  ,\
          \n2 | a {b: color.to-gamut(pink)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
     fn null() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.to-gamut(pink, $method: null)}\n"
-        ),
-        "Error: $method: color.to-gamut() requires a $method argument for forwards-compatibility with changes in the CSS spec. Suggestion:\n\
+            ),
+            "Error: $method: color.to-gamut() requires a $method argument for forwards-compatibility with changes in the CSS spec. Suggestion:\n\
          \n$method: local-minde\
          \n  ,\
          \n2 | a {b: color.to-gamut(pink, $method: null)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
@@ -149,17 +149,17 @@ mod space {
     #[ignore] // wrong error
     fn unknown() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.to-gamut(pink, $space: c, $method: local-minde)}\n"
-        ),
-        "Error: $space: Unknown color space \"c\".\
+            ),
+            "Error: $space: Unknown color space \"c\".\
          \n  ,\
          \n2 | a {b: color.to-gamut(pink, $space: c, $method: local-minde)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 #[test]

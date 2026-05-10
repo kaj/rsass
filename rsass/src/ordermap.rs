@@ -13,7 +13,7 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
     }
 
     pub fn insert(&mut self, key: K, value: V) -> Option<V> {
-        for (ref k, ref mut v) in &mut self.0 {
+        for (k, v) in &mut self.0 {
             if k == &key {
                 return Some(std::mem::replace(v, value));
             }

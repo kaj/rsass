@@ -14,15 +14,15 @@ mod error {
         #[ignore] // wrong error
         fn builtin() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:meta\";\n\
+                runner().err(
+                    "@use \"sass:meta\";\n\
              \na {\
              \n  @include meta.apply(meta.get-mixin(load-css, meta), \"a\") {\
              \n    a: b;\
              \n  }\
              \n}\n"
-        ),
-        "Error: Mixin doesn\'t accept a content block.\
+                ),
+                "Error: Mixin doesn\'t accept a content block.\
          \n  ,--> input.scss\
          \n4 |   @include meta.apply(meta.get-mixin(load-css, meta), \"a\") {\
          \n  |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
@@ -32,7 +32,7 @@ mod error {
          \n  |        =========================== declaration\
          \n  \'\
          \n  input.scss 4:3  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error

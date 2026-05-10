@@ -30,7 +30,7 @@ impl Pseudo {
                     }
                     (Opt::Any, false) | (Opt::None, true) => return Opt::Any,
                     (Opt::None, false) | (Opt::Any, true) => {
-                        return Opt::None
+                        return Opt::None;
                     }
                 }
             }
@@ -158,7 +158,7 @@ fn is_pseudo_element(n: &str) -> bool {
 fn name_in(name: &str, known: &[&str]) -> bool {
     if name.starts_with('-') {
         known.iter().any(|end| {
-            name.strip_suffix(end).map_or(false, |s| s.ends_with('-'))
+            name.strip_suffix(end).is_some_and(|s| s.ends_with('-'))
         })
     } else {
         known.contains(&name)
@@ -205,11 +205,11 @@ pub(super) mod parser {
         css_string_nohash, custom_value_inner,
     };
     use crate::parser::{PResult, Span};
+    use nom::Parser as _;
     use nom::branch::alt;
     use nom::bytes::complete::tag;
     use nom::combinator::{map, value};
     use nom::sequence::delimited;
-    use nom::Parser as _;
 
     pub(crate) fn pseudo(input: Span) -> PResult<Pseudo> {
         map(

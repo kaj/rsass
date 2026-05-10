@@ -58,31 +58,27 @@ mod error {
         #[ignore] // wrong error
         fn alpha() {
             assert_eq!(
-        runner().err(
-            "a {b: rgb(\"from\" #aaa r g b / 25%)}\n"
-        ),
-        "Error: $channels: Expected red channel to be a number, was \"from\".\
+                runner().err("a {b: rgb(\"from\" #aaa r g b / 25%)}\n"),
+                "Error: $channels: Expected red channel to be a number, was \"from\".\
          \n  ,\
          \n1 | a {b: rgb(\"from\" #aaa r g b / 25%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn no_alpha() {
             assert_eq!(
-        runner().err(
-            "a {b: rgb(\"from\" #aaa r g b)}\n"
-        ),
-        "Error: $channels: Expected red channel to be a number, was \"from\".\
+                runner().err("a {b: rgb(\"from\" #aaa r g b)}\n"),
+                "Error: $channels: Expected red channel to be a number, was \"from\".\
          \n  ,\
          \n1 | a {b: rgb(\"from\" #aaa r g b)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
     mod wrong_keyword {
@@ -92,31 +88,27 @@ mod error {
         #[ignore] // wrong error
         fn alpha() {
             assert_eq!(
-        runner().err(
-            "a {b: rgb(c #aaa r g b / 25%)}\n"
-        ),
-        "Error: $channels: Expected red channel to be a number, was c.\
+                runner().err("a {b: rgb(c #aaa r g b / 25%)}\n"),
+                "Error: $channels: Expected red channel to be a number, was c.\
          \n  ,\
          \n1 | a {b: rgb(c #aaa r g b / 25%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn no_alpha() {
             assert_eq!(
-        runner().err(
-            "a {b: rgb(c #aaa r g b)}\n"
-        ),
-        "Error: $channels: Expected red channel to be a number, was c.\
+                runner().err("a {b: rgb(c #aaa r g b)}\n"),
+                "Error: $channels: Expected red channel to be a number, was c.\
          \n  ,\
          \n1 | a {b: rgb(c #aaa r g b)}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
 }

@@ -59,32 +59,32 @@ mod powerless {
     #[ignore] // wrong error
     fn legacy() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.adjust(grey, $hue: 10deg, $space: hsl)}\n"
-        ),
-        "Error: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: hsl(none 0% 50.1960784314%)).\
+            ),
+            "Error: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: hsl(none 0% 50.1960784314%)).\
          \n  ,\
          \n2 | a {b: color.adjust(grey, $hue: 10deg, $space: hsl)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
     fn modern() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.adjust(grey, $hue: 10deg, $space: lch)}\n"
-        ),
-        "Error: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: lch(53.5850134522% 0 none)).\
+            ),
+            "Error: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: lch(53.5850134522% 0 none)).\
          \n  ,\
          \n2 | a {b: color.adjust(grey, $hue: 10deg, $space: lch)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }

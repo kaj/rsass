@@ -1,13 +1,13 @@
 use super::{
-    expected_to, is_not, CallError, CheckedArg, FunctionMap, NumOrSpecial,
-    ResolvedArgs,
+    CallError, CheckedArg, FunctionMap, NumOrSpecial, ResolvedArgs,
+    expected_to, is_not,
 };
+use crate::Scope;
 use crate::css::{CallArgs, CssString, Value};
 use crate::input::SourcePos;
 use crate::output::Format;
 use crate::sass::{FormalArgs, Name};
 use crate::value::{ListSeparator, Numeric, Quotes, Unit};
-use crate::Scope;
 mod channels;
 mod hsl;
 mod hwb;

@@ -7,8 +7,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(
-            ".parent-sel-value {\
+        runner().ok(".parent-sel-value {\
              \n  font-family: &;\
              \n  .parent-sel-interpolation {\
              \n    font-family: #{&};\
@@ -16,8 +15,7 @@ fn test() {
              \n        font-family: \"Current parent: \" + &;\
              \n     }\
              \n  }\
-             \n}\n"
-        ),
+             \n}\n"),
         ".parent-sel-value {\
          \n  font-family: .parent-sel-value;\
          \n}\

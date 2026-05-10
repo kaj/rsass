@@ -62,10 +62,8 @@ fn float() {
 #[ignore] // unexepected error
 fn gray() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(#aaa, display-p3-linear)}\n"
-        ),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(#aaa, display-p3-linear)}\n"),
         "a {\
          \n  b: color(display-p3-linear 0.4019777798 0.4019777798 0.4019777798);\
          \n}\n"
@@ -75,10 +73,8 @@ fn gray() {
 #[ignore] // unexepected error
 fn middle() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(#28d, display-p3-linear)}\n"
-        ),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(#28d, display-p3-linear)}\n"),
         "a {\
          \n  b: color(display-p3-linear 0.0568664418 0.2385598551 0.6764537091);\
          \n}\n"

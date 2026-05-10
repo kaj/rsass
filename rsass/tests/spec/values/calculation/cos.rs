@@ -98,44 +98,38 @@ mod error {
         #[test]
         fn complex() {
             assert_eq!(
-        runner().err(
-            "a {b: cos(-7px / 4em)}\n"
-        ),
-        "Error: $number: Expected calc(-1.75px / 1em) to have an angle unit (deg, grad, rad, turn).\
+                runner().err("a {b: cos(-7px / 4em)}\n"),
+                "Error: $number: Expected calc(-1.75px / 1em) to have an angle unit (deg, grad, rad, turn).\
          \n  ,\
          \n1 | a {b: cos(-7px / 4em)}\
          \n  |       ^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn known() {
             assert_eq!(
-        runner().err(
-            "a {b: cos(1px)}\n"
-        ),
-        "Error: $number: Expected 1px to have an angle unit (deg, grad, rad, turn).\
+                runner().err("a {b: cos(1px)}\n"),
+                "Error: $number: Expected 1px to have an angle unit (deg, grad, rad, turn).\
          \n  ,\
          \n1 | a {b: cos(1px)}\
          \n  |       ^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn unknown() {
             assert_eq!(
-        runner().err(
-            "a {b: cos(1%)}\n"
-        ),
-        "Error: $number: Expected 1% to have an angle unit (deg, grad, rad, turn).\
+                runner().err("a {b: cos(1%)}\n"),
+                "Error: $number: Expected 1% to have an angle unit (deg, grad, rad, turn).\
          \n  ,\
          \n1 | a {b: cos(1%)}\
          \n  |       ^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
 }

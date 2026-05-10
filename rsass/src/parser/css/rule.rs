@@ -4,13 +4,13 @@ use super::strings::custom_value;
 use super::{comment, import2, strings, values};
 use crate::css::parser::selector_set;
 use crate::css::{BodyItem, CustomProperty, Property, Rule};
+use nom::Parser as _;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::one_of;
 use nom::combinator::{into, map, opt};
 use nom::multi::many_till;
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::Parser as _;
 
 pub fn rule(input: Span) -> PResult<Rule> {
     map(

@@ -472,13 +472,13 @@ mod or {
         #[ignore] // unexepected error
         fn css_or_false_or_css() {
             assert_eq!(
-        runner().ok(
-            "a {b: if(css(1) or sass(false) or css(2): c; else: d)}\n"
-        ),
-        "a {\
+                runner().ok(
+                    "a {b: if(css(1) or sass(false) or css(2): c; else: d)}\n"
+                ),
+                "a {\
          \n  b: if(css(1) or css(2): c; else: d);\
          \n}\n"
-    );
+            );
         }
         #[test]
         #[ignore] // unexepected error

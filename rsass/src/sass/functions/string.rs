@@ -1,10 +1,9 @@
-use super::{check, CallError, FunctionMap};
+use super::{CallError, FunctionMap, check};
+use crate::Scope;
 use crate::css::{CssString, Value};
 use crate::value::ListSeparator;
-use crate::Scope;
-use lazy_static::lazy_static;
 use std::cmp::min;
-use std::sync::Mutex;
+use std::sync::{LazyLock, Mutex};
 
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:string");
@@ -117,10 +116,9 @@ pub fn create_module() -> Scope {
         Ok(CssString::new(v.value().to_lowercase(), v.quotes()).into())
     });
     def!(f, unique_id(), |_s| {
-        lazy_static! {
-            static ref CALL_ID: Mutex<u64> =
-                Mutex::new(u64::from(std::process::id()) * 0xa01);
-        };
+        static CALL_ID: LazyLock<Mutex<u64>> = LazyLock::new(|| {
+            Mutex::new(u64::from(std::process::id()) * 0xa01)
+        });
         let v = {
             let mut v = CALL_ID.lock().unwrap();
             *v += 1;

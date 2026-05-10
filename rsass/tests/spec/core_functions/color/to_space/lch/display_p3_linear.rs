@@ -62,10 +62,8 @@ fn float() {
 #[ignore] // unexepected error
 fn gray() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(lch(50% 0 0deg), display-p3-linear)}\n"
-        ),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lch(50% 0 0deg), display-p3-linear)}\n"),
         "a {\
          \n  b: color(display-p3-linear 0.1841865185 0.1841865185 0.1841865185);\
          \n}\n"
@@ -104,14 +102,12 @@ mod missing {
     #[ignore] // unexepected error
     fn hue() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(lch(10% 20 none), display-p3-linear)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lch(10% 20 none), display-p3-linear)}\n"),
+            "a {\
          \n  b: color(display-p3-linear 0.0278772897 0.0054380443 0.0115933369);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error

@@ -5,10 +5,9 @@ use crate::output::Format;
 use crate::sass::{Expose, Function, Item, ItemBody, MixinDecl, Name, UseAs};
 use crate::{Error, Invalid};
 use arc_swap::ArcSwapOption;
-use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::ops::Deref;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, LazyLock, Mutex};
 
 /// A static or dynamic scope referece.
 ///
@@ -46,7 +45,7 @@ impl ScopeRef {
     pub fn is_same(a: &Self, b: &Self) -> bool {
         match (a, b) {
             (Self::Builtin(a), Self::Builtin(b)) => std::ptr::eq(a, b),
-            (Self::Dynamic(ref a), Self::Dynamic(ref b)) => Arc::ptr_eq(a, b),
+            (Self::Dynamic(a), Self::Dynamic(b)) => Arc::ptr_eq(a, b),
             _ => false,
         }
     }
@@ -57,15 +56,15 @@ impl ScopeRef {
         Self: Sized,
     {
         for b in body.as_ref() {
-            let result = match *b {
-                Item::IfStatement(ref cond, ref do_if, ref do_else) => {
+            let result = match b {
+                Item::IfStatement(cond, do_if, do_else) => {
                     if cond.evaluate(self.clone())?.is_true() {
                         self.clone().eval_body(do_if)?
                     } else {
                         self.clone().eval_body(do_else)?
                     }
                 }
-                Item::Each(ref names, ref values, ref body) => {
+                Item::Each(names, values, body) => {
                     let s = self.clone();
                     for value in values.evaluate(s.clone())?.iter_items() {
                         s.define_multi(names, value)?;
@@ -75,7 +74,7 @@ impl ScopeRef {
                     }
                     None
                 }
-                Item::For(ref name, ref range, ref body) => {
+                Item::For(name, range, body) => {
                     let range = range.evaluate(self.clone())?;
                     let s = self.clone();
                     for value in range {
@@ -86,14 +85,14 @@ impl ScopeRef {
                     }
                     None
                 }
-                Item::VariableDeclaration(ref var) => {
+                Item::VariableDeclaration(var) => {
                     var.evaluate(&self)?;
                     None
                 }
-                Item::Return(ref v, _) => {
+                Item::Return(v, _) => {
                     Some(v.do_evaluate(self.clone(), true)?)
                 }
-                Item::While(ref cond, ref body) => {
+                Item::While(cond, body) => {
                     let scope = Self::sub(self.clone());
                     while cond.evaluate(scope.clone())?.is_true() {
                         if let Some(r) = scope.clone().eval_body(body)? {
@@ -102,29 +101,29 @@ impl ScopeRef {
                     }
                     None
                 }
-                Item::Debug(ref value) => {
+                Item::Debug(value) => {
                     eprintln!(
                         "DEBUG: {}",
                         value.evaluate(self.clone())?.introspect()
                     );
                     None
                 }
-                Item::Warn(ref value) => {
+                Item::Warn(value) => {
                     eprintln!(
                         "WARNING: {}",
                         value.evaluate(self.clone())?.introspect()
                     );
                     None
                 }
-                Item::Error(ref value, ref pos) => {
+                Item::Error(value, pos) => {
                     let msg = value.evaluate(self)?.introspect();
                     return Err(Invalid::AtError(msg).at(pos.clone()));
                 }
                 Item::None | Item::Comment(..) => None,
-                ref x => {
+                x => {
                     return Err(Error::S(format!(
                         "Not implemented in function: {x:?}",
-                    )))
+                    )));
                 }
             };
             if let Some(result) = result {
@@ -337,7 +336,7 @@ impl Scope {
     /// Define a variable in the global scope that is an ultimate
     /// parent of this scope.
     pub fn define_global(&self, name: Name, val: Value) {
-        if let Some(ref parent) = self.parent {
+        if let Some(parent) = &self.parent {
             parent.define_global(name, val);
         } else {
             self.variables.lock().unwrap().insert(name, val);
@@ -429,7 +428,7 @@ impl Scope {
     }
     /// Get the global Value for a variable.
     pub fn get_global_or_none(&self, name: &Name) -> Option<Value> {
-        if let Some(ref parent) = self.parent {
+        if let Some(parent) = &self.parent {
             parent.get_global_or_none(name)
         } else {
             self.get_or_none(name)
@@ -476,7 +475,7 @@ impl Scope {
             let f = self.functions.lock().unwrap().get(name).cloned();
             if let Some(f) = f {
                 Ok(Some(f))
-            } else if let Some(ref parent) = self.parent {
+            } else if let Some(parent) = &self.parent {
                 parent.get_function(name)
             } else {
                 Ok(None)
@@ -491,11 +490,9 @@ impl Scope {
 
     /// Get the selectors active for this scope.
     pub fn get_selectors(&self) -> &SelectorCtx {
-        lazy_static! {
-            static ref ROOT: SelectorCtx = SelectorCtx::root();
-        }
+        static ROOT: LazyLock<SelectorCtx> = LazyLock::new(SelectorCtx::root);
         self.selectors.as_ref().unwrap_or_else(|| {
-            self.parent.as_ref().map_or(&ROOT, |p| p.get_selectors())
+            self.parent.as_ref().map_or(&*ROOT, |p| p.get_selectors())
         })
     }
 
@@ -624,9 +621,7 @@ pub mod test {
                 $expected
             )
         }};
-        ($input:expr, $expected:expr) => {{
-            assert_expr!(&[], $input, $expected)
-        }};
+        ($input:expr, $expected:expr) => {{ assert_expr!(&[], $input, $expected) }};
     }
 
     #[test]
@@ -853,7 +848,7 @@ pub mod test {
     ) -> Result<String, crate::Error> {
         use super::ScopeRef;
         use crate::parser::value::value_expression;
-        use crate::parser::{code_span, ParseError};
+        use crate::parser::{ParseError, code_span};
         use crate::sass::Name;
         use nom::bytes::complete::tag;
         use nom::sequence::terminated;

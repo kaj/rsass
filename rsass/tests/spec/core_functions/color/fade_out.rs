@@ -14,10 +14,8 @@ mod error {
         #[ignore] // wrong error
         fn too_high() {
             assert_eq!(
-        runner().err(
-            "a {b: fade-out(red, 1.001)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: fade-out(red, 1.001)}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -31,16 +29,14 @@ mod error {
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn too_low() {
             assert_eq!(
-        runner().err(
-            "a {b: fade-out(red, -0.001)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: fade-out(red, -0.001)}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -54,7 +50,7 @@ mod error {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
@@ -86,10 +82,8 @@ mod error {
     #[ignore] // wrong error
     fn non_legacy() {
         assert_eq!(
-        runner().err(
-            "a {b: fade-out(color(srgb 1 1 1), 0.1)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+            runner().err("a {b: fade-out(color(srgb 1 1 1), 0.1)}\n"),
+            "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -103,7 +97,7 @@ mod error {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn too_few_args() {
@@ -144,10 +138,8 @@ mod error {
         #[ignore] // wrong error
         fn alpha() {
             assert_eq!(
-        runner().err(
-            "a {b: fade-out(red, blue)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: fade-out(red, blue)}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -161,16 +153,14 @@ mod error {
          \n  |       ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // wrong error
         fn color() {
             assert_eq!(
-        runner().err(
-            "a {b: fade-out(1, 0.1)}\n"
-        ),
-        "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
+                runner().err("a {b: fade-out(1, 0.1)}\n"),
+                "DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.\
          \nUse color.adjust instead.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
@@ -184,7 +174,7 @@ mod error {
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
 }

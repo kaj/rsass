@@ -106,17 +106,17 @@ mod error {
     #[ignore] // wrong error
     fn invalid_args() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:meta\";\
+            runner().err(
+                "@use \"sass:meta\";\
              \na {b: meta.call(meta.get-function(\"rgb\"), 1)}\n"
-        ),
-        "Error: $channels: The rgb color space has 3 channels but 1 has 1.\
+            ),
+            "Error: $channels: The rgb color space has 3 channels but 1 has 1.\
          \n  ,\
          \n2 | a {b: meta.call(meta.get-function(\"rgb\"), 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     fn too_few_args() {

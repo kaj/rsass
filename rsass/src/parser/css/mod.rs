@@ -5,15 +5,15 @@ mod values;
 
 use super::{PResult, Span};
 use crate::css::{AtRule, Comment, Import, Item, MediaRule, Value};
+use nom::Parser as _;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, tag_no_case};
 use nom::character::complete::{multispace0, multispace1};
 use nom::combinator::{
     all_consuming, into, map, map_res, not, opt, peek, recognize,
 };
-use nom::multi::{fold_many0, many0, many_till};
+use nom::multi::{fold_many0, many_till, many0};
 use nom::sequence::{delimited, preceded, terminated};
-use nom::Parser as _;
 use nom_language::error::{VerboseError, VerboseErrorKind};
 use std::str::from_utf8;
 

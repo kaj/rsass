@@ -3,7 +3,7 @@ use crate::error::ResultPos;
 use crate::input::SourcePos;
 use crate::output::Format;
 use crate::value::{BadOp, ListSeparator, Number, Numeric, Operator, Rgba};
-use crate::{css, Error, Invalid, ScopeRef};
+use crate::{Error, Invalid, ScopeRef, css};
 use std::fmt::{self, Write};
 
 /// A sass value.

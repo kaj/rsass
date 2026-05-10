@@ -126,11 +126,11 @@ mod error {
         #[ignore] // wrong error
         fn trailing() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+                runner().err(
+                    "@use \"sass:selector\";\
              \na {b: selector.append(\".c ~\", \".d\")}\n"
-        ),
-        "Error: Selector \".c ~\" can\'t be used as a parent in a compound selector.\
+                ),
+                "Error: Selector \".c ~\" can\'t be used as a parent in a compound selector.\
          \n  ,\
          \n1 | .c ~\
          \n  | ^^^^ outer selector\
@@ -140,7 +140,7 @@ mod error {
          \n  |       ============================= parent selector\
          \n  \'\
          \n  - 1:1  root stylesheet",
-    );
+            );
         }
     }
     #[test]

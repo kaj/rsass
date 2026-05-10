@@ -25,62 +25,62 @@ mod error {
         #[test]
         fn all() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.hypot(1turn, 1px, 1s)}\n"
-        ),
-        "Error: $numbers[2]: 1px and $numbers[1]: 1turn have incompatible units.\
+                ),
+                "Error: $numbers[2]: 1px and $numbers[1]: 1turn have incompatible units.\
          \n  ,\
          \n2 | a {b: math.hypot(1turn, 1px, 1s)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn first_and_second() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.hypot(1deg, 1px, 1turn)}\n"
-        ),
-        "Error: $numbers[2]: 1px and $numbers[1]: 1deg have incompatible units.\
+                ),
+                "Error: $numbers[2]: 1px and $numbers[1]: 1deg have incompatible units.\
          \n  ,\
          \n2 | a {b: math.hypot(1deg, 1px, 1turn)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn first_and_third() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.hypot(1deg, 1turn, 1px)}\n"
-        ),
-        "Error: $numbers[3]: 1px and $numbers[1]: 1deg have incompatible units.\
+                ),
+                "Error: $numbers[3]: 1px and $numbers[1]: 1deg have incompatible units.\
          \n  ,\
          \n2 | a {b: math.hypot(1deg, 1turn, 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn second_and_third() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.hypot(1turn, 1deg, 1px)}\n"
-        ),
-        "Error: $numbers[3]: 1px and $numbers[1]: 1turn have incompatible units.\
+                ),
+                "Error: $numbers[3]: 1px and $numbers[1]: 1turn have incompatible units.\
          \n  ,\
          \n2 | a {b: math.hypot(1turn, 1deg, 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
     }
     mod some_unitless {
@@ -89,92 +89,92 @@ mod error {
         #[test]
         fn first() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.hypot(0, 1px, 2px)}\n"
-        ),
-        "Error: $numbers[2]: 1px and $numbers[1]: 0 have incompatible units (one has units and the other doesn\'t).\
+                ),
+                "Error: $numbers[2]: 1px and $numbers[1]: 0 have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.hypot(0, 1px, 2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn first_and_second() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.hypot(0, 1, 2px)}\n"
-        ),
-        "Error: $numbers[3]: 2px and $numbers[1]: 0 have incompatible units (one has units and the other doesn\'t).\
+                ),
+                "Error: $numbers[3]: 2px and $numbers[1]: 0 have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.hypot(0, 1, 2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn first_and_third() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.hypot(0, 1px, 2)}\n"
-        ),
-        "Error: $numbers[2]: 1px and $numbers[1]: 0 have incompatible units (one has units and the other doesn\'t).\
+                ),
+                "Error: $numbers[2]: 1px and $numbers[1]: 0 have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.hypot(0, 1px, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn second() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.hypot(0px, 1, 2px)}\n"
-        ),
-        "Error: $numbers[2]: 1 and $numbers[1]: 0px have incompatible units (one has units and the other doesn\'t).\
+                ),
+                "Error: $numbers[2]: 1 and $numbers[1]: 0px have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.hypot(0px, 1, 2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn second_and_third() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.hypot(0px, 1, 2)}\n"
-        ),
-        "Error: $numbers[2]: 1 and $numbers[1]: 0px have incompatible units (one has units and the other doesn\'t).\
+                ),
+                "Error: $numbers[2]: 1 and $numbers[1]: 0px have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.hypot(0px, 1, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn third() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.hypot(0px, 1px, 2)}\n"
-        ),
-        "Error: $numbers[3]: 2 and $numbers[1]: 0px have incompatible units (one has units and the other doesn\'t).\
+                ),
+                "Error: $numbers[3]: 2 and $numbers[1]: 0px have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.hypot(0px, 1px, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
     }
     mod test_type {

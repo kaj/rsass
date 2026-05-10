@@ -24,16 +24,14 @@ mod list {
     #[ignore] // missing error
     fn comma() {
         assert_eq!(
-        runner().err(
-            "a {b: oklab((1%, 2, 3))}\n"
-        ),
-        "Error: $channels: Expected a space- or slash-separated list, was (1%, 2, 3)\
+            runner().err("a {b: oklab((1%, 2, 3))}\n"),
+            "Error: $channels: Expected a space- or slash-separated list, was (1%, 2, 3)\
          \n  ,\
          \n1 | a {b: oklab((1%, 2, 3))}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
@@ -89,48 +87,44 @@ mod list {
         #[ignore] // missing error
         fn three() {
             assert_eq!(
-        runner().err(
-            "@use \'sass:list\';\
+                runner().err(
+                    "@use \'sass:list\';\
              \na {b: oklab(list.slash(1%, 2, 3))}\n"
-        ),
-        "Error: $channels: Only 2 slash-separated elements allowed, but 3 were passed.\
+                ),
+                "Error: $channels: Only 2 slash-separated elements allowed, but 3 were passed.\
          \n  ,\
          \n2 | a {b: oklab(list.slash(1%, 2, 3))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
     }
     #[test]
     #[ignore] // missing error
     fn too_few_channels() {
         assert_eq!(
-        runner().err(
-            "a {b: oklab(1% 2)}\n"
-        ),
-        "Error: $channels: The oklab color space has 3 channels but (1% 2) has 2.\
+            runner().err("a {b: oklab(1% 2)}\n"),
+            "Error: $channels: The oklab color space has 3 channels but (1% 2) has 2.\
          \n  ,\
          \n1 | a {b: oklab(1% 2)}\
          \n  |       ^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn too_many_channels() {
         assert_eq!(
-        runner().err(
-            "a {b: oklab(1% 2 3 0.4)}\n"
-        ),
-        "Error: $channels: The oklab color space has 3 channels but (1% 2 3 0.4) has 4.\
+            runner().err("a {b: oklab(1% 2 3 0.4)}\n"),
+            "Error: $channels: The oklab color space has 3 channels but (1% 2 3 0.4) has 4.\
          \n  ,\
          \n1 | a {b: oklab(1% 2 3 0.4)}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
 }
 #[test]
@@ -220,16 +214,14 @@ mod test_type {
     #[ignore] // missing error
     fn lightness() {
         assert_eq!(
-        runner().err(
-            "a {b: oklab(c 2 3)}\n"
-        ),
-        "Error: $channels: Expected lightness channel to be a number, was c.\
+            runner().err("a {b: oklab(c 2 3)}\n"),
+            "Error: $channels: Expected lightness channel to be a number, was c.\
          \n  ,\
          \n1 | a {b: oklab(c 2 3)}\
          \n  |       ^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
 }
 mod unit {
@@ -255,32 +247,30 @@ mod unit {
         #[ignore] // missing error
         fn slash() {
             assert_eq!(
-        runner().err(
-            "a {b: oklab(1% 2 3/0.4px)}\n"
-        ),
-        "Error: $alpha: Expected 0.4px to have unit \"%\" or no units.\
+                runner().err("a {b: oklab(1% 2 3/0.4px)}\n"),
+                "Error: $alpha: Expected 0.4px to have unit \"%\" or no units.\
          \n  ,\
          \n1 | a {b: oklab(1% 2 3/0.4px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
         fn slash_list() {
             assert_eq!(
-        runner().err(
-            "@use \'sass:list\';\
+                runner().err(
+                    "@use \'sass:list\';\
              \na {b: oklab(list.slash(1% 2 3, 0.4px))}\n"
-        ),
-        "Error: $alpha: Expected 0.4px to have unit \"%\" or no units.\
+                ),
+                "Error: $alpha: Expected 0.4px to have unit \"%\" or no units.\
          \n  ,\
          \n2 | a {b: oklab(list.slash(1% 2 3, 0.4px))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
     }
     #[test]

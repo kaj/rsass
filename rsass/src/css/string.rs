@@ -213,9 +213,7 @@ impl From<CssString> for crate::sass::Name {
 
 fn is_namelike(s: &str) -> bool {
     let mut chars = s.chars();
-    chars
-        .next()
-        .map_or(false, |c| c.is_alphabetic() || c == '_')
+    chars.next().is_some_and(|c| c.is_alphabetic() || c == '_')
         && chars.all(|c| c.is_alphanumeric() || c == '-' || c == '_')
 }
 

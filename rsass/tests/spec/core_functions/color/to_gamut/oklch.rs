@@ -8,15 +8,13 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn clip() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
+        runner().ok("@use \"sass:color\";\
              \na {\
              \n  b: color.to-gamut(\
              \n    color.change(oklch(50% 200% 70deg), $lightness: 150%),\
              \n    $method: clip\
              \n  );\
-             \n}\n"
-        ),
+             \n}\n"),
         "a {\
          \n  b: color-mix(in oklch, color(xyz 5.2395754279 2.9713210325 -1.434870444) 100%, black);\
          \n}\n"
@@ -26,15 +24,13 @@ fn clip() {
 #[ignore] // unexepected error
 fn local_minde() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
+        runner().ok("@use \"sass:color\";\
              \na {\
              \n  b: color.to-gamut(\
              \n    color.change(oklch(50% 200% 70deg), $lightness: 150%),\
              \n    $method: local-minde\
              \n  );\
-             \n}\n"
-        ),
+             \n}\n"),
         "a {\
          \n  b: color-mix(in oklch, color(xyz 5.2395754279 2.9713210325 -1.434870444) 100%, black);\
          \n}\n"

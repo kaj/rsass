@@ -44,11 +44,11 @@ mod error {
     #[test]
     fn too_many_args() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:meta\";\
+            runner().err(
+                "@use \"sass:meta\";\
              \na {b: meta.calc-args(calc(var(--c)), calc(var(--d)))}\n"
-        ),
-        "Error: Only 1 argument allowed, but 2 were passed.\
+            ),
+            "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n2 | a {b: meta.calc-args(calc(var(--c)), calc(var(--d)))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
@@ -58,7 +58,7 @@ mod error {
          \n  |           ================ declaration\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 mod multi_args {

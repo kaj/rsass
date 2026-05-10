@@ -75,11 +75,11 @@ mod parent {
     #[ignore] // wrong error
     fn non_initial() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+            runner().err(
+                "@use \"sass:selector\";\
              \na {b: selector.nest(\"c\", \"[d]&\")}\n"
-        ),
-        "Error: \"&\" may only used at the beginning of a compound selector.\
+            ),
+            "Error: \"&\" may only used at the beginning of a compound selector.\
          \n  ,\
          \n1 | [d]&\
          \n  |    ^\
@@ -90,17 +90,17 @@ mod parent {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
     fn prefix() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:selector\";\
+            runner().err(
+                "@use \"sass:selector\";\
              \na {b: selector.nest(\"c\", \"d&\")}\n"
-        ),
-        "Error: \"&\" may only used at the beginning of a compound selector.\
+            ),
+            "Error: \"&\" may only used at the beginning of a compound selector.\
          \n  ,\
          \n1 | d&\
          \n  |  ^\
@@ -111,7 +111,7 @@ mod parent {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }
 #[test]

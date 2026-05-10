@@ -11,46 +11,40 @@ mod list {
     #[ignore] // missing error
     fn after_space() {
         assert_eq!(
-        runner().err(
-            "a {b: color(srgb (0.1 0.2 0.3))}\n"
-        ),
-        "Error: $description: Expected red channel to be a number, was (0.1 0.2 0.3).\
+            runner().err("a {b: color(srgb (0.1 0.2 0.3))}\n"),
+            "Error: $description: Expected red channel to be a number, was (0.1 0.2 0.3).\
          \n  ,\
          \n1 | a {b: color(srgb (0.1 0.2 0.3))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn bracketed() {
         assert_eq!(
-        runner().err(
-            "a {b: color([srgb 0.1 0.2 0.3])}\n"
-        ),
-        "Error: $description: Expected an unbracketed list, was [srgb 0.1 0.2 0.3]\
+            runner().err("a {b: color([srgb 0.1 0.2 0.3])}\n"),
+            "Error: $description: Expected an unbracketed list, was [srgb 0.1 0.2 0.3]\
          \n  ,\
          \n1 | a {b: color([srgb 0.1 0.2 0.3])}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn comma() {
         assert_eq!(
-        runner().err(
-            "a {b: color((srgb, 0.1, 0.2, 0.3))}\n"
-        ),
-        "Error: $description: Expected a space- or slash-separated list, was (srgb, 0.1, 0.2, 0.3)\
+            runner().err("a {b: color((srgb, 0.1, 0.2, 0.3))}\n"),
+            "Error: $description: Expected a space- or slash-separated list, was (srgb, 0.1, 0.2, 0.3)\
          \n  ,\
          \n1 | a {b: color((srgb, 0.1, 0.2, 0.3))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     mod slash {
         use super::runner;
@@ -76,48 +70,44 @@ mod list {
         #[ignore] // missing error
         fn three() {
             assert_eq!(
-        runner().err(
-            "@use \'sass:list\';\
+                runner().err(
+                    "@use \'sass:list\';\
              \na {b: color(list.slash(srgb 0.1, 0.2, 0.3))}\n"
-        ),
-        "Error: $description: Only 2 slash-separated elements allowed, but 3 were passed.\
+                ),
+                "Error: $description: Only 2 slash-separated elements allowed, but 3 were passed.\
          \n  ,\
          \n2 | a {b: color(list.slash(srgb 0.1, 0.2, 0.3))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
     }
     #[test]
     #[ignore] // missing error
     fn too_few_channels() {
         assert_eq!(
-        runner().err(
-            "a {b: color(srgb 0.1 0.2)}\n"
-        ),
-        "Error: $description: The srgb color space has 3 channels but (srgb 0.1 0.2) has 2.\
+            runner().err("a {b: color(srgb 0.1 0.2)}\n"),
+            "Error: $description: The srgb color space has 3 channels but (srgb 0.1 0.2) has 2.\
          \n  ,\
          \n1 | a {b: color(srgb 0.1 0.2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn too_many_channels() {
         assert_eq!(
-        runner().err(
-            "a {b: color(srgb 0.1 0.2 0.3 0.4)}\n"
-        ),
-        "Error: $description: The srgb color space has 3 channels but (srgb 0.1 0.2 0.3 0.4) has 4.\
+            runner().err("a {b: color(srgb 0.1 0.2 0.3 0.4)}\n"),
+            "Error: $description: The srgb color space has 3 channels but (srgb 0.1 0.2 0.3 0.4) has 4.\
          \n  ,\
          \n1 | a {b: color(srgb 0.1 0.2 0.3 0.4)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
 }
 mod relative_color {
@@ -130,31 +120,28 @@ mod relative_color {
         #[ignore] // missing error
         fn alpha() {
             assert_eq!(
-        runner().err(
-            "a {b: color(\"from\" #aaa srgb r g b / 25%)}\n"
-        ),
-        "Error: $description: Expected \"from\" to be an unquoted string.\
+                runner()
+                    .err("a {b: color(\"from\" #aaa srgb r g b / 25%)}\n"),
+                "Error: $description: Expected \"from\" to be an unquoted string.\
          \n  ,\
          \n1 | a {b: color(\"from\" #aaa srgb r g b / 25%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
         fn no_alpha() {
             assert_eq!(
-        runner().err(
-            "a {b: color(\"from\" #aaa srgb r g b)}\n"
-        ),
-        "Error: $description: Expected \"from\" to be an unquoted string.\
+                runner().err("a {b: color(\"from\" #aaa srgb r g b)}\n"),
+                "Error: $description: Expected \"from\" to be an unquoted string.\
          \n  ,\
          \n1 | a {b: color(\"from\" #aaa srgb r g b)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
     }
     mod wrong_keyword {
@@ -195,16 +182,14 @@ mod too_few_args {
     #[ignore] // missing error
     fn no_channels() {
         assert_eq!(
-        runner().err(
-            "a {b: color(srgb)}\n"
-        ),
-        "Error: $description: The srgb color space has 3 channels but srgb has 0.\
+            runner().err("a {b: color(srgb)}\n"),
+            "Error: $description: The srgb color space has 3 channels but srgb has 0.\
          \n  ,\
          \n1 | a {b: color(srgb)}\
          \n  |       ^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
@@ -241,9 +226,7 @@ mod too_few_args {
 #[ignore] // missing error
 fn too_many_args() {
     assert_eq!(
-        runner().err(
-            "a {b: color(srgb 0.1 0.2 0.3 0.4)}\n"
-        ),
+        runner().err("a {b: color(srgb 0.1 0.2 0.3 0.4)}\n"),
         "Error: $description: The srgb color space has 3 channels but (srgb 0.1 0.2 0.3 0.4) has 4.\
          \n  ,\
          \n1 | a {b: color(srgb 0.1 0.2 0.3 0.4)}\
@@ -279,46 +262,40 @@ mod test_type {
     #[ignore] // missing error
     fn blue() {
         assert_eq!(
-        runner().err(
-            "a {b: color(srgb 0.1 0.2 c)}\n"
-        ),
-        "Error: $description: Expected blue channel to be a number, was c.\
+            runner().err("a {b: color(srgb 0.1 0.2 c)}\n"),
+            "Error: $description: Expected blue channel to be a number, was c.\
          \n  ,\
          \n1 | a {b: color(srgb 0.1 0.2 c)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn green() {
         assert_eq!(
-        runner().err(
-            "a {b: color(srgb 0.1 c 0.3)}\n"
-        ),
-        "Error: $description: Expected green channel to be a number, was c.\
+            runner().err("a {b: color(srgb 0.1 c 0.3)}\n"),
+            "Error: $description: Expected green channel to be a number, was c.\
          \n  ,\
          \n1 | a {b: color(srgb 0.1 c 0.3)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn red() {
         assert_eq!(
-        runner().err(
-            "a {b: color(srgb c 0.2 0.3)}\n"
-        ),
-        "Error: $description: Expected red channel to be a number, was c.\
+            runner().err("a {b: color(srgb c 0.2 0.3)}\n"),
+            "Error: $description: Expected red channel to be a number, was c.\
          \n  ,\
          \n1 | a {b: color(srgb c 0.2 0.3)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+        );
     }
 }
 mod unit {
@@ -331,32 +308,30 @@ mod unit {
         #[ignore] // missing error
         fn slash() {
             assert_eq!(
-        runner().err(
-            "a {b: color(srgb 0.1 0.2 0.3/0.4px)}\n"
-        ),
-        "Error: $alpha: Expected 0.4px to have unit \"%\" or no units.\
+                runner().err("a {b: color(srgb 0.1 0.2 0.3/0.4px)}\n"),
+                "Error: $alpha: Expected 0.4px to have unit \"%\" or no units.\
          \n  ,\
          \n1 | a {b: color(srgb 0.1 0.2 0.3/0.4px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-    );
+            );
         }
         #[test]
         #[ignore] // missing error
         fn slash_list() {
             assert_eq!(
-        runner().err(
-            "@use \'sass:list\';\
+                runner().err(
+                    "@use \'sass:list\';\
              \na {b: color(list.slash(srgb 0.1 0.2 0.3, 0.4px))}\n"
-        ),
-        "Error: $alpha: Expected 0.4px to have unit \"%\" or no units.\
+                ),
+                "Error: $alpha: Expected 0.4px to have unit \"%\" or no units.\
          \n  ,\
          \n2 | a {b: color(list.slash(srgb 0.1 0.2 0.3, 0.4px))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
     }
     #[test]

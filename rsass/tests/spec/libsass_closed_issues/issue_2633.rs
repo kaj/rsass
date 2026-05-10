@@ -7,8 +7,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:selector\";\
+        runner().ok("@use \"sass:selector\";\
              \n$sel1: \'.something__child + .something__child--mod1\';\
              \n$sel2: \'.something__child ~ .something__child--mod2\';\
              \n$result1: selector.unify($sel1, $sel2);\n\
@@ -30,8 +29,7 @@ fn test() {
              \n      color: red;\
              \n    }\
              \n  }\
-             \n}\n"
-        ),
+             \n}\n"),
         ".something__child + .something__child--mod1.something__child--mod2 {\
          \n  /* nothing */\
          \n}\

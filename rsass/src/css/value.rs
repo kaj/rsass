@@ -1,5 +1,5 @@
 use super::util::IsNot;
-use super::{is_calc_name, is_not, BinOp, CallArgs, CssString};
+use super::{BinOp, CallArgs, CssString, is_calc_name, is_not};
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
 use crate::sass::Function;
@@ -326,11 +326,7 @@ impl Eq for Value {}
 
 impl From<bool> for Value {
     fn from(v: bool) -> Self {
-        if v {
-            Self::True
-        } else {
-            Self::False
-        }
+        if v { Self::True } else { Self::False }
     }
 }
 impl From<CssString> for Value {

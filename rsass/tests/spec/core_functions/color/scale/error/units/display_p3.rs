@@ -27,17 +27,17 @@ mod none {
     #[ignore] // wrong error
     fn green() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.scale(color(display-p3 0.2 0.5 0.7), $green: 1)}\n"
-        ),
-        "Error: $green: Expected 1 to have unit \"%\".\
+            ),
+            "Error: $green: Expected 1 to have unit \"%\".\
          \n  ,\
          \n2 | a {b: color.scale(color(display-p3 0.2 0.5 0.7), $green: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // wrong error
@@ -95,16 +95,16 @@ mod wrong {
     #[ignore] // wrong error
     fn red() {
         assert_eq!(
-        runner().err(
-            "@use \"sass:color\";\
+            runner().err(
+                "@use \"sass:color\";\
              \na {b: color.scale(color(display-p3 0.2 0.5 0.7), $red: 1px)}\n"
-        ),
-        "Error: $red: Expected 1px to have unit \"%\".\
+            ),
+            "Error: $red: Expected 1px to have unit \"%\".\
          \n  ,\
          \n2 | a {b: color.scale(color(display-p3 0.2 0.5 0.7), $red: 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+        );
     }
 }

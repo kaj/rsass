@@ -1,14 +1,14 @@
 use super::channels::Channels;
 use super::{
+    CallError, CheckedArg, FunctionMap, NumOrSpecial, ResolvedArgs,
     check_alpha, check_amount, check_hue, eval_inner, is_not, is_special,
-    relative_color, CallError, CheckedArg, FunctionMap, NumOrSpecial,
-    ResolvedArgs,
+    relative_color,
 };
+use crate::Scope;
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::sass::{ArgsError, FormalArgs, Name};
 use crate::value::{Color, Hsla, Numeric, Unit};
-use crate::Scope;
 
 pub fn register(f: &mut Scope) {
     def_va!(f, _hsl(kwargs), |s| do_hsla(&name!(hsl), s));

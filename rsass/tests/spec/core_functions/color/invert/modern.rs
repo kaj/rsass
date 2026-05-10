@@ -44,14 +44,12 @@ mod space {
     #[ignore] // unexepected error
     fn legacy() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.invert(lch(20% 80 50deg), $space: rgb)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.invert(lch(20% 80 50deg), $space: rgb)}\n"),
+            "a {\
          \n  b: color-mix(in lch, color(xyz 0.8040115061 1.0427791446 1.4858460828) 100%, black);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error

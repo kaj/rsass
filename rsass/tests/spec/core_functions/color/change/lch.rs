@@ -168,14 +168,12 @@ mod lightness {
     #[ignore] // unexepected error
     fn out_of_range() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.change(lch(50% 20 30deg), $lightness: 120%)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.change(lch(50% 20 30deg), $lightness: 120%)}\n"),
+            "a {\
          \n  b: color-mix(in lch, color(xyz 1.6569354424 1.6040925936 1.5400032443) 100%, black);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error

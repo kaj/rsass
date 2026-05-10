@@ -2,10 +2,10 @@ use super::{
     CargoLoader, FsLoader, LoadError, Loader, SourceFile, SourceKind,
     SourcePos,
 };
-use crate::output::{handle_parsed, CssData, Format};
+use crate::output::{CssData, Format, handle_parsed};
 use crate::{Error, ScopeRef};
 use std::{borrow::Cow, collections::BTreeMap, fmt, path::Path};
-use tracing::{span, Level};
+use tracing::{Level, span};
 
 type Combine = &'static dyn Fn(&str, &str) -> String;
 

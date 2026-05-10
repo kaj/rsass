@@ -3,13 +3,13 @@ use super::util::{ignore_comments, opt_spacelike};
 use super::value::space_list;
 use super::{PResult, Span};
 use crate::sass::{CallArgs, FormalArgs, Name};
+use nom::Parser as _;
 use nom::bytes::complete::tag;
 use nom::character::complete::char;
 use nom::combinator::{cut, map, map_res, opt};
 use nom::error::context;
 use nom::multi::separated_list0;
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::Parser as _;
 
 pub fn formal_args(input: Span) -> PResult<FormalArgs> {
     let (input, _) = terminated(char('('), opt_spacelike).parse(input)?;

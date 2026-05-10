@@ -6,7 +6,7 @@ use quote::ToTokens;
 use rsass::output::{Format, Style};
 use std::env::var_os;
 use std::path::PathBuf;
-use syn::{parse_macro_input, Error, LitStr};
+use syn::{Error, LitStr, parse_macro_input};
 
 /// Convert a scss string to css at compile time.
 ///

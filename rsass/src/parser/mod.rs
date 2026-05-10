@@ -14,7 +14,7 @@ pub mod value;
 pub(crate) use self::strings::name;
 pub use error::ParseError;
 pub(crate) use span::DebugBytes;
-pub(crate) use span::{position, Span};
+pub(crate) use span::{Span, position};
 
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
@@ -29,9 +29,10 @@ use self::value::{
     dictionary, function_call_or_string_rulearg, single_value,
     value_expression,
 };
+use crate::Error;
 use crate::input::{SourceFile, SourceName, SourcePos};
 use crate::sass::parser::{
-    src_range, variable_declaration2, variable_declaration_mod,
+    src_range, variable_declaration_mod, variable_declaration2,
 };
 use crate::sass::{
     Callable, FormalArgs, Item, ItemBody, Name, Selectors, SrcValue, Value,
@@ -39,7 +40,6 @@ use crate::sass::{
 use crate::value::ListSeparator;
 #[cfg(test)]
 use crate::value::{Numeric, Unit};
-use crate::Error;
 use imports::{forward2, import2, use2};
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
@@ -48,11 +48,11 @@ use nom::combinator::{
     all_consuming, into, map, map_res, not, opt, peek, value, verify,
 };
 use nom::error::context;
-use nom::multi::{many0, many_till, separated_list0, separated_list1};
+use nom::multi::{many_till, many0, separated_list0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::{IResult, Parser as _};
 use nom_language::error::VerboseError;
-use std::str::{from_utf8, Utf8Error};
+use std::str::{Utf8Error, from_utf8};
 
 /// A Parsing Result; ok gives a span for the rest of the data and a parsed T.
 pub(crate) type PResult<'a, T> = IResult<Span<'a>, T, VerboseError<Span<'a>>>;

@@ -32,14 +32,14 @@ pub(crate) mod parser {
     #[cfg(test)]
     use crate::parser::check_parse;
     use crate::parser::util::{opt_spacelike, semi_or_end};
-    use crate::parser::{name, value::value_expression, PResult, Span};
+    use crate::parser::{PResult, Span, name, value::value_expression};
     use crate::sass::Name;
     #[cfg(test)]
     use crate::sass::Value;
     #[cfg(test)]
     use crate::value::ListSeparator;
-    use nom::sequence::{delimited, pair, preceded, terminated};
     use nom::Parser as _;
+    use nom::sequence::{delimited, pair, preceded, terminated};
     use nom::{
         branch::alt, bytes::complete::tag, combinator::map, multi::fold_many0,
     };

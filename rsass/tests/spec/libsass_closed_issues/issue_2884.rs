@@ -8,8 +8,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok(
-            "$titles: \"foo\", \"bar\", \"BaZ\";\n\
+        runner().ok("$titles: \"foo\", \"bar\", \"BaZ\";\n\
              \n%border {\
              \n        border: 1px solid;\
              \n}\n\
@@ -28,8 +27,7 @@ fn test() {
              \n                @extend %border;\
              \n                @include border-blue;\
              \n        }\
-             \n}\n"
-        ),
+             \n}\n"),
         "p[title=BaZ], p[title=BaZ i], p[title=bar], p[title=bar i], p[title=foo], p[title=foo i] {\
          \n  border: 1px solid;\
          \n}\

@@ -247,13 +247,13 @@ mod test_true {
                 #[test]
                 fn no_none() {
                     assert_eq!(
-        runner().ok(
-            "a {b: hwb(250 30% 20%) == hwb(250deg 30% 20%)}\n"
-        ),
-        "a {\
+                        runner().ok(
+                            "a {b: hwb(250 30% 20%) == hwb(250deg 30% 20%)}\n"
+                        ),
+                        "a {\
          \n  b: true;\
          \n}\n"
-    );
+                    );
                 }
                 #[test]
                 #[ignore] // unexepected error

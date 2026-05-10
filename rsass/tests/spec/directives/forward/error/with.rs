@@ -139,11 +139,11 @@ mod multi_configuration {
     fn multi_file() {
         let runner = runner().with_cwd("multi_file");
         assert_eq!(
-        runner.err(
-            "@use \"left\";\
+            runner.err(
+                "@use \"left\";\
              \n@use \"right\";\n"
-        ),
-        "Error: This module was already loaded, so it can\'t be configured using \"with\".\
+            ),
+            "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,--> _right.scss\
          \n1 | @forward \"other\" with ($a: b);\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ new load\
@@ -154,18 +154,18 @@ mod multi_configuration {
          \n  \'\
          \n  _right.scss 1:1  @use\
          \n  input.scss 2:1   root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn one_file() {
         let runner = runner().with_cwd("one_file");
         assert_eq!(
-        runner.err(
-            "@forward \"other\" with ($a: b);\
+            runner.err(
+                "@forward \"other\" with ($a: b);\
              \n@forward \"other\" with ($a: b);\n"
-        ),
-        "Error: This module was already loaded, so it can\'t be configured using \"with\".\
+            ),
+            "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,\
          \n1 | @forward \"other\" with ($a: b);\
          \n  | ============================= original load\
@@ -173,18 +173,18 @@ mod multi_configuration {
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ new load\
          \n  \'\
          \n  input.scss 2:1  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn through_forward() {
         let runner = runner().with_cwd("through_forward");
         assert_eq!(
-        runner.err(
-            "@use \"upstream\";\
+            runner.err(
+                "@use \"upstream\";\
              \n@forward \"midstream\" with ($a: b, $c: d);\n"
-        ),
-        "Error: This module was already loaded, so it can\'t be configured using \"with\".\
+            ),
+            "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,--> _midstream.scss\
          \n1 | @forward \"upstream\";\
          \n  | ^^^^^^^^^^^^^^^^^^^ new load\
@@ -197,18 +197,18 @@ mod multi_configuration {
          \n  \'\
          \n  _midstream.scss 1:1  @forward\
          \n  input.scss 2:1       root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn unconfigured_first() {
         let runner = runner().with_cwd("unconfigured_first");
         assert_eq!(
-        runner.err(
-            "@forward \"other\";\
+            runner.err(
+                "@forward \"other\";\
              \n@forward \"other\" with ($a: b);\n"
-        ),
-        "Error: This module was already loaded, so it can\'t be configured using \"with\".\
+            ),
+            "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,\
          \n1 | @forward \"other\";\
          \n  | ================ original load\
@@ -216,7 +216,7 @@ mod multi_configuration {
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ new load\
          \n  \'\
          \n  input.scss 2:1  root stylesheet",
-    );
+        );
     }
 }
 #[test]
@@ -224,9 +224,7 @@ mod multi_configuration {
 fn namespace() {
     let runner = runner().with_cwd("namespace");
     assert_eq!(
-        runner.err(
-            "@use \"downstream\";\n"
-        ),
+        runner.err("@use \"downstream\";\n"),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @forward \"midstream\" with ($a: b);\
@@ -241,9 +239,7 @@ fn namespace() {
 fn nested() {
     let runner = runner().with_cwd("nested");
     assert_eq!(
-        runner.err(
-            "@use \"midstream\";\n"
-        ),
+        runner.err("@use \"midstream\";\n"),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @forward \"upstream\" with ($a: b);\
@@ -258,9 +254,7 @@ fn nested() {
 fn not_default() {
     let runner = runner().with_cwd("not_default");
     assert_eq!(
-        runner.err(
-            "@use \"midstream\";\n"
-        ),
+        runner.err("@use \"midstream\";\n"),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @forward \"upstream\" with ($a: b);\
@@ -337,64 +331,56 @@ mod through_forward {
     fn test_as() {
         let runner = runner().with_cwd("as");
         assert_eq!(
-        runner.err(
-            "@forward \"midstream\" with ($a: b);\n"
-        ),
-        "Error: This variable was not declared with !default in the @used module.\
+            runner.err("@forward \"midstream\" with ($a: b);\n"),
+            "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @forward \"midstream\" with ($a: b);\
          \n  |                            ^^^^^\
          \n  \'\
          \n  input.scss 1:28  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn hide() {
         let runner = runner().with_cwd("hide");
         assert_eq!(
-        runner.err(
-            "@forward \"midstream\" with ($a: b);\n"
-        ),
-        "Error: This variable was not declared with !default in the @used module.\
+            runner.err("@forward \"midstream\" with ($a: b);\n"),
+            "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @forward \"midstream\" with ($a: b);\
          \n  |                            ^^^^^\
          \n  \'\
          \n  input.scss 1:28  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn show() {
         let runner = runner().with_cwd("show");
         assert_eq!(
-        runner.err(
-            "@forward \"midstream\" with ($a: b);\n"
-        ),
-        "Error: This variable was not declared with !default in the @used module.\
+            runner.err("@forward \"midstream\" with ($a: b);\n"),
+            "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @forward \"midstream\" with ($a: b);\
          \n  |                            ^^^^^\
          \n  \'\
          \n  input.scss 1:28  root stylesheet",
-    );
+        );
     }
     #[test]
     #[ignore] // missing error
     fn with() {
         let runner = runner().with_cwd("with");
         assert_eq!(
-        runner.err(
-            "@forward \"midstream\" with ($a: b);\n"
-        ),
-        "Error: This variable was not declared with !default in the @used module.\
+            runner.err("@forward \"midstream\" with ($a: b);\n"),
+            "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @forward \"midstream\" with ($a: b);\
          \n  |                            ^^^^^\
          \n  \'\
          \n  input.scss 1:28  root stylesheet",
-    );
+        );
     }
 }
 #[test]
@@ -402,9 +388,7 @@ mod through_forward {
 fn undefined() {
     let runner = runner().with_cwd("undefined");
     assert_eq!(
-        runner.err(
-            "@use \"midstream\";\n"
-        ),
+        runner.err("@use \"midstream\";\n"),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @forward \"upstream\" with ($a: b);\

@@ -126,92 +126,92 @@ mod error {
         #[test]
         fn max() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.clamp(0px, 1px, 2)}\n"
-        ),
-        "Error: $max: 2 and $min: 0px have incompatible units (one has units and the other doesn\'t).\
+                ),
+                "Error: $max: 2 and $min: 0px have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.clamp(0px, 1px, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn min() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.clamp(0, 1px, 2px)}\n"
-        ),
-        "Error: $number: 1px and $min: 0 have incompatible units (one has units and the other doesn\'t).\
+                ),
+                "Error: $number: 1px and $min: 0 have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.clamp(0, 1px, 2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn min_and_max() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.clamp(0, 1px, 2)}\n"
-        ),
-        "Error: $number: 1px and $min: 0 have incompatible units (one has units and the other doesn\'t).\
+                ),
+                "Error: $number: 1px and $min: 0 have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.clamp(0, 1px, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn min_and_number() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.clamp(0, 1, 2px)}\n"
-        ),
-        "Error: $max: 2px and $min: 0 have incompatible units (one has units and the other doesn\'t).\
+                ),
+                "Error: $max: 2px and $min: 0 have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.clamp(0, 1, 2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn number() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.clamp(0px, 1, 2px)}\n"
-        ),
-        "Error: $number: 1 and $min: 0px have incompatible units (one has units and the other doesn\'t).\
+                ),
+                "Error: $number: 1 and $min: 0px have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.clamp(0px, 1, 2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
         #[test]
         fn number_and_max() {
             assert_eq!(
-        runner().err(
-            "@use \"sass:math\";\
+                runner().err(
+                    "@use \"sass:math\";\
              \na {b: math.clamp(0px, 1, 2)}\n"
-        ),
-        "Error: $number: 1 and $min: 0px have incompatible units (one has units and the other doesn\'t).\
+                ),
+                "Error: $number: 1 and $min: 0px have incompatible units (one has units and the other doesn\'t).\
          \n  ,\
          \n2 | a {b: math.clamp(0px, 1, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-    );
+            );
         }
     }
     #[test]

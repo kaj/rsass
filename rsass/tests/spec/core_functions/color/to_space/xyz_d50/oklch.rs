@@ -111,14 +111,12 @@ mod out_of_range {
     #[ignore] // unexepected error
     fn far() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz-d50 -999999 0 0), oklch)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(color(xyz-d50 -999999 0 0), oklch)}\n"),
+            "a {\
          \n  b: color-mix(in oklch, color(xyz -955472.4660146532 28369.6809641542 -12314.002550467) 100%, black);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error
@@ -136,10 +134,8 @@ mod out_of_range {
 #[ignore] // unexepected error
 fn white() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz-d50 1 1 1), oklch)}\n"
-        ),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(color(xyz-d50 1 1 1), oklch)}\n"),
         "a {\
          \n  b: color-mix(in oklch, color(xyz 0.9956342097 1.0026671299 1.3221722918) 100%, black);\
          \n}\n"

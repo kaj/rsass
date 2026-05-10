@@ -1,7 +1,7 @@
 use super::{CallError, CheckedArg, Name};
+use crate::ScopeRef;
 use crate::css::Value;
 use crate::value::ListSeparator;
-use crate::ScopeRef;
 
 /// The arguments to a builtin function.
 pub struct ResolvedArgs {

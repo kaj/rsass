@@ -8,8 +8,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok(
-            "%place-to-go {\
+        runner().ok("%place-to-go {\
              \n  font-size: 1em;\
              \n}\n\
              \na::foo(1){\
@@ -50,8 +49,7 @@ fn test() {
              \n}\
              \n[bar=\"3\"]{\
              \n  @extend %place-to-go;\
-             \n}\n"
-        ),
+             \n}\n"),
         "[bar=\"3\"], [bar=\"2\"], [bar=\"1\"], [baz], [bar], [foo], :bar(3), :bar(2), :bar(1), b::foo(2), b::foo(1), a::foo(2), a::foo(1) {\
          \n  font-size: 1em;\
          \n}\n"

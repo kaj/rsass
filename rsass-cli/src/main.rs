@@ -1,7 +1,7 @@
 use clap::Parser;
 use rsass::output::{Format, Style};
-use rsass::{input, Error};
-use std::io::{stdout, Write};
+use rsass::{Error, input};
+use std::io::{Write, stdout};
 use std::path::PathBuf;
 use std::process::ExitCode;
 

@@ -4,8 +4,9 @@ use super::strings::{
 };
 use super::util::{ignore_comments, opt_spacelike, semi_or_end};
 use super::value::{identifier, space_list};
-use super::{media, position, PResult, Span};
+use super::{PResult, Span, media, position};
 use crate::sass::{Expose, Item, Name, SassString, UseAs, Value};
+use nom::Parser as _;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::char;
@@ -13,7 +14,6 @@ use nom::combinator::{cut, map, opt, value};
 use nom::error::context;
 use nom::multi::{separated_list0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::Parser as _;
 use std::collections::BTreeSet;
 
 /// What follows the `@import` tag.

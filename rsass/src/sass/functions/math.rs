@@ -1,7 +1,7 @@
 use super::num_or_special::NumOrSpecial;
 use super::{
-    check, expected_to, unnamed, CallError, CheckedArg, FunctionMap,
-    ResolvedArgs, Scope,
+    CallError, CheckedArg, FunctionMap, ResolvedArgs, Scope, check,
+    expected_to, unnamed,
 };
 use crate::css::{BinOp, CallArgs, CssString, InvalidCss, Value};
 use crate::output::Format;

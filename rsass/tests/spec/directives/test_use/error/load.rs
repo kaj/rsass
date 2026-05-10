@@ -264,10 +264,8 @@ mod test_loop {
     fn import_to_use() {
         let runner = runner().with_cwd("import_to_use");
         assert_eq!(
-        runner.err(
-            "@import \"other\";\n"
-        ),
-        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+            runner.err("@import \"other\";\n"),
+            "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | @import \"other\";\
@@ -281,7 +279,7 @@ mod test_loop {
          \n  \'\
          \n  other.scss 1:1  @import\
          \n  input.scss 1:9  root stylesheet",
-    );
+        );
     }
     #[test]
     fn use_self() {
@@ -301,10 +299,8 @@ mod test_loop {
     fn use_to_import() {
         let runner = runner().with_cwd("use_to_import");
         assert_eq!(
-        runner.err(
-            "@use \"other\";\n"
-        ),
-        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
+            runner.err("@use \"other\";\n"),
+            "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/import\n\
          \n  ,\
          \n1 | @import \"input\";\
@@ -319,7 +315,7 @@ mod test_loop {
          \n  \'\
          \n  other.scss 1:9  @use\
          \n  input.scss 1:1  root stylesheet",
-    );
+        );
     }
     #[test]
     fn use_to_use() {

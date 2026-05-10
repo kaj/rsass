@@ -49,10 +49,8 @@ fn black() {
 #[ignore] // unexepected error
 fn gray() {
     assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(lab(50% 0 0), display-p3-linear)}\n"
-        ),
+        runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lab(50% 0 0), display-p3-linear)}\n"),
         "a {\
          \n  b: color(display-p3-linear 0.1841865185 0.1841865185 0.1841865185);\
          \n}\n"
@@ -76,40 +74,34 @@ mod missing {
     #[ignore] // unexepected error
     fn a() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(lab(10% none 30), display-p3-linear)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lab(10% none 30), display-p3-linear)}\n"),
+            "a {\
          \n  b: color(display-p3-linear 0.0176420089 0.0110026625 -0.0091825814);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error
     fn b() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(lab(10% 20 none), display-p3-linear)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lab(10% 20 none), display-p3-linear)}\n"),
+            "a {\
          \n  b: color(display-p3-linear 0.0278772897 0.0054380443 0.0115933369);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error
     fn lightness() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(lab(none 20 30), display-p3-linear)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lab(none 20 30), display-p3-linear)}\n"),
+            "a {\
          \n  b: color(display-p3-linear 0.0182270941 -0.0044270743 -0.020004771);\
          \n}\n"
-    );
+        );
     }
 }
 mod out_of_range {

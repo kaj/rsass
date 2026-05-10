@@ -2,10 +2,10 @@
 #![allow(clippy::unreadable_literal)]
 use crate::output::{Format, Formatted};
 use crate::value::Number;
-use lazy_static::lazy_static;
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use std::fmt::{self, Display};
+use std::sync::LazyLock;
 
 /// A color defined by red, green, blue, and alpha components.
 #[derive(Clone, Debug)]
@@ -263,8 +263,8 @@ impl Lookup {
     }
 }
 
-lazy_static! {
-    static ref LOOKUP: Lookup = Lookup::from_slice(&[
+static LOOKUP: LazyLock<Lookup> = LazyLock::new(|| {
+    Lookup::from_slice(&[
         ("aliceblue", 0xf0f8ff_u32),
         ("antiquewhite", 0xfaebd7),
         ("aqua", 0x00ffff),
@@ -413,8 +413,8 @@ lazy_static! {
         ("whitesmoke", 0xf5f5f5),
         ("yellow", 0xffff00),
         ("yellowgreen", 0x9acd32),
-    ]);
-}
+    ])
+});
 
 impl Display for Formatted<'_, Rgba> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {

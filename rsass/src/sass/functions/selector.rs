@@ -1,7 +1,7 @@
-use super::{unnamed, CheckedArg, FunctionMap};
+use super::{CheckedArg, FunctionMap, unnamed};
+use crate::Scope;
 use crate::css::{CssSelectorSet, Selector, Value};
 use crate::value::ListSeparator;
-use crate::Scope;
 
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:selector");

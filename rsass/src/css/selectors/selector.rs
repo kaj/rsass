@@ -54,7 +54,7 @@ impl Selector {
         }
     }
     fn has_leading_combinator(&self) -> bool {
-        self.rel_of.as_deref().map_or(false, |(_k, r)| {
+        self.rel_of.as_deref().is_some_and(|(_k, r)| {
             if r.rel_of.is_none() {
                 r.is_local_empty()
             } else {
@@ -211,7 +211,7 @@ impl Selector {
     /// Return true iff this selector is a superselector of `sub`.
     pub(super) fn is_superselector(&self, sub: &Self) -> bool {
         self.is_local_superselector(sub)
-            && self.rel_of.as_deref().map_or(true, |(kind, s)| {
+            && self.rel_of.as_deref().is_none_or(|(kind, s)| {
                 match kind {
                     RelKind::Ancestor => {
                         let mut t = sub.rel_of.as_deref();
@@ -353,10 +353,7 @@ impl Selector {
 
     pub(super) fn has_backref(&self) -> bool {
         self.compound.has_backref()
-            || self
-                .rel_of
-                .as_deref()
-                .map_or(false, |(_, s)| s.has_backref())
+            || self.rel_of.as_deref().is_some_and(|(_, s)| s.has_backref())
     }
 
     fn add_root_ancestor(&mut self, ancestor: Self) {
@@ -478,19 +475,15 @@ pub(super) enum AppendError {
 impl AppendError {
     pub(super) fn context(self, e: &Selector, b: &Selector) -> CallError {
         match self {
-            Self::Parent => {
-                CallError::msg(
-                    format!(
-                        "Selector {:?} can't be used as a parent in a compound selector.",
-                        show(b)
-                    )
-                )
-            },
-            Self::Sub => {
-                CallError::msg(
-                    format!("Can't append {} to {}.", show(e), show(b))
-                )
-            },
+            Self::Parent => CallError::msg(format!(
+                "Selector {:?} can't be used as a parent in a compound selector.",
+                show(b)
+            )),
+            Self::Sub => CallError::msg(format!(
+                "Can't append {} to {}.",
+                show(e),
+                show(b)
+            )),
             Self::Selector(b) => b.into(),
         }
     }
@@ -664,12 +657,12 @@ pub(crate) mod parser {
     use super::{RelKind, Selector};
     use crate::parser::util::{opt_spacelike, spacelike};
     use crate::parser::{PResult, Span};
+    use nom::Parser as _;
     use nom::branch::alt;
     use nom::bytes::complete::tag;
     use nom::combinator::{into, opt, value, verify};
     use nom::multi::fold_many0;
     use nom::sequence::{delimited, pair, preceded, terminated};
-    use nom::Parser as _;
 
     pub(crate) fn selector(input: Span) -> PResult<Selector> {
         let (input, prerel) =

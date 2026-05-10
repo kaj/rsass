@@ -1,16 +1,16 @@
 use super::value::value_expression;
-use super::{input_to_str, input_to_string, PResult, Span};
+use super::{PResult, Span, input_to_str, input_to_string};
 use crate::sass::{SassString, StringPart};
 use crate::value::Quotes;
+use nom::Parser as _;
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag, take};
 use nom::character::complete::{alphanumeric1, char, one_of};
 use nom::combinator::{
     cut, map, map_opt, map_res, not, opt, peek, recognize, value, verify,
 };
-use nom::multi::{fold_many0, fold_many1, many0, many1, many_m_n};
+use nom::multi::{fold_many0, fold_many1, many_m_n, many0, many1};
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::Parser as _;
 use std::str::from_utf8;
 
 pub fn sass_string(input: Span) -> PResult<SassString> {
@@ -331,7 +331,7 @@ pub fn sass_string_sq(input: Span) -> PResult<SassString> {
 fn cleanup_escape_ws(parts: &mut [StringPart]) {
     let mut t_iter = parts.iter_mut().peekable();
     while let Some(ref mut item) = t_iter.next() {
-        if let StringPart::Raw(ref mut s) = item {
+        if let StringPart::Raw(s) = item {
             if s.starts_with('\\') && s.ends_with(' ') {
                 match t_iter.peek() {
                     None => {

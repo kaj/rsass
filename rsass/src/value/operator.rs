@@ -1,4 +1,4 @@
-use crate::css::{is_function_name, CssString, InvalidCss, Value};
+use crate::css::{CssString, InvalidCss, Value, is_function_name};
 use crate::value::{ListSeparator, Numeric};
 use std::fmt;
 
@@ -149,22 +149,22 @@ impl Operator {
                     }
                 }
             },
-            Self::Multiply => match (a, b) {
-                (Value::Numeric(ref a, _), Value::Numeric(ref b, _)) => {
+            Self::Multiply => match (&a, &b) {
+                (Value::Numeric(a, _), Value::Numeric(b, _)) => {
                     Some((a * b).into())
                 }
-                (a, b) if valid_operand(&a) && valid_operand(&b) => None,
+                (a, b) if valid_operand(a) && valid_operand(b) => None,
                 _ => return Err(BadOp::UndefinedOperation),
             },
-            Self::Div => match (a, b) {
+            Self::Div => match (&a, &b) {
                 (Value::Color(..), Value::Numeric(..)) => {
-                    return Err(BadOp::UndefinedOperation)
+                    return Err(BadOp::UndefinedOperation);
                 }
                 (Value::Color(..), Value::Color(..)) => {
-                    return Err(BadOp::UndefinedOperation)
+                    return Err(BadOp::UndefinedOperation);
                 }
-                (Value::Numeric(ref a, a_c), Value::Numeric(ref b, b_c))
-                    if a_c || b_c =>
+                (Value::Numeric(a, a_c), Value::Numeric(b, b_c))
+                    if *a_c || *b_c =>
                 {
                     Some((a / b).into())
                 }
@@ -212,8 +212,8 @@ fn valid_operand(v: &Value) -> bool {
 fn add_as_join(v: &Value) -> bool {
     match v {
         Value::List(..) | Value::True | Value::False => true,
-        Value::Literal(ref s) => !s.is_css_fn(),
-        Value::Call(ref name, _) => !is_function_name(name),
+        Value::Literal(s) => !s.is_css_fn(),
+        Value::Call(name, _) => !is_function_name(name),
         Value::BinOp(op) => op.add_as_join(),
         _ => false,
     }

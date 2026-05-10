@@ -168,12 +168,12 @@ fn value_to_selectors(v: &Value) -> Result<SelectorSet, BadSelector0> {
 
 pub(super) mod parser {
     use super::SelectorSet;
-    use crate::parser::{util::opt_spacelike, PResult, Span};
+    use crate::parser::{PResult, Span, util::opt_spacelike};
+    use nom::Parser as _;
     use nom::bytes::complete::tag;
     use nom::combinator::map;
     use nom::multi::separated_list1;
     use nom::sequence::delimited;
-    use nom::Parser as _;
 
     pub(crate) fn selector_set(input: Span) -> PResult<SelectorSet> {
         map(

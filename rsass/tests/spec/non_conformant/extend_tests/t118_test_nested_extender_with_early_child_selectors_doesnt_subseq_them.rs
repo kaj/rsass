@@ -9,10 +9,8 @@ fn runner() -> crate::TestRunner {
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().ok(
-            ".bip > .bap .foo {a: b}\
-             \n.grip > .bap .bar {@extend .foo}\n"
-        ),
+        runner().ok(".bip > .bap .foo {a: b}\
+             \n.grip > .bap .bar {@extend .foo}\n"),
         ".bip > .bap .foo, .bip > .bap .grip > .bap .bar, .grip > .bap .bip > .bap .bar {\
          \n  a: b;\
          \n}\n"

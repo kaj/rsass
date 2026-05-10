@@ -8,8 +8,7 @@ fn runner() -> crate::TestRunner {
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().ok(
-            "a b {\
+        runner().ok("a b {\
              \n  color: red;\
              \n  :first-child, :nth-of-type(  -2n+1 ) {\
              \n    .foo#bar:nth-child(even) {\
@@ -25,8 +24,7 @@ fn test() {
              \n    }\
              \n    a { b: c; }\
              \n  }\
-             \n}"
-        ),
+             \n}"),
         "a b {\
          \n  color: red;\
          \n}\

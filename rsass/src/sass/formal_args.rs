@@ -1,4 +1,4 @@
-use super::{functions::ResolvedArgs, Call, CallError, Name, Value};
+use super::{Call, CallError, Name, Value, functions::ResolvedArgs};
 use crate::css::CallArgs;
 use crate::input::SourcePos;
 use crate::{Error, ScopeError, ScopeRef};

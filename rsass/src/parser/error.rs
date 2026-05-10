@@ -1,6 +1,6 @@
 use super::{PResult, Span};
 use crate::input::SourcePos;
-use nom::{character::complete::one_of, Finish};
+use nom::{Finish, character::complete::one_of};
 use nom_language::error::{VerboseError, VerboseErrorKind};
 use std::fmt;
 
