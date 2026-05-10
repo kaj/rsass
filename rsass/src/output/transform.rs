@@ -462,18 +462,13 @@ fn check_body(body: &ItemBody, context: BodyContext) -> Result<(), Error> {
             Item::Return(_, ref pos) if context != BodyContext::Function => {
                 return Err(Invalid::AtRule.at(pos.clone()));
             }
-            Item::AtRule {
-                name,
-                args: _,
-                body: _,
-                pos,
-            } if context != BodyContext::Rule => {
-                if !name
-                    .single_raw()
-                    .map_or(false, |name| name_in(name, &CSS_AT_RULES[..]))
-                {
-                    return Err(Invalid::AtRule.at(pos.clone()));
-                }
+            Item::AtRule { name, pos, .. }
+                if context != BodyContext::Rule
+                    && !name.single_raw().map_or(false, |name| {
+                        name_in(name, &CSS_AT_RULES[..])
+                    }) =>
+            {
+                return Err(Invalid::AtRule.at(pos.clone()));
             }
             _ => (),
         }
