@@ -109,7 +109,7 @@ pub fn string_or_call(input: Span) -> PResult<Value> {
                 terminated(opt_spacelike, char(')')).parse(input)
             }
             let (rest, args) = if string.value() == "calc" {
-                if let Ok((end, _)) = endp(rest) {
+                if let Ok((end, ())) = endp(rest) {
                     return Err(nom_err(
                         "Missing argument.",
                         input.up_to(&end),
@@ -239,7 +239,7 @@ fn single_arg(input: Span) -> PResult<Value> {
 
 fn ext_arg_as_string(input: Span) -> PResult<String> {
     map_opt(is_not("\"\\;{}()[] ,"), |s: Span| {
-        if s.first().map_or(true, |ch| ch.is_ascii_digit()) {
+        if s.first().map_or(true, u8::is_ascii_digit) {
             None
         } else {
             Some(input_to_str(s).ok()?.to_owned())

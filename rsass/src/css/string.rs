@@ -190,7 +190,7 @@ impl fmt::Display for CssString {
         }
         if let Some(q) = q {
             out.write_char(q)?;
-        };
+        }
         Ok(())
     }
 }

@@ -230,7 +230,7 @@ impl Scope {
     pub(crate) fn get_name(&self) -> String {
         match self.get_local_or_none(&Name::from_static("@scope_name@")) {
             Some(Value::Literal(s)) => s.value().into(),
-            _ => "".into(),
+            _ => String::new(),
         }
     }
     /// Create a new subscope of a given parent.
@@ -308,14 +308,14 @@ impl Scope {
                 .ok_or(ScopeError::NoModule(modulename))?;
             // Refuse to declare new var from outside module:
             let _check_existence = module.get(&name)?;
-            if module
+            return if module
                 .get_local_or_none(&Name::from_static("@scope_name@"))
                 .is_some()
             {
-                return Err(ScopeError::ModifiedBuiltin);
+                Err(ScopeError::ModifiedBuiltin)
             } else {
-                return module.set_variable(name, val, default, global);
-            }
+                module.set_variable(name, val, default, global)
+            };
         }
         /*if let Some(fwd) = self.opt_forward() {
             fwd.get_or_none(&name);
@@ -902,7 +902,7 @@ impl Display for ScopeError {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Self::NoModule(name) => {
-                write!(out, "There is no module with the namespace {name:?}.",)
+                write!(out, "There is no module with the namespace {name:?}.")
             }
             Self::UndefinedVariable => "Undefined variable.".fmt(out),
             Self::UndefinedFunction => "Undefined function.".fmt(out),

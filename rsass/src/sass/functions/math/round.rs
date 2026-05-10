@@ -133,7 +133,7 @@ enum Strategy {
 }
 
 impl Strategy {
-    fn apply(&self, val: Number) -> Number {
+    fn apply(self, val: Number) -> Number {
         match self {
             Self::Nearest => val.round(),
             Self::Up => val.ceil(),

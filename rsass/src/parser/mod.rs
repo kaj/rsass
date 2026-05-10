@@ -180,7 +180,7 @@ fn mixin_call<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
     let (rest, n1) = terminated(name, opt_spacelike).parse(input)?;
     let (rest, n2) = opt(preceded(tag("."), name)).parse(rest)?;
     let name = n2.map(|n2| format!("{n1}.{n2}")).unwrap_or(n1);
-    let (rest, _) = opt_spacelike(rest)?;
+    let (rest, ()) = opt_spacelike(rest)?;
     let (rest0, args) =
         terminated(opt(call_args), ignore_comments).parse(rest)?;
     let (rest, t) = alt((tag("using"), tag("{"), tag(""))).parse(rest0)?;
@@ -198,7 +198,7 @@ fn mixin_call<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
             let decl = rest0.up_to(&rest).to_owned();
             (rest, Some(Callable::no_args(body, decl)))
         }
-        _ => map(semi_or_end, |_| None).parse(rest)?,
+        _ => map(semi_or_end, |()| None).parse(rest)?,
     };
     let pos = start.up_to(&rest).to_owned();
     Ok((
@@ -252,8 +252,6 @@ fn unknown_atrule<'a>(
     start: Span,
     input: Span<'a>,
 ) -> PResult<'a, Item> {
-    let (input, args) =
-        terminated(opt(unknown_rule_args), opt(ignore_space)).parse(input)?;
     fn x_args(value: Value) -> Value {
         match value {
             Value::Variable(name, _pos) => {
@@ -267,6 +265,8 @@ fn unknown_atrule<'a>(
             value => value,
         }
     }
+    let (input, args) =
+        terminated(opt(unknown_rule_args), opt(ignore_space)).parse(input)?;
     let (rest, body) = if input.first() == Some(&b'{') {
         map(body_block, Some).parse(input)?
     } else {
@@ -499,7 +499,7 @@ fn property_or_namespace_rule(input: Span) -> PResult<Item> {
 
     let (input, body) = preceded(
         ignore_comments,
-        alt((map(semi_or_end, |_| None), map(body_block, Some))),
+        alt((map(semi_or_end, |()| None), map(body_block, Some))),
     )
     .parse(input)?;
     Ok((input, ns_or_prop_item(name, val, body, pos.to_owned())))

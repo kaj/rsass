@@ -53,9 +53,6 @@ pub fn global(global: &mut FunctionMap) {
             NumOrSpecial::Special(v) => Value::call("sqrt", [v]),
         })
     });
-    fn num_rad(v: Numeric) -> Result<f64> {
-        num2radians(v).named(name!(number))
-    }
     def_va!(global, sin(number), |s| {
         Ok(match one_number_or_special(s, Ok)? {
             NumOrSpecial::Num(v) => Value::scalar(num_rad(v)?.sin()),
@@ -309,6 +306,10 @@ pub fn global(global: &mut FunctionMap) {
             Ok(Value::call("calc", [css_fn_arg(v)?]))
         }
     });
+}
+
+fn num_rad(v: Numeric) -> Result<f64> {
+    num2radians(v).named(name!(number))
 }
 
 fn one_number_or_special<F, T>(

@@ -31,7 +31,7 @@ impl Name {
     pub fn split_module(&self) -> Option<(String, Self)> {
         self.key.split_once('.').map(|(module, local)| {
             (
-                module.replace('_', "-").to_string(),
+                module.replace('_', "-"),
                 Self {
                     key: local.to_string().into(),
                 },

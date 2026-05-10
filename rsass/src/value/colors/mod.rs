@@ -1,4 +1,5 @@
 //! Types for color values.
+#![allow(clippy::many_single_char_names)]
 mod convert;
 mod hsla;
 mod hwba;
@@ -150,7 +151,7 @@ impl Color {
         match self {
             Self::Rgba(rgba) => rgba.reset_source(),
             Self::Hsla(hsla) => hsla.reset_source(),
-            _ => (),
+            Self::Hwba(_) => (),
         }
     }
     /// Get a reference to this `Value` bound to an output format.

@@ -120,7 +120,7 @@ fn selector_part(input: Span) -> PResult<SelectorPart> {
             ),
             |name| SelectorPart::Attribute {
                 name,
-                op: "".to_string(),
+                op: String::new(),
                 val: "".into(),
                 modifier: None,
             },

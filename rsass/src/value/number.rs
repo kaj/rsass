@@ -259,7 +259,7 @@ impl fmt::Display for Formatted<'_, Number> {
                     if end == 10 {
                         loop {
                             match dec.pop() {
-                                Some('9') => continue,
+                                Some('9') => (),
                                 None => {
                                     whole += 1.;
                                     break;
@@ -273,7 +273,7 @@ impl fmt::Display for Formatted<'_, Number> {
                     } else if end == 0 {
                         loop {
                             match dec.pop() {
-                                Some('0') => continue,
+                                Some('0') => (),
                                 None => break,
                                 Some(c) => {
                                     dec.push(c);

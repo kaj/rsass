@@ -201,7 +201,7 @@ fn handle_item(
                                 )?;
                             }
                             Parsed::Css(css) => {
-                                handle_css(css, dest, scope.clone())?
+                                handle_css(css, dest, scope.clone())?;
                             }
                         }
                         file_context.unlock_loading(&sourcefile);

@@ -238,21 +238,23 @@ fn find_extreme(
 ) -> Result<Option<Numeric>, ExtremeError> {
     let mut v = v.iter();
     let found = v.next().ok_or(ExtremeError::OneRequired)?;
-    let mut found = match found {
-        NumOrSpecial::Num(found) => found,
-        _ => return Ok(None),
+    let NumOrSpecial::Num(found) = found else {
+        return Ok(None);
     };
+    let mut found = found;
     for v in v {
-        let v = match v {
-            NumOrSpecial::Num(v) => v,
-            _ => return Ok(None),
+        let NumOrSpecial::Num(v) = v else {
+            return Ok(None);
         };
         if let Some(o) = cmp2(found, v) {
             found = if o == pref { found } else { v };
         } else if may_cmp_css(found, v) {
             return Ok(None);
         } else {
-            return Err(ExtremeError::Incompatible(found.clone(), v.clone()));
+            return Err(ExtremeError::Incompatible(
+                found.to_owned(),
+                v.clone(),
+            ));
         }
     }
     Ok(Some(found.clone()))

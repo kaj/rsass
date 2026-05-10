@@ -37,45 +37,6 @@ pub fn create_module() -> Scope {
         Ok(Value::Map(map))
     });
 
-    // Common to get and has_key
-    fn find_value<'a>(
-        map: &'a ValueMap,
-        key: &Value,
-        keys: &Value,
-    ) -> Result<Option<&'a Value>, CallError> {
-        let mut val = map.get(key);
-        match keys {
-            Value::ArgList(args) => {
-                args.check_no_named().map_err(CallError::msg)?;
-                for k in &args.positional {
-                    match val {
-                        Some(Value::Map(m)) => {
-                            val = m.get(k);
-                        }
-                        _ => return Ok(None),
-                    }
-                }
-            }
-            Value::List(keys, ..) => {
-                for k in keys {
-                    match val {
-                        Some(Value::Map(m)) => {
-                            val = m.get(k);
-                        }
-                        _ => return Ok(None),
-                    }
-                }
-            }
-            Value::Null => (),
-            single_key => match val {
-                Some(Value::Map(m)) => {
-                    val = m.get(single_key);
-                }
-                _ => return Ok(None),
-            },
-        };
-        Ok(val)
-    }
     def_va!(f, get(map, key, keys), |s| {
         let map = s.get(name!(map))?;
         Ok(find_value(&map, &s.get(name!(key))?, &s.get(name!(keys))?)?
@@ -97,25 +58,6 @@ pub fn create_module() -> Scope {
         ))
     });
     def_va!(g, merge(map1, args), |s| {
-        let mut map1 = s.get(name!(map1))?;
-        let (keys, map2) = match s.get(name!(args))? {
-            Value::ArgList(mut args) => {
-                if let Some(map2) = args.only_named(&name!(map2)) {
-                    (vec![], as_va_map(map2).named(name!(map2))?)
-                } else {
-                    let mut values = args.positional;
-                    let map2 = values
-                        .pop()
-                        .ok_or_else(|| {
-                            CallError::msg("Expected $args to contain a key.")
-                        })?
-                        .try_into()
-                        .named(name!(map2))?;
-                    (values, map2)
-                }
-            }
-            direct => (vec![], direct.try_into().named(name!(map2))?),
-        };
         fn do_merge(
             mut keys: impl Iterator<Item = Value>,
             map1: &mut ValueMap,
@@ -135,6 +77,25 @@ pub fn create_module() -> Scope {
                 }
             }
         }
+        let mut map1 = s.get(name!(map1))?;
+        let (keys, map2) = match s.get(name!(args))? {
+            Value::ArgList(mut args) => {
+                if let Some(map2) = args.only_named(&name!(map2)) {
+                    (vec![], as_va_map(map2).named(name!(map2))?)
+                } else {
+                    let mut values = args.positional;
+                    let map2 = values
+                        .pop()
+                        .ok_or_else(|| {
+                            CallError::msg("Expected $args to contain a key.")
+                        })?
+                        .try_into()
+                        .named(name!(map2))?;
+                    (values, map2)
+                }
+            }
+            direct => (vec![], direct.try_into().named(name!(map2))?),
+        };
         do_merge(keys.into_iter(), &mut map1, map2);
         Ok(Value::Map(map1))
     });
@@ -178,6 +139,46 @@ pub fn create_module() -> Scope {
     });
     f.expose_star(&g);
     f
+}
+
+// Common to get and has_key
+fn find_value<'a>(
+    map: &'a ValueMap,
+    key: &Value,
+    keys: &Value,
+) -> Result<Option<&'a Value>, CallError> {
+    let mut val = map.get(key);
+    match keys {
+        Value::ArgList(args) => {
+            args.check_no_named().map_err(CallError::msg)?;
+            for k in &args.positional {
+                match val {
+                    Some(Value::Map(m)) => {
+                        val = m.get(k);
+                    }
+                    _ => return Ok(None),
+                }
+            }
+        }
+        Value::List(keys, ..) => {
+            for k in keys {
+                match val {
+                    Some(Value::Map(m)) => {
+                        val = m.get(k);
+                    }
+                    _ => return Ok(None),
+                }
+            }
+        }
+        Value::Null => (),
+        single_key => match val {
+            Some(Value::Map(m)) => {
+                val = m.get(single_key);
+            }
+            _ => return Ok(None),
+        },
+    }
+    Ok(val)
 }
 
 pub fn expose(m: &Scope, global: &mut FunctionMap) {

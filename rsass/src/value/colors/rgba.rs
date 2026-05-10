@@ -26,7 +26,7 @@ pub enum RgbFormat {
     ShortHex,
     /// A well-known named color
     Name,
-    /// A rgb() or rgba() color specification
+    /// A `"rgb()"` or `"rgba()"` color specification
     Rgb,
 }
 
@@ -114,15 +114,15 @@ impl Rgba {
     /// If the color is not opaque or not exactly equal to a byte
     /// value, return None.
     pub fn try_bytes(&self) -> Option<(u8, u8, u8)> {
-        if !self.is_opaque() {
-            return None;
-        }
         fn byte(v: f64) -> Option<u8> {
             if (v.round() - v).abs() < 1e-7 {
                 Some(v.round() as u8)
             } else {
                 None
             }
+        }
+        if !self.is_opaque() {
+            return None;
         }
         if let (Some(r), Some(g), Some(b)) =
             (byte(self.red), byte(self.green), byte(self.blue))

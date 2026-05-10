@@ -436,6 +436,7 @@ pub fn extended_part(input: Span) -> PResult<StringPart> {
     Ok((input, StringPart::Raw(part)))
 }
 
+#[allow(clippy::trivially_copy_pass_by_ref)]
 fn is_ext_str_start_char(c: &char) -> bool {
     is_name_char(c)
         || *c == '*'
@@ -449,6 +450,7 @@ fn is_ext_str_start_char(c: &char) -> bool {
         || *c == '<'
         || *c == '>'
 }
+#[allow(clippy::trivially_copy_pass_by_ref)]
 fn is_ext_str_char(c: &char) -> bool {
     is_name_char(c)
         || *c == '*'
@@ -557,9 +559,11 @@ fn single_char(data: Span) -> Option<char> {
         .and_then(|s| s.chars().next())
 }
 
+#[allow(clippy::trivially_copy_pass_by_ref)]
 fn is_name_char(c: &char) -> bool {
     c.is_alphanumeric() || *c == '_' || *c == '-'
 }
+#[allow(clippy::trivially_copy_pass_by_ref)]
 fn is_name_start_char(c: &char) -> bool {
     c.is_alphabetic() || *c == '_' || *c == '-'
 }

@@ -34,7 +34,7 @@ impl SassString {
         for part in parts {
             match part {
                 StringPart::Raw(s) => buf.push_str(&s),
-                interpolation => {
+                interpolation @ StringPart::Interpolation(_) => {
                     if !buf.is_empty() {
                         p2.push(StringPart::Raw(std::mem::take(&mut buf)));
                     }

@@ -120,14 +120,14 @@ pub enum SelectorPart {
         /// Optional modifier.
         modifier: Option<char>,
     },
-    /// A css3 pseudo-element (::foo)
+    /// A css3 pseudo-element (`"::foo"`)
     PseudoElement {
         /// The name of the pseudo-element
         name: SassString,
         /// Arguments to the pseudo-element
         arg: Option<Selectors>,
     },
-    /// A pseudo-class or a css2 pseudo-element (:foo)
+    /// A pseudo-class or a css2 pseudo-element (`":foo"`)
     Pseudo {
         /// The name of the pseudo-class
         name: SassString,

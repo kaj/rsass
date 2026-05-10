@@ -202,10 +202,13 @@ where
                 position,
             ),
             |((s1, op, s2), t2, _)| {
-                use Value::*;
+                use Value as V;
                 *s2 || !*s1
                     || op == &Operator::Plus
-                    || !matches!(&t2, Literal(_) | Numeric(_) | BinOp(_))
+                    || !matches!(
+                        &t2,
+                        V::Literal(_) | V::Numeric(_) | V::BinOp(_)
+                    )
             },
         ),
         move || v.clone(),
@@ -425,7 +428,7 @@ fn hex_color(input: Span) -> PResult<Value> {
             (hexchar2, hexchar2, hexchar2, opt(hexchar2)),
             (hexchar1, hexchar1, hexchar1, opt(hexchar1)),
         )),
-        peek(map(not(alphanumeric1), |_| ())),
+        peek(map(not(alphanumeric1), |()| ())),
     )
     .parse(input)?;
 
@@ -520,11 +523,11 @@ fn function_call_or_string_real(
                 return Ok((rest, Value::Call(name, Box::new(args), pos)));
             }
             Err(error) => {
-                if let Ok((rest, lit)) = sass_string_ext(rest) {
-                    return Ok((rest, Value::Literal(lit)));
+                return if let Ok((rest, lit)) = sass_string_ext(rest) {
+                    Ok((rest, Value::Literal(lit)))
                 } else {
-                    return Err(error);
-                }
+                    Err(error)
+                };
             }
         }
     }

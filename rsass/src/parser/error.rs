@@ -48,10 +48,10 @@ impl From<VerboseError<Span<'_>>> for ParseError {
         let (msg, pos) = value
             .errors
             .iter()
-            .filter_map(|(pos, kind)| {
+            .find_map(|(pos, kind)| {
                 match kind {
                     VerboseErrorKind::Context(ctx) => {
-                        Some((ctx.to_string(), pos))
+                        Some(((*ctx).to_string(), pos))
                     }
                     VerboseErrorKind::Char(ch) if *ch == '\'' => {
                         Some((format!("Expected {ch}."), pos))
@@ -62,7 +62,6 @@ impl From<VerboseError<Span<'_>>> for ParseError {
                     VerboseErrorKind::Nom(_) => None, // Try the next one!
                 }
             })
-            .next()
             .or_else(|| {
                 value.errors.first().map(|(pos, _)| {
                     if pos.is_at_end() {

@@ -18,7 +18,7 @@ pub enum Value {
     /// A comma- or space separated list of values, with or without brackets.
     List(Vec<Value>, Option<ListSeparator>, bool),
     /// A Numeric value is a rational value with a Unit (which may be
-    /// Unit::None) and flags.
+    /// `Unit::None`) and flags.
     Numeric(Numeric),
     /// "(a/b) and a/b differs semantically.  Parens means the value
     /// should be evaluated numerically if possible, without parens /
@@ -28,7 +28,7 @@ pub enum Value {
     /// A variable reference to be loaded when the value is evaluated.
     Variable(Name, SourcePos),
     /// Both a numerical and original string representation,
-    /// since case and length should be preserved (#AbC vs #aabbcc).
+    /// since case and length should be preserved (`"#AbC"` vs `"#aabbcc"`).
     Color(Rgba, Option<String>),
     /// The null value.
     Null,
@@ -162,7 +162,7 @@ impl Value {
             }
             Self::Map(m) => {
                 let mut items = css::ValueMap::new();
-                for (k, v) in m.iter() {
+                for (k, v) in m {
                     let k = k.do_evaluate(scope.clone(), arithmetic)?;
                     let v = v.do_evaluate(scope.clone(), arithmetic)?;
                     if items.insert(k, v).is_some() {

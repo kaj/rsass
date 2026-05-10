@@ -49,7 +49,7 @@ pub fn create_module() -> Scope {
         })?;
         let function = function
             .ok_or(())
-            .or_else(|_| get_function(s, None, &name))?;
+            .or_else(|()| get_function(s, None, &name))?;
         let args = s.get_map(name!(args), CallArgs::from_value)?;
         if let Some(function) = function {
             function.call(Call {

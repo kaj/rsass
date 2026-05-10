@@ -300,14 +300,14 @@ impl Selector {
     }
 
     pub(super) fn unify(self, other: Self) -> Vec<Self> {
-        self._unify(other).unwrap_or_default()
+        self.inner_unify(other).unwrap_or_default()
     }
 
     pub(crate) fn unify_extend(&self, other: &Self) -> Vec<Self> {
-        self.clone()._unify(other.clone()).unwrap_or_default()
+        self.clone().inner_unify(other.clone()).unwrap_or_default()
     }
 
-    fn _unify(self, other: Self) -> Option<Vec<Self>> {
+    fn inner_unify(self, other: Self) -> Option<Vec<Self>> {
         let rel_of = match (self.rel_of, other.rel_of) {
             (None, None) => vec![],
             (None, Some(rel)) | (Some(rel), None) => vec![rel],
@@ -517,7 +517,7 @@ impl From<BadSelector> for AppendError {
 // emtpyness at the call site?
 #[allow(clippy::boxed_local)]
 fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
-    use RelKind::*;
+    use RelKind as Rk;
     fn as_rel_vec(
         kind: RelKind,
         s: impl IntoIterator<Item = Selector>,
@@ -529,33 +529,35 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
     }
 
     Some(match (*a, *b) {
-        ((k @ AdjacentSibling, a), (AdjacentSibling, b))
-        | ((k @ Parent, a), (Parent, b)) => as_rel_vec(k, a._unify(b)?),
-        ((Ancestor, a), (Ancestor, b)) => {
+        ((k @ Rk::AdjacentSibling, a), (Rk::AdjacentSibling, b))
+        | ((k @ Rk::Parent, a), (Rk::Parent, b)) => {
+            as_rel_vec(k, a.inner_unify(b)?)
+        }
+        ((Rk::Ancestor, a), (Rk::Ancestor, b)) => {
             if b.is_local_superselector(&a) {
-                as_rel_vec(Ancestor, a._unify(b)?)
+                as_rel_vec(Rk::Ancestor, a.inner_unify(b)?)
             } else if a.is_local_superselector(&b)
                 || a.compound.must_not_inherit(&b.compound)
             {
-                as_rel_vec(Ancestor, b._unify(a)?)
+                as_rel_vec(Rk::Ancestor, b.inner_unify(a)?)
             } else {
                 as_rel_vec(
-                    Ancestor,
+                    Rk::Ancestor,
                     b.clone()
-                        .with_rel_of(Ancestor, a.clone())
+                        .with_rel_of(Rk::Ancestor, a.clone())
                         .into_iter()
-                        .chain(a.with_rel_of(Ancestor, b)),
+                        .chain(a.with_rel_of(Rk::Ancestor, b)),
                 )
             }
         }
-        ((k @ Sibling, a), (Sibling, b)) => {
+        ((k @ Rk::Sibling, a), (Rk::Sibling, b)) => {
             if a.is_superselector(&b) {
-                as_rel_vec(Sibling, once(b))
+                as_rel_vec(Rk::Sibling, once(b))
             } else if b.is_superselector(&a) {
-                as_rel_vec(Sibling, once(a))
+                as_rel_vec(Rk::Sibling, once(a))
             } else if !a.compound.must_not_inherit(&b.compound) {
                 as_rel_vec(
-                    Sibling,
+                    Rk::Sibling,
                     b.clone()
                         .with_rel_of(k, a.clone())
                         .into_iter()
@@ -563,34 +565,35 @@ fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
                         .chain(a.unify(b)),
                 )
             } else {
-                as_rel_vec(Sibling, a.unify(b))
+                as_rel_vec(Rk::Sibling, a.unify(b))
             }
         }
-        ((a_k @ AdjacentSibling, a_s), (Sibling, b_s))
-        | ((Sibling, b_s), (a_k @ AdjacentSibling, a_s)) => {
+        ((a_k @ Rk::AdjacentSibling, a_s), (Rk::Sibling, b_s))
+        | ((Rk::Sibling, b_s), (a_k @ Rk::AdjacentSibling, a_s)) => {
             if b_s.is_superselector(&a_s) {
                 as_rel_vec(a_k, once(a_s))
             } else if a_s.compound.has_id() || b_s.compound.has_id() {
-                as_rel_vec(a_k, a_s.with_rel_of(Sibling, b_s))
+                as_rel_vec(a_k, a_s.with_rel_of(Rk::Sibling, b_s))
             } else {
                 as_rel_vec(
                     a_k,
                     a_s.clone()
-                        .with_rel_of(Sibling, b_s.clone())
+                        .with_rel_of(Rk::Sibling, b_s.clone())
                         .into_iter()
                         .chain(b_s.unify(a_s)),
                 )
             }
         }
-        ((a_k @ (AdjacentSibling | Sibling), a_s), (b_k, b_s))
-        | ((b_k, b_s), (a_k @ (AdjacentSibling | Sibling), a_s)) => {
+        ((a_k @ (Rk::AdjacentSibling | Rk::Sibling), a_s), (b_k, b_s))
+        | ((b_k, b_s), (a_k @ (Rk::AdjacentSibling | Rk::Sibling), a_s)) => {
             as_rel_vec(a_k, a_s.with_rel_of(b_k, b_s))
         }
-        ((Parent, p), (Ancestor, a)) | ((Ancestor, a), (Parent, p)) => {
+        ((Rk::Parent, p), (Rk::Ancestor, a))
+        | ((Rk::Ancestor, a), (Rk::Parent, p)) => {
             if a.is_superselector(&p) {
-                as_rel_vec(Parent, once(p))
+                as_rel_vec(Rk::Parent, once(p))
             } else {
-                as_rel_vec(Parent, p.with_rel_of(RelKind::Ancestor, a))
+                as_rel_vec(Rk::Parent, p.with_rel_of(Rk::Ancestor, a))
             }
         }
     })

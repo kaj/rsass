@@ -26,3 +26,57 @@ maintenance = { status = "actively-developed" }
 [dev-dependencies]
 tracing-subscriber = "0.3.11"
 rustversion = "1.0.22"
+
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+cast_possible_truncation = "allow"
+cast_sign_loss = "allow"
+if_not_else = "allow"
+needless_pass_by_value = "allow"
+struct_field_names = "allow"
+unnecessary_wraps = "allow"
+too_many_lines = "allow"
+similar_names = "allow"
+
+missing_panics_doc = "allow"
+float_cmp= "allow"
+must_use_candidate = "allow"
+missing_errors_doc = "allow"
+default_trait_access = "allow"
+ref_option = "allow"
+return_self_not_must_use = "allow"
+match_same_arms = "allow"
+case_sensitive_file_extension_comparisons = "allow"
+naive_bytecount = "allow"
+maybe_infinite_iter = "allow"
+single_match_else = "allow"
+map_unwrap_or = "allow"
+cast_possible_wrap = "allow"
+match_wildcard_for_single_variants = "allow"
+cast-precision-loss = "allow"
+
+# Selected "restriction" lints.
+#cfg_not_test = "warn"
+#dbg_macro = "warn"
+#deref_by_slicing = "warn"
+# doc_paragraphs_missing_punctuation = "warn" - todo: decide on this
+#exit = "warn"
+#large_include_file = "warn"
+#panic = "warn"
+#rc_buffer = "warn"
+#redundant_test_prefix = "warn"
+#ref_patterns = "warn"
+#same_name_method = "warn"
+#self_named_module_files = "warn"
+#tests_outside_test_module = "warn"
+#todo = "warn"
+#try_err = "warn"
+#unimplemented = "warn"
+# unneeded_field_pattern = "warn" -- todo
+# unreachable = "warn" -- todo
+#unused_result_ok = "warn"
+#unwrap_used = "warn"
+# allow_attributes_without_reason = "warn" -- needs work in ructe

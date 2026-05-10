@@ -86,7 +86,7 @@ pub(crate) mod parser {
             |(default, global), (d, g)| (default || d, global || g),
         )
         .parse(input)?;
-        let (trail, _) = semi_or_end(input)?;
+        let (trail, ()) = semi_or_end(input)?;
         let pos = input0.up_to(&input).to_owned().opt_back("$");
         Ok((
             trail,

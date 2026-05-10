@@ -9,6 +9,7 @@ impl From<&Hsla> for Rgba {
             let gray = lum * 255.;
             Self::new(gray, gray, gray, hsla.alpha(), RgbFormat::Name)
         } else {
+            const THIRD: f64 = 1. / 3.;
             fn hue2rgb(p: f64, q: f64, t: f64) -> f64 {
                 let t = (t - t.floor()) * 6.;
                 match t as u8 {
@@ -24,7 +25,6 @@ impl From<&Hsla> for Rgba {
                 lum + sat - lum * sat
             };
             let p = lum * 2. - q;
-            const THIRD: f64 = 1. / 3.;
             Self::new(
                 hue2rgb(p, q, hue + THIRD) * 255.,
                 hue2rgb(p, q, hue) * 255.,

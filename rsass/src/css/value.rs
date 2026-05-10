@@ -19,7 +19,7 @@ pub enum Value {
     /// A comma- or space separated list of values, with or without brackets.
     List(Vec<Value>, Option<ListSeparator>, bool),
     /// A Numeric value is a rational value with a Unit (which may be
-    /// Unit::None) and flags.
+    /// `Unit::None`) and flags.
     ///
     /// The boolean flag is true for calculated values and false for
     /// literal values.
@@ -326,9 +326,10 @@ impl Eq for Value {}
 
 impl From<bool> for Value {
     fn from(v: bool) -> Self {
-        match v {
-            true => Self::True,
-            false => Self::False,
+        if v {
+            Self::True
+        } else {
+            Self::False
         }
     }
 }

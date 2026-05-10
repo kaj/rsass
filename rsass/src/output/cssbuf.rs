@@ -64,7 +64,7 @@ impl CssBuf {
     }
     pub(crate) fn add_char(&mut self, ch: char) {
         let mut buf = [b'0'; 6];
-        self.add_str(ch.encode_utf8(&mut buf))
+        self.add_str(ch.encode_utf8(&mut buf));
     }
     pub fn add_one(&mut self, normal: &str, compressed: &str) {
         self.add_str(if self.format.is_compressed() {
