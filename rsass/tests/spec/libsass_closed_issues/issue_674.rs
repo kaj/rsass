@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong error
 fn test() {
     assert_eq!(
         runner().err(
@@ -36,8 +37,8 @@ fn test() {
         "Error: Invalid function name.\
          \n  ,\
          \n5 | @function url($src, $path:\'\'){\
-         \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  |           ^^^\
          \n  \'\
-         \n  input.scss 5:1  root stylesheet",
+         \n  input.scss 5:11  root stylesheet",
     );
 }

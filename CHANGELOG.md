@@ -12,7 +12,7 @@ project adheres to
 * Output for nested rules now conserves order, as by sass/sass#3846 .
 * Refined custom-property handling for new tests.
 * Refactored to get items and values smaller in memory.
-* Updated sass-spec test suite to 2026-01-21.
+* Updated sass-spec test suite to 2026-05-07.
 * Use rust edition 2024, so msrv is now 1.85.0.
 * Removed dependency `lazy-static`.
 

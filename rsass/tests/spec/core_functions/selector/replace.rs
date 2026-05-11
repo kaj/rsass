@@ -327,14 +327,14 @@ mod format {
             #[test]
             fn list_of_compound() {
                 assert_eq!(
-                    runner().ok(
-                        "@use \"sass:selector\";\
+        runner().ok(
+            "@use \"sass:selector\";\
              \na {b: selector.replace(\"c.d.e.f\", \"c.d, .e.f\", \".g\")}\n"
-                    ),
-                    "a {\
+        ),
+        "a {\
          \n  b: .g;\
          \n}\n"
-                );
+    );
             }
         }
         mod non_string {

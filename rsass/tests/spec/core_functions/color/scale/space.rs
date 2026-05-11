@@ -54,14 +54,14 @@ mod missing {
             #[ignore] // unexepected error
             fn modern() {
                 assert_eq!(
-                    runner().ok(
-                        "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.scale(rgb(none none none), $space: display-p3)}\n"
-                    ),
-                    "a {\
+        ),
+        "a {\
          \n  b: black;\
          \n}\n"
-                );
+    );
             }
         }
         mod same {

@@ -185,28 +185,28 @@ mod host {
                 #[test]
                 fn left() {
                     assert_eq!(
-                        runner().ok(
-                            "@use \"sass:meta\";\
+        runner().ok(
+            "@use \"sass:meta\";\
              \n@use \"sass:selector\";\
              \na {b: meta.inspect(selector.unify(\":host\", \":host.c\"))}\n"
-                        ),
-                        "a {\
+        ),
+        "a {\
          \n  b: null;\
          \n}\n"
-                    );
+    );
                 }
                 #[test]
                 fn right() {
                     assert_eq!(
-                        runner().ok(
-                            "@use \"sass:meta\";\
+        runner().ok(
+            "@use \"sass:meta\";\
              \n@use \"sass:selector\";\
              \na {b: meta.inspect(selector.unify(\":host.c\", \":host\"))}\n"
-                        ),
-                        "a {\
+        ),
+        "a {\
          \n  b: null;\
          \n}\n"
-                    );
+    );
                 }
             }
             mod selector_pseudos {

@@ -266,13 +266,13 @@ mod red {
     #[ignore] // unexepected error
     fn zero() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.scale(color(display-p3 0.2 0.5 0.7), $red: 0%)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(display-p3 0.2 0.5 0.7);\
          \n}\n"
-        );
+    );
     }
 }

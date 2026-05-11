@@ -11,27 +11,27 @@ mod alpha {
     #[ignore] // unexepected error
     fn partial() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(color(srgb 0.1 0.2 0.3 / 0.4), oklch)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: oklch(31.3834100712% 0.0558899439 250.027498023deg / 0.4);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn transparent() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(color(srgb 0.1 0.2 0.3 / 0.0), oklch)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: oklch(31.3834100712% 0.0558899439 250.027498023deg / 0);\
          \n}\n"
-        );
+    );
     }
 }
 #[test]

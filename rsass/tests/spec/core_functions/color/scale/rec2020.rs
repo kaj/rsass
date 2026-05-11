@@ -71,27 +71,27 @@ mod blue {
     #[ignore] // unexepected error
     fn low() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.scale(color(rec2020 0.2 0.5 0.7), $blue: -16%)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(rec2020 0.2 0.5 0.588);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn max() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.scale(color(rec2020 0.2 0.5 0.7), $blue: 100%)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(rec2020 0.2 0.5 1);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
@@ -125,14 +125,14 @@ mod green {
     #[ignore] // unexepected error
     fn high() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.scale(color(rec2020 0.2 0.5 0.7), $green: 12%)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(rec2020 0.2 0.56 0.7);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
@@ -241,14 +241,14 @@ mod red {
     #[ignore] // unexepected error
     fn min() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.scale(color(rec2020 0.2 0.5 0.7), $red: -100%)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(rec2020 0 0.5 0.7);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error

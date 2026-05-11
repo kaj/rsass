@@ -4,6 +4,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("combinator")
 }
 
+mod adjacent;
+
 mod has;
 
 mod is;

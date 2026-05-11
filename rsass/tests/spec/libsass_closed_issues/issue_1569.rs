@@ -5,11 +5,10 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().err(
-            "$common-border: \"foo\";\
+        runner().ok("$common-border: \"foo\";\
              \n.nihilo & {\
              \n  .dijitMenu {\
              \n    border: $common-border;\
@@ -17,13 +16,12 @@ fn test() {
              \n      color: getColor(\'text-dark-main\');\
              \n    }\
              \n  }\
-             \n}\n"
-        ),
-        "Error: Top-level selectors may not contain the parent selector \"&\".\
-         \n  ,\
-         \n2 | .nihilo & {\
-         \n  |         ^\
-         \n  \'\
-         \n  input.scss 2:9  root stylesheet",
+             \n}\n"),
+        ".nihilo & .dijitMenu {\
+         \n  border: \"foo\";\
+         \n}\
+         \n.nihilo & .dijitMenu .dijitMenuItem {\
+         \n  color: getColor(\"text-dark-main\");\
+         \n}\n"
     );
 }

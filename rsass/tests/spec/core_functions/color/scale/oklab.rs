@@ -208,14 +208,14 @@ mod lightness {
     #[ignore] // unexepected error
     fn min() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.scale(oklab(70% 0.3 -0.25), $lightness: -100%)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: oklab(0% 0.3 -0.25);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error

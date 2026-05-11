@@ -179,14 +179,14 @@ mod unprefixed {
                 #[test]
                 fn has_argument() {
                     assert_eq!(
-                        runner().ok(
-                            "@use \"sass:selector\";\
+        runner().ok(
+            "@use \"sass:selector\";\
              \na {b: selector.extend(\":is(c d.e, f g)\", \":is\", \"h\")}\n"
-                        ),
-                        "a {\
+        ),
+        "a {\
          \n  b: :is(c d.e, f g);\
          \n}\n"
-                    );
+    );
                 }
                 #[test]
                 fn name() {

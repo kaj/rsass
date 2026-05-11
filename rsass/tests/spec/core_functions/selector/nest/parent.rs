@@ -4,15 +4,30 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("parent")
 }
 
-#[test]
-fn alone() {
-    assert_eq!(
-        runner().ok("@use \"sass:selector\";\
+mod alone {
+    use super::runner;
+
+    #[test]
+    #[ignore] // unexepected error
+    fn first() {
+        assert_eq!(
+            runner().ok("@use \"sass:selector\";\
+             \na {b: selector.nest(\"&\")}\n"),
+            "a {\
+         \n  b: &;\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn second() {
+        assert_eq!(
+            runner().ok("@use \"sass:selector\";\
              \na {b: selector.nest(\"c\", \"&\")}\n"),
-        "a {\
+            "a {\
          \n  b: c;\
          \n}\n"
-    );
+        );
+    }
 }
 mod complex {
     use super::runner;

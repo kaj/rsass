@@ -11,43 +11,43 @@ mod calculation {
     #[ignore] // unexepected error
     fn arg_1() {
         assert_eq!(
-            runner().ok(
-                "@use \'core_functions/color/utils\';\
+        runner().ok(
+            "@use \'core_functions/color/utils\';\
              \n@include utils.inspect(color(srgb calc(1px + 1%) 0.2 0.3));\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  value: color(srgb calc(1px + 1%) 0.2 0.3);\
          \n  type: string;\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn arg_2() {
         assert_eq!(
-            runner().ok(
-                "@use \'core_functions/color/utils\';\
+        runner().ok(
+            "@use \'core_functions/color/utils\';\
              \n@include utils.inspect(color(srgb 0.1 calc(1px + 1%) 0.3));\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  value: color(srgb 0.1 calc(1px + 1%) 0.3);\
          \n  type: string;\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn arg_3() {
         assert_eq!(
-            runner().ok(
-                "@use \'core_functions/color/utils\';\
+        runner().ok(
+            "@use \'core_functions/color/utils\';\
              \n@include utils.inspect(color(srgb 0.1 0.2 calc(1px + 1%)));\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  value: color(srgb 0.1 0.2 calc(1px + 1%));\
          \n  type: string;\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error

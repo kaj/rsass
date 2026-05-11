@@ -5,10 +5,10 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().err(
+        runner().ok(
             "@use \"sass:map\";\
              \n$tablet-portrait:                 768px;\
              \n$tablet-landscape:                980px;\
@@ -41,13 +41,25 @@ fn test() {
              \n  }\
              \n}\n"
         ),
-        "Error: Top-level selectors may not contain the parent selector \"&\".\
-         \n   ,\
-         \n31 |     body.immobile & {\
-         \n   |                   ^\
-         \n   \'\
-         \n  input.scss 31:19  @content\
-         \n  input.scss 23:9   grid-media-query()\
-         \n  input.scss 30:3   root stylesheet",
+        "@media only screen and (min-width: 768px) and (max-width: 980px) {\
+         \n  body.immobile & {\
+         \n    margin-bottom: 0;\
+         \n  }\
+         \n}\
+         \n@media only screen and (min-width: 980px) and (max-width: 1120px) {\
+         \n  body.immobile & {\
+         \n    margin-bottom: 0;\
+         \n  }\
+         \n}\
+         \n@media only screen and (min-width: 1120px) and (max-width: 1280px) {\
+         \n  body.immobile & {\
+         \n    margin-bottom: 0;\
+         \n  }\
+         \n}\
+         \n@media only screen and (min-width: 1280px) {\
+         \n  body.immobile & {\
+         \n    margin-bottom: 0;\
+         \n  }\
+         \n}\n"
     );
 }

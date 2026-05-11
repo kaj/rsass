@@ -95,15 +95,15 @@ mod missing {
     #[ignore] // unexepected error
     fn blue() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \n@use \'core_functions/color/utils\';\
              \na {b: color.to-space(color(srgb-linear 0.1 0.2 none), hwb)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: hsl(76.7592364631, 100%, 24.2264602241%);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error

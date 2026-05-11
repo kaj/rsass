@@ -74,40 +74,40 @@ mod missing {
     #[ignore] // unexepected error
     fn blue() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(color(xyz-d50 0.1 0.2 none), rec2020)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(rec2020 0.2651201665 0.5016141545 none);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn green() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(color(xyz-d50 0.1 none 0.3), rec2020)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(rec2020 0.2799117622 none 0.6111315018);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn red() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(color(xyz-d50 none 0.2 0.3), rec2020)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(rec2020 none 0.57127065 0.5978630317);\
          \n}\n"
-        );
+    );
     }
 }
 mod out_of_range {

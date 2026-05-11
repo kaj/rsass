@@ -122,15 +122,15 @@ mod first {
     #[test]
     fn space() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:list\";\
+        runner().ok(
+            "@use \"sass:list\";\
              \n@use \"core_functions/list/utils\";\
              \na {b: list.join(utils.with-separator(1, space), (2, 3, 4))}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: 1 2 3 4;\
          \n}\n"
-        );
+    );
     }
     mod undecided {
         use super::runner;
@@ -317,15 +317,15 @@ mod second {
     #[test]
     fn space() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:list\";\
+        runner().ok(
+            "@use \"sass:list\";\
              \n@use \"core_functions/list/utils\";\
              \na {b: list.join((1, 2, 3), utils.with-separator(4, space))}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: 1, 2, 3, 4;\
          \n}\n"
-        );
+    );
     }
     mod undecided {
         use super::runner;

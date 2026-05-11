@@ -59,14 +59,14 @@ mod local {
     #[ignore] // unexepected error
     fn green() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.channel(color(rec2020 0.2 0.5 0.8), \"green\")}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: 0.5;\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error

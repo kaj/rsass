@@ -145,14 +145,14 @@ mod clamp {
         #[test]
         fn arg_1() {
             assert_eq!(
-                runner().ok(
-                    "@use \"sass:string\";\
+        runner().ok(
+            "@use \"sass:string\";\
              \na {b: hsl(string.unquote(\"clamp(1, 2, 3)\"), 2%, 3%, 0.4)}\n"
-                ),
-                "a {\
+        ),
+        "a {\
          \n  b: hsl(clamp(1, 2, 3), 2%, 3%, 0.4);\
          \n}\n"
-            );
+    );
         }
         #[test]
         fn arg_2() {

@@ -18,7 +18,7 @@ fn test() {
          \n  |         ^^^^^^^^^^^^^^\
          \n  \'\
          \n    input.scss 1:9  root stylesheet\n\
-         \nError: Top-level selectors may not contain the parent selector \"&\".\
+         \nError: A top-level selector may not contain a parent selector with a suffix.\
          \n  ,\
          \n1 | &post {\
          \n  | ^^^^^\

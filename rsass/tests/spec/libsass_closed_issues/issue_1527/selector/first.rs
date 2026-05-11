@@ -5,19 +5,14 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().err(
-            "& foo {\
+        runner().ok("& foo {\
              \n  bar: baz;\
-             \n}\n"
-        ),
-        "Error: Top-level selectors may not contain the parent selector \"&\".\
-         \n  ,\
-         \n1 | & foo {\
-         \n  | ^\
-         \n  \'\
-         \n  input.scss 1:1  root stylesheet",
+             \n}\n"),
+        "& foo {\
+         \n  bar: baz;\
+         \n}\n"
     );
 }

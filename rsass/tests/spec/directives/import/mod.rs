@@ -20,4 +20,6 @@ mod load;
 
 mod nested;
 
+mod top_level_parent;
+
 mod whitespace;

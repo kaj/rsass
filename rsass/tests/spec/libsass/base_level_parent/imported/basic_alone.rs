@@ -7,23 +7,12 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
-        runner().err("@import \"include.scss\";"),
-        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
-         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
-         \n  ,\
-         \n1 | @import \"include.scss\";\
-         \n  |         ^^^^^^^^^^^^^^\
-         \n  \'\
-         \n    input.scss 1:9  root stylesheet\n\
-         \nError: Top-level selectors may not contain the parent selector \"&\".\
-         \n  ,\
-         \n1 | & {\
-         \n  | ^\
-         \n  \'\
-         \n  include.scss 1:1  @import\
-         \n  input.scss 1:9    root stylesheet",
+        runner().ok("@import \"include.scss\";"),
+        "& foo {\
+         \n  bar: baz;\
+         \n}\n"
     );
 }

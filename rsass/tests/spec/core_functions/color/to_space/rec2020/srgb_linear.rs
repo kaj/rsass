@@ -134,14 +134,14 @@ mod out_of_range {
     #[ignore] // unexepected error
     fn near() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(color(rec2020 -1 0.4 2), srgb-linear)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(srgb-linear -2.0689650071 0.28550882 4.7113611346);\
          \n}\n"
-        );
+    );
     }
 }
 #[test]

@@ -52,23 +52,19 @@ mod parent {
     use super::runner;
 
     #[test]
-    fn first_arg() {
+    #[ignore] // wrong error
+    fn first_arg_suffix() {
         assert_eq!(
             runner().err(
                 "@use \"sass:selector\";\
-             \na {b: selector.nest(\"&\")}\n"
+             \na {b: selector.nest(\"&c\")}\n"
             ),
-            "Error: Parent selectors aren\'t allowed here.\
+            "Error: A top-level selector may not contain a parent selector with a suffix.\
          \n  ,\
-         \n1 | &\
-         \n  | ^\
+         \n1 | &c\
+         \n  | ^^\
          \n  \'\
-         \n  - 1:1  root stylesheet\
-         \n  ,\
-         \n2 | a {b: selector.nest(\"&\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^\
-         \n  \'\
-         \n  input.scss 2:7  root stylesheet",
+         \n  - 1:1  root stylesheet",
         );
     }
     #[test]

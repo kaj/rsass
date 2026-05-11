@@ -22,40 +22,40 @@ mod missing {
     #[ignore] // unexepected error
     fn blue() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(color(a98-rgb 0.1 0.2 none), a98-rgb)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb 0.1 0.2 none);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn green() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(color(a98-rgb 0.1 none 0.3), a98-rgb)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb 0.1 none 0.3);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn red() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(color(a98-rgb none 0.2 0.3), a98-rgb)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb none 0.2 0.3);\
          \n}\n"
-        );
+    );
     }
 }
 #[test]

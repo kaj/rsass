@@ -69,15 +69,15 @@ mod doesnt_accept {
     #[ignore] // unexepected error
     fn builtin() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:meta\";\
+        runner().ok(
+            "@use \"sass:meta\";\
              \n@mixin a() {}\n\
              \na {b: meta.accepts-content(meta.get-mixin(load-css, meta))}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: false;\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error

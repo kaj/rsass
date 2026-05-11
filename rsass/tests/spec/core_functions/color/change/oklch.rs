@@ -157,14 +157,14 @@ mod lightness {
     #[ignore] // unexepected error
     fn none() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.change(oklch(50% 0.2 30deg), $lightness: none)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: oklch(none 0.2 30deg);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error

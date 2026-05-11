@@ -7,7 +7,6 @@ fn runner() -> crate::TestRunner {
             "include/_upstream.scss",
             "@mixin a { b: c }\n@include a;\n",
         )
-        .mock_file("parent_selector/_upstream.scss", "&{ a: b; }\n")
         .mock_file("root/_upstream.scss", "a: b;\n")
 }
 
@@ -35,28 +34,6 @@ fn include() {
          \n  _upstream.scss 1:12  a()\
          \n  _upstream.scss 2:1   @import\
          \n  input.scss 2:9       root stylesheet",
-    );
-}
-#[test]
-#[ignore] // missing error
-fn parent_selector() {
-    let runner = runner().with_cwd("parent_selector");
-    assert_eq!(
-        runner.err("@import \'upstream\';\n"),
-        "DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.\n\
-         \nMore info and automated migrator: https://sass-lang.com/d/import\n\
-         \n  ,\
-         \n1 | @import \'upstream\';\
-         \n  |         ^^^^^^^^^^\
-         \n  \'\
-         \n    input.scss 1:9  root stylesheet\n\
-         \nError: Top-level selectors may not contain the parent selector \"&\".\
-         \n  ,\
-         \n1 | &{ a: b; }\
-         \n  | ^\
-         \n  \'\
-         \n  _upstream.scss 1:1  @import\
-         \n  input.scss 1:9      root stylesheet",
     );
 }
 #[test]

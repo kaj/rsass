@@ -101,14 +101,14 @@ mod with {
     fn default() {
         let runner = runner().with_cwd("default");
         assert_eq!(
-            runner.ok(
-                "@use \"sass:meta\";\
+        runner.ok(
+            "@use \"sass:meta\";\
              \n@include meta.load-css(\"loaded\", $with: (a: from input));\n"
-            ),
-            "b {\
+        ),
+        "b {\
          \n  c: from input;\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // wrong result
@@ -127,14 +127,14 @@ mod with {
     fn unconfigured() {
         let runner = runner().with_cwd("unconfigured");
         assert_eq!(
-            runner.ok(
-                "@use \"sass:meta\";\
+        runner.ok(
+            "@use \"sass:meta\";\
              \n@include meta.load-css(\"loaded\", $with: (a: from input));\n"
-            ),
-            "c {\
+        ),
+        "c {\
          \n  a: from input;\
          \n  b: from loaded;\
          \n}\n"
-        );
+    );
     }
 }

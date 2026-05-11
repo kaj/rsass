@@ -74,40 +74,40 @@ mod missing {
     #[ignore] // unexepected error
     fn blue() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(color(display-p3 0.1 0.2 none), srgb)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(srgb 0.0593560814 0.2030894066 none);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn green() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(color(display-p3 0.1 none 0.3), srgb)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(srgb 0.113673257 none 0.3137633461);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn red() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(color(display-p3 none 0.2 0.3), srgb)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(srgb none 0.2044149221 0.3091143468);\
          \n}\n"
-        );
+    );
     }
 }
 mod out_of_range {

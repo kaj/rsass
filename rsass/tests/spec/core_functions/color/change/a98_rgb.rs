@@ -63,40 +63,40 @@ mod blue {
     #[ignore] // unexepected error
     fn out_of_range() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.change(color(a98-rgb 0.2 0.5 0.7), $blue: 100)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb 0.2 0.5 100);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn percent() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.change(color(a98-rgb 0.2 0.5 0.7), $blue: 50%)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb 0.2 0.5 0.5);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn unitless() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.change(color(a98-rgb 0.2 0.5 0.7), $blue: 0.5)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb 0.2 0.5 0.5);\
          \n}\n"
-        );
+    );
     }
 }
 mod green {
@@ -162,14 +162,14 @@ mod red {
     #[ignore] // unexepected error
     fn none() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.change(color(a98-rgb 0.2 0.5 0.7), $red: none)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb none 0.5 0.7);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error

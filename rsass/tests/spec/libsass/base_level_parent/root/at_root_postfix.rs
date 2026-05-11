@@ -17,7 +17,7 @@ fn test() {
              \n  }\
              \n}"
         ),
-        "Error: Top-level selectors may not contain the parent selector \"&\".\
+        "Error: A top-level selector may not contain a parent selector with a suffix.\
          \n  ,\
          \n2 |   &post {\
          \n  |   ^^^^^\

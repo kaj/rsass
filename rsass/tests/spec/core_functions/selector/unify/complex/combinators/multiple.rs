@@ -34,22 +34,22 @@ mod in_a_row {
         #[test]
         fn contiguous() {
             assert_eq!(
-                runner().ok(
-                    "@use \"sass:selector\";\
+        runner().ok(
+            "@use \"sass:selector\";\
              \na {b: selector.unify(\".c + ~ > .d\", \".e > + ~ > > .f\")}\n"
-                ),
-                ""
-            );
+        ),
+        ""
+    );
         }
         #[test]
         fn non_contiguous() {
             assert_eq!(
-                runner().ok(
-                    "@use \"sass:selector\";\
+        runner().ok(
+            "@use \"sass:selector\";\
              \na {b: selector.unify(\".c + ~ > .d\", \".e + > ~ ~ > .f\")}\n"
-                ),
-                ""
-            );
+        ),
+        ""
+    );
         }
     }
 }

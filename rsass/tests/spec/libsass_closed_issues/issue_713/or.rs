@@ -19,8 +19,8 @@ fn test() {
         "Error: Invalid function name.\
          \n  ,\
          \n1 | @function or() {\
-         \n  | ^^^^^^^^^^^^^^\
+         \n  |           ^^\
          \n  \'\
-         \n  input.scss 1:1  root stylesheet",
+         \n  input.scss 1:11  root stylesheet",
     );
 }

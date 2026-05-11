@@ -22,14 +22,14 @@ mod foreign {
     #[ignore] // unexepected error
     fn green() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.channel(pink, \"green\", $space: prophoto-rgb)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: 0.7357592889;\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error

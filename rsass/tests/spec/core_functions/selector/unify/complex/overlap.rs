@@ -39,14 +39,14 @@ mod id {
     #[test]
     fn no_unification() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:selector\";\
+        runner().ok(
+            "@use \"sass:selector\";\
              \na {b: selector.unify(\"#s1-1.c .s1-2\", \"#s2-1.c .s2-2\")}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: #s1-1.c #s2-1.c .s1-2.s2-2, #s2-1.c #s1-1.c .s1-2.s2-2;\
          \n}\n"
-        );
+    );
     }
 }
 mod pseudo_element {

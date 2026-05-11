@@ -79,14 +79,14 @@ mod and_sibling {
     #[test]
     fn conflict() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:selector\";\
+        runner().ok(
+            "@use \"sass:selector\";\
              \na {b: selector.unify(\"#s1-1 + .s1-2\", \"#s2-1 ~ .s2-2\")}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: #s2-1 ~ #s1-1 + .s1-2.s2-2;\
          \n}\n"
-        );
+    );
     }
     #[test]
     fn distinct() {

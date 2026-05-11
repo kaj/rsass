@@ -24,14 +24,14 @@ mod alpha {
     #[ignore] // unexepected error
     fn transparent() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.to-space(hwb(10deg 20% 30% / 0.0), display-p3)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(display-p3 0.6499865104 0.3093627099 0.2280296402 / 0);\
          \n}\n"
-        );
+    );
     }
 }
 #[test]

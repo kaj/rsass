@@ -10,6 +10,8 @@ mod combinator;
 
 mod escaping;
 
+mod parent;
+
 mod placeholder;
 
 mod pseudoselector;

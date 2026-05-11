@@ -5,18 +5,12 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().err(
-            "@function calc() {\
+        runner().ok("@function calc() {\
              \n  @return null;\
-             \n}\n"
-        ),
-        "Error: Invalid function name.\
-         \n  ,\
-         \n1 | @function calc() {\
-         \n  | ^^^^^^^^^^^^^^^^\
-         \n  \'\
-         \n  input.scss 1:1  root stylesheet",
+             \n}\n"),
+        ""
     );
 }

@@ -67,14 +67,14 @@ mod pseudo_element {
         #[test]
         fn first_letter() {
             assert_eq!(
-                runner().ok(
-                    "@use \"sass:selector\";\
+        runner().ok(
+            "@use \"sass:selector\";\
              \na {b: selector.is-superselector(\"c\", \"c:first-letter\")}\n"
-                ),
-                "a {\
+        ),
+        "a {\
          \n  b: false;\
          \n}\n"
-            );
+    );
         }
         #[test]
         fn first_line() {

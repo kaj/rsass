@@ -12,6 +12,4 @@ mod special;
 
 mod special_variable;
 
-mod url;
-
 mod var;

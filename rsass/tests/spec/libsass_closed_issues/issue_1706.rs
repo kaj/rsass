@@ -5,22 +5,20 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        runner().err(
-            "@function calc($e) { @return custom; }\
+        runner().ok("@function calc($e) { @return custom; }\
              \n@function -foo-calc($e) { @return custom; }\n\
              \n.test {\
              \n    a: calc(1px * 1%);\
              \n    b: -foo-calc(2px * 2%);\
              \n    c: call(calc, 3px * 3%);\
-             \n}\n"
-        ),
-        "Error: Invalid function name.\
-         \n  ,\
-         \n1 | @function calc($e) { @return custom; }\
-         \n  | ^^^^^^^^^^^^^^^^^^\
-         \n  \'\
-         \n  input.scss 1:1  root stylesheet",
+             \n}\n"),
+        ".test {\
+         \n  a: custom;\
+         \n  b: -foo-calc(2px * 2%);\
+         \n  c: custom;\
+         \n}\n"
     );
 }

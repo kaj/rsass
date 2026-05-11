@@ -50,27 +50,27 @@ mod blue {
     #[ignore] // unexepected error
     fn above_max() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.adjust(color(a98-rgb 0.2 0.5 0.7), $blue: 0.7)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb 0.2 0.5 1.4);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn arg_above_max() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.adjust(color(a98-rgb 0.2 0.5 0.7), $blue: 1.7)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb 0.2 0.5 2.4);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
@@ -102,14 +102,14 @@ mod blue {
     #[ignore] // unexepected error
     fn percent() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.adjust(color(a98-rgb 0.2 0.5 0.7), $blue: 20%)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb 0.2 0.5 0.9);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
@@ -236,40 +236,40 @@ mod red {
     #[ignore] // unexepected error
     fn arg_below_min() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.adjust(color(a98-rgb 0.2 0.5 0.7), $red: -1.3)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb -1.1 0.5 0.7);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn below_min() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.adjust(color(a98-rgb 0.2 0.5 0.7), $red: -0.3)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb -0.1 0.5 0.7);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error
     fn percent() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {b: color.adjust(color(a98-rgb 0.2 0.5 0.7), $red: -10%)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: color(a98-rgb 0.1 0.5 0.7);\
          \n}\n"
-        );
+    );
     }
     #[test]
     #[ignore] // unexepected error

@@ -34,14 +34,14 @@ mod bracketed {
     #[test]
     fn and_separator() {
         assert_eq!(
-            runner().ok(
-                "@use \"sass:list\";\
+        runner().ok(
+            "@use \"sass:list\";\
              \na {b: list.join(c, d, $bracketed: true, $separator: comma)}\n"
-            ),
-            "a {\
+        ),
+        "a {\
          \n  b: [c, d];\
          \n}\n"
-        );
+    );
     }
     #[test]
     fn both() {

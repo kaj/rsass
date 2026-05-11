@@ -95,14 +95,14 @@ mod element {
         #[test]
         fn name() {
             assert_eq!(
-                runner().ok(
-                    "@use \"sass:selector\";\
+        runner().ok(
+            "@use \"sass:selector\";\
              \na {b: selector.is-superselector(\"::c(@#$)\", \":d(@#$)\")}\n"
-                ),
-                "a {\
+        ),
+        "a {\
          \n  b: false;\
          \n}\n"
-            );
+    );
         }
     }
 }

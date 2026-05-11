@@ -101,14 +101,14 @@ mod order {
             #[ignore] // wrong result
             fn into_simple() {
                 assert_eq!(
-                    runner().ok(
-                        "@use \"sass:selector\";\
+        runner().ok(
+            "@use \"sass:selector\";\
              \na {b: selector.unify(\".x::scrollbar:horizontal\", \".y\")}\n"
-                    ),
-                    "a {\
+        ),
+        "a {\
          \n  b: .x.y::scrollbar:horizontal;\
          \n}\n"
-                );
+    );
             }
         }
         mod pseudo_element {
@@ -133,14 +133,14 @@ mod order {
             #[ignore] // wrong result
             fn into_pseudo_class_and_element() {
                 assert_eq!(
-                    runner().ok(
-                        "@use \"sass:selector\";\
+        runner().ok(
+            "@use \"sass:selector\";\
              \na {b: selector.unify(\".x\", \".y::scrollbar:horizontal\")}\n"
-                    ),
-                    "a {\
+        ),
+        "a {\
          \n  b: .x.y::scrollbar:horizontal;\
          \n}\n"
-                );
+    );
             }
         }
     }
