@@ -285,6 +285,7 @@ impl CssDestination for AtRuleDest<'_> {
             Item::Comment(c) => c.into(),
             Item::Import(i) => i.into(),
             Item::Rule(r) => r.into(),
+            Item::CssFunction(f) => f.into(),
             // FIXME: This should bubble or something?
             Item::MediaRule(r) => r.into(),
             Item::AtRule(r) => r.into(),
@@ -407,6 +408,7 @@ impl CssDestination for AtMediaDest<'_> {
             Item::Comment(c) => c.into(),
             Item::Import(i) => i.into(),
             Item::Rule(r) => r.into(),
+            Item::CssFunction(f) => f.into(),
             // FIXME: Check if the args can be merged!
             // Or is that a separate pass after building a first css tree?
             Item::MediaRule(r) => r.into(),

@@ -46,7 +46,7 @@ pub fn property(input: Span) -> PResult<BodyItem> {
     }
 }
 
-fn property_name(input: Span) -> PResult<String> {
+pub fn property_name(input: Span) -> PResult<String> {
     map(
         pair(opt(one_of("*:.")), strings::css_string),
         |(pre, mut main)| {

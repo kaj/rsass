@@ -4,7 +4,7 @@ pub(crate) mod strings;
 mod values;
 
 use super::{PResult, Span};
-use crate::css::{AtRule, Comment, Import, Item, MediaRule, Value};
+use crate::css::{self, AtRule, Comment, Import, Item, MediaRule, Value};
 use nom::Parser as _;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, tag_no_case};
@@ -15,6 +15,7 @@ use nom::combinator::{
 use nom::multi::{fold_many0, many_till, many0};
 use nom::sequence::{delimited, preceded, terminated};
 use nom_language::error::{VerboseError, VerboseErrorKind};
+pub use rule::property_name;
 use std::str::from_utf8;
 
 pub fn file(input: Span) -> PResult<Vec<Item>> {
@@ -50,6 +51,7 @@ fn top_level_item(input: Span) -> PResult<Item> {
         b"@" => {
             let (input, name) = strings::css_string(rest)?;
             match name.as_ref() {
+                "function" => into(css::Function::parse).parse(input),
                 "import" => into(import2).parse(input),
                 "media" => {
                     let (input, args) =
@@ -110,7 +112,7 @@ fn top_level_item(input: Span) -> PResult<Item> {
     }
 }
 
-fn import2(input: Span) -> PResult<Import> {
+pub(crate) fn import2(input: Span) -> PResult<Import> {
     map(
         delimited(
             opt_spacelike,

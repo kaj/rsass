@@ -1,6 +1,6 @@
 use super::{
-    BodyItem, Comment, CustomProperty, Import, Item, MediaRule, Property,
-    Rule, Value,
+    self as css, BodyItem, Comment, CustomProperty, Import, Item, MediaRule,
+    Property, Rule, Value,
 };
 use crate::output::CssBuf;
 use std::io::{self, Write};
@@ -69,6 +69,8 @@ pub enum AtRuleBodyItem {
     CustomProperty(CustomProperty),
     /// An `@media` rule.
     MediaRule(MediaRule),
+    /// An `@function` definition.
+    CssFunction(css::Function),
     /// An `@` rule.
     AtRule(AtRule),
 }
@@ -82,6 +84,7 @@ impl AtRuleBodyItem {
             Self::Property(property) => property.write(buf),
             Self::CustomProperty(cp) => cp.write(buf),
             Self::MediaRule(rule) => rule.write(buf)?,
+            Self::CssFunction(f) => f.write(buf)?,
             Self::AtRule(rule) => rule.write(buf)?,
         }
         Ok(())
@@ -107,6 +110,11 @@ impl From<Property> for AtRuleBodyItem {
         Self::Property(rule)
     }
 }
+impl From<css::Function> for AtRuleBodyItem {
+    fn from(value: css::Function) -> Self {
+        Self::CssFunction(value)
+    }
+}
 impl From<AtRule> for AtRuleBodyItem {
     fn from(rule: AtRule) -> Self {
         Self::AtRule(rule)
@@ -124,6 +132,7 @@ impl From<BodyItem> for AtRuleBodyItem {
             BodyItem::Property(p) => Self::Property(p),
             BodyItem::CustomProperty(p) => Self::CustomProperty(p),
             BodyItem::Comment(c) => Self::Comment(c),
+            BodyItem::CssFunction(f) => Self::CssFunction(f),
             BodyItem::ARule(r) => Self::AtRule(r),
         }
     }
@@ -138,6 +147,7 @@ impl TryFrom<Item> for AtRuleBodyItem {
             Item::Import(x) => Ok(x.into()),
             Item::Rule(x) => Ok(x.into()),
             Item::MediaRule(x) => Ok(x.into()),
+            Item::CssFunction(f) => Ok(f.into()),
             Item::AtRule(x) => Ok(x.into()),
             Item::Separator => Err("separator not supported here"),
         }

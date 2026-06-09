@@ -1,5 +1,6 @@
 use super::{
-    AtRule, Comment, CssString, Import, SelectorSet, Value, selectors::Opt,
+    self as css, AtRule, Comment, CssString, Import, SelectorSet, Value,
+    selectors::Opt,
 };
 use crate::output::CssBuf;
 use std::io;
@@ -63,6 +64,8 @@ pub enum BodyItem {
     CustomProperty(CustomProperty),
     /// A comment
     Comment(Comment),
+    /// A css function definition.
+    CssFunction(css::Function),
     /// Empty at-rules are allowed in a rule body.
     ARule(AtRule),
 }
@@ -75,6 +78,7 @@ impl BodyItem {
             Self::Import(import) => import.write(buf)?,
             Self::Property(property) => property.write(buf),
             Self::CustomProperty(property) => property.write(buf),
+            Self::CssFunction(function) => function.write(buf)?,
             Self::ARule(rule) => rule.write(buf)?,
         }
         Ok(())
