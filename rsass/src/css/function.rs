@@ -6,10 +6,10 @@ use std::io;
 /// These functions are preserved in css output, not evaluated by rsass.
 #[derive(Clone, Debug)]
 pub struct Function {
-    name: String,
-    args: String,            // TODO: Proper type?
-    returns: Option<String>, // TODO: Proper type?
-    body: Vec<super::BodyItem>,
+    pub(crate) name: String,
+    pub(crate) args: String, // TODO: Proper type?
+    pub(crate) returns: Option<String>, // TODO: Proper type?
+    pub(crate) body: Vec<super::BodyItem>,
 }
 
 impl Function {

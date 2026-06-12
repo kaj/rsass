@@ -1,5 +1,5 @@
 use super::{
-    self as css, AtRule, Comment, CssString, Import, SelectorSet, Value,
+    AtRule, Comment, CssString, Function, Import, SelectorSet, Value,
     selectors::Opt,
 };
 use crate::output::CssBuf;
@@ -65,7 +65,7 @@ pub enum BodyItem {
     /// A comment
     Comment(Comment),
     /// A css function definition.
-    CssFunction(css::Function),
+    CssFunction(Function),
     /// Empty at-rules are allowed in a rule body.
     ARule(AtRule),
 }

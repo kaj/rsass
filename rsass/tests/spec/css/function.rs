@@ -102,7 +102,6 @@ mod lowercase {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn interpolation() {
         assert_eq!(
             runner().ok("@function --#{a}() {result: b}\n"),
@@ -112,7 +111,6 @@ mod lowercase {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn parameter() {
         assert_eq!(
             runner().ok("@function --a(--b <color>) {result: c}\n"),
@@ -125,7 +123,6 @@ mod lowercase {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn characters() {
             assert_eq!(
                 runner().ok("@function --a() {\
@@ -137,7 +134,6 @@ mod lowercase {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn interpolation() {
             assert_eq!(
                 runner().ok("@function --a() {\
@@ -149,7 +145,6 @@ mod lowercase {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn sass_script() {
             assert_eq!(
                 runner().ok("@function --a() {\
@@ -162,7 +157,6 @@ mod lowercase {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn returns() {
         assert_eq!(
             runner().ok("@function --a() returns <ident> {result: b}\n"),
@@ -179,7 +173,6 @@ mod result {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn sass_script() {
             assert_eq!(
                 runner().ok("@function --a() {\
@@ -221,7 +214,6 @@ mod result {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn characters() {
             assert_eq!(
                 runner().ok("@function --a() {\
@@ -233,7 +225,6 @@ mod result {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn interpolation() {
             assert_eq!(
                 runner().ok("@function --a() {\
@@ -245,7 +236,6 @@ mod result {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn sass_script() {
             assert_eq!(
                 runner().ok("@function --a() {\
@@ -288,7 +278,6 @@ mod uppercase {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn nesting() {
             assert_eq!(
                 runner().ok("@function --a() {\

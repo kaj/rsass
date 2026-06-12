@@ -1,6 +1,6 @@
 use super::{
-    CallArgs, Callable, Name, SassString, Selectors, SrcRange, Value,
-    VariableDeclaration,
+    CallArgs, Callable, CssFunction, Name, SassString, Selectors, SrcRange,
+    Value, VariableDeclaration,
 };
 use crate::input::SourcePos;
 use std::collections::BTreeSet;
@@ -52,6 +52,8 @@ pub enum Item {
 
     /// An `@function` declaration.
     FunctionDeclaration(String, Callable),
+    /// A css `@function` declaration.
+    CssFunction(CssFunction),
     /// An `@return` statement in a function declaration.
     Return(Value, SourcePos),
 

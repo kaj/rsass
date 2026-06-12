@@ -1,5 +1,5 @@
 use super::{
-    self as css, BodyItem, Comment, CustomProperty, Import, Item, MediaRule,
+    BodyItem, Comment, CustomProperty, Function, Import, Item, MediaRule,
     Property, Rule, Value,
 };
 use crate::output::CssBuf;
@@ -70,7 +70,7 @@ pub enum AtRuleBodyItem {
     /// An `@media` rule.
     MediaRule(MediaRule),
     /// An `@function` definition.
-    CssFunction(css::Function),
+    CssFunction(Function),
     /// An `@` rule.
     AtRule(AtRule),
 }
@@ -110,8 +110,8 @@ impl From<Property> for AtRuleBodyItem {
         Self::Property(rule)
     }
 }
-impl From<css::Function> for AtRuleBodyItem {
-    fn from(value: css::Function) -> Self {
+impl From<Function> for AtRuleBodyItem {
+    fn from(value: Function) -> Self {
         Self::CssFunction(value)
     }
 }
