@@ -70,10 +70,8 @@ impl TestFixture {
             if let Some(p) = self.options.precision {
                 write!(rs, ".set_precision({p});")?;
             }
-            if has_files {
-                if let Some(name) = &self.name {
-                    write!(rs, ".with_cwd({name:?})")?;
-                }
+            if has_files && let Some(name) = &self.name {
+                write!(rs, ".with_cwd({name:?})")?;
             }
             rs.write_all(b";\n")?;
             "runner"

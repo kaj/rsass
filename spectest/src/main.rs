@@ -249,15 +249,14 @@ fn spec_hrx_to_test(
         runner = runner.mock_file(name, content);
     }
     for (name, content) in archive.entries() {
-        if let Some(base) = name.strip_suffix("input.scss") {
-            if references_input(content)
+        if let Some(base) = name.strip_suffix("input.scss")
+            && (references_input(content)
                 || archive.entries().any(|(path, content)| {
                     path.starts_with(base) && references_input(content)
-                })
-            {
-                writeln!(top, "        .mock_file({name:?}, {content:#?})",)?;
-                runner = runner.mock_file(name, content);
-            }
+                }))
+        {
+            writeln!(top, "        .mock_file({name:?}, {content:#?})",)?;
+            runner = runner.mock_file(name, content);
         }
     }
     if let Some(p) = precision {
