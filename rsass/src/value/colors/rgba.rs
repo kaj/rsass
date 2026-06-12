@@ -426,12 +426,11 @@ impl Display for Formatted<'_, Rgba> {
             let short = r % 0x11 == 0 && g % 0x11 == 0 && b % 0x11 == 0;
             let hex_len = if short { 4 } else { 7 };
             if self.format.is_compressed() {
-                if let Some(name) = rgba.name() {
-                    if name.len() <= hex_len {
-                        return name.fmt(out);
-                    }
-                }
-                if short {
+                if let Some(name) = rgba.name()
+                    && name.len() <= hex_len
+                {
+                    name.fmt(out)
+                } else if short {
                     write!(out, "#{:x}{:x}{:x}", r / 0x11, g / 0x11, b / 0x11)
                 } else {
                     write!(out, "#{r:02x}{g:02x}{b:02x}")

@@ -188,15 +188,14 @@ impl CallArgs {
 }
 
 fn is_splat(arg: &Value) -> Option<&[Value]> {
-    if let Value::List(list, sep, false) = arg {
-        if let Some((Value::Literal(v, ..), splat)) = list.split_last() {
-            if v.is_unquoted()
-                && v.single_raw() == Some("...")
-                && sep.unwrap_or_default() == ListSeparator::Space
-            {
-                return Some(splat);
-            }
-        }
+    if let Value::List(list, sep, false) = arg
+        && let Some((Value::Literal(v, ..), splat)) = list.split_last()
+        && v.is_unquoted()
+        && v.single_raw() == Some("...")
+        && sep.unwrap_or_default() == ListSeparator::Space
+    {
+        Some(splat)
+    } else {
+        None
     }
-    None
 }

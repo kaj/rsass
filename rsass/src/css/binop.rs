@@ -69,17 +69,14 @@ impl BinOp {
                     }
                     if let (Value::Numeric(a, _), Value::Numeric(b, _)) =
                         (&self.a, &self.b)
-                    {
-                        if let (Some(a_u), Some(b_u)) =
+                        && let (Some(a_u), Some(b_u)) =
                             (cmp_dim(a), cmp_dim(b))
-                        {
-                            if a_u != b_u {
-                                return Err(InvalidCss::Incompat(
-                                    a.clone(),
-                                    b.clone(),
-                                ));
-                            }
-                        }
+                        && a_u != b_u
+                    {
+                        return Err(InvalidCss::Incompat(
+                            a.clone(),
+                            b.clone(),
+                        ));
                     }
                     Ok(self)
                 }

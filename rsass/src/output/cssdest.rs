@@ -340,10 +340,10 @@ impl Drop for AtMediaDest<'_> {
         let mut body = std::mem::take(&mut self.body);
         let args =
             std::mem::replace(&mut self.args, MediaArgs::Name(String::new()));
-        if let Some(rule) = self.rule.take() {
-            if !rule.body.is_empty() {
-                body.insert(0, rule.into());
-            }
+        if let Some(rule) = self.rule.take()
+            && !rule.body.is_empty()
+        {
+            body.insert(0, rule.into());
         }
         let result = MediaRule::new(args, body);
         if let Err(err) = self.parent.push_item(result.into()) {

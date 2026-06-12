@@ -119,10 +119,10 @@ impl SassString {
     ///
     /// If so, return a reference to it.
     pub fn single_raw(&self) -> Option<&str> {
-        if self.parts.len() == 1 {
-            if let StringPart::Raw(s) = &self.parts[0] {
-                return Some(s);
-            }
+        if self.parts.len() == 1
+            && let StringPart::Raw(s) = &self.parts[0]
+        {
+            return Some(s);
         }
         None
     }

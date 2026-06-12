@@ -57,10 +57,10 @@ impl CompoundSelector {
         if self.id.is_some() && self.id == other.id {
             return true;
         }
-        if let Some(pseudo) = self.pseudo_element() {
-            if other.pseudo_element() == Some(pseudo) {
-                return true;
-            }
+        if let Some(pseudo) = self.pseudo_element()
+            && other.pseudo_element() == Some(pseudo)
+        {
+            return true;
         }
         false
     }
@@ -168,15 +168,14 @@ impl CompoundSelector {
         if self.backref.is_some() {
             buf.add_char('&');
         }
-        if let Some(e) = &self.element {
-            if !e.is_any()
+        if let Some(e) = &self.element
+            && (!e.is_any()
                 || (self.classes.is_empty()
                     && self.placeholders.is_empty()
                     && self.id.is_none()
-                    && self.pseudo.is_empty())
-            {
-                e.write_to(buf);
-            }
+                    && self.pseudo.is_empty()))
+        {
+            e.write_to(buf);
         }
         for p in &self.placeholders {
             buf.add_char('%');

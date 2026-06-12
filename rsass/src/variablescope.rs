@@ -374,10 +374,10 @@ impl Scope {
 
     /// Get the Value for a variable.
     pub fn get_or_none(&self, name: &Name) -> Option<Value> {
-        if let Some((modulename, name)) = name.split_module() {
-            if let Some(module) = self.get_module(&modulename) {
-                return module.get_or_none(&name);
-            }
+        if let Some((modulename, name)) = name.split_module()
+            && let Some(module) = self.get_module(&modulename)
+        {
+            return module.get_or_none(&name);
         }
         self.get_local_or_none(name)
     }

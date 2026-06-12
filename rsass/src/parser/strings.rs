@@ -42,11 +42,11 @@ pub fn sass_string_allow_dash(input: Span) -> PResult<SassString> {
 pub fn custom_value(input: Span) -> PResult<SassString> {
     match opt(custom_value_inner).parse(input)? {
         (rest, Some(mut parts)) => {
-            if let Some(StringPart::Raw(last)) = parts.last_mut() {
-                if last.ends_with('\n') {
-                    last.pop();
-                    last.push(' ');
-                }
+            if let Some(StringPart::Raw(last)) = parts.last_mut()
+                && last.ends_with('\n')
+            {
+                last.pop();
+                last.push(' ');
             }
             Ok((rest, SassString::new(parts, Quotes::None)))
         }
@@ -331,21 +331,23 @@ pub fn sass_string_sq(input: Span) -> PResult<SassString> {
 fn cleanup_escape_ws(parts: &mut [StringPart]) {
     let mut t_iter = parts.iter_mut().peekable();
     while let Some(ref mut item) = t_iter.next() {
-        if let StringPart::Raw(s) = item {
-            if s.starts_with('\\') && s.ends_with(' ') {
-                match t_iter.peek() {
-                    None => {
+        if let StringPart::Raw(s) = item
+            && s.starts_with('\\')
+            && s.ends_with(' ')
+        {
+            match t_iter.peek() {
+                None => {
+                    s.pop();
+                }
+                Some(StringPart::Raw(next)) => {
+                    if let Some(next) = next.chars().next()
+                        && !next.is_ascii_hexdigit()
+                        && next != '\t'
+                    {
                         s.pop();
                     }
-                    Some(StringPart::Raw(next)) => {
-                        if let Some(next) = next.chars().next() {
-                            if !next.is_ascii_hexdigit() && next != '\t' {
-                                s.pop();
-                            }
-                        }
-                    }
-                    _ => (),
                 }
+                _ => (),
             }
         }
     }

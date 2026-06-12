@@ -302,12 +302,11 @@ fn css_fn_arg(v: Value) -> Result<Value, CallError> {
             let a = css_fn_arg(op.a().clone())?;
             let b = css_fn_arg(op.b().clone())?;
             let op = op.op();
-            if let (Some(adim), Some(bdim)) = (css_dim(&a), css_dim(&b)) {
-                if (op == Operator::Plus || op == Operator::Minus)
-                    && adim != bdim
-                {
-                    return Err(CallError::incompatible_values(a, b));
-                }
+            if let (Some(adim), Some(bdim)) = (css_dim(&a), css_dim(&b))
+                && (op == Operator::Plus || op == Operator::Minus)
+                && adim != bdim
+            {
+                return Err(CallError::incompatible_values(a, b));
             }
             Ok(BinOp::new(a, true, op, true, b).into())
         }

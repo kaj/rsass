@@ -115,10 +115,10 @@ pub fn simple_space_list(input: Span) -> PResult<Value> {
 
 fn se_or_ext_string(input: Span) -> PResult<Value> {
     let result = single_expression(input);
-    if matches!(result, Err(nom::Err::Error(_))) {
-        if let Ok((rest, lit)) = sass_string_ext(input) {
-            return Ok((rest, Value::Literal(lit)));
-        }
+    if matches!(result, Err(nom::Err::Error(_)))
+        && let Ok((rest, lit)) = sass_string_ext(input)
+    {
+        return Ok((rest, Value::Literal(lit)));
     }
     result
 }
@@ -533,12 +533,13 @@ fn function_call_or_string_real(
 }
 
 fn literal_or_color(s: SassString) -> Value {
-    if let Some(val) = s.single_raw() {
-        if let Some(rgba) = Rgba::from_name(val) {
-            return Value::Color(rgba, Some(val.to_string()));
-        }
+    if let Some(val) = s.single_raw()
+        && let Some(rgba) = Rgba::from_name(val)
+    {
+        Value::Color(rgba, Some(val.to_string()))
+    } else {
+        Value::Literal(s)
     }
-    Value::Literal(s)
 }
 
 fn hexchar1(input: Span) -> PResult<u8> {
