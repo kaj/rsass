@@ -35,7 +35,8 @@ use crate::sass::parser::{
     src_range, variable_declaration_mod, variable_declaration2,
 };
 use crate::sass::{
-    Callable, FormalArgs, Item, ItemBody, Name, Selectors, SrcValue, Value,
+    Callable, CssFunction, FormalArgs, Item, ItemBody, Name, Selectors,
+    SrcValue, Value,
 };
 use crate::value::ListSeparator;
 #[cfg(test)]
@@ -448,14 +449,24 @@ fn mixin_declaration2(input: Span) -> PResult<Item> {
 }
 
 fn function_declaration2(input: Span) -> PResult<Item> {
-    let (end, name) = terminated(name, ignore_comments).parse(input)?;
-    let (end, args) = formal_args(end)?;
-    let (rest, body) = preceded(ignore_comments, body_block).parse(end)?;
-    let decl = input.up_to(&end).to_owned();
-    Ok((
-        rest,
-        Item::FunctionDeclaration(name, Callable { args, body, decl }),
-    ))
+    let name = terminated(name, ignore_comments).parse(input);
+    if let Ok((end, name)) = name
+        && !name.starts_with("--")
+    {
+        let (end, args) = formal_args(end)?;
+        let (rest, body) =
+            preceded(ignore_comments, body_block).parse(end)?;
+        let decl = input.up_to(&end).to_owned();
+        Ok((
+            rest,
+            Item::FunctionDeclaration(name, Callable { args, body, decl }),
+        ))
+    } else {
+        let (end, name) =
+            terminated(sass_string, ignore_comments).parse(input)?;
+        let (end, func) = CssFunction::parse(end, name)?;
+        Ok((end, Item::CssFunction(func)))
+    }
 }
 
 fn return_stmt2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {

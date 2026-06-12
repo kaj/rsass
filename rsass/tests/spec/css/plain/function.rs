@@ -58,7 +58,6 @@ mod lowercase {
         }
 
         #[test]
-        #[ignore] // unexepected error
         fn characters() {
             let runner = runner().with_cwd("characters");
             assert_eq!(
@@ -69,7 +68,6 @@ mod lowercase {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn sass_script() {
             let runner = runner().with_cwd("sass_script");
             assert_eq!(
@@ -102,7 +100,6 @@ mod result {
         }
 
         #[test]
-        #[ignore] // unexepected error
         fn characters() {
             let runner = runner().with_cwd("characters");
             assert_eq!(
@@ -113,7 +110,6 @@ mod result {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn sass_script() {
             let runner = runner().with_cwd("sass_script");
             assert_eq!(

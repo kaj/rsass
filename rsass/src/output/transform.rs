@@ -268,6 +268,11 @@ fn handle_item(
         Item::VariableDeclaration(var) => {
             var.evaluate(&scope)?;
         }
+        Item::CssFunction(func) => {
+            let func = func.evaluate(scope.clone())?;
+            // TODO: There should be a position!
+            dest.push_item(func.into()).no_pos()?;
+        }
         Item::FunctionDeclaration(name, body) => {
             if name == "calc"
                 || name == "element"

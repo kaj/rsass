@@ -1,4 +1,4 @@
-use super::{AtRule, Comment, CssString, MediaRule, Rule, Value};
+use super::{AtRule, Comment, CssString, Function, MediaRule, Rule, Value};
 use crate::output::CssBuf;
 use std::io::{self, Write};
 
@@ -13,6 +13,8 @@ pub enum Item {
     Rule(Rule),
     /// An `@media` rule.
     MediaRule(MediaRule),
+    /// A css `@function` definition.
+    CssFunction(Function),
     /// An (unknown) `@` rule.
     AtRule(AtRule),
     /// An extra newline for grouping (unless compressed format).
@@ -42,6 +44,7 @@ impl Item {
             Self::Import(import) => import.write(buf)?,
             Self::Rule(rule) => rule.write(buf)?,
             Self::MediaRule(rule) => rule.write(buf)?,
+            Self::CssFunction(f) => f.write(buf)?,
             Self::AtRule(atrule) => atrule.write(buf)?,
             Self::Separator => buf.opt_nl(),
         }
@@ -64,6 +67,12 @@ impl From<Rule> for Item {
         Self::Rule(rule)
     }
 }
+impl From<Function> for Item {
+    fn from(value: Function) -> Self {
+        Self::CssFunction(value)
+    }
+}
+
 impl From<AtRule> for Item {
     fn from(value: AtRule) -> Self {
         Self::AtRule(value)

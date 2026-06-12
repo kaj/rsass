@@ -12,6 +12,7 @@ macro_rules! name {
 
 mod call_args;
 mod callable;
+mod css_function;
 mod formal_args;
 mod functions;
 mod item;
@@ -26,6 +27,7 @@ mod variabledeclaration;
 
 pub use self::call_args::CallArgs;
 pub use self::callable::{Call, Callable, Closure};
+pub use self::css_function::CssFunction;
 pub use self::formal_args::{ArgsError, FormalArgs};
 pub use self::functions::{
     CallError, Function, ResolvedArgs, get_global_module,
