@@ -117,7 +117,7 @@ impl Mixin {
     pub(crate) fn define_content(
         &self,
         scope: &ScopeRef,
-        body: &Option<Callable>,
+        body: Option<&Callable>,
     ) {
         self.scope.define_content(match body {
             Some(body) => body.closure(scope).into(),

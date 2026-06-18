@@ -1,6 +1,6 @@
 use super::{Attribute, CssSelectorSet, ElemType, Opt, Pseudo, SelectorSet};
 use crate::{ParseError, output::CssBuf, parser::input_span};
-use std::{fmt, sync::LazyLock};
+use std::fmt;
 
 #[derive(Default, Clone, PartialEq, Eq)]
 pub(crate) struct CompoundSelector {
@@ -118,13 +118,10 @@ impl CompoundSelector {
     }
 
     pub fn is_superselector(&self, sub: &Self) -> bool {
-        fn elem_or_default(e: &Option<ElemType>) -> &ElemType {
-            static DEF: LazyLock<ElemType> = LazyLock::new(ElemType::default);
-            e.as_ref().unwrap_or(&DEF)
-        }
-        elem_or_default(&self.element)
-            .is_superselector(elem_or_default(&sub.element))
-            && all_any(&self.placeholders, &sub.placeholders, PartialEq::eq)
+        self.element.as_ref().is_none_or(|e| {
+            e.is_any()
+                || sub.element.as_ref().is_some_and(|s| e.is_superselector(s))
+        }) && all_any(&self.placeholders, &sub.placeholders, PartialEq::eq)
             && all_any(&self.classes, &sub.classes, PartialEq::eq)
             && self.id.iter().all(|id| sub.id.as_ref() == Some(id))
             && all_any(&self.attr, &sub.attr, Attribute::is_superselector)

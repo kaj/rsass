@@ -6,15 +6,9 @@ pub(crate) struct ElemType {
     s: String,
 }
 
-impl Default for ElemType {
-    fn default() -> Self {
-        Self { s: "*".into() }
-    }
-}
-
 impl ElemType {
     pub fn is_any(&self) -> bool {
-        self.s == "*"
+        self.s == "*" || self.s == "*|*"
     }
     pub(super) fn cant_append(&self) -> bool {
         self.s.starts_with('*') || self.s.starts_with('|')

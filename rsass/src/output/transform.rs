@@ -299,7 +299,7 @@ fn handle_item(
                 let mixin = mixin
                     .get(scope.clone(), args, pos, file_context)
                     .map_err(|e| e.called_from(pos, name))?;
-                mixin.define_content(&scope, body);
+                mixin.define_content(&scope, body.as_ref());
                 handle_parsed(mixin.body, dest, mixin.scope, file_context)
                     .map_err(|e: Error| match e {
                         Error::Invalid(err, _) => err.at(pos.clone()),
