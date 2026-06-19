@@ -46,7 +46,7 @@ use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
 use nom::character::complete::{char, one_of};
 use nom::combinator::{
-    all_consuming, into, map, map_res, not, opt, peek, value, verify,
+    all_consuming, cut, into, map, map_res, not, opt, peek, value, verify,
 };
 use nom::error::context;
 use nom::multi::{many_till, many0, separated_list0, separated_list1};
@@ -104,15 +104,14 @@ pub(crate) fn sassfile(input: Span) -> PResult<ItemBody> {
 }
 
 fn top_level_item(input: Span) -> PResult<Item> {
-    let (rest, tag) =
-        alt((tag("$"), tag("/*"), tag("@"), tag(""))).parse(input)?;
-    match tag.fragment() {
-        b"$" => into(variable_declaration2).parse(rest),
-        b"/*" => comment_item(rest),
-        b"@" => at_rule2(input),
-        b"" => alt((into(variable_declaration_mod), rule)).parse(input),
-        _ => unreachable!(),
-    }
+    alt((
+        preceded(tag("$"), cut(into(variable_declaration2))),
+        preceded(tag("/*"), cut(comment_item)),
+        preceded(peek(tag("@")), cut(at_rule2)),
+        into(variable_declaration_mod),
+        rule,
+    ))
+    .parse(input)
 }
 
 fn comment_item(input: Span) -> PResult<Item> {
@@ -132,33 +131,33 @@ fn rule_start(input: Span) -> PResult<Selectors> {
 }
 
 fn body_item(input: Span) -> PResult<Item> {
-    let (rest, tag) =
-        alt((tag("$"), tag("/*"), tag(";"), tag("@"), tag("--"), tag("")))
-            .parse(input)?;
-    match tag.fragment() {
-        b"$" => into(variable_declaration2).parse(rest),
-        b"/*" => comment_item(rest),
-        b";" => Ok((rest, Item::None)),
-        b"@" => at_rule2(input),
-        b"--" => {
-            let result = custom_property(input);
-            if result.is_err() {
-                // Note use of `input` rather than `rest` here.
-                if let Ok((rest, rule)) = rule(input) {
-                    return Ok((rest, rule));
+    alt((
+        preceded(tag("$"), cut(into(variable_declaration2))),
+        preceded(tag("/*"), cut(comment_item)),
+        value(Item::None, tag(";")),
+        preceded(peek(tag("@")), cut(at_rule2)),
+        preceded(
+            peek(tag("--")),
+            cut(|input| {
+                let result = custom_property(input);
+                if result.is_err() {
+                    // Note use of `input` rather than `rest` here.
+                    if let Ok((rest, rule)) = rule(input) {
+                        return Ok((rest, rule));
+                    }
                 }
-            }
-            result
-        }
-        b"" => match rule_start(rest) {
+                result
+            }),
+        ),
+        |rest| match rule_start(rest) {
             Ok((rest, selectors)) => {
                 let (rest, body) = body_block2(rest)?;
                 Ok((rest, Item::Rule(selectors, body)))
             }
             Err(_) => property_or_namespace_rule(rest),
         },
-        _ => unreachable!(),
-    }
+    ))
+    .parse(input)
 }
 
 /// What follows the `@at-root` tag.
@@ -501,8 +500,8 @@ fn property_or_namespace_rule(input: Span) -> PResult<Item> {
     }
 
     let (input, val) = alt((
-        map(peek(char('{')), |_| None),
-        map(context("Expected expression.", value_expression), Some),
+        map(peek(char('{')), |_| Value::Null),
+        context("Expected expression.", value_expression),
     ))
     .parse(start_val)?;
 
@@ -519,16 +518,14 @@ fn property_or_namespace_rule(input: Span) -> PResult<Item> {
 use crate::sass::SassString;
 fn ns_or_prop_item(
     name: SassString,
-    value: Option<Value>,
+    value: Value,
     body: Option<ItemBody>,
     pos: SourcePos,
 ) -> Item {
     if let Some(body) = body {
-        Item::NamespaceRule(name, value.unwrap_or(Value::Null), body)
-    } else if let Some(value) = value {
-        Item::Property(name, value, pos)
+        Item::NamespaceRule(name, value, body)
     } else {
-        unreachable!()
+        Item::Property(name, value, pos)
     }
 }
 

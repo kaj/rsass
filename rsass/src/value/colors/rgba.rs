@@ -1,5 +1,4 @@
 //! Color names from <https://www.w3.org/TR/css3-color/>
-#![allow(clippy::unreadable_literal)]
 use crate::output::{Format, Formatted};
 use crate::value::Number;
 use std::cmp::Ordering;
@@ -32,6 +31,7 @@ pub enum RgbFormat {
 
 impl Rgba {
     /// Create a new rgba color.
+    #[allow(clippy::many_single_char_names, reason = "natural names")]
     pub fn new(r: f64, g: f64, b: f64, a: f64, s: RgbFormat) -> Self {
         let ff = 255.;
         Self {
@@ -263,6 +263,7 @@ impl Lookup {
     }
 }
 
+#[allow(clippy::unreadable_literal, reason = "hex colors")]
 static LOOKUP: LazyLock<Lookup> = LazyLock::new(|| {
     Lookup::from_slice(&[
         ("aliceblue", 0xf0f8ff_u32),

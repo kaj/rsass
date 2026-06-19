@@ -117,12 +117,15 @@ impl UnitSet {
     /// Simplify this unit set, returning a scaling factor.
     pub fn simplify(&mut self) -> f64 {
         let mut factor = 1.;
-        if self.units.len() > 1 {
-            for i in 1..(self.units.len()) {
-                let (a, b) = self.units.split_at_mut(i);
-                let (au, ap) = a.last_mut().unwrap();
+        for i in 1..(self.units.len()) {
+            let (a, b) = self.units.split_at_mut(i);
+            if let Some((au, ap)) = a.last_mut()
+                && *ap != 0
+            {
                 for (bu, bp) in b {
-                    if let Some(f) = bu.scale_to(au) {
+                    if *bp != 0
+                        && let Some(f) = bu.scale_to(au)
+                    {
                         if ap.abs() > bp.abs() {
                             factor *= f.powi((*bp).into());
                             *ap += *bp;

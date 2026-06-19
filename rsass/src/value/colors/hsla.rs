@@ -26,7 +26,7 @@ impl Hsla {
             hue: deg_mod(hue),
             sat: sat.clamp(0., f64::INFINITY),
             lum,
-            #[allow(clippy::manual_clamp)] // to get correct NaN handling
+            #[allow(clippy::manual_clamp, reason = "correct NaN handling")]
             alpha: alpha.max(0.).min(1.),
             hsla_format,
         }

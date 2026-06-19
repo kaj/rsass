@@ -111,11 +111,9 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
             }
         }
     });
-    #[allow(clippy::single_element_loop)] // for consistency
-    for name in [name!(invert)] {
-        let f = f.get_lfunction(&name);
-        global.insert(name, f);
-    }
+    let name = name!(invert);
+    let f = f.get_lfunction(&name);
+    global.insert(name, f);
 }
 
 fn do_rgba(fn_name: &Name, s: &ResolvedArgs) -> Result<Value, CallError> {

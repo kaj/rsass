@@ -10,7 +10,7 @@ use crate::{Invalid, ParseError};
 use core::fmt;
 use std::iter::once;
 
-type RelBox = Box<(RelKind, Selector)>;
+type RelSel = (RelKind, Selector);
 
 /// A css selector.
 ///
@@ -19,7 +19,7 @@ type RelBox = Box<(RelKind, Selector)>;
 /// whitespace in the text representation).
 #[derive(Default, Clone, PartialEq, Eq)]
 pub struct Selector {
-    rel_of: Option<RelBox>,
+    rel_of: Option<Box<RelSel>>,
     compound: CompoundSelector,
 }
 
@@ -310,9 +310,9 @@ impl Selector {
     fn inner_unify(self, other: Self) -> Option<Vec<Self>> {
         let rel_of = match (self.rel_of, other.rel_of) {
             (None, None) => vec![],
-            (None, Some(rel)) | (Some(rel), None) => vec![rel],
+            (None, Some(rel)) | (Some(rel), None) => vec![*rel],
             (Some(a), Some(b)) => {
-                let v = unify_relbox(a, b)?;
+                let v = unify_relbox(*a, *b)?;
                 if v.is_empty() {
                     return None;
                 }
@@ -328,14 +328,14 @@ impl Selector {
         } else if rel_of.len() == 1 {
             let mut rel_of = rel_of;
             vec![Selector {
-                rel_of: rel_of.pop(),
+                rel_of: rel_of.pop().map(Box::new),
                 compound,
             }]
         } else {
             rel_of
                 .into_iter()
                 .map(|r| Selector {
-                    rel_of: Some(r),
+                    rel_of: Some(Box::new(r)),
                     compound: compound.clone(),
                 })
                 .collect()
@@ -508,20 +508,19 @@ impl From<BadSelector> for AppendError {
 // NOTE: I think returning an empty vector here should be equivalent
 // to returning None, so maybe just return a Vec and check for
 // emtpyness at the call site?
-#[allow(clippy::boxed_local)]
-fn unify_relbox(a: RelBox, b: RelBox) -> Option<Vec<RelBox>> {
+fn unify_relbox(a: RelSel, b: RelSel) -> Option<Vec<RelSel>> {
     use RelKind as Rk;
     fn as_rel_vec(
         kind: RelKind,
         s: impl IntoIterator<Item = Selector>,
-    ) -> Vec<RelBox> {
-        s.into_iter().map(|s| Box::new((kind, s))).collect()
+    ) -> Vec<RelSel> {
+        s.into_iter().map(|s| (kind, s)).collect()
     }
     if a.0 == b.0 && a.1.compound.is_rootish() && b.1.compound.is_rootish() {
         return Some(as_rel_vec(a.0, a.1.unify(b.1)));
     }
 
-    Some(match (*a, *b) {
+    Some(match (a, b) {
         ((k @ Rk::AdjacentSibling, a), (Rk::AdjacentSibling, b))
         | ((k @ Rk::Parent, a), (Rk::Parent, b)) => {
             as_rel_vec(k, a.inner_unify(b)?)

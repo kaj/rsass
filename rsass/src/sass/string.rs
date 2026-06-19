@@ -3,7 +3,7 @@ use crate::css::CssString;
 use crate::error::{Error, ResultPos};
 use crate::sass::Value;
 use crate::value::Quotes;
-use std::fmt::{self, Write};
+use std::fmt::Write;
 
 /// A string that may contain interpolations.
 ///
@@ -145,21 +145,6 @@ impl SassString {
     }
     pub(crate) fn parts(self) -> Vec<StringPart> {
         self.parts
-    }
-}
-
-impl fmt::Display for SassString {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        self.quotes.fmt(out)?;
-        for part in &self.parts {
-            match part {
-                StringPart::Raw(s) => s.fmt(out)?,
-                StringPart::Interpolation(v) => {
-                    panic!("Interpolation should be evaluated: {v:?}")
-                }
-            }
-        }
-        self.quotes.fmt(out)
     }
 }
 

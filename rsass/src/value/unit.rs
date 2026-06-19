@@ -176,7 +176,7 @@ impl Unit {
     /// When comparing 10cm to 4in, these factors will give correct results.
     /// When comparing rems to vw, who can say?
     pub(crate) fn scale_factor(&self) -> f64 {
-        #[allow(clippy::match_same_arms)]
+        #[allow(clippy::match_same_arms, reason = "group by dimension")]
         match *self {
             Self::Em | Self::Rem => 5.,
             Self::Ex => 3.,

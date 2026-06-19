@@ -1,5 +1,4 @@
 //! Types for color values.
-#![allow(clippy::many_single_char_names)]
 mod convert;
 mod hsla;
 mod hwba;

@@ -251,7 +251,11 @@ impl Value {
                 Ok(())
             }
             Self::Call(ref name, ref args, ref _pos) => {
-                write!(out, "{name}({args:?})")
+                if let Some(name) = name.single_raw() {
+                    write!(out, "{name}({args:?})")
+                } else {
+                    write!(out, "{name:?}({args:?})")
+                }
             }
             Self::Numeric(ref num) => {
                 num.format(Format::introspect()).fmt(out)

@@ -1,3 +1,4 @@
+#![allow(clippy::missing_panics_doc, reason = "Lock handling to fix")]
 //! A scope is something that contains variable values.
 use crate::css::{CssString, SelectorCtx, Value};
 use crate::input::SourcePos;
@@ -6,6 +7,7 @@ use crate::sass::{Expose, Function, Item, ItemBody, MixinDecl, Name, UseAs};
 use crate::{Error, Invalid};
 use arc_swap::ArcSwapOption;
 use std::collections::BTreeMap;
+use std::iter::repeat;
 use std::ops::Deref;
 use std::sync::{Arc, LazyLock, Mutex};
 
@@ -352,23 +354,14 @@ impl Scope {
         if names.len() == 1 {
             Ok(self.define(names[0].clone(), value)?)
         } else {
-            let values = value.iter_items();
-            if values.len() > names.len() {
-                panic!(
-                    "Expected {} values, but got {}",
-                    names.len(),
-                    values.len(),
-                )
-            } else {
-                let mut values = values.into_iter();
-                for name in names {
-                    self.define(
-                        name.clone(),
-                        values.next().unwrap_or(Value::Null),
-                    )?;
-                }
-                Ok(())
+            // Note: Excess values are just ignored.
+            // The test suite don't cover this behaviour?
+            for (name, value) in names.iter().zip(
+                value.iter_items().into_iter().chain(repeat(Value::Null)),
+            ) {
+                self.define(name.clone(), value)?;
             }
+            Ok(())
         }
     }
 
