@@ -23,7 +23,6 @@ fn dollar_char_as_numeric() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn number_as_first_char_with_space() {
     assert_eq!(
         runner().ok(".\\31 u {a: b;}\n"),
@@ -33,7 +32,6 @@ fn number_as_first_char_with_space() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn number_as_first_char_without_space() {
     assert_eq!(
         runner().ok(".\\31u {a: b;}\n"),

@@ -184,7 +184,16 @@ impl CompoundSelector {
         }
         for c in &self.classes {
             buf.add_char('.');
-            buf.add_str(c);
+            if let Some((c, rest)) = c.as_bytes().split_first()
+                && c.is_ascii_digit()
+                && let Ok(rest) = str::from_utf8(rest)
+            {
+                use std::io::Write;
+                let _ = write!(buf, "\\{c:x} ");
+                buf.add_str(rest);
+            } else {
+                buf.add_str(c);
+            }
         }
         for attr in &self.attr {
             attr.write_to(buf);

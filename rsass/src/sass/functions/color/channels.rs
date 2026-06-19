@@ -4,7 +4,7 @@ use crate::value::ListSeparator;
 
 /// Channels data is either four values of parsable data, or one value
 /// of "special" data, that is probably a sass list.
-#[allow(clippy::large_enum_variant, reason="temp use only")]
+#[allow(clippy::large_enum_variant, reason = "temp use only")]
 pub enum Channels {
     Data([Value; 4]),
     Special(Value),
