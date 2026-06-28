@@ -73,6 +73,13 @@ fn check_alpha(v: Value) -> Result<f64, String> {
         }
     })
 }
+fn check_alpha_num(num: Numeric) -> Result<f64, String> {
+    Ok(num
+        .as_unit(Unit::None)
+        .ok_or_else(|| expected_to(num, "have unit \"%\" or no units"))?
+        .into())
+}
+
 /// Get a rational number in the 0..1 range.
 fn check_alpha_range(v: Value) -> Result<f64, String> {
     let v = Numeric::try_from(v)?;
