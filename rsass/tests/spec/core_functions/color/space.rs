@@ -7,7 +7,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn a98_rgb() {
     let runner = runner().with_cwd("a98-rgb");
     assert_eq!(
@@ -50,7 +49,6 @@ mod error {
     }
 
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         let runner = runner().with_cwd("too_few_args");
         assert_eq!(
@@ -71,7 +69,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         let runner = runner().with_cwd("too_many_args");
         assert_eq!(
@@ -92,7 +89,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn test_type() {
         let runner = runner().with_cwd("type");
         assert_eq!(
@@ -110,7 +106,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn hex() {
     let runner = runner().with_cwd("hex");
     assert_eq!(
@@ -122,7 +117,6 @@ fn hex() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn hsl() {
     let runner = runner().with_cwd("hsl");
     assert_eq!(
@@ -134,7 +128,6 @@ fn hsl() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn hwb() {
     let runner = runner().with_cwd("hwb");
     assert_eq!(
@@ -146,7 +139,6 @@ fn hwb() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn lab() {
     let runner = runner().with_cwd("lab");
     assert_eq!(
@@ -158,7 +150,6 @@ fn lab() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn lch() {
     let runner = runner().with_cwd("lch");
     assert_eq!(
@@ -170,7 +161,6 @@ fn lch() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn named() {
     let runner = runner().with_cwd("named");
     assert_eq!(
@@ -206,7 +196,6 @@ fn oklch() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn prophoto_rgb() {
     let runner = runner().with_cwd("prophoto-rgb");
     assert_eq!(
@@ -234,7 +223,6 @@ fn rec2020() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn rgb() {
     let runner = runner().with_cwd("rgb");
     assert_eq!(
@@ -246,7 +234,6 @@ fn rgb() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn rgba() {
     let runner = runner().with_cwd("rgba");
     assert_eq!(
@@ -258,7 +245,6 @@ fn rgba() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn srgb_linear() {
     let runner = runner().with_cwd("srgb-linear");
     assert_eq!(
@@ -272,7 +258,6 @@ fn srgb_linear() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn srgb() {
     let runner = runner().with_cwd("srgb");
     assert_eq!(

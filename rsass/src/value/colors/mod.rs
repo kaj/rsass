@@ -153,6 +153,13 @@ impl Color {
             Self::Hwba(_) => (),
         }
     }
+    pub(crate) fn space(&self) -> &'static str {
+        match self {
+            Color::Rgba(_) => "rgb",
+            Color::Hsla(_) => "hsl",
+            Color::Hwba(_) => "hwb",
+        }
+    }
     /// Get a reference to this `Value` bound to an output format.
     pub fn format(&self, format: Format) -> Formatted<'_, Self> {
         Formatted {

@@ -8,7 +8,6 @@ mod alpha {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn nan() {
         assert_eq!(
             runner().ok("a {b: color(srgb 0 0 0 / calc(NaN))}\n"),
@@ -18,7 +17,6 @@ mod alpha {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative_infinity() {
         assert_eq!(
             runner().ok("a {b: color(srgb 0 0 0 / calc(-infinity))}\n"),
@@ -28,7 +26,6 @@ mod alpha {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative_zero() {
         assert_eq!(
             runner().ok("a {b: color(srgb 0 0 0 / -0)}\n"),
@@ -38,7 +35,6 @@ mod alpha {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn positive_infinity() {
         assert_eq!(
             runner().ok("a {b: color(srgb 0 0 0 / calc(infinity))}\n"),
@@ -103,7 +99,6 @@ mod before_alpha {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative_infinity() {
         assert_eq!(
             runner().ok("a {b: color(srgb 0 0 calc(-infinity) / 0.5)}\n"),
@@ -113,7 +108,6 @@ mod before_alpha {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn positive_infinity() {
         assert_eq!(
             runner().ok("a {b: color(srgb 0 0 calc(infinity) / 0.5)}\n"),

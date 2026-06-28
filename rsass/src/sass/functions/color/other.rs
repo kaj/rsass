@@ -1,13 +1,218 @@
 use super::{
-    CallError, CheckedArg, FunctionMap, Name, check_alpha_pm,
-    check_alpha_range, check_channel_pm, check_channel_range, check_expl_pct,
-    check_hue, check_pct, check_pct_range, expected_to,
+    CallError, CheckedArg, FunctionMap, Name, check_alpha_num,
+    check_alpha_pm, check_alpha_range, check_channel_pm, check_channel_range,
+    check_expl_pct, check_hue, check_pct, check_pct_range, expected_to,
 };
 use crate::Scope;
-use crate::css::{CallArgs, Value};
-use crate::value::{Color, Hsla, Hwba, Numeric, RgbFormat, Rgba};
+use crate::css::{CallArgs, CssString, Value, is_not};
+use crate::output::Format;
+use crate::sass::functions::color::is_special;
+use crate::sass::functions::num_or_special::NumOrSpecial;
+use crate::value::{
+    Color, Hsla, Hwba, ListSeparator, Numeric, Operator, Quotes, RgbFormat,
+    Rgba,
+};
+use std::collections::BTreeMap;
+
+/// The argument to the `color` function.
+struct ColDesc {
+    args: Vec<Value>,
+    alpha: Option<Value>,
+}
+
+impl ColDesc {
+    fn into_arg(self) -> Result<Value, CallError> {
+        let inner_list =
+            Value::List(self.args, Some(ListSeparator::Space), false);
+        let alpha = if let Some(alpha) = self.alpha {
+            match NumOrSpecial::try_from(alpha).named(name!(description))? {
+                NumOrSpecial::Num(n) => {
+                    if check_alpha_num(n.clone()).named(name!(alpha))? >= 1.0
+                    {
+                        None
+                    } else if n > Numeric::scalar(0.) {
+                        Some(n.clone().into())
+                    } else {
+                        Some(Numeric::scalar(0).into())
+                    }
+                }
+                NumOrSpecial::Special(x) => Some(x),
+            }
+        } else {
+            None
+        };
+        if let Some(alpha) = alpha {
+            Ok(Value::List(
+                vec![inner_list, alpha],
+                Some(ListSeparator::Slash),
+                false,
+            ))
+        } else {
+            Ok(inner_list)
+        }
+    }
+}
+
+impl TryFrom<Value> for ColDesc {
+    type Error = String;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        let (args, alpha) = match value {
+            c if is_special(&c) => Ok((vec![c], None)),
+            l @ Value::List(_, _, true) => Err(format!(
+                "Expected an unbracketed list, was {}",
+                l.introspect()
+            )),
+            l @ Value::List(_, Some(ListSeparator::Comma), _) => {
+                Err(format!(
+                    "Expected a space- or slash-separated list, was ({})",
+                    l.introspect()
+                ))
+            }
+            Value::List(v, Some(ListSeparator::Slash), _) => match &v[..] {
+                [Value::List(_, _, true), _] => {
+                    Err("Expected an unbracketed list.".to_string())
+                }
+                [l @ Value::List(_, Some(i_s), _), _]
+                    if *i_s != ListSeparator::Space =>
+                {
+                    Err(format!(
+                        "Expected a space-separated list, was ({})",
+                        l.introspect()
+                    ))
+                }
+                [Value::List(inner, _, _), a] => Ok((
+                    valid_col_arg_noslash(inner.clone())?,
+                    Some(a.clone()),
+                )),
+                other => {
+                    let n = other.len();
+                    Err(format!(
+                        "Only 2 slash-separated elements allowed, but {n} {} passed.",
+                        if n == 1 { "was" } else { "were" },
+                    ))
+                }
+            },
+            Value::List(vec, _, false) => match &vec[..] {
+                [kind, r, g, Value::BinOp(op)]
+                    if op.op() == Operator::Div =>
+                {
+                    Ok((
+                        valid_col_arg_noslash(vec![
+                            kind.clone(),
+                            r.clone(),
+                            g.clone(),
+                            op.a().clone(),
+                        ])?,
+                        Some(op.b().clone()),
+                    ))
+                }
+                other => Ok((valid_col_arg_noslash(other.to_vec())?, None)),
+            },
+            item => Ok((valid_col_arg_noslash(vec![item])?, None)),
+        }?;
+        Ok(Self { args, alpha })
+    }
+}
+
+enum ColorOrCall {
+    Color(Color),
+    Call(String, CallArgs),
+}
+impl TryFrom<Value> for ColorOrCall {
+    type Error = String;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::Call(name, args) => Ok(Self::Call(name, args)),
+            Value::Color(color, _x) => Ok(Self::Color(color)),
+            other => Err(is_not(&other, "a color")),
+        }
+    }
+}
 
 pub fn register(f: &mut Scope) {
+    def!(f, color(description), |s| {
+        let description = s.get::<ColDesc>(name!(description))?;
+        Ok(Value::call("color", [description.into_arg()?]))
+    });
+    def!(f, space(color), |s| {
+        let color = s.get::<ColorOrCall>(name!(color))?;
+        match color {
+            ColorOrCall::Color(color) => Ok(color.space().into()),
+            ColorOrCall::Call(name, args) => match name.as_str() {
+                "lab" | "lch" => Ok(name.into()),
+                "color" => match args.get_single() {
+                    Ok(Value::List(v, _, _)) => match v.get(0) {
+                        Some(s @ Value::Literal(_)) => Ok(s.clone()),
+                        _ => Err("unexpected color arg").named(name!(color)),
+                    },
+                    _ => Err("unexpected color arg").named(name!(color)),
+                },
+                _ => Err("not a color").named(name!(color)),
+            },
+        }
+    });
+    def!(f, is_missing(color, channel), |s| {
+        let color = s.get::<ColorOrCall>(name!(color))?;
+        let channel = s.get::<CssString>(name!(channel))?;
+        if channel.quotes() == Quotes::None {
+            return Err(format!("Expected {channel} to be a quoted string."))
+                .named(name!(channel));
+        }
+        match color {
+            ColorOrCall::Call(f, args) if f == "color" => {
+                Err(format!("Proper color({args}) not handled yet"))
+                    .named(name!(color))
+            }
+            ColorOrCall::Call(f, args) => {
+                let channels = BTreeMap::from_iter([
+                    ("lch", &["lightness", "chroma", "hue"]),
+                    ("lab", &["l", "a", "b"]),
+                    ("rgb", &["red", "green", "blue"]),
+                ]);
+                if let Some(channels) = channels.get(&f.as_str()) {
+                    if let Some(n) = channels
+                        .iter()
+                        .enumerate()
+                        .find(|(_, c)| **c == channel.value())
+                        .map(|(i, _)| i)
+                    {
+                        let is_none = dbg!(arg_channels(&dbg!(args)))
+                            .named(name!(color))?
+                            .0
+                            .get(dbg!(n))
+                            == Some(&Value::Literal(CssString::from("none")));
+                        Ok(is_none.into()) // Can it be missing?  Explicit "none"?
+                    } else {
+                        Err(format!("Color fn {f} doesn\'t have a channel named {channel}."))
+                            .named(name!(channel))
+                    }
+                } else {
+                    Err(format!("Color fn {f} not handled yet"))
+                        .named(name!(color))
+                }
+            }
+            ColorOrCall::Color(color) => {
+                // This kind of color don't have missing components, either false or error.
+                let existing = match &color {
+                    Color::Rgba(_) => ["red", "green", "blue"],
+                    Color::Hsla(_) => ["hue", "sat", "val"],
+                    Color::Hwba(_) => ["hue", "white", "black"],
+                };
+                if existing.iter().any(|c| *c == channel.value()) {
+                    Ok(false.into())
+                } else {
+                    Err(format!(
+                        "Color {} doesn\'t have a channel named {channel}.",
+                        color.format(Format::default())
+                    ))
+                    .named(name!(channel))
+                }
+            }
+        }
+        //Ok(false.into())
+    });
     def_va!(f, adjust(color, kwargs), |s| {
         fn opt_add(a: f64, b: Option<f64>) -> f64 {
             if let Some(b) = b { a + b } else { a }
@@ -224,8 +429,68 @@ pub fn register(f: &mut Scope) {
     });
 }
 
+fn arg_channels(
+    value: &CallArgs,
+) -> Result<(Vec<Value>, Option<Value>), String> {
+    if let Ok(arg) = value.get_single() {
+        channels_from_value(arg)
+    } else {
+        Ok((value.positional.clone(), None))
+    }
+}
+
+fn channels_from_value(
+    value: &Value,
+) -> Result<(Vec<Value>, Option<Value>), String> {
+    match value {
+        c if is_special(&c) => Ok((vec![c.clone()], None)),
+        l @ Value::List(_, _, true) => Err(format!(
+            "Expected an unbracketed list, was {}",
+            l.introspect()
+        )),
+        l @ Value::List(_, Some(ListSeparator::Comma), _) => Err(format!(
+            "Expected a space- or slash-separated list, was ({})",
+            l.introspect()
+        )),
+        Value::List(v, Some(ListSeparator::Slash), _) => match &v[..] {
+            [Value::List(_, _, true), _] => {
+                Err(format!("Expected an unbracketed list."))
+            }
+            [l @ Value::List(_, Some(i_s), _), _]
+                if *i_s != ListSeparator::Space =>
+            {
+                Err(format!(
+                    "Expected a space-separated list, was ({})",
+                    l.introspect()
+                ))
+            }
+            [Value::List(inner, _, _), a] => {
+                Ok((inner.clone(), Some(a.clone())))
+            }
+            other => {
+                let n = other.len();
+                Err(format!(
+                    "Only 2 slash-separated elements allowed, but {n} {} passed.",
+                    if n == 1 { "was" } else { "were" },
+                ))
+            }
+        },
+        Value::List(vec, _, false) => match &vec[..] {
+            [kind, r, g, Value::BinOp(op)] if op.op() == Operator::Div => {
+                Ok((
+                    vec![kind.clone(), r.clone(), g.clone(), op.a().clone()],
+                    Some(op.b().clone()),
+                ))
+            }
+            other => Ok((other.to_vec(), None)),
+        },
+        item => Ok((vec![item.clone()], None)),
+    }
+}
+
 pub fn expose(m: &Scope, global: &mut FunctionMap) {
     for (gname, lname) in &[
+        (name!(color), name!(color)),
         (name!(adjust_color), name!(adjust)),
         (name!(alpha), name!(alpha)),
         (name!(opacity), name!(opacity)),
@@ -256,6 +521,51 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     ] {
         global.insert(gname.clone(), f.get_lfunction(lname));
     }
+}
+
+fn valid_col_arg_noslash(args: Vec<Value>) -> Result<Vec<Value>, String> {
+    match args.get(0) {
+        Some(Value::Literal(s)) => {
+            if s.quotes() != Quotes::None {
+                return Err(expected_to(s.clone(), "be an unquoted string"));
+            }
+            let s = s.value();
+            // TODO: A much longer list is needed!
+            //let known = ["from", "srgb", "srgb-linear", "prophoto-rgb"];
+            let expected_len = BTreeMap::from_iter([
+                ("a98-rgb", 3),
+                ("srgb", 3),
+                ("srgb-linear", 3),
+                ("prophoto-rgb", 3),
+            ]);
+            if !s.eq_ignore_ascii_case("from") {
+                if let Some(ex) = expected_len.get(&s).copied() {
+                    let l = args.len() - 1;
+                    if l != ex {
+                        let s = s.to_owned();
+                        let v = if args.len() == 1 {
+                            args.get(0).unwrap().introspect()
+                        } else {
+                            format!(
+                                "({})",
+                                Value::List(args, None, false).introspect()
+                            )
+                        };
+                        return Err(format!(
+                            "The {s} color space has {ex} channels but {v} has {l}."
+                        ));
+                    }
+                } else {
+                    return Err(format!("Unknown color space {s:?}."));
+                }
+            }
+        }
+        Some(x) => {
+            return Err(format!("{} is not a string.", x.introspect()));
+        }
+        None => return Err(format!("empty??")),
+    }
+    Ok(args)
 }
 
 fn check_none_scalable(_: Value) -> Result<(), String> {
