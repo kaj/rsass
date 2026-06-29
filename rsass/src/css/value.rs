@@ -142,23 +142,6 @@ impl Value {
         }
     }
 
-    pub(crate) fn to_string(&self, format: Format) -> String {
-        let value = self.format(format);
-        if self.needs_calc() {
-            format!("calc({value})")
-        } else {
-            value.to_string()
-        }
-    }
-
-    fn needs_calc(&self) -> bool {
-        if let Self::Numeric(Numeric { value, unit }, _) = self {
-            !value.is_finite() || !unit.valid_in_css()
-        } else {
-            false
-        }
-    }
-
     /// Return true if this is a calculated value.
     ///
     /// The return of functions or operators are calculated, verbatim
@@ -286,7 +269,7 @@ impl Value {
     }
     /// Format this value for error messages.
     pub fn introspect(&self) -> String {
-        self.to_string(Format::introspect())
+        self.format(Format::introspect()).to_string()
     }
 }
 

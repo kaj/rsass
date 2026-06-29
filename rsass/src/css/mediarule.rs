@@ -109,14 +109,9 @@ impl MediaArgs {
             Self::Range(v) => {
                 buf.add_str("(");
                 if let Some(((_op, first), rest)) = v.split_first() {
-                    buf.add_str(
-                        &first.to_string(buf.format()).replace('\n', " "),
-                    );
+                    write!(buf, "{}", first.format(buf.format()))?;
                     for (op, val) in rest {
-                        write!(buf, " {op} ")?;
-                        buf.add_str(
-                            &val.to_string(buf.format()).replace('\n', " "),
-                        );
+                        write!(buf, " {op} {}", val.format(buf.format()))?;
                     }
                 }
                 buf.add_str(")");

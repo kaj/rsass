@@ -18,7 +18,18 @@ impl Display for Formatted<'_, Value> {
                     .collect::<String>();
                 write!(out, "get-function(\"{name}\")")
             }
-            Value::Numeric(ref num, _) => num.format(self.format).fmt(out),
+            Value::Numeric(ref num, _) => {
+                let nc = !out.alternate() && !num.value.is_finite()
+                    || !num.unit.valid_in_css();
+                if nc {
+                    out.write_str("calc(")?;
+                }
+                num.format(self.format).fmt(out)?;
+                if nc {
+                    out.write_str(")")?;
+                }
+                Ok(())
+            }
             Value::Color(ref col, ref name) => {
                 if let Some(ref name) = *name {
                     name.fmt(out)
@@ -85,6 +96,8 @@ impl Display for Formatted<'_, Value> {
                 // it is for scss, but not when loading plain css.
                 if let Some(arg) = is_calc_result(name, arg) {
                     write!(out, "{}", arg.format(self.format))
+                } else if name == "calc" {
+                    write!(out, "{name}({arg:#})")
                 } else {
                     write!(out, "{name}({arg})")
                 }

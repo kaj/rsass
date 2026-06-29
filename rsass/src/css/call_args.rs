@@ -1,5 +1,6 @@
 use super::{Value, is_not};
 use crate::ordermap::OrderMap;
+use crate::output::Format;
 use crate::sass::{ArgsError, Name};
 use crate::value::ListSeparator;
 use std::default::Default;
@@ -119,18 +120,32 @@ impl From<CallArgs> for Value {
 
 impl fmt::Display for CallArgs {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        let pos = self
-            .positional
-            .iter()
-            .map(|v| format!("{}", v.format(Default::default())));
-        let named = self
-            .named
-            .iter()
-            .map(|(k, v)| format!("{}={}", k, v.format(Default::default())));
-        let t = pos.chain(named).collect::<Vec<_>>().join(", ");
-        write!(out, "{t}")?;
+        let format = Format::default(); // TODO: Get current output format!
+        let sep = if format.is_compressed() { "," } else { ", " };
+        if let Some((first, rest)) = self.positional.split_first() {
+            first.format(format).fmt(out)?;
+            for item in rest {
+                out.write_str(sep)?;
+                item.format(format).fmt(out)?;
+            }
+            if !self.named.is_empty() {
+                out.write_str(sep)?;
+            }
+        }
+        let mut named = self.named.iter();
+        if let Some((key, val)) = named.next() {
+            out.write_str(key.as_ref())?;
+            out.write_str("=")?;
+            val.format(format).fmt(out)?;
+        }
+        for (key, val) in named {
+            out.write_str(sep)?;
+            out.write_str(key.as_ref())?;
+            out.write_str("=")?;
+            val.format(format).fmt(out)?;
+        }
         if self.trailing_comma {
-            write!(out, ", ")?;
+            out.write_str(sep)?;
         }
         Ok(())
     }

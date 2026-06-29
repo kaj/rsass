@@ -5,7 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("@media (max-width: (2px*5in)) {\

@@ -2,7 +2,7 @@ use super::{CallError, FunctionMap, ResolvedArgs, is_not};
 use crate::css::{CallArgs, CssString, Value, is_calc_name};
 use crate::sass::{Call, Function, MixinDecl, Name};
 use crate::value::Quotes;
-use crate::{Format, Scope, ScopeRef};
+use crate::{Scope, ScopeRef};
 
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:meta");
@@ -105,7 +105,7 @@ pub fn create_module() -> Scope {
     });
     def!(f, inspect(value), |s| {
         let value = s.get::<Value>(name!(value))?;
-        Ok(value.to_string(Format::introspect()).into())
+        Ok(value.introspect().into())
     });
     def!(f, keywords(args), |s| {
         let args = s.get_map(name!(args), |v| match v {

@@ -42,7 +42,6 @@ mod arg1 {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn nan() {
         assert_eq!(
             runner().ok("a {b: color(srgb calc(NaN) 0 0)}\n"),
@@ -52,7 +51,6 @@ mod arg1 {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative_infinity() {
         assert_eq!(
             runner().ok("a {b: color(srgb calc(-infinity) 0 0)}\n"),
@@ -62,7 +60,6 @@ mod arg1 {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn positive_infinity() {
         assert_eq!(
             runner().ok("a {b: color(srgb calc(infinity) 0 0)}\n"),

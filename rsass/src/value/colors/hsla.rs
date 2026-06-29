@@ -104,18 +104,18 @@ impl Display for Formatted<'_, Hsla> {
             write!(
                 out,
                 "hsl({}, {}, {})",
-                hue.to_string(self.format),
-                sat.to_string(self.format),
-                lum.to_string(self.format),
+                hue.format(self.format),
+                sat.format(self.format),
+                lum.format(self.format),
             )
         } else {
             let a = Number::from(a);
             write!(
                 out,
                 "hsla({}, {}, {}, {})",
-                hue.to_string(self.format),
-                sat.to_string(self.format),
-                lum.to_string(self.format),
+                hue.format(self.format),
+                sat.format(self.format),
+                lum.format(self.format),
                 a.format(self.format)
             )
         }

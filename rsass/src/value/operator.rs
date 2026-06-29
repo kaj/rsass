@@ -242,6 +242,7 @@ impl fmt::Display for Operator {
 }
 
 /// Something went wrong when evaluating an operator.
+#[derive(Debug)]
 pub enum BadOp {
     /// An undefined operation (e.g. adding incompatible units) were attempted.
     UndefinedOperation,

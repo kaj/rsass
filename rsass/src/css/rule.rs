@@ -134,7 +134,13 @@ impl Property {
         buf.do_indent_no_nl();
         buf.add_str(&self.name);
         buf.add_one(": ", ":");
-        buf.add_str(&self.value.to_string(buf.format()).replace('\n', " "));
+        buf.add_str(
+            &self
+                .value
+                .format(buf.format())
+                .to_string()
+                .replace('\n', " "),
+        );
         buf.add_one(";\n", ";");
     }
 }
