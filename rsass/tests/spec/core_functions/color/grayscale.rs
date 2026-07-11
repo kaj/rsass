@@ -205,7 +205,6 @@ mod legacy {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn different() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\

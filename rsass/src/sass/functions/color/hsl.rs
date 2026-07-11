@@ -30,9 +30,16 @@ pub fn register(f: &mut Scope) {
     def!(f, grayscale(color), |args| match args.get(name!(color))? {
         Value::Color(col, _) => {
             let is_rgb = col.is_rgb();
+            let is_hsl = col.is_hsl();
             let col = col.to_hsla();
-            Ok(Hsla::new(col.hue(), 0., col.lum(), col.alpha(), !is_rgb)
-                .into())
+            Ok(Hsla::new(
+                if is_hsl { col.hue() } else { 0. },
+                0.,
+                col.lum(),
+                col.alpha(),
+                !is_rgb,
+            )
+            .into())
         }
         v @ Value::Numeric(..) => Ok(Value::call("grayscale", [v])),
         v => Err(is_not(&v, "a color")).named(name!(color)),
