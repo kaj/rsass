@@ -52,7 +52,9 @@ impl Color {
     pub(crate) fn is_rgb(&self) -> bool {
         matches!(self, Self::Rgba(_))
     }
-
+    pub(crate) fn is_hsl(&self) -> bool {
+        matches!(self, Self::Hsla(_))
+    }
     /// Get this color as a rgba value.
     ///
     /// If this color is a rgba value, return a borrow of it.
@@ -118,7 +120,7 @@ impl Color {
                     hsla.sat(),
                     hsla.lum(),
                     hsla.alpha(),
-                    hsla.hsla_format,
+                    false,
                 )
                 .into()
             }
