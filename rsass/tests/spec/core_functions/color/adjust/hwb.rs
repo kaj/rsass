@@ -112,7 +112,6 @@ mod blackness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -201,7 +200,6 @@ mod whiteness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

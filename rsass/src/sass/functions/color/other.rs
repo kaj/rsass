@@ -143,7 +143,7 @@ pub fn register(f: &mut Scope) {
             ColorOrCall::Call(name, args) => match name.as_str() {
                 "lab" | "lch" => Ok(name.into()),
                 "color" => match args.get_single() {
-                    Ok(Value::List(v, _, _)) => match v.get(0) {
+                    Ok(Value::List(v, _, _)) => match v.first() {
                         Some(s @ Value::Literal(_)) => Ok(s.clone()),
                         _ => Err("unexpected color arg").named(name!(color)),
                     },
@@ -178,10 +178,10 @@ pub fn register(f: &mut Scope) {
                         .find(|(_, c)| **c == channel.value())
                         .map(|(i, _)| i)
                     {
-                        let is_none = dbg!(arg_channels(&dbg!(args)))
+                        let is_none = arg_channels(&args)
                             .named(name!(color))?
                             .0
-                            .get(dbg!(n))
+                            .get(n)
                             == Some(&Value::Literal(CssString::from("none")));
                         Ok(is_none.into()) // Can it be missing?  Explicit "none"?
                     } else {
@@ -256,7 +256,16 @@ pub fn register(f: &mut Scope) {
                     opt_add(hwba.blackness(), bla),
                     opt_add(hwba.alpha(), a_adj),
                 );
-                Ok(Rgba::from(&hwba).into())
+                if hwba.blackness() >= 0.
+                    && hwba.blackness() <= 1.
+                    && hwba.whiteness() >= 0.
+                    && hwba.whiteness() <= 1.
+                    && hwba.hue().is_finite()
+                {
+                    Ok(Rgba::from(&hwba).into())
+                } else {
+                    Ok(hwba.into())
+                }
             } else if hue.is_some() || sat.is_some() || lig.is_some() {
                 let hsla = color.to_hsla();
                 let sat = opt_add(hsla.sat(), sat);
@@ -443,7 +452,7 @@ fn channels_from_value(
     value: &Value,
 ) -> Result<(Vec<Value>, Option<Value>), String> {
     match value {
-        c if is_special(&c) => Ok((vec![c.clone()], None)),
+        c if is_special(c) => Ok((vec![c.clone()], None)),
         l @ Value::List(_, _, true) => Err(format!(
             "Expected an unbracketed list, was {}",
             l.introspect()
@@ -454,7 +463,7 @@ fn channels_from_value(
         )),
         Value::List(v, Some(ListSeparator::Slash), _) => match &v[..] {
             [Value::List(_, _, true), _] => {
-                Err(format!("Expected an unbracketed list."))
+                Err("Expected an unbracketed list.".to_string())
             }
             [l @ Value::List(_, Some(i_s), _), _]
                 if *i_s != ListSeparator::Space =>
@@ -524,7 +533,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
 }
 
 fn valid_col_arg_noslash(args: Vec<Value>) -> Result<Vec<Value>, String> {
-    match args.get(0) {
+    match args.first() {
         Some(Value::Literal(s)) => {
             if s.quotes() != Quotes::None {
                 return Err(expected_to(s.clone(), "be an unquoted string"));
@@ -544,7 +553,7 @@ fn valid_col_arg_noslash(args: Vec<Value>) -> Result<Vec<Value>, String> {
                     if l != ex {
                         let s = s.to_owned();
                         let v = if args.len() == 1 {
-                            args.get(0).unwrap().introspect()
+                            args.first().unwrap().introspect()
                         } else {
                             format!(
                                 "({})",
@@ -563,7 +572,7 @@ fn valid_col_arg_noslash(args: Vec<Value>) -> Result<Vec<Value>, String> {
         Some(x) => {
             return Err(format!("{} is not a string.", x.introspect()));
         }
-        None => return Err(format!("empty??")),
+        None => return Err("empty??".to_string()),
     }
     Ok(args)
 }
