@@ -30,7 +30,7 @@ pub use self::callable::{Call, Callable, Closure};
 pub use self::css_function::CssFunction;
 pub use self::formal_args::{ArgsError, FormalArgs};
 pub use self::functions::{
-    CallError, Function, ResolvedArgs, get_global_module,
+    CallError, Function, ResolvedArgs, get_global_module, is_color_fn,
 };
 pub use self::item::{Expose, Item, ItemBody, UseAs};
 pub use self::mixin::{Mixin, MixinDecl};

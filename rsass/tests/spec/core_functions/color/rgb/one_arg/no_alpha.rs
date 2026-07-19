@@ -8,7 +8,6 @@ mod missing {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn blue() {
         assert_eq!(
             runner().ok("a {b: rgb(18 52 none)}\n"),
@@ -18,7 +17,6 @@ mod missing {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn green() {
         assert_eq!(
             runner().ok("a {b: rgb(18 none 66)}\n"),
@@ -28,7 +26,6 @@ mod missing {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn red() {
         assert_eq!(
             runner().ok("a {b: rgb(none 52 66)}\n"),

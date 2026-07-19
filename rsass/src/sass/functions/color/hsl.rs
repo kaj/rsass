@@ -1,8 +1,9 @@
 use super::channels::Channels;
+use super::other::ColorOrCall;
 use super::{
     CallError, CheckedArg, FunctionMap, NumOrSpecial, ResolvedArgs,
-    check_alpha, check_amount, check_hue, eval_inner, is_not, is_special,
-    relative_color,
+    channels_alpha_list, check_alpha, check_amount, check_hue, eval_inner,
+    is_none, is_not, is_special, relative_color,
 };
 use crate::Scope;
 use crate::css::{CallArgs, Value};
@@ -17,15 +18,23 @@ pub fn register(f: &mut Scope) {
         Ok(s.get::<Color>(name!(color))?.rotate_hue(180.into()).into())
     });
     def!(f, hue(color), |s| {
-        let col = s.get::<Color>(name!(color))?;
+        let col = s
+            .get::<ColorOrCall>(name!(color))?
+            .check_legacy_w("color.hue")?;
         let hsla = col.to_hsla();
         Ok(Value::Numeric(Numeric::new(hsla.hue(), Unit::Deg), true))
     });
     def!(f, saturation(color), |s| {
-        Ok(percentage(s.get::<Color>(name!(color))?.to_hsla().sat()))
+        let col = s
+            .get::<ColorOrCall>(name!(color))?
+            .check_legacy_w("color.saturation")?;
+        Ok(Numeric::percentage(col.to_hsla().sat()).into())
     });
     def!(f, lightness(color), |s| {
-        Ok(percentage(s.get::<Color>(name!(color))?.to_hsla().lum()))
+        let col = s
+            .get::<ColorOrCall>(name!(color))?
+            .check_legacy_w("color.lightness")?;
+        Ok(Numeric::percentage(col.to_hsla().lum()).into())
     });
     def!(f, grayscale(color), |args| match args.get(name!(color))? {
         Value::Color(col, _) => {
@@ -182,7 +191,22 @@ fn hsla_from_values(
     l: Value,
     a: Value,
 ) -> Result<Value, CallError> {
-    if is_special(&h) || is_special(&s) || is_special(&l) || is_special(&a) {
+    if is_none(&h) || is_none(&s) || is_none(&l) || is_none(&a) {
+        let h = match h {
+            Value::Numeric(h, _) => h
+                .as_unit_def(Unit::Deg)
+                .map(|h| Numeric::new(h, Unit::Deg))
+                .unwrap_or(h)
+                .into(),
+            h => h,
+        };
+        let arg = channels_alpha_list(vec![h, s, l], a);
+        Ok(Value::call(fn_name.as_ref(), [arg]))
+    } else if is_special(&h)
+        || is_special(&s)
+        || is_special(&l)
+        || is_special(&a)
+    {
         Ok(Value::call(
             fn_name.as_ref(),
             [h, s, l, a].into_iter().filter(|v| v != &Value::Null),
@@ -199,10 +223,6 @@ fn hsla_from_values(
         )
         .into())
     }
-}
-
-pub fn percentage(v: f64) -> Value {
-    Numeric::percentage(v).into()
 }
 
 /// Gets a percentage as a fraction 0 .. 1.

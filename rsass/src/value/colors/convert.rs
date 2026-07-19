@@ -59,6 +59,11 @@ impl From<&Hwba> for Hsla {
         } else {
             (0., w)
         };
+        let (hue, s) = if s < -1e-15 {
+            (hue + 180., s.abs())
+        } else {
+            (hue, s)
+        };
         Self::new(hue, s, lum, hwba.alpha(), false)
     }
 }

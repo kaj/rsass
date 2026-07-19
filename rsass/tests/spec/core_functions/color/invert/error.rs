@@ -176,7 +176,7 @@ mod missing {
                 );
             }
             #[test]
-            #[ignore] // wrong error
+            #[ignore] // missing error
             fn implicit() {
                 assert_eq!(
                     runner().err("a {b: invert(rgb(none 10 20))}\n"),

@@ -21,6 +21,7 @@ mod selector;
 mod string;
 
 pub use call_error::CallError;
+pub use color::is_color_fn;
 use num_or_special::NumOrSpecial;
 pub use resolvedargs::ResolvedArgs;
 
@@ -219,7 +220,7 @@ static FUNCTIONS: LazyLock<FunctionMap> = LazyLock::new(|| {
 
 // argument helpers for the actual functions
 
-trait CheckedArg<T> {
+pub trait CheckedArg<T> {
     fn named(self, name: Name) -> Result<T, CallError>;
 }
 impl<T, E: ToString> CheckedArg<T> for Result<T, E> {

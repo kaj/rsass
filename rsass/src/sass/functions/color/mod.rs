@@ -14,6 +14,8 @@ mod hwb;
 mod other;
 mod rgb;
 
+pub use other::is_color_fn;
+
 macro_rules! def_adj {
     ($f:expr, $name:ident($arg1:ident, $arg2:ident), $toarg:ident) => {{
         def!($f, $name($arg1, $arg2), |s| {
@@ -256,4 +258,21 @@ fn is_special(v: &Value) -> bool {
         NumOrSpecial::try_from(v.clone()),
         Ok(NumOrSpecial::Special(_))
     )
+}
+
+fn is_none(arg: &Value) -> bool {
+    matches!(arg, Value::Literal(s) if s.value() == "none")
+}
+
+fn is_special_not_none(v: &Value) -> bool {
+    !is_none(v) && is_special(v)
+}
+
+fn channels_alpha_list(channels: Vec<Value>, alpha: Value) -> Value {
+    let inner = Value::List(channels, Some(ListSeparator::Space), false);
+    if alpha.is_null() {
+        inner
+    } else {
+        Value::List(vec![inner, alpha], Some(ListSeparator::Slash), false)
+    }
 }

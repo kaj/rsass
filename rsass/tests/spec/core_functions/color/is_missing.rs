@@ -263,7 +263,6 @@ mod test_true {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn legacy() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\

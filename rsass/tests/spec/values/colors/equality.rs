@@ -218,7 +218,6 @@ mod test_true {
     );
                 }
                 #[test]
-                #[ignore] // unexepected error
                 fn none() {
                     assert_eq!(
                         runner().ok(
@@ -281,7 +280,6 @@ mod test_true {
                     );
                 }
                 #[test]
-                #[ignore] // unexepected error
                 fn none() {
                     assert_eq!(
                         runner().ok(
