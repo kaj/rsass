@@ -2,62 +2,142 @@ use super::{
     CallError, CheckedArg, FunctionMap, Name, check_alpha_num,
     check_alpha_pm, check_alpha_range, check_channel_pm, check_channel_range,
     check_expl_pct, check_hue, check_pct, check_pct_range, expected_to,
+    is_special_not_none,
 };
 use crate::Scope;
 use crate::css::{CallArgs, CssString, Value, is_not};
 use crate::output::Format;
+use crate::sass::ResolvedArgs;
 use crate::sass::functions::color::is_special;
 use crate::sass::functions::num_or_special::NumOrSpecial;
 use crate::value::{
     Color, Hsla, Hwba, ListSeparator, Numeric, Operator, Quotes, RgbFormat,
-    Rgba,
+    Rgba, Unit,
 };
 use std::collections::BTreeMap;
+use std::sync::LazyLock;
 
 /// The argument to the `color` function.
+#[derive(Debug)]
 struct ColDesc {
-    args: Vec<Value>,
-    alpha: Option<Value>,
+    data: WildChannels,
 }
 
 impl ColDesc {
-    fn into_arg(self) -> Result<Value, CallError> {
-        let inner_list =
-            Value::List(self.args, Some(ListSeparator::Space), false);
-        let alpha = if let Some(alpha) = self.alpha {
-            match NumOrSpecial::try_from(alpha).named(name!(description))? {
-                NumOrSpecial::Num(n) => {
-                    if check_alpha_num(n.clone()).named(name!(alpha))? >= 1.0
-                    {
-                        None
-                    } else if n > Numeric::scalar(0.) {
-                        Some(n.clone().into())
-                    } else {
-                        Some(Numeric::scalar(0).into())
-                    }
-                }
-                NumOrSpecial::Special(x) => Some(x),
-            }
-        } else {
-            None
-        };
-        if let Some(alpha) = alpha {
-            Ok(Value::List(
-                vec![inner_list, alpha],
-                Some(ListSeparator::Slash),
-                false,
-            ))
-        } else {
-            Ok(inner_list)
-        }
+    fn into_call_or_str(self) -> Value {
+        self.data.into_call_or_str("color")
     }
 }
 
 impl TryFrom<Value> for ColDesc {
-    type Error = String;
+    type Error = ChannelErr;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        let mut data = WildChannels::try_from(value)?;
+        data.args = valid_col_arg_noslash(data.args)?;
+        Ok(Self { data })
+    }
+}
+
+#[derive(Debug)]
+struct WildChannels {
+    args: Vec<Value>,
+    alpha: Option<Value>,
+}
+
+impl WildChannels {
+    fn into_arg(self) -> Value {
+        let inner_list =
+            Value::List(self.args, Some(ListSeparator::Space), false);
+        if let Some(alpha) = self.alpha {
+            Value::List(
+                vec![inner_list, alpha],
+                Some(ListSeparator::Slash),
+                false,
+            )
+        } else {
+            inner_list
+        }
+    }
+
+    fn into_call_or_str(self, fn_name: &str) -> Value {
+        let is_from = self.args.first().is_some_and(is_from);
+        if is_from
+            || self.args.iter().any(is_special_not_none)
+            || self.alpha.as_ref().is_some_and(is_special_not_none)
+        {
+            let inner =
+                Value::List(self.args, Some(ListSeparator::Space), false);
+            let inner = inner.format(Format::default());
+            Value::from(if let Some(alpha) = self.alpha {
+                let alpha = alpha.format(Format::default());
+                if is_from {
+                    format!("{fn_name}({inner} / {alpha})")
+                } else {
+                    format!("{fn_name}({inner}/{alpha})")
+                }
+            } else {
+                format!("{fn_name}({inner})")
+            })
+        } else {
+            Value::call(fn_name, [self.into_arg()])
+        }
+    }
+}
+
+/// An error in channel arguments.
+///
+/// It should either be reported on the parameter that holds the entire set
+/// of channels or on a specific channel.
+struct ChannelErr {
+    err: String,
+    channel: Option<Name>,
+}
+impl ChannelErr {
+    fn named(err: impl Into<String>, channel: Name) -> Self {
+        Self {
+            err: err.into(),
+            channel: Some(channel),
+        }
+    }
+}
+
+impl<T: Into<String>> From<T> for ChannelErr {
+    fn from(value: T) -> Self {
+        Self {
+            err: value.into(),
+            channel: None,
+        }
+    }
+}
+impl<T> CheckedArg<T> for Result<T, ChannelErr> {
+    /// The `name` is applied if there isn't a channel name in the `ChannelErr`.
+    fn named(self, name: Name) -> Result<T, CallError> {
+        self.map_err(|e| {
+            CallError::BadArgument(e.channel.unwrap_or(name), e.err)
+        })
+    }
+}
+
+impl TryFrom<CallArgs> for WildChannels {
+    type Error = ChannelErr;
+
+    fn try_from(value: CallArgs) -> Result<Self, Self::Error> {
+        match value.get_single() {
+            Ok(value) => value.clone().try_into(),
+            Err(_) => Err("expected single argument".into()),
+        }
+    }
+}
+
+impl TryFrom<Value> for WildChannels {
+    type Error = ChannelErr;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         let (args, alpha) = match value {
+            Value::BinOp(op) if op.op() == Operator::Div => {
+                Ok((vec![op.a().clone()], Some(op.b().clone())))
+            }
             c if is_special(&c) => Ok((vec![c], None)),
             l @ Value::List(_, _, true) => Err(format!(
                 "Expected an unbracketed list, was {}",
@@ -81,10 +161,10 @@ impl TryFrom<Value> for ColDesc {
                         l.introspect()
                     ))
                 }
-                [Value::List(inner, _, _), a] => Ok((
-                    valid_col_arg_noslash(inner.clone())?,
-                    Some(a.clone()),
-                )),
+                [Value::List(inner, _, _), a] => {
+                    Ok((inner.clone(), Some(a.clone())))
+                }
+                [item, a] => Ok((vec![item.clone()], Some(a.clone()))),
                 other => {
                     let n = other.len();
                     Err(format!(
@@ -93,31 +173,252 @@ impl TryFrom<Value> for ColDesc {
                     ))
                 }
             },
-            Value::List(vec, _, false) => match &vec[..] {
-                [kind, r, g, Value::BinOp(op)]
-                    if op.op() == Operator::Div =>
-                {
-                    Ok((
-                        valid_col_arg_noslash(vec![
-                            kind.clone(),
-                            r.clone(),
-                            g.clone(),
-                            op.a().clone(),
-                        ])?,
-                        Some(op.b().clone()),
-                    ))
+            Value::List(mut vec, _, false) => {
+                if vec.first().is_some_and(is_from) {
+                    Ok((vec, None))
+                } else {
+                    match vec.pop() {
+                        Some(Value::BinOp(op))
+                            if op.op() == Operator::Div =>
+                        {
+                            vec.push(op.a().clone());
+                            Ok((vec, Some(op.b().clone())))
+                        }
+                        Some(other) => {
+                            vec.push(other);
+                            Ok((vec, None))
+                        }
+                        None => Ok((vec, None)),
+                    }
                 }
-                other => Ok((valid_col_arg_noslash(other.to_vec())?, None)),
-            },
-            item => Ok((valid_col_arg_noslash(vec![item])?, None)),
+            }
+            item => Ok((vec![item], None)),
         }?;
+        if args.is_empty() {
+            return Err("Color component list may not be empty.".into());
+        }
+
+        let alpha = if let Some(alpha) = alpha {
+            if args.first().is_some_and(is_from) {
+                Some(alpha)
+            } else {
+                match NumOrSpecial::try_from(alpha)? {
+                    NumOrSpecial::Num(n) => {
+                        let alpha = check_alpha_num(n).map_err(|e| {
+                            ChannelErr::named(e, name!(alpha))
+                        })?;
+                        if alpha >= 1.0 {
+                            None
+                        } else {
+                            Some(Numeric::scalar(alpha.max(0.)).into())
+                        }
+                    }
+                    NumOrSpecial::Special(x) => Some(x),
+                }
+            }
+        } else {
+            None
+        };
+
         Ok(Self { args, alpha })
     }
 }
 
-enum ColorOrCall {
+#[derive(Debug)]
+struct StrictChannels {
+    channels: Vec<Option<Numeric>>,
+    alpha: Option<Numeric>, // TODO: Or just f64, since dimension is known?
+}
+
+impl StrictChannels {
+    fn from_value(
+        space: &str,
+        value: Value,
+    ) -> Result<Result<Self, WildChannels>, ChannelErr> {
+        let channels = WildChannels::try_from(value)?;
+        Self::check(space, channels.args, channels.alpha)
+    }
+
+    fn check(
+        space: &str,
+        channels: Vec<Value>,
+        alpha: Option<Value>,
+    ) -> Result<Result<Self, WildChannels>, ChannelErr> {
+        if channels.first().is_some_and(is_from) {
+            return Ok(Err(WildChannels {
+                args: channels,
+                alpha,
+            }));
+        }
+
+        let (_s, ch) = get_space(space)
+            .ok_or_else(|| format!("Unknown color space {space:?}"))?;
+
+        let ch_num_msg = {
+            let l = channels.len();
+            let ex = ch.len();
+
+            let v = if channels.len() == 1 {
+                channels.first().unwrap().introspect()
+            } else {
+                format!(
+                    "({})",
+                    Value::List(channels.clone(), None, false).introspect()
+                )
+            };
+            format!(
+                "The {space} color space has {ex} channels but {v} has {l}."
+            )
+        };
+
+        let mut argiter = channels.into_iter();
+        let mut channels = Vec::new();
+        let mut wild = Vec::new();
+        for ch in ch {
+            if let Some(arg) = argiter.next() {
+                match NumOrSpecial::try_from(arg).map_err(|e| {
+                    format!(
+                        "Expected {} channel to be a number, was {}.",
+                        ch.name,
+                        e.value().format(Format::default())
+                    )
+                })? {
+                    NumOrSpecial::Num(n) if wild.is_empty() => {
+                        channels.push(Some((ch.check)(n).map_err(|s| {
+                            ChannelErr::named(s, ch.name.into())
+                        })?));
+                    }
+                    NumOrSpecial::Special(s)
+                        if wild.is_empty() && is_none(&s) =>
+                    {
+                        channels.push(None);
+                    }
+                    NumOrSpecial::Num(n) => {
+                        wild.push(n.into());
+                    }
+                    NumOrSpecial::Special(s) => {
+                        wild.extend(channels_to_value(channels.split_off(0)));
+                        wild.push(s);
+                    }
+                }
+            } else if wild.is_empty() {
+                return Err(ch_num_msg.into());
+            }
+        }
+        if argiter.next().is_some() {
+            return Err(ch_num_msg.into());
+        }
+
+        let a = alpha.map(NumOrSpecial::try_from).transpose()?;
+        if wild.is_empty()
+            && let Some(NumOrSpecial::Num(alpha)) = a
+        {
+            Ok(Ok(Self {
+                channels,
+                alpha: Some(alpha),
+            }))
+        } else if wild.is_empty() && a.is_none() {
+            Ok(Ok(Self {
+                channels,
+                alpha: None,
+            }))
+        } else if wild.is_empty() {
+            Ok(Err(WildChannels {
+                args: channels_to_value(channels),
+                alpha: a.map(Value::from),
+            }))
+        } else {
+            Ok(Err(WildChannels {
+                args: wild,
+                alpha: a.map(Value::from),
+            }))
+        }
+    }
+
+    fn into_call(self, fn_name: &str) -> Value {
+        Value::call(fn_name, [self.into_arg()])
+    }
+    fn into_arg(self) -> Value {
+        let inner_list = Value::List(
+            channels_to_value(self.channels),
+            Some(ListSeparator::Space),
+            false,
+        );
+        if let Some(alpha) = self.alpha {
+            Value::List(
+                vec![inner_list, Value::from(alpha)],
+                Some(ListSeparator::Slash),
+                false,
+            )
+        } else {
+            inner_list
+        }
+    }
+}
+fn channels_to_value(ch: Vec<Option<Numeric>>) -> Vec<Value> {
+    ch.into_iter()
+        .map(|v| v.map_or_else(|| Value::from("none"), Value::from))
+        .collect()
+}
+
+#[derive(Debug, Clone)]
+pub enum ColorOrCall {
     Color(Color),
     Call(String, CallArgs),
+}
+impl ColorOrCall {
+    fn space(&self) -> Result<String, CallError> {
+        match self {
+            Self::Color(color) => Ok(color.space().into()),
+            Self::Call(name, args) => {
+                if name == "color" {
+                    match WildChannels::try_from(args.clone())
+                        .named(name!(color))?
+                        .args
+                        .first()
+                    {
+                        Some(Value::Literal(s)) => {
+                            Ok(s.value().to_ascii_lowercase())
+                        }
+                        _ => Err("unexpected color arg").named(name!(color)),
+                    }
+                } else if let Some((space, _)) = get_space(name) {
+                    Ok(space)
+                } else {
+                    Err("not a color").named(name!(color))
+                }
+            }
+        }
+    }
+    fn get_channel(&self, channel: &str) -> Option<f64> {
+        if let Self::Color(color) = self {
+            color.get_channel(channel).map(|c| c.value.into()).ok()
+        } else {
+            match find_channel(self.clone(), channel) {
+                Ok(Value::Numeric(n, _)) => Some(n.value.into()),
+                _ => None,
+            }
+        }
+    }
+    pub fn check_legacy(self, name: &str) -> Result<Color, CallError> {
+        self.check_legacy_inner(name, "")
+    }
+    pub fn check_legacy_w(self, name: &str) -> Result<Color, CallError> {
+        self.check_legacy_inner(name, " with an explicit $space argument")
+    }
+    fn check_legacy_inner(
+        self,
+        name: &str,
+        extra: &str,
+    ) -> Result<Color, CallError> {
+        match self {
+            ColorOrCall::Color(c) => Ok(c),
+            ColorOrCall::Call(..) => Err(CallError::msg(format!(
+                "{name}() is only supported for legacy colors. \
+                 Please use color.channel() instead{extra}."
+            ))),
+        }
+    }
 }
 impl TryFrom<Value> for ColorOrCall {
     type Error = String;
@@ -130,88 +431,82 @@ impl TryFrom<Value> for ColorOrCall {
         }
     }
 }
+impl From<ColorOrCall> for Value {
+    fn from(value: ColorOrCall) -> Self {
+        match value {
+            ColorOrCall::Color(color) => color.into(),
+            ColorOrCall::Call(name, args) => Value::Call(name, args),
+        }
+    }
+}
+
+fn num_or_pct_of(num: Numeric, total: f64) -> Result<f64, String> {
+    if num.is_no_unit() {
+        Ok(f64::from(num.value))
+    } else if num.unit.is_percent() {
+        Ok(f64::from(num.value) / 100. * total)
+    } else {
+        Err(expected_to(num, "have unit \"%\" or no units"))
+    }
+}
 
 pub fn register(f: &mut Scope) {
     def!(f, color(description), |s| {
         let description = s.get::<ColDesc>(name!(description))?;
-        Ok(Value::call("color", [description.into_arg()?]))
+        Ok(description.into_call_or_str())
     });
+    def!(f, lab(channels), |s| col_space_fn("lab", s));
+    def!(f, oklab(channels), |s| col_space_fn("oklab", s));
+    def!(f, lch(channels), |s| col_space_fn("lch", s));
+    def!(f, oklch(channels), |s| col_space_fn("oklch", s));
+
     def!(f, space(color), |s| {
+        Ok(s.get::<ColorOrCall>(name!(color))?.space()?.into())
+    });
+    def!(f, channel(color, channel), |s| {
         let color = s.get::<ColorOrCall>(name!(color))?;
-        match color {
-            ColorOrCall::Color(color) => Ok(color.space().into()),
-            ColorOrCall::Call(name, args) => match name.as_str() {
-                "lab" | "lch" => Ok(name.into()),
-                "color" => match args.get_single() {
-                    Ok(Value::List(v, _, _)) => match v.first() {
-                        Some(s @ Value::Literal(_)) => Ok(s.clone()),
-                        _ => Err("unexpected color arg").named(name!(color)),
-                    },
-                    _ => Err("unexpected color arg").named(name!(color)),
-                },
-                _ => Err("not a color").named(name!(color)),
-            },
+        let channel = s.get_map(name!(channel), ch_channel)?;
+        let channel = find_channel(color, &channel)?;
+        if is_none(&channel) {
+            Ok(Value::scalar(0))
+        } else {
+            Ok(channel)
         }
     });
     def!(f, is_missing(color, channel), |s| {
         let color = s.get::<ColorOrCall>(name!(color))?;
-        let channel = s.get::<CssString>(name!(channel))?;
-        if channel.quotes() == Quotes::None {
-            return Err(format!("Expected {channel} to be a quoted string."))
+        let channel = s.get_map(name!(channel), ch_channel)?;
+        Ok(is_none(&find_channel(color, &channel)?).into())
+    });
+    def!(f, is_powerless(color, channel), |s| {
+        let color = s.get::<ColorOrCall>(name!(color))?;
+        let channel = s.get_map(name!(channel), ch_channel)?;
+        Ok(match (color.space()?.as_str(), channel.as_str()) {
+            ("hsl", "hue") => color
+                .get_channel("saturation")
+                .is_some_and(|s| s.abs() < 1e-10)
+                .into(),
+            ("hsl", "saturation" | "lightness") => false.into(),
+            ("hwb", "hue") => {
+                ((color.get_channel("blackness").unwrap_or(0.)
+                    + color.get_channel("whiteness").unwrap_or(0.))
+                    > (100. - 1e-10))
+                    .into()
+            }
+            ("lch" | "oklch", "chroma") => false.into(),
+            ("lch" | "oklch", "hue") => color
+                .get_channel("chroma")
+                .is_some_and(|s| s.abs() < 1e-10)
+                .into(),
+            ("lab" | "oklab", "l" | "a" | "b") => false.into(),
+            (_, ch) => {
+                return Err(format!(
+                    "Color {} doesn't have a channel named \"{ch}\".",
+                    Value::from(color).format(Format::default())
+                ))
                 .named(name!(channel));
-        }
-        match color {
-            ColorOrCall::Call(f, args) if f == "color" => {
-                Err(format!("Proper color({args}) not handled yet"))
-                    .named(name!(color))
             }
-            ColorOrCall::Call(f, args) => {
-                let channels = BTreeMap::from_iter([
-                    ("lch", &["lightness", "chroma", "hue"]),
-                    ("lab", &["l", "a", "b"]),
-                    ("rgb", &["red", "green", "blue"]),
-                ]);
-                if let Some(channels) = channels.get(&f.as_str()) {
-                    if let Some(n) = channels
-                        .iter()
-                        .enumerate()
-                        .find(|(_, c)| **c == channel.value())
-                        .map(|(i, _)| i)
-                    {
-                        let is_none = arg_channels(&args)
-                            .named(name!(color))?
-                            .0
-                            .get(n)
-                            == Some(&Value::Literal(CssString::from("none")));
-                        Ok(is_none.into()) // Can it be missing?  Explicit "none"?
-                    } else {
-                        Err(format!("Color fn {f} doesn\'t have a channel named {channel}."))
-                            .named(name!(channel))
-                    }
-                } else {
-                    Err(format!("Color fn {f} not handled yet"))
-                        .named(name!(color))
-                }
-            }
-            ColorOrCall::Color(color) => {
-                // This kind of color don't have missing components, either false or error.
-                let existing = match &color {
-                    Color::Rgba(_) => ["red", "green", "blue"],
-                    Color::Hsla(_) => ["hue", "sat", "val"],
-                    Color::Hwba(_) => ["hue", "white", "black"],
-                };
-                if existing.iter().any(|c| *c == channel.value()) {
-                    Ok(false.into())
-                } else {
-                    Err(format!(
-                        "Color {} doesn\'t have a channel named {channel}.",
-                        color.format(Format::default())
-                    ))
-                    .named(name!(channel))
-                }
-            }
-        }
-        //Ok(false.into())
+        })
     });
     def_va!(f, adjust(color, kwargs), |s| {
         fn opt_add(a: f64, b: Option<f64>) -> f64 {
@@ -358,7 +653,6 @@ pub fn register(f: &mut Scope) {
             }
         }
     });
-
     def!(f, opacity(color), |s| match s.get(name!(color))? {
         Value::Color(ref col, _) => Ok(Value::scalar(col.get_alpha())),
         v => Ok(Value::call("opacity", [v])),
@@ -368,7 +662,9 @@ pub fn register(f: &mut Scope) {
         if ok_as_filterarg(&v) {
             Ok(Value::call("alpha", [v]))
         } else {
-            let color = Color::try_from(v).named(name!(color))?;
+            let color = ColorOrCall::try_from(v)
+                .named(name!(color))?
+                .check_legacy("color.alpha")?;
             Ok(Value::scalar(color.get_alpha()))
         }
     });
@@ -431,11 +727,78 @@ pub fn register(f: &mut Scope) {
             Ok(rgba.into())
         }
     });
+    def!(f, is_legacy(color), |s| {
+        let color = s.get::<ColorOrCall>(name!(color))?;
+        Ok(color.check_legacy("color.is_legacy").is_ok().into())
+    });
     def!(f, ie_hex_str(color), |s| {
         let (r, g, b, alpha) =
             Color::to_rgba(&s.get(name!(color))?).to_bytes();
         Ok(format!("#{alpha:02X}{r:02X}{g:02X}{b:02X}").into())
     });
+}
+
+fn col_space_fn(space: &str, s: &ResolvedArgs) -> Result<Value, CallError> {
+    let channels =
+        s.get_map(name!(channels), |v| StrictChannels::from_value(space, v))?;
+    match channels {
+        Ok(strict) => Ok(strict.into_call(space)),
+        Err(wild) => Ok(wild.into_call_or_str(space)),
+    }
+}
+
+fn find_channel(
+    color: ColorOrCall,
+    channel: &str,
+) -> Result<Value, CallError> {
+    match color {
+        ColorOrCall::Call(f, args) if f == "color" => {
+            let (ch, alpha) = arg_channels(&args).named(name!(color))?;
+            if channel == "alpha" {
+                return Ok(alpha.unwrap_or(Value::scalar(1)));
+            }
+            match ch.split_first() {
+                Some((Value::Literal(kind), args)) => {
+                    let n = channel_index(kind.value(), channel)
+                        .named(name!(color))?;
+                    let v = args.get(n);
+                    Ok(v.ok_or({
+                        format!(
+                            "Color (..) doesn\'t have a channel named {channel:?}.",
+                        )
+                    }).named(name!(channel))?.clone())
+                }
+                _ => Err(format!("Strange color arg {ch:?}"))
+                    .named(name!(color)),
+            }
+        }
+        ColorOrCall::Call(f, args) => {
+            let (ch, alpha) = arg_channels(&args).named(name!(color))?;
+            if channel == "alpha" {
+                Ok(alpha.unwrap_or(Value::scalar(1)))
+            } else {
+                let n = channel_index(&f, channel).named(name!(color))?;
+                Ok(ch
+                    .get(n)
+                    .cloned()
+                    .ok_or_else(|| "missing".to_string())
+                    .named(name!(color))?)
+            }
+        }
+        ColorOrCall::Color(color) => {
+            color
+                .get_channel(channel)
+                .map(Into::into)
+                .map_err(|_| {
+                    format!(
+                        "Color {} doesn\'t have a channel named {channel:?}.",
+                        color.format(Format::default())
+                    )
+                })
+                .named(name!(channel))
+            //}
+        }
+    }
 }
 
 fn arg_channels(
@@ -445,6 +808,163 @@ fn arg_channels(
         channels_from_value(arg)
     } else {
         Ok((value.positional.clone(), None))
+    }
+}
+
+fn get_space(name: &str) -> Option<(String, &[ChannelDesc])> {
+    let name = if name.eq_ignore_ascii_case("xyz-d65") {
+        String::from("xyz")
+    } else {
+        name.to_ascii_lowercase()
+    };
+    SPACES.get(name.as_str()).map(|c| (name, *c))
+}
+
+static SPACES: LazyLock<BTreeMap<&str, &[ChannelDesc]>> =
+    LazyLock::new(|| {
+        macro_rules! cd {
+            ($name:ident) => {
+                ChannelDesc {
+                    name: stringify!($name),
+                    check: Ok,
+                }
+            };
+            ($name:ident, $check:tt) => {
+                ChannelDesc {
+                    name: stringify!($name),
+                    check: $check,
+                }
+            };
+        }
+        let rgb = &[
+            cd!(red, scalar_or_pct),
+            cd!(green, scalar_or_pct),
+            cd!(blue, scalar_or_pct),
+        ][..];
+        let xyz = &[
+            cd!(x, scalar_or_pct),
+            cd!(y, scalar_or_pct),
+            cd!(z, scalar_or_pct),
+        ][..];
+        BTreeMap::from_iter([
+            (
+                "lab",
+                &[
+                    cd!(lightness, ch_bound_percent),
+                    cd!(a, ch_ab),
+                    cd!(b, ch_ab),
+                ][..],
+            ),
+            (
+                "oklab",
+                &[
+                    cd!(lightness, ch_pct_or_scalar),
+                    cd!(a, ch_ok_ab),
+                    cd!(b, ch_ok_ab),
+                ][..],
+            ),
+            (
+                "lch",
+                &[
+                    cd!(lightness, ch_bound_percent),
+                    cd!(chroma, ch_chroma),
+                    cd!(hue, ch_hue),
+                ],
+            ),
+            (
+                "oklch",
+                &[
+                    cd!(lightness, ch_pct_or_scalar),
+                    cd!(chroma, ch_ok_chroma),
+                    cd!(hue, ch_hue),
+                ],
+            ),
+            ("rgb", rgb),
+            ("srgb", rgb),
+            ("srgb-linear", rgb),
+            ("prophoto-rgb", rgb),
+            ("a98-rgb", rgb),
+            ("display-p3", rgb),
+            ("display-p3-linear", rgb),
+            ("rec2020", rgb),
+            ("xyz", xyz),
+            ("xyz-d50", xyz),
+        ])
+    });
+
+struct ChannelDesc {
+    name: &'static str,
+    check: fn(Numeric) -> Result<Numeric, String>,
+}
+
+fn scalar_or_pct(v: Numeric) -> Result<Numeric, String> {
+    num_or_pct_of(v, 1.).map(Numeric::scalar)
+}
+fn ch_pct_or_scalar(v: Numeric) -> Result<Numeric, String> {
+    #[allow(clippy::manual_clamp, reason = "NaN behavior")]
+    let t = num_or_pct_of(v, 1.)?.max(0.).min(1.);
+    Ok(Numeric::percentage(t))
+}
+
+fn ch_bound_percent(v: Numeric) -> Result<Numeric, String> {
+    #[allow(clippy::manual_clamp, reason = "NaN behavior")]
+    let t = num_or_pct_of(v, 100.)?.max(0.).min(100.);
+    Ok(Numeric::percentage(t / 100.))
+}
+
+fn ch_chroma(v: Numeric) -> Result<Numeric, String> {
+    let t = num_or_pct_of(v, 150.)?.max(0.);
+    Ok(Numeric::scalar(t))
+}
+fn ch_ok_chroma(v: Numeric) -> Result<Numeric, String> {
+    let t = num_or_pct_of(v, 0.4)?.max(0.);
+    Ok(Numeric::scalar(t))
+}
+
+fn ch_hue(v: Numeric) -> Result<Numeric, String> {
+    let hue = v.as_unit_def(Unit::Deg).ok_or_else(|| {
+        expected_to(v, "have an angle unit (deg, grad, rad, turn)")
+    })?;
+    let hue = f64::from(hue).rem_euclid(360.);
+    Ok(Numeric::new(hue, crate::value::Unit::Deg))
+}
+
+/// The a and b values of a `lab` color.
+fn ch_ab(v: Numeric) -> Result<Numeric, String> {
+    Ok(Numeric::scalar(num_or_pct_of(v, 125.)?))
+}
+/// The a and b values of a `oklab` color.
+fn ch_ok_ab(v: Numeric) -> Result<Numeric, String> {
+    Ok(Numeric::scalar(num_or_pct_of(v, 0.4)?))
+}
+
+fn ch_channel(value: Value) -> Result<String, String> {
+    let channel = CssString::try_from(value)?;
+    if channel.quotes() == Quotes::None {
+        Err(expected_to(channel, "be a quoted string"))
+    } else {
+        Ok(channel.take_value())
+    }
+}
+fn ch_unquoted(value: Value) -> Result<String, String> {
+    let channel = CssString::try_from(value)?;
+    if channel.quotes() == Quotes::None {
+        Ok(channel.take_value())
+    } else {
+        Err(expected_to(channel, "be an unquoted string"))
+    }
+}
+
+fn channel_index(space: &str, channel: &str) -> Result<usize, String> {
+    if let Some((_, channels)) = get_space(space) {
+        channels
+            .iter()
+            .enumerate()
+            .find(|(_, c)| c.name == channel)
+            .map(|(i, _)| i)
+            .ok_or_else(|| format!("Color space {space:?} doesn\'t have a channel named {channel}."))
+    } else {
+        Err(format!("Color space {space:?} not handled yet"))
     }
 }
 
@@ -500,6 +1020,10 @@ fn channels_from_value(
 pub fn expose(m: &Scope, global: &mut FunctionMap) {
     for (gname, lname) in &[
         (name!(color), name!(color)),
+        (name!(lab), name!(lab)),
+        (name!(oklab), name!(oklab)),
+        (name!(lch), name!(lch)),
+        (name!(oklch), name!(oklch)),
         (name!(adjust_color), name!(adjust)),
         (name!(alpha), name!(alpha)),
         (name!(opacity), name!(opacity)),
@@ -532,49 +1056,74 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn valid_col_arg_noslash(args: Vec<Value>) -> Result<Vec<Value>, String> {
-    match args.first() {
-        Some(Value::Literal(s)) => {
-            if s.quotes() != Quotes::None {
-                return Err(expected_to(s.clone(), "be an unquoted string"));
-            }
-            let s = s.value();
-            // TODO: A much longer list is needed!
-            //let known = ["from", "srgb", "srgb-linear", "prophoto-rgb"];
-            let expected_len = BTreeMap::from_iter([
-                ("a98-rgb", 3),
-                ("srgb", 3),
-                ("srgb-linear", 3),
-                ("prophoto-rgb", 3),
-            ]);
-            if !s.eq_ignore_ascii_case("from") {
-                if let Some(ex) = expected_len.get(&s).copied() {
-                    let l = args.len() - 1;
-                    if l != ex {
-                        let s = s.to_owned();
-                        let v = if args.len() == 1 {
-                            args.first().unwrap().introspect()
-                        } else {
-                            format!(
-                                "({})",
-                                Value::List(args, None, false).introspect()
-                            )
-                        };
-                        return Err(format!(
-                            "The {s} color space has {ex} channels but {v} has {l}."
-                        ));
+fn valid_col_arg_noslash(
+    mut args: Vec<Value>,
+) -> Result<Vec<Value>, ChannelErr> {
+    let s = ch_unquoted(args.first().ok_or("empty??")?.clone())?;
+    let s = if s.eq_ignore_ascii_case("from") {
+        s.clone()
+    } else if let Some((s, ch)) = get_space(&s) {
+        check_n_channels(&args, &s, ch.len(), 1)?;
+        if args.len() == ch.len() + 1 {
+            let mut argiter = args.into_iter();
+            args = if let Some(ch) = argiter.next() {
+                vec![ch]
+            } else {
+                vec![]
+            };
+            let argiter = ch.iter().zip(argiter);
+            for (ch, arg) in argiter {
+                args.push(match NumOrSpecial::try_from(arg) {
+                    Ok(NumOrSpecial::Num(n)) => {
+                        Value::from((ch.check)(n).map_err(|s| {
+                            ChannelErr::named(s, ch.name.into())
+                        })?)
                     }
-                } else {
-                    return Err(format!("Unknown color space {s:?}."));
-                }
+                    Ok(NumOrSpecial::Special(s)) => s,
+                    Err(e) => {
+                        return Err(format!(
+                            "Expected {} channel to be a number, was {}.",
+                            ch.name,
+                            e.value().format(Format::default())
+                        )
+                        .into());
+                    }
+                });
             }
         }
-        Some(x) => {
-            return Err(format!("{} is not a string.", x.introspect()));
-        }
-        None => return Err("empty??".to_string()),
-    }
+        s
+    } else {
+        return Err(format!("Unknown color space {s:?}.").into());
+    };
+    args[0] = Value::Literal(s.into());
     Ok(args)
+}
+
+fn check_n_channels(
+    args: &[Value],
+    s: &str,
+    ex: usize,
+    extra: usize,
+) -> Result<(), String> {
+    let l = args.len() - extra;
+    if l != ex {
+        if l < ex && args.iter().any(is_special) {
+            return Ok(());
+        }
+        let s = s.to_owned();
+        let v = if args.len() == 1 {
+            args.first().unwrap().introspect()
+        } else {
+            format!(
+                "({})",
+                Value::List(args.to_vec(), None, false).introspect()
+            )
+        };
+        return Err(format!(
+            "The {s} color space has {ex} channels but {v} has {l}."
+        ));
+    }
+    Ok(())
 }
 
 fn check_none_scalable(_: Value) -> Result<(), String> {
@@ -640,6 +1189,20 @@ fn ok_as_filterarg(v: &Value) -> bool {
         Value::List(..) => true,
         _ => false,
     }
+}
+
+fn is_from(v: &Value) -> bool {
+    matches!(v, Value::Literal(s)
+             if s.value().eq_ignore_ascii_case("from")
+             && s.quotes() == Quotes::None
+    )
+}
+
+fn is_none(v: &Value) -> bool {
+    matches!(v, Value::Literal(s)
+             if s.value().eq_ignore_ascii_case("none")
+             && s.quotes() == Quotes::None
+    )
 }
 
 #[cfg(test)]

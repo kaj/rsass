@@ -24,7 +24,6 @@ mod channel {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn unquoted() {
         assert_eq!(
             runner().err(
@@ -152,7 +151,6 @@ mod test_type {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn channel() {
         assert_eq!(
             runner().err(
@@ -168,7 +166,6 @@ mod test_type {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn color() {
         assert_eq!(
             runner().err(

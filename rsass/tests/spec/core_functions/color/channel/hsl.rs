@@ -45,7 +45,6 @@ mod local {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn hue() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -56,7 +55,6 @@ mod local {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn lightness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -70,7 +68,6 @@ mod local {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn hue() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -82,7 +79,6 @@ mod local {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn saturation() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

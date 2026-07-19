@@ -21,46 +21,42 @@ impl ResolvedArgs {
     pub fn get<T>(&self, name: Name) -> Result<T, CallError>
     where
         T: TryFrom<Value>,
-        <T as TryFrom<Value>>::Error: ToString,
+        Result<T, <T as TryFrom<Value>>::Error>: CheckedArg<T>,
     {
-        self.get_map(name, |v| T::try_from(v).map_err(|e| e.to_string()))
+        self.get_map(name, T::try_from)
     }
 
     /// Get a checked var-args parameter as a Vec of a given type.
     pub fn get_va<T>(&self, name: Name) -> Result<Vec<T>, CallError>
     where
         T: TryFrom<Value>,
-        <T as TryFrom<Value>>::Error: ToString,
+        Result<Vec<T>, <T as TryFrom<Value>>::Error>: CheckedArg<Vec<T>>,
     {
-        fn inner<T>(value: Value) -> Result<Vec<T>, String>
-        where
-            T: TryFrom<Value>,
-            <T as TryFrom<Value>>::Error: ToString,
-        {
-            let check = |value: Value| -> Result<T, String> {
-                T::try_from(value).map_err(|e| e.to_string())
-            };
-            match value {
-                Value::ArgList(args) => {
-                    args.check_no_named().map_err(|e| e.to_string())?;
-                    args.positional.into_iter().map(check).collect()
-                }
-                Value::List(v, Some(ListSeparator::Comma), false) => {
-                    v.into_iter().map(check).collect()
-                }
-                single => Ok(vec![check(single)?]),
+        match self.scope.get(&name)? {
+            Value::ArgList(args) => {
+                args.check_no_named().named(name.clone())?;
+                args.positional
+                    .into_iter()
+                    .map(T::try_from)
+                    .collect::<Result<Vec<T>, _>>()
+                    .named(name)
             }
+            Value::List(v, Some(ListSeparator::Comma), false) => v
+                .into_iter()
+                .map(T::try_from)
+                .collect::<Result<Vec<T>, _>>()
+                .named(name),
+            single => T::try_from(single).map(|t| vec![t]).named(name),
         }
-        inner(self.scope.get(&name)?).named(name)
     }
 
     /// Get an optional named argument.
     pub fn get_opt<T>(&self, name: Name) -> Result<Option<T>, CallError>
     where
         T: TryFrom<Value>,
-        <T as TryFrom<Value>>::Error: ToString,
+        Result<T, <T as TryFrom<Value>>::Error>: CheckedArg<T>,
     {
-        self.get_opt_map(name, |v| T::try_from(v).map_err(|e| e.to_string()))
+        self.get_opt_map(name, T::try_from)
     }
 
     /// Get a named argument.
@@ -74,19 +70,20 @@ impl ResolvedArgs {
     ) -> Result<T, CallError>
     where
         F: Fn(Value) -> Result<T, E>,
-        E: ToString,
+        Result<T, E>: CheckedArg<T>,
     {
         check(self.scope.get(&name)?).named(name)
     }
 
     /// Get an optional named argument.
-    pub fn get_opt_map<T, F>(
+    pub fn get_opt_map<T, F, E>(
         &self,
         name: Name,
         check: F,
     ) -> Result<Option<T>, CallError>
     where
-        F: Fn(Value) -> Result<T, String>,
+        F: Fn(Value) -> Result<T, E>,
+        Result<T, E>: CheckedArg<T>,
     {
         match self.scope.get(&name)? {
             Value::Null => Ok(None),

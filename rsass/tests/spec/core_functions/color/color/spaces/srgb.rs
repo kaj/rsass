@@ -11,7 +11,6 @@ mod percent {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn above_range() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -24,7 +23,6 @@ mod percent {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn below_range() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -41,7 +39,6 @@ mod percent {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn above_range() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -54,7 +51,6 @@ mod percent {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn below_range() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -68,7 +64,6 @@ mod percent {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn in_range() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -84,7 +79,6 @@ mod percent {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn above_range() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -97,7 +91,6 @@ mod percent {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn below_range() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -118,7 +111,6 @@ mod unitless {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn above_range() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -131,7 +123,6 @@ mod unitless {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn below_range() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -148,7 +139,6 @@ mod unitless {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn above_range() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -161,7 +151,6 @@ mod unitless {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn below_range() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -175,7 +164,6 @@ mod unitless {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn in_range() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -191,7 +179,6 @@ mod unitless {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn above_range() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -204,7 +191,6 @@ mod unitless {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn below_range() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\

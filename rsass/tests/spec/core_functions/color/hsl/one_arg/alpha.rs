@@ -104,7 +104,6 @@ mod missing {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn slash() {
         assert_eq!(
             runner().ok("a {b: hsl(180 60% 50% / none)}\n"),
@@ -114,7 +113,6 @@ mod missing {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn slash_list() {
         assert_eq!(
             runner().ok("@use \'sass:list\';\

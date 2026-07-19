@@ -257,3 +257,20 @@ fn is_special(v: &Value) -> bool {
         Ok(NumOrSpecial::Special(_))
     )
 }
+
+fn is_none(arg: &Value) -> bool {
+    matches!(arg, Value::Literal(s) if s.value() == "none")
+}
+
+fn is_special_not_none(v: &Value) -> bool {
+    !is_none(v) && is_special(v)
+}
+
+fn channels_alpha_list(channels: Vec<Value>, alpha: Value) -> Value {
+    let inner = Value::List(channels, Some(ListSeparator::Space), false);
+    if alpha.is_null() {
+        inner
+    } else {
+        Value::List(vec![inner, alpha], Some(ListSeparator::Slash), false)
+    }
+}

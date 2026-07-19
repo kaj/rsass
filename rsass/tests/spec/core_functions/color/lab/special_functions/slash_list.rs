@@ -5,7 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn alpha() {
     assert_eq!(
         runner().ok("@use \"sass:list\";\
@@ -18,7 +18,7 @@ fn alpha() {
     );
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn channels() {
     assert_eq!(
         runner().ok("@use \"sass:list\";\
@@ -31,7 +31,7 @@ fn channels() {
     );
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn some_channels() {
     assert_eq!(
         runner().ok(
