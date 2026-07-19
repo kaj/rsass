@@ -85,7 +85,7 @@ mod alpha {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn slash() {
             assert_eq!(
                 runner().ok("a {b: hwb(0 30% 40% / none)}\n"),
@@ -95,7 +95,7 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn slash_list() {
             assert_eq!(
                 runner().ok("@use \'sass:list\';\
@@ -111,7 +111,7 @@ mod missing {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn blackness() {
         assert_eq!(
             runner().ok("a {b: hwb(0 30% none)}\n"),
@@ -121,7 +121,6 @@ mod missing {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn hue() {
         assert_eq!(
             runner().ok("a {b: hwb(none 30% 40%)}\n"),
@@ -131,7 +130,7 @@ mod missing {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn whiteness() {
         assert_eq!(
             runner().ok("a {b: hwb(0 none 40%)}\n"),
@@ -214,7 +213,6 @@ mod relative_color {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong error
             fn alpha() {
                 assert_eq!(
                     runner().err("a {b: hwb(\"from\" #aaa h w b / 25%)}\n"),
@@ -227,7 +225,6 @@ mod relative_color {
                 );
             }
             #[test]
-            #[ignore] // wrong error
             fn no_alpha() {
                 assert_eq!(
                     runner().err("a {b: hwb(\"from\" #aaa h w b)}\n"),
@@ -244,7 +241,6 @@ mod relative_color {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong error
             fn alpha() {
                 assert_eq!(
                     runner().err("a {b: hwb(c #aaa h w b / 25%)}\n"),
@@ -257,7 +253,6 @@ mod relative_color {
                 );
             }
             #[test]
-            #[ignore] // wrong error
             fn no_alpha() {
                 assert_eq!(
                     runner().err("a {b: hwb(c #aaa h w b)}\n"),

@@ -48,7 +48,6 @@ mod arg1 {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn nan() {
         assert_eq!(
             runner().ok("a {b: color(srgb calc(NaN) 0 0)}\n"),
@@ -89,7 +88,6 @@ mod before_alpha {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn nan() {
         assert_eq!(
             runner().ok("a {b: color(srgb 0 0 calc(NaN) / 0.5)}\n"),

@@ -18,7 +18,6 @@ fn a98_rgb() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn display_p3() {
     let runner = runner().with_cwd("display-p3");
     assert_eq!(
@@ -30,7 +29,6 @@ fn display_p3() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn display_p3_linear() {
     let runner = runner().with_cwd("display_p3_linear");
     assert_eq!(
@@ -172,7 +170,6 @@ fn named() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn oklab() {
     let runner = runner().with_cwd("oklab");
     assert_eq!(
@@ -184,7 +181,6 @@ fn oklab() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn oklch() {
     let runner = runner().with_cwd("oklch");
     assert_eq!(
@@ -209,7 +205,6 @@ fn prophoto_rgb() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn rec2020() {
     let runner = runner().with_cwd("rec2020");
     assert_eq!(
@@ -269,7 +264,6 @@ fn srgb() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn xyz_d50() {
     let runner = runner().with_cwd("xyz-d50");
     assert_eq!(
@@ -281,7 +275,6 @@ fn xyz_d50() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn xyz_d65() {
     let runner = runner().with_cwd("xyz-d65");
     assert_eq!(
@@ -293,7 +286,6 @@ fn xyz_d65() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn xyz() {
     let runner = runner().with_cwd("xyz");
     assert_eq!(

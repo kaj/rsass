@@ -46,8 +46,10 @@ impl From<&Hwba> for Hsla {
     fn from(hwba: &Hwba) -> Self {
         let w = hwba.whiteness();
         let b = hwba.blackness();
+        let w = if w.is_nan() { 0. } else { w };
+        let b = if b.is_nan() { 0. } else { b };
         let l = f64::midpoint(1. - b, w);
-        let s = if l == 0. || l == 1. || !hwba.hue().is_finite() {
+        let s = if l == 0. || l == 1. {
             0.
         } else {
             (1. - b - l) / f64::min(l, 1. - l)
@@ -57,7 +59,12 @@ impl From<&Hwba> for Hsla {
         } else if hwba.hue().is_finite() {
             (hwba.hue(), l)
         } else {
-            (0., w)
+            (0., l)
+        };
+        let (hue, s) = if s < -1e-15 {
+            (hue + 180., s.abs())
+        } else {
+            (hue, s)
         };
         Self::new(hue, s, lum, hwba.alpha(), false)
     }

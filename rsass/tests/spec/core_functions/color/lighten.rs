@@ -163,7 +163,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn fraction() {
     assert_eq!(
         runner().ok("a {b: lighten(red, 0.5%)}\n"),
@@ -191,7 +190,6 @@ fn max_remaining() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn middle() {
     assert_eq!(
         runner().ok("a {b: lighten(red, 14%)}\n"),
@@ -210,7 +208,6 @@ fn min() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok("a {b: lighten($color: red, $amount: 14%)}\n"),

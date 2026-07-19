@@ -8,7 +8,6 @@ mod weight {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn unitless() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -19,7 +18,6 @@ mod weight {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn unknown() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

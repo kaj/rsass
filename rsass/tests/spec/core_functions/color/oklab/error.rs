@@ -8,7 +8,6 @@ mod list {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn bracketed() {
         assert_eq!(
             runner().err("a {b: oklab([1% 2 3])}\n"),
@@ -21,7 +20,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn comma() {
         assert_eq!(
             runner().err("a {b: oklab((1%, 2, 3))}\n"),
@@ -34,7 +32,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn empty() {
         assert_eq!(
             runner().err("a {b: oklab(())}\n"),
@@ -47,7 +44,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn empty_space() {
         assert_eq!(
             runner().err(
@@ -67,7 +63,6 @@ mod list {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn one() {
             assert_eq!(
         runner().err(
@@ -84,7 +79,6 @@ mod list {
     );
         }
         #[test]
-        #[ignore] // missing error
         fn three() {
             assert_eq!(
                 runner().err(
@@ -101,7 +95,6 @@ mod list {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn too_few_channels() {
         assert_eq!(
             runner().err("a {b: oklab(1% 2)}\n"),
@@ -114,7 +107,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_many_channels() {
         assert_eq!(
             runner().err("a {b: oklab(1% 2 3 0.4)}\n"),
@@ -128,7 +120,6 @@ mod list {
     }
 }
 #[test]
-#[ignore] // missing error
 fn too_few_args() {
     assert_eq!(
         runner().err("a {b: oklab()}\n"),
@@ -145,7 +136,6 @@ fn too_few_args() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn too_many_args() {
     assert_eq!(
         runner().err("a {b: oklab(1%, 2, 3, 0.4)}\n"),
@@ -165,7 +155,6 @@ mod test_type {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn a() {
         assert_eq!(
             runner().err("a {b: oklab(1% c 3)}\n"),
@@ -181,7 +170,6 @@ mod test_type {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn slash_list() {
             assert_eq!(
                 runner().err(
@@ -198,7 +186,6 @@ mod test_type {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn b() {
         assert_eq!(
             runner().err("a {b: oklab(1% 2 c)}\n"),
@@ -211,7 +198,6 @@ mod test_type {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn lightness() {
         assert_eq!(
             runner().err("a {b: oklab(c 2 3)}\n"),
@@ -228,7 +214,6 @@ mod unit {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn a() {
         assert_eq!(
             runner().err("a {b: oklab(1% 2px 3)}\n"),
@@ -244,7 +229,6 @@ mod unit {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn slash() {
             assert_eq!(
                 runner().err("a {b: oklab(1% 2 3/0.4px)}\n"),
@@ -257,7 +241,6 @@ mod unit {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn slash_list() {
             assert_eq!(
                 runner().err(
@@ -274,7 +257,6 @@ mod unit {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn b() {
         assert_eq!(
             runner().err("a {b: oklab(1% 2 3px)}\n"),
@@ -287,7 +269,6 @@ mod unit {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn lightness() {
         assert_eq!(
             runner().err("a {b: oklab(1px 2 3)}\n"),

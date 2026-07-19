@@ -5,7 +5,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn even() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -26,7 +25,6 @@ fn first() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn firstwards() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -47,7 +45,6 @@ fn last() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn lastwards() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\

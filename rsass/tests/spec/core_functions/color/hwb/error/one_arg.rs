@@ -27,7 +27,6 @@ mod blackness {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err(
@@ -81,7 +80,6 @@ mod hue {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err(
@@ -101,7 +99,6 @@ mod list {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn bracketed() {
         assert_eq!(
             runner().err(
@@ -117,7 +114,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn comma_separated() {
         assert_eq!(
             runner().err(
@@ -133,7 +129,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn empty() {
         assert_eq!(
             runner().err(
@@ -149,7 +144,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn four_elements() {
         assert_eq!(
             runner().err(
@@ -165,7 +159,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn one_element() {
         assert_eq!(
             runner().err(
@@ -181,7 +174,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn two_elements() {
         assert_eq!(
             runner().err(
@@ -198,7 +190,6 @@ mod list {
     }
 }
 #[test]
-#[ignore] // wrong error
 fn quoted_var_slash() {
     assert_eq!(
         runner().err(
@@ -217,7 +208,6 @@ mod whiteness {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err(

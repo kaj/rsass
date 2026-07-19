@@ -68,7 +68,6 @@ mod hue {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn nan() {
             assert_eq!(
                 runner().ok("a {b: hsl(calc(NaN), 100%, 50%)}\n"),
@@ -78,7 +77,6 @@ mod hue {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("a {b: hsl(calc(-infinity), 100%, 50%)}\n"),
@@ -88,7 +86,6 @@ mod hue {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("a {b: hsl(calc(infinity), 100%, 50%)}\n"),
@@ -106,7 +103,6 @@ mod lightness {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn nan() {
             assert_eq!(
                 runner().ok("a {b: hsl(0, 100%, calc(NaN * 1%))}\n"),

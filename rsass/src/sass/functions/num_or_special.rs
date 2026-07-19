@@ -36,7 +36,9 @@ impl TryFrom<Value> for NumOrSpecial {
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
             v @ (Value::Call(..) | Value::BinOp(..)) => Ok(Self::Special(v)),
-            Value::Literal(s) if like_call_or_num(&s) => {
+            Value::Literal(s)
+                if like_call_or_num(&s) || s.value() == "none" =>
+            {
                 Ok(Self::Special(Value::Literal(s)))
             }
             v => Ok(Self::Num(v.try_into()?)),

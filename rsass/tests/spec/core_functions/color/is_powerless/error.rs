@@ -8,7 +8,6 @@ mod channel {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn unknown() {
         assert_eq!(
             runner().err(
@@ -24,7 +23,6 @@ mod channel {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn unquoted() {
         assert_eq!(
             runner().err(
@@ -40,7 +38,6 @@ mod channel {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn wrong_case() {
         assert_eq!(
             runner().err(
@@ -56,7 +53,6 @@ mod channel {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn wrong_space() {
         assert_eq!(
             runner().err(
@@ -152,7 +148,6 @@ mod test_type {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn channel() {
         assert_eq!(
             runner().err(
@@ -168,7 +163,6 @@ mod test_type {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn color() {
         assert_eq!(
             runner().err(
