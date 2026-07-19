@@ -8,7 +8,6 @@ mod chroma {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn full_lightness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -19,7 +18,6 @@ mod chroma {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn zero_lightness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -34,7 +32,6 @@ mod hue {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn full_lightness() {
         assert_eq!(
         runner().ok(
@@ -49,7 +46,6 @@ mod hue {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn near_zero_chroma() {
         assert_eq!(
         runner().ok(
@@ -62,7 +58,6 @@ mod hue {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn positive_chroma() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -73,7 +68,6 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn zero_chroma() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -84,7 +78,6 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn zero_lightness() {
         assert_eq!(
         runner().ok(

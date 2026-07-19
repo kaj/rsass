@@ -244,7 +244,6 @@ mod test_type {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn blue() {
         assert_eq!(
             runner().err("a {b: color(srgb 0.1 0.2 c)}\n"),
@@ -257,7 +256,6 @@ mod test_type {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn green() {
         assert_eq!(
             runner().err("a {b: color(srgb 0.1 c 0.3)}\n"),
@@ -270,7 +268,6 @@ mod test_type {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn red() {
         assert_eq!(
             runner().err("a {b: color(srgb c 0.2 0.3)}\n"),
@@ -318,7 +315,6 @@ mod unit {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn blue() {
         assert_eq!(
             runner().err("a {b: color(srgb 0.1 0.2 0.3px)}\n"),
@@ -331,7 +327,6 @@ mod unit {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn green() {
         assert_eq!(
             runner().err("a {b: color(srgb 0.1 0.2px 0.3)}\n"),
@@ -344,7 +339,6 @@ mod unit {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn red() {
         assert_eq!(
             runner().err("a {b: color(srgb 0.1px 0.2 0.3)}\n"),

@@ -1,6 +1,6 @@
 //! Color names from <https://www.w3.org/TR/css3-color/>
 use crate::output::{Format, Formatted};
-use crate::value::Number;
+use crate::value::{Number, Numeric};
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use std::fmt::{self, Display};
@@ -474,19 +474,38 @@ fn write_rgba(
     out: &mut fmt::Formatter,
     format: Format,
 ) -> fmt::Result {
-    let r = Number::from(rgba.red);
-    let g = Number::from(rgba.green);
-    let b = Number::from(rgba.blue);
-    let r = r.format(format);
-    let g = g.format(format);
-    let b = b.format(format);
     let sep = if format.is_compressed() { "," } else { ", " };
-    if rgba.is_opaque() {
-        write!(out, "rgb({r}{sep}{g}{sep}{b})")
+    if rgba.red.fract() == 0.
+        && rgba.green.fract() == 0.
+        && rgba.blue.fract() == 0.
+    {
+        let r = Number::from(rgba.red);
+        let g = Number::from(rgba.green);
+        let b = Number::from(rgba.blue);
+        let r = r.format(format);
+        let g = g.format(format);
+        let b = b.format(format);
+        if rgba.is_opaque() {
+            write!(out, "rgb({r}{sep}{g}{sep}{b})")
+        } else {
+            let a = Number::from(rgba.alpha);
+            let a = a.format(format);
+            write!(out, "rgba({r}{sep}{g}{sep}{b}{sep}{a})")
+        }
     } else {
-        let a = Number::from(rgba.alpha);
-        let a = a.format(format);
-        write!(out, "rgba({r}{sep}{g}{sep}{b}{sep}{a})")
+        let r = Numeric::percentage(rgba.red / 255.);
+        let g = Numeric::percentage(rgba.green / 255.);
+        let b = Numeric::percentage(rgba.blue / 255.);
+        let r = r.format(format);
+        let g = g.format(format);
+        let b = b.format(format);
+        if rgba.is_opaque() {
+            write!(out, "rgb({r}{sep}{g}{sep}{b})")
+        } else {
+            let a = Number::from(rgba.alpha);
+            let a = a.format(format);
+            write!(out, "rgba({r}{sep}{g}{sep}{b}{sep}{a})")
+        }
     }
 }
 

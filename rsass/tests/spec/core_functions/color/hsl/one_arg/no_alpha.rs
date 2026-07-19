@@ -82,7 +82,6 @@ mod missing {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn hue() {
         assert_eq!(
             runner().ok("a {b: hsl(none 100% 50%)}\n"),
@@ -92,7 +91,6 @@ mod missing {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn lightness() {
         assert_eq!(
             runner().ok("a {b: hsl(0 100% none)}\n"),
@@ -102,7 +100,6 @@ mod missing {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn saturation() {
         assert_eq!(
             runner().ok("a {b: hsl(0 none 50%)}\n"),
