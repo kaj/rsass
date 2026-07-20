@@ -100,7 +100,7 @@ impl Import {
     /// Write this comment to a css output buffer.
     pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
         buf.do_indent_no_nl();
-        write!(buf, "@import {}", &self.name)?;
+        write!(buf, "@import {}", self.name)?;
         if !self.args.is_null() {
             write!(buf, " {}", self.args.format(buf.format()))?;
         }

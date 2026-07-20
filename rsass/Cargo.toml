@@ -61,7 +61,6 @@ dbg_macro = "warn"
 #deref_by_slicing = "warn"
 # doc_paragraphs_missing_punctuation = "warn" - todo: decide on this
 exit = "warn"
-#large_include_file = "warn"
 panic = "deny"
 #rc_buffer = "warn"
 #redundant_test_prefix = "warn"
