@@ -97,10 +97,30 @@ fn additional_selectors() {
     )
 }
 
+#[test]
+fn dashed_function() {
+    check(
+        "@function -foo-bar() {\
+         \n  @return 1px;\
+         \n}\
+         \np {\
+         \n  padding: -foo-bar() -foo-bar() -foo-bar() -foo-bar();\
+         \n}\n",
+        "p {\
+         \n  padding: 1px 1px 1px 1px;\
+         \n}\n",
+    );
+}
+
 fn check(input: &str, expected: &str) {
     assert_eq!(
         String::from_utf8(
-            compile_scss(input.as_ref(), Default::default()).unwrap()
+            compile_scss(input.as_ref(), Default::default())
+                .map_err(|e| {
+                    eprintln!("Error:\n{e}");
+                    ()
+                })
+                .unwrap()
         )
         .unwrap(),
         expected

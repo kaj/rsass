@@ -15,7 +15,7 @@ use nom::Parser as _;
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
-    alphanumeric1, char, digit1, multispace0, multispace1, one_of,
+    alpha1, alphanumeric1, char, digit1, multispace0, multispace1, one_of,
 };
 use nom::combinator::{
     cut, into, map, map_opt, map_res, not, opt, peek, recognize, value,
@@ -192,7 +192,10 @@ where
                     ignore_comments,
                     alt((
                         value(Operator::Plus, tag("+")),
-                        value(Operator::Minus, tag("-")),
+                        terminated(
+                            value(Operator::Minus, tag("-")),
+                            peek(not(alpha1)),
+                        ),
                     )),
                     ignore_comments,
                 ),
