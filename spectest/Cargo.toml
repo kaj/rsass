@@ -10,5 +10,4 @@ rust-version = "1.88.0"
 rsass = { path = "../rsass" }
 deunicode = "1.0"
 hrx-get = "0.2.0"
-lazy-regex = "3.0.0"
 yaml-rust = "0.4"

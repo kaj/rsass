@@ -1,6 +1,5 @@
 use deunicode::deunicode;
 use hrx_get::Archive;
-use lazy_regex::regex_is_match;
 use std::env::set_current_dir;
 use std::ffi::OsStr;
 use std::fs::{DirEntry, File, create_dir, read_to_string};
@@ -291,7 +290,15 @@ fn skip_mock(name: &str) -> bool {
 }
 
 fn references_input(content: &str) -> bool {
-    regex_is_match!("['\"]input['\"]", content)
+    let input = "input";
+    match content.find(input) {
+        Some(pos) if pos >= 1 => {
+            let before = content.as_bytes()[pos - 1];
+            let after = content.as_bytes().get(pos + input.len());
+            (before == b'"' || before == b'\'') && after == Some(&before)
+        }
+        _ => false,
+    }
 }
 
 fn handle_hrx_part(

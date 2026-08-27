@@ -1,7 +1,6 @@
 use super::options::Options;
 use super::writestr::WriteStr;
 use super::{Error, TestRunner, fn_name, ignore};
-use lazy_regex::regex_replace_all;
 use std::io::Write;
 
 pub struct TestFixture {
@@ -146,5 +145,5 @@ fn normalize_output_css(css: &str) -> String {
     // https://github.com/sass/sass-spec/blob/0f59164aabb3273645fda068d0fb1b879aa3f1dc/lib/sass_spec/util.rb#L5-L7
     // NOTE: This is done on input and expected output.
     // The actual result is normalized in a simler way in the rsass function in generated tests.
-    regex_replace_all!("(?:\r?\n)+", css, |_| "\n").to_string()
+    css.replace("\r\n", "\n").replace("\n\n", "\n")
 }
