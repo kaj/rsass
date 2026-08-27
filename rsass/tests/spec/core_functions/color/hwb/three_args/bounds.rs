@@ -14,7 +14,6 @@ mod blackness {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn above() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -28,7 +27,6 @@ mod blackness {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn below() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -42,7 +40,6 @@ mod blackness {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn mid() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -56,7 +53,6 @@ mod blackness {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn zero() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -78,7 +74,6 @@ mod blackness {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn above() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -92,7 +87,6 @@ mod blackness {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn below() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -106,7 +100,6 @@ mod blackness {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn mid() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -120,7 +113,6 @@ mod blackness {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn zero() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -146,7 +138,6 @@ mod whiteness {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn above() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -160,7 +151,6 @@ mod whiteness {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn below() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -174,7 +164,6 @@ mod whiteness {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn mid() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -188,7 +177,6 @@ mod whiteness {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn zero() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -210,7 +198,6 @@ mod whiteness {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn above() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -224,7 +211,6 @@ mod whiteness {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn below() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -238,7 +224,6 @@ mod whiteness {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn mid() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -252,7 +237,6 @@ mod whiteness {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn zero() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\

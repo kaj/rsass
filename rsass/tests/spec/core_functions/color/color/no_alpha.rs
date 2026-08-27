@@ -5,7 +5,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn case() {
     assert_eq!(
         runner().ok("@use \'core_functions/color/utils\';\
@@ -18,7 +17,6 @@ fn case() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn named() {
     assert_eq!(
         runner().ok(
@@ -36,7 +34,6 @@ mod none {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn blue() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -49,7 +46,6 @@ mod none {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn green() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -62,7 +58,6 @@ mod none {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn red() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -76,7 +71,6 @@ mod none {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn relative_color() {
     assert_eq!(
         runner().ok("@use \'core_functions/color/utils\';\

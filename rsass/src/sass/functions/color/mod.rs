@@ -73,6 +73,13 @@ fn check_alpha(v: Value) -> Result<f64, String> {
         }
     })
 }
+fn check_alpha_num(num: Numeric) -> Result<f64, String> {
+    Ok(num
+        .as_unit(Unit::None)
+        .ok_or_else(|| expected_to(num, "have unit \"%\" or no units"))?
+        .into())
+}
+
 /// Get a rational number in the 0..1 range.
 fn check_alpha_range(v: Value) -> Result<f64, String> {
     let v = Numeric::try_from(v)?;
@@ -249,4 +256,21 @@ fn is_special(v: &Value) -> bool {
         NumOrSpecial::try_from(v.clone()),
         Ok(NumOrSpecial::Special(_))
     )
+}
+
+fn is_none(arg: &Value) -> bool {
+    matches!(arg, Value::Literal(s) if s.value() == "none")
+}
+
+fn is_special_not_none(v: &Value) -> bool {
+    !is_none(v) && is_special(v)
+}
+
+fn channels_alpha_list(channels: Vec<Value>, alpha: Value) -> Value {
+    let inner = Value::List(channels, Some(ListSeparator::Space), false);
+    if alpha.is_null() {
+        inner
+    } else {
+        Value::List(vec![inner, alpha], Some(ListSeparator::Slash), false)
+    }
 }

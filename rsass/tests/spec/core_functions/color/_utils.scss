@@ -1,0 +1,72 @@
+@use "sass:color";
+@use 'sass:list';
+@use 'sass:meta';
+
+@function -real-channel($color, $channel) {
+  @if color.is-missing($color, $channel) {
+    @return none;
+  } @else {
+    @return color.channel($color, $channel);
+  }
+}
+
+@mixin inspect($color) {
+  a {
+    value: $color;
+    @if meta.type-of($color) == string {
+      type: string;
+    } @else {
+      $space: color.space($color);
+      space: $space;
+
+      @if $space == 'rgb' or $space == 'srgb' or $space == 'srgb-linear' or
+          $space == 'display-p3' or $space == 'display-p3-linear' or
+          $space == 'a98-rgb' or $space == 'prophoto-rgb' or
+          $space == 'rec2020' {
+        channels: list.slash(
+          -real-channel($color, 'red')
+            -real-channel($color, 'green')
+            -real-channel($color, 'blue'),
+          -real-channel($color, 'alpha')
+        );
+      } @else if $space == 'hwb' {
+        channels: list.slash(
+          -real-channel($color, 'hue')
+            -real-channel($color, 'whiteness')
+            -real-channel($color, 'blackness'),
+          -real-channel($color, 'alpha')
+        );
+      } @else if $space == 'hsl' {
+        channels: list.slash(
+          -real-channel($color, 'hue')
+            -real-channel($color, 'saturation')
+            -real-channel($color, 'lightness'),
+          -real-channel($color, 'alpha')
+        );
+      } @else if $space == 'xyz' or $space == 'xyz-d50' {
+        channels: list.slash(
+          -real-channel($color, 'x')
+            -real-channel($color, 'y')
+            -real-channel($color, 'z'),
+          -real-channel($color, 'alpha')
+        );
+      } @else if $space == 'lab' or $space == 'oklab' {
+        channels: list.slash(
+          -real-channel($color, 'lightness')
+            -real-channel($color, 'a')
+            -real-channel($color, 'b'),
+          -real-channel($color, 'alpha')
+        );
+      } @else if $space == 'lch' or $space == 'oklch' {
+        channels: list.slash(
+          -real-channel($color, 'lightness')
+            -real-channel($color, 'chroma')
+            -real-channel($color, 'hue'),
+          -real-channel($color, 'alpha')
+        );
+      } @else {
+        @error "Unknown color space #{$space}";
+      }
+    }
+  }
+}

@@ -8,7 +8,6 @@ mod hue {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn full_blackness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -19,7 +18,6 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn full_whiteness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -30,7 +28,6 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn grey() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -41,7 +38,6 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn normalized_grey() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -52,7 +48,6 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn not_greyscale() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -66,7 +61,6 @@ mod hue {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn colorful() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -77,7 +71,6 @@ mod hue {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn grey() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\

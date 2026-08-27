@@ -1,11 +1,12 @@
 use super::channels::Channels;
 use super::{
     CallError, CheckedArg, FunctionMap, NumOrSpecial, ResolvedArgs,
-    check_alpha, check_channel, check_pct_range, eval_inner, is_not,
-    is_special, relative_color,
+    channels_alpha_list, check_alpha, check_channel, check_pct_range,
+    eval_inner, is_none, is_not, is_special, relative_color,
 };
 use crate::Scope;
 use crate::css::{CallArgs, Value};
+use crate::sass::functions::color::other::ColorOrCall;
 use crate::sass::{ArgsError, FormalArgs, Name};
 use crate::value::{Color, RgbFormat, Rgba};
 
@@ -13,15 +14,21 @@ pub fn register(f: &mut Scope) {
     def_va!(f, _rgb(kwargs), |s| do_rgba(&name!(rgb), s));
     def_va!(f, _rgba(kwargs), |s| do_rgba(&name!(rgba), s));
     def!(f, red(color), |s| {
-        let c: Color = s.get(name!(color))?;
+        let c = s
+            .get::<ColorOrCall>(name!(color))?
+            .check_legacy_w("color.red")?;
         Ok(Value::scalar(c.to_rgba().red().round()))
     });
     def!(f, green(color), |s| {
-        let c: Color = s.get(name!(color))?;
+        let c = s
+            .get::<ColorOrCall>(name!(color))?
+            .check_legacy_w("color.green")?;
         Ok(Value::scalar(c.to_rgba().green().round()))
     });
     def!(f, blue(color), |s| {
-        let c: Color = s.get(name!(color))?;
+        let c = s
+            .get::<ColorOrCall>(name!(color))?
+            .check_legacy_w("color.blue")?;
         Ok(Value::scalar(c.to_rgba().blue().round()))
     });
     def!(f, mix(color1, color2, weight = b"50%"), |s| {
@@ -197,7 +204,14 @@ fn rgba_from_values(
     b: Value,
     a: Value,
 ) -> Result<Value, CallError> {
-    if is_special(&r) || is_special(&g) || is_special(&b) || is_special(&a) {
+    if is_none(&r) || is_none(&g) || is_none(&b) || is_none(&a) {
+        let arg = channels_alpha_list(vec![r, g, b], a);
+        Ok(Value::call(fn_name.as_ref(), [arg]))
+    } else if is_special(&r)
+        || is_special(&g)
+        || is_special(&b)
+        || is_special(&a)
+    {
         Ok(Value::call(
             fn_name.as_ref(),
             [r, g, b, a].into_iter().filter(|v| v != &Value::Null),

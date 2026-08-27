@@ -7,6 +7,7 @@ mod rgba;
 pub use self::hsla::Hsla;
 pub use self::hwba::Hwba;
 pub use self::rgba::{RgbFormat, Rgba};
+use super::Numeric;
 use crate::output::{Format, Formatted};
 use std::borrow::Cow;
 use std::fmt::{self, Display};
@@ -52,7 +53,9 @@ impl Color {
     pub(crate) fn is_rgb(&self) -> bool {
         matches!(self, Self::Rgba(_))
     }
-
+    pub(crate) fn is_hsl(&self) -> bool {
+        matches!(self, Self::Hsla(_))
+    }
     /// Get this color as a rgba value.
     ///
     /// If this color is a rgba value, return a borrow of it.
@@ -118,7 +121,7 @@ impl Color {
                     hsla.sat(),
                     hsla.lum(),
                     hsla.alpha(),
-                    hsla.hsla_format,
+                    false,
                 )
                 .into()
             }
@@ -153,6 +156,47 @@ impl Color {
             Self::Hwba(_) => (),
         }
     }
+    pub(crate) fn space(&self) -> &'static str {
+        match self {
+            Color::Rgba(_) => "rgb",
+            Color::Hsla(_) => "hsl",
+            Color::Hwba(_) => "hwb",
+        }
+    }
+    pub(crate) fn get_channel(
+        &self,
+        channel: &str,
+    ) -> Result<Numeric, NoSuchChannel> {
+        match (self, channel) {
+            (_, "alpha") => Ok(Numeric::scalar(self.get_alpha())),
+
+            (Self::Rgba(rgba), "red") => Ok(Numeric::scalar(rgba.red())),
+            (Self::Rgba(rgba), "green") => Ok(Numeric::scalar(rgba.green())),
+            (Self::Rgba(rgba), "blue") => Ok(Numeric::scalar(rgba.blue())),
+
+            (Self::Hsla(hsla), "hue") => {
+                Ok(Numeric::new(hsla.hue(), crate::value::Unit::Deg))
+            }
+            (Self::Hsla(hsla), "saturation") => {
+                Ok(Numeric::percentage(hsla.sat()))
+            }
+            (Self::Hsla(hsla), "lightness") => {
+                Ok(Numeric::percentage(hsla.lum()))
+            }
+
+            (Self::Hwba(hwba), "hue") => {
+                Ok(Numeric::new(hwba.hue(), crate::value::Unit::Deg))
+            }
+            (Self::Hwba(hwba), "whiteness") => {
+                Ok(Numeric::percentage(hwba.whiteness()))
+            }
+            (Self::Hwba(hwba), "blackness") => {
+                Ok(Numeric::percentage(hwba.blackness()))
+            }
+            _ => Err(NoSuchChannel),
+        }
+    }
+
     /// Get a reference to this `Value` bound to an output format.
     pub fn format(&self, format: Format) -> Formatted<'_, Self> {
         Formatted {
@@ -161,6 +205,8 @@ impl Color {
         }
     }
 }
+
+pub(crate) struct NoSuchChannel;
 
 impl From<Rgba> for Color {
     fn from(rgba: Rgba) -> Self {
@@ -186,7 +232,14 @@ impl Display for Formatted<'_, Color> {
                 hsla.format(self.format).fmt(out)
             }
             Color::Hwba(hwba) => {
-                Hsla::from(hwba).format(self.format).fmt(out)
+                let rgba = Rgba::from(hwba);
+                if hwba.is_normal() && rgba.is_integer()
+                /*&& w >= 0. && b >= 0. && w <= 1. && b <= 1.*/
+                {
+                    rgba.format(self.format).fmt(out)
+                } else {
+                    Hsla::from(hwba).format(self.format).fmt(out)
+                }
             }
             any => any.to_rgba().format(self.format).fmt(out),
         }

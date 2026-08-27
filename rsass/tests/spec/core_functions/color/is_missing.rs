@@ -11,7 +11,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn unquoted() {
             assert_eq!(
                 runner().err(
@@ -27,7 +26,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn wrong_case() {
             assert_eq!(
                 runner().err(
@@ -43,7 +41,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn wrong_space() {
             assert_eq!(
                 runner().err(
@@ -60,7 +57,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err(
@@ -80,7 +76,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err(
@@ -103,7 +98,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn channel() {
             assert_eq!(
                 runner().err(
@@ -119,7 +113,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn color() {
             assert_eq!(
                 runner().err(
@@ -140,7 +133,6 @@ mod test_false {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn explicit() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -187,7 +179,6 @@ mod test_false {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn legacy() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -198,7 +189,6 @@ mod test_false {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn non_legacy() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -234,7 +224,6 @@ mod test_false {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn legacy() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -245,7 +234,6 @@ mod test_false {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn non_legacy() {
                 assert_eq!(
                     runner().ok("@use \"sass:color\";\
@@ -259,7 +247,6 @@ mod test_false {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn named() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -276,7 +263,6 @@ mod test_true {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn legacy() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -287,7 +273,6 @@ mod test_true {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn non_legacy() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\

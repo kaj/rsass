@@ -84,17 +84,16 @@ pub fn create_module() -> Scope {
                     (vec![], as_va_map(map2).named(name!(map2))?)
                 } else {
                     let mut values = args.positional;
-                    let map2 = values
-                        .pop()
-                        .ok_or_else(|| {
-                            CallError::msg("Expected $args to contain a key.")
-                        })?
-                        .try_into()
-                        .named(name!(map2))?;
+                    let map2 = ValueMap::try_from(values.pop().ok_or_else(
+                        || CallError::msg("Expected $args to contain a key."),
+                    )?)
+                    .named(name!(map2))?;
                     (values, map2)
                 }
             }
-            direct => (vec![], direct.try_into().named(name!(map2))?),
+            direct => {
+                (vec![], ValueMap::try_from(direct).named(name!(map2))?)
+            }
         };
         do_merge(keys.into_iter(), &mut map1, map2);
         Ok(Value::Map(map1))

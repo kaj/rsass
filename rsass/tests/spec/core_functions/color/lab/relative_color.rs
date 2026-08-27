@@ -55,7 +55,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn alpha() {
             assert_eq!(
                 runner().err("a {b: lab(\"from\" #aaa l a b / 25%)}\n"),
@@ -68,7 +67,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn no_alpha() {
             assert_eq!(
                 runner().err("a {b: lab(\"from\" #aaa l a b)}\n"),
@@ -85,7 +83,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn alpha() {
             assert_eq!(
                 runner().err("a {b: lab(c #aaa l a b / 25%)}\n"),
@@ -98,7 +95,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn no_alpha() {
             assert_eq!(
                 runner().err("a {b: lab(c #aaa l a b)}\n"),

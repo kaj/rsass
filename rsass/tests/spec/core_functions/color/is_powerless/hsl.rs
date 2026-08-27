@@ -8,7 +8,6 @@ mod hue {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn full_lightness() {
         assert_eq!(
         runner().ok(
@@ -23,7 +22,6 @@ mod hue {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn near_zero_saturation() {
         assert_eq!(
         runner().ok(
@@ -36,7 +34,6 @@ mod hue {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn positive_saturation() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -47,7 +44,6 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn zero_lightness() {
         assert_eq!(
         runner().ok(
@@ -62,7 +58,6 @@ mod hue {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn zero_saturation() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -77,7 +72,6 @@ mod saturation {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn full_lightness() {
         assert_eq!(
         runner().ok(
@@ -90,7 +84,6 @@ mod saturation {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn zero_lightness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
