@@ -19,4 +19,4 @@ proc-macro = true
 rsass = { path = "../rsass" }
 proc-macro2 = "1.0.32"
 quote = "1.0.22"
-syn = "2.0.2"
+syn = "3.0.4"
