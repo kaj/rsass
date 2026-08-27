@@ -32,7 +32,7 @@ impl Hsla {
         }
     }
 
-    /// Get the hue of this color.
+    /// Get the hue of this color, in degrees.
     pub fn hue(&self) -> f64 {
         self.hue
     }
