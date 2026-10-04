@@ -32,6 +32,8 @@ unsafe_code = "deny"
 [lints.clippy]
 pedantic = { level = "warn", priority = -1 }
 cast_possible_truncation = "allow"
+cast_possible_wrap = "allow"
+cast_precision_loss = "allow"
 cast_sign_loss = "allow"
 if_not_else = "allow"
 needless_pass_by_value = "allow"
@@ -51,9 +53,7 @@ naive_bytecount = "allow"
 maybe_infinite_iter = "allow"
 single_match_else = "allow"
 map_unwrap_or = "allow"
-cast_possible_wrap = "allow"
 match_wildcard_for_single_variants = "allow"
-cast-precision-loss = "allow"
 
 # Selected "restriction" lints.
 cfg_not_test = "warn"
