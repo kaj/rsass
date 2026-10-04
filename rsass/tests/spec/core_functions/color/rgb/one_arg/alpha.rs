@@ -14,7 +14,6 @@ mod bounds {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn above() {
                 assert_eq!(
                     runner().ok("@use \'core_functions/color/utils\';\
@@ -27,7 +26,6 @@ mod bounds {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn below() {
                 assert_eq!(
                     runner().ok("@use \'core_functions/color/utils\';\
@@ -44,7 +42,6 @@ mod bounds {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn above() {
                 assert_eq!(
                     runner().ok("@use \'core_functions/color/utils\';\
@@ -57,7 +54,6 @@ mod bounds {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn below() {
                 assert_eq!(
                     runner().ok("@use \'core_functions/color/utils\';\
@@ -75,7 +71,6 @@ mod bounds {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn above() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -88,7 +83,6 @@ mod bounds {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn below() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -105,7 +99,6 @@ mod bounds {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn above() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -118,7 +111,6 @@ mod bounds {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn below() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -135,7 +127,6 @@ mod bounds {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn above() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -148,7 +139,6 @@ mod bounds {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn below() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -227,7 +217,6 @@ mod missing {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn slash() {
         assert_eq!(
             runner().ok("a {b: rgb(0 255 127 / none)}\n"),
@@ -237,7 +226,6 @@ mod missing {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn slash_list() {
         assert_eq!(
             runner().ok("@use \'sass:list\';\

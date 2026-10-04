@@ -1,5 +1,5 @@
 use super::super::FunctionMap;
-use super::hsl::percentage;
+use super::other::ColorOrCall;
 use super::{
     CallError, CheckedArg, ResolvedArgs, check_alpha, check_expl_pct_norange,
     eval_inner, is_not, relative_color,
@@ -8,19 +8,23 @@ use crate::Scope;
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::sass::FormalArgs;
-use crate::value::{Color, Hwba, ListSeparator, Numeric, Rgba, Unit};
+use crate::value::{Hwba, ListSeparator, Numeric, Unit};
 
 pub fn register(f: &mut Scope) {
     def_va!(f, hwb(kwargs), hwb);
     def!(f, blackness(color), |s| {
-        let color: Color = s.get(name!(color))?;
+        let color = s
+            .get::<ColorOrCall>(name!(color))?
+            .check_legacy_w("color.blackness")?;
         let hwb = color.to_hwba();
-        Ok(percentage(hwb.blackness()))
+        Ok(Numeric::percentage(hwb.blackness()).into())
     });
     def!(f, whiteness(color), |s| {
-        let color: Color = s.get(name!(color))?;
+        let color = s
+            .get::<ColorOrCall>(name!(color))?
+            .check_legacy_w("color.whiteness")?;
         let hwb = color.to_hwba();
-        Ok(percentage(hwb.whiteness()))
+        Ok(Numeric::percentage(hwb.whiteness()).into())
     });
 }
 
@@ -60,12 +64,7 @@ fn hwb(s: &ResolvedArgs) -> Result<Value, CallError> {
     // I don't really agree with this, but it makes tests pass.
     let hue = if w + b >= 1. { 0. } else { hue };
     let hwba = Hwba::new(hue, w, b, a);
-    let rgba = Rgba::from(&hwba);
-    if rgba.is_integer() && w >= 0. {
-        Ok(rgba.into())
-    } else {
-        Ok(hwba.into())
-    }
+    Ok(hwba.into())
 }
 
 fn hwb_from_channels(

@@ -47,15 +47,22 @@ impl From<&Hwba> for Hsla {
         let w = hwba.whiteness();
         let b = hwba.blackness();
         let l = f64::midpoint(1. - b, w);
-        let s = if l == 0. || l == 1. {
+        let s = if l == 0. || l == 1. || !hwba.hue().is_finite() {
             0.
         } else {
             (1. - b - l) / f64::min(l, 1. - l)
         };
-        let (hue, lum) = if w.is_finite() && b.is_finite() {
+        let (hue, lum) = if !w.is_finite() || !b.is_finite() {
+            (f64::NAN, f64::NAN)
+        } else if hwba.hue().is_finite() {
             (hwba.hue(), l)
         } else {
-            (f64::NAN, f64::NAN)
+            (0., w)
+        };
+        let (hue, s) = if s < -1e-15 {
+            (hue + 180., s.abs())
+        } else {
+            (hue, s)
         };
         Self::new(hue, s, lum, hwba.alpha(), false)
     }

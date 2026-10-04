@@ -354,6 +354,7 @@ impl BinOp {
                         Inspect(self)
                     )),
                     BadOp::Invalid(e) => Invalid::AtError(e.to_string()),
+                    BadOp::Unimplemented(msg) => Invalid::AtError(msg),
                 })
                 .at(&self.pos)?
                 .ok_or(())
@@ -386,6 +387,7 @@ impl BinOp {
                         Inspect(self)
                     )),
                     BadOp::Invalid(e) => Invalid::AtError(e.to_string()),
+                    BadOp::Unimplemented(msg) => Invalid::AtError(msg),
                 })
                 .at(&self.pos)?
                 .unwrap_or_else(|| {
@@ -393,7 +395,9 @@ impl BinOp {
                         Operator::Div => false,
                         Operator::Minus => {
                             a.type_name() != "string"
+                                && a.type_name() != "call"
                                 && b.type_name() != "string"
+                                && b.type_name() != "call"
                         }
                         _ => true,
                     };

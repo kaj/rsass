@@ -8,7 +8,6 @@ mod degenerate {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn nan() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -21,7 +20,6 @@ mod degenerate {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn negative_infinity() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -34,7 +32,6 @@ mod degenerate {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn positive_infinity() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -48,7 +45,6 @@ mod degenerate {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn named() {
     assert_eq!(
         runner().ok("@use \'core_functions/color/utils\';\
@@ -67,7 +63,6 @@ mod none {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn alpha() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -80,7 +75,6 @@ mod none {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn b() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -93,7 +87,6 @@ mod none {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn b_and_alpha() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -110,7 +103,6 @@ mod none {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn alpha() {
             assert_eq!(
                 runner().ok("@use \'sass:list\';\
@@ -124,7 +116,6 @@ mod none {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn b() {
             assert_eq!(
                 runner().ok("@use \'sass:list\';\
@@ -138,7 +129,6 @@ mod none {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn b_and_alpha() {
             assert_eq!(
                 runner().ok("@use \'sass:list\';\
@@ -154,7 +144,6 @@ mod none {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn opaque() {
     assert_eq!(
         runner().ok("@use \'core_functions/color/utils\';\
@@ -167,7 +156,6 @@ fn opaque() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn partial() {
     assert_eq!(
         runner().ok("@use \'core_functions/color/utils\';\
@@ -180,7 +168,6 @@ fn partial() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn percent() {
     assert_eq!(
         runner().ok("@use \'core_functions/color/utils\';\
@@ -193,7 +180,6 @@ fn percent() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn slash_list() {
     assert_eq!(
         runner().ok("@use \"sass:list\";\
@@ -207,7 +193,6 @@ fn slash_list() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn transparent() {
     assert_eq!(
         runner().ok("@use \'core_functions/color/utils\';\

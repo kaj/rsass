@@ -40,7 +40,7 @@ impl Hsla {
     pub fn sat(&self) -> f64 {
         self.sat
     }
-    /// Get the lumination of this color.
+    /// Get the luminance of this color.
     pub fn lum(&self) -> f64 {
         self.lum
     }

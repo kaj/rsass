@@ -1,4 +1,5 @@
 use crate::css::{CssString, InvalidCss, Value, is_function_name};
+use crate::sass::is_color_fn;
 use crate::value::{ListSeparator, Numeric};
 use std::fmt;
 
@@ -64,7 +65,19 @@ impl Operator {
         Ok(match *self {
             Self::And => Some(if a.is_true() { b } else { a }),
             Self::Or => Some(if a.is_true() { a } else { b }),
-            Self::Equal => Some(Value::from(a == b)),
+            Self::Equal => match (a, b) {
+                (Value::Color(..), Value::Call(f, ..))
+                | (Value::Call(f, ..), Value::Color(..)) => {
+                    if is_color_fn(&f) {
+                        return Err(BadOp::Unimplemented(format!(
+                            "Comparing function {f} to a color is not yet implemented."
+                        )));
+                    } else {
+                        Some(false.into())
+                    }
+                }
+                (a, b) => Some(Value::from(a == b)),
+            },
             Self::EqualSingle => cmp(a, b, &|a, b| a == b),
             Self::NotEqual => Some(Value::from(a != b)),
             Self::Greater => cmp(a, b, &|a, b| a > b),
@@ -248,6 +261,8 @@ pub enum BadOp {
     UndefinedOperation,
     /// A potentially valid operation, but with invalid operands.
     Invalid(InvalidCss),
+    /// Something that should be possible to evaluate but isn't
+    Unimplemented(String),
 }
 
 impl From<InvalidCss> for BadOp {

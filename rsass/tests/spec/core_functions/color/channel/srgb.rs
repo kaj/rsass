@@ -45,7 +45,6 @@ mod local {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn blue() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -56,7 +55,6 @@ mod local {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn green() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -67,7 +65,6 @@ mod local {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn red() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
