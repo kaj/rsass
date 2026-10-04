@@ -21,12 +21,13 @@ mod negative {
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(-1, math.div(1, 0))}\n"),
                 "a {\
-         \n  b: 0deg;\
+         \n  b: -0deg;\
          \n}\n"
             );
         }

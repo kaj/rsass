@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn all() {
     assert_eq!(
         runner().ok(
@@ -12,11 +13,12 @@ fn all() {
              \na {b: color.change(black, $hue: 12, $saturation: 24%, $lightness: 48%)}\n"
         ),
         "a {\
-         \n  b: rgb(151.776, 104.7744, 93.024);\
+         \n  b: rgb(59.52%, 41.088%, 36.48%);\
          \n}\n"
     );
 }
 #[test]
+#[ignore] // wrong result
 fn alpha_arg() {
     assert_eq!(
         runner().ok(
@@ -24,11 +26,12 @@ fn alpha_arg() {
              \na {b: color.change(black, $hue: 12, $saturation: 24%, $lightness: 48%, $alpha: 0.7)}\n"
         ),
         "a {\
-         \n  b: rgba(151.776, 104.7744, 93.024, 0.7);\
+         \n  b: rgba(59.52%, 41.088%, 36.48%, 0.7);\
          \n}\n"
     );
 }
 #[test]
+#[ignore] // wrong result
 fn alpha_input() {
     assert_eq!(
         runner().ok(
@@ -36,7 +39,7 @@ fn alpha_input() {
              \na {b: color.change(rgba(black, 0.7), $hue: 12, $saturation: 24%, $lightness: 48%)}\n"
         ),
         "a {\
-         \n  b: rgba(151.776, 104.7744, 93.024, 0.7);\
+         \n  b: rgba(59.52%, 41.088%, 36.48%, 0.7);\
          \n}\n"
     );
 }
@@ -54,32 +57,35 @@ mod hue {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn fraction() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(red, $hue: 0.5)}\n"),
             "a {\
-         \n  b: rgb(255, 2.125, 0);\
+         \n  b: rgb(100%, 0.8333333333%, 0%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(red, $hue: 359)}\n"),
             "a {\
-         \n  b: rgb(255, 0, 4.25);\
+         \n  b: rgb(100%, 0%, 1.6666666667%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn middle() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(red, $hue: 123)}\n"),
             "a {\
-         \n  b: rgb(0, 255, 12.75);\
+         \n  b: rgb(0%, 100%, 5%);\
          \n}\n"
         );
     }
@@ -141,32 +147,35 @@ mod lightness {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn fraction() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(red, $lightness: 0.5%)}\n"),
             "a {\
-         \n  b: rgb(2.55, 0, 0);\
+         \n  b: rgb(1%, 0%, 0%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn high() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(red, $lightness: 63%)}\n"),
             "a {\
-         \n  b: rgb(255, 66.3, 66.3);\
+         \n  b: rgb(100%, 26%, 26%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn low() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(red, $lightness: 27%)}\n"),
             "a {\
-         \n  b: rgb(137.7, 0, 0);\
+         \n  b: rgb(54%, 0%, 0%);\
          \n}\n"
         );
     }
@@ -203,6 +212,7 @@ mod lightness {
     }
 }
 #[test]
+#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok(
@@ -210,7 +220,7 @@ fn named() {
              \na {b: color.change($color: black, $hue: 12, $saturation: 24%, $lightness: 48%)}\n"
         ),
         "a {\
-         \n  b: rgb(151.776, 104.7744, 93.024);\
+         \n  b: rgb(59.52%, 41.088%, 36.48%);\
          \n}\n"
     );
 }
@@ -235,27 +245,29 @@ mod saturation {
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(plum, $saturation: -20%)}\n"),
             "a {\
-         \n  b: rgb(177.6, 203.4, 177.6);\
+         \n  b: rgb(69.6470588235%, 79.7647058824%, 69.6470588235%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn high() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(plum, $saturation: 76%)}\n"),
             "a {\
-         \n  b: rgb(239.52, 141.48, 239.52);\
+         \n  b: rgb(93.9294117647%, 55.4823529412%, 93.9294117647%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn low() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(plum, $saturation: 14%)}\n"),
             "a {\
-         \n  b: rgb(199.53, 181.47, 199.53);\
+         \n  b: rgb(78.2470588235%, 71.1647058824%, 78.2470588235%);\
          \n}\n"
         );
     }
@@ -270,12 +282,13 @@ mod saturation {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(plum, $saturation: 0%)}\n"),
             "a {\
-         \n  b: rgb(190.5, 190.5, 190.5);\
+         \n  b: rgb(74.7058823529%, 74.7058823529%, 74.7058823529%);\
          \n}\n"
         );
     }
@@ -298,12 +311,13 @@ mod units {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong result
         fn angle() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.change(red, $hue: 60rad)}\n"),
                 "a {\
-         \n  b: rgb(0, 179.576224164, 255);\
+         \n  b: rgb(0%, 70.4220486918%, 100%);\
          \n}\n"
             );
         }
@@ -376,32 +390,35 @@ mod units {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong result
         fn percent() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.change(red, $saturation: 50%)}\n"),
                 "a {\
-         \n  b: rgb(191.25, 63.75, 63.75);\
+         \n  b: rgb(75%, 25%, 25%);\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn unitless() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.change(red, $saturation: 50)}\n"),
                 "a {\
-         \n  b: rgb(191.25, 63.75, 63.75);\
+         \n  b: rgb(75%, 25%, 25%);\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn unknown() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.change(red, $saturation: 50in)}\n"),
                 "a {\
-         \n  b: rgb(191.25, 63.75, 63.75);\
+         \n  b: rgb(75%, 25%, 25%);\
          \n}\n"
             );
         }

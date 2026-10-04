@@ -56,6 +56,15 @@ mod alpha {
             );
         }
     }
+    #[test]
+    fn negative_zero() {
+        assert_eq!(
+            runner().ok("a {b: rgb(0, 0, 0, -0)}\n"),
+            "a {\
+         \n  b: rgba(0, 0, 0, 0);\
+         \n}\n"
+        );
+    }
 }
 mod blue {
     use super::runner;
@@ -97,6 +106,15 @@ mod blue {
             runner().ok("a {b: rgb(0, 0, 9999, 0.5)}\n"),
             "a {\
          \n  b: rgba(0, 0, 255, 0.5);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn negative_zero() {
+        assert_eq!(
+            runner().ok("a {b: rgb(0, 0, -0, 0.5)}\n"),
+            "a {\
+         \n  b: rgba(0, 0, 0, 0.5);\
          \n}\n"
         );
     }
@@ -144,6 +162,15 @@ mod green {
          \n}\n"
         );
     }
+    #[test]
+    fn negative_zero() {
+        assert_eq!(
+            runner().ok("a {b: rgb(0, -0, 0, 0.5)}\n"),
+            "a {\
+         \n  b: rgba(0, 0, 0, 0.5);\
+         \n}\n"
+        );
+    }
 }
 mod red {
     use super::runner;
@@ -185,6 +212,15 @@ mod red {
             runner().ok("a {b: rgb(256, 0, 0, 0.5)}\n"),
             "a {\
          \n  b: rgba(255, 0, 0, 0.5);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn negative_zero() {
+        assert_eq!(
+            runner().ok("a {b: rgb(-0, 0, 0, 0.5)}\n"),
+            "a {\
+         \n  b: rgba(0, 0, 0, 0.5);\
          \n}\n"
         );
     }

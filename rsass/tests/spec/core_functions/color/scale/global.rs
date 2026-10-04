@@ -5,11 +5,12 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn legacy() {
     assert_eq!(
         runner().ok("a {b: scale-color(pink, $blue: 20%)}\n"),
         "a {\
-         \n  b: rgb(255, 192, 213.4);\
+         \n  b: rgb(100%, 75.2941176471%, 83.6862745098%);\
          \n}\n"
     );
 }
@@ -20,7 +21,7 @@ fn non_legacy() {
         runner()
             .ok("a {b: scale-color(pink, $chroma: -10%, $space: oklch)}\n"),
         "a {\
-         \n  b: rgb(250.9720047847, 194.0861924112, 203.8303770998);\
+         \n  b: rgb(98.4203940332%, 76.1122323181%, 79.9334812156%);\
          \n}\n"
     );
 }

@@ -29,15 +29,39 @@ mod alone {
          \n}\n"
         );
     }
-    #[test]
-    #[ignore] // wrong result
-    fn no_else() {
-        assert_eq!(
-            runner().ok("a {b: if(css(): c)}\n"),
-            "a {\
+    mod no_else {
+        use super::runner;
+
+        #[test]
+        #[ignore] // wrong result
+        fn list() {
+            assert_eq!(
+                runner().ok("a {b: if(css(): c d e)}\n"),
+                "a {\
+         \n  b: if(css(): c d e);\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn quoted() {
+            assert_eq!(
+                runner().ok("a {b: if(css(): \"c\")}\n"),
+                "a {\
+         \n  b: if(css(): \"c\");\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn unquoted() {
+            assert_eq!(
+                runner().ok("a {b: if(css(): c)}\n"),
+                "a {\
          \n  b: if(css(): c);\
          \n}\n"
-        );
+            );
+        }
     }
 }
 mod and {

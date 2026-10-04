@@ -14,7 +14,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% 0.1 30deg / 0.4), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 0.0256576861 -0.0056343194 -0.0019025126 / 0.4);\
+         \n  b: color(rec2020 0.1161454157 -0.0617559389 -0.0392838997 / 0.4);\
          \n}\n"
         );
     }
@@ -25,7 +25,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% 0.1 30deg / 0.0), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 0.0256576861 -0.0056343194 -0.0019025126 / 0);\
+         \n  b: color(rec2020 0.1161454157 -0.0617559389 -0.0392838997 / 0);\
          \n}\n"
         );
     }
@@ -50,7 +50,7 @@ fn float() {
              \na {b: color.to-space(oklch(10.123456789% 0.198765432 30.192837465deg), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.0644187624 -0.0232002199 -0.0029907847);\
+         \n  b: color(rec2020 0.1704446117 -0.1113738318 -0.0474320537);\
          \n}\n"
     );
 }
@@ -61,7 +61,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(50% 0 0deg), rec2020)}\n"),
         "a {\
-         \n  b: color(rec2020 0.3319485778 0.3319485778 0.3319485778);\
+         \n  b: color(rec2020 0.4204482076 0.4204482076 0.4204482076);\
          \n}\n"
     );
 }
@@ -72,7 +72,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% 0.1 30deg), rec2020)}\n"),
         "a {\
-         \n  b: color(rec2020 0.0256576861 -0.0056343194 -0.0019025126);\
+         \n  b: color(rec2020 0.1161454157 -0.0617559389 -0.0392838997);\
          \n}\n"
     );
 }
@@ -81,12 +81,23 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(oklch(none none none), rec2020)}\n"),
+            "a {\
+         \n  b: color(rec2020 none none none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn chroma() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% none 30deg), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 0.0045 0.0045 0.0045);\
+         \n  b: color(rec2020 0.0562341325 0.0562341325 0.0562341325);\
          \n}\n"
         );
     }
@@ -97,7 +108,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% 0.1 none), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 0.0225650019 -0.0048194752 0.0030470885);\
+         \n  b: color(rec2020 0.1100929542 -0.0578643858 0.0478020915);\
          \n}\n"
         );
     }
@@ -108,7 +119,29 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(none 0.1 30deg), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 0.0007134353 0.0000902746 -0.002575042);\
+         \n  b: color(rec2020 0.02610513 0.0110318166 -0.044564419);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_hue() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(oklch(none none 10deg), rec2020)}\n"),
+            "a {\
+         \n  b: color(rec2020 0 0 0);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(oklch(50% none none), rec2020)}\n"),
+            "a {\
+         \n  b: color(rec2020 0.4204482076 0.4204482076 0.4204482076);\
          \n}\n"
         );
     }
@@ -123,7 +156,7 @@ mod out_of_range {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklch(10% 999999 0deg), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 56131775.40788209 -38257539.11466927 -10955271.733469665);\
+         \n  b: color(rec2020 13712729.015620274 -9615344.930416511 -3020648.353808308);\
          \n}\n"
         );
     }
@@ -136,7 +169,7 @@ mod out_of_range {
              \na {b: color.to-space(color.change(oklch(0% 1 0deg), $lightness: -10%), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.2237639314 -0.1587187275 -0.0339392463);\
+         \n  b: color(rec2020 0.3217837476 -0.2613113378 -0.1305030615);\
          \n}\n"
     );
     }

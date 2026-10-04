@@ -13,7 +13,7 @@ fn polar_space() {
              \na {b: color.mix($color1: #91e16f, $color2: #0144bf, $weight: 92%, $method: hsl decreasing hue)}\n"
         ),
         "a {\
-         \n  b: rgb(177.749777646, 225.4953896552, 98.9846103448);\
+         \n  b: rgb(69.7057951553%, 88.4295645707%, 38.8174942529%);\
          \n}\n"
     );
 }
@@ -26,7 +26,7 @@ fn rectangular_space() {
              \na {b: color.mix($color1: #91e16f, $color2: #0144bf, $weight: 92%, $method: lab)}\n"
         ),
         "a {\
-         \n  b: rgb(141.3483384924, 211.5499489073, 120.4340844852);\
+         \n  b: rgb(55.4307209774%, 82.9607642774%, 47.2290527393%);\
          \n}\n"
     );
 }

@@ -79,6 +79,17 @@ mod missing {
     }
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lab(none none none), hwb)}\n"),
+            "a {\
+         \n  b: red;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn b() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -96,6 +107,17 @@ mod missing {
              \na {b: color.to-space(lab(none 20 30), hwb)}\n"),
             "a {\
          \n  b: hsl(17.5913578322, 6051.6428880587%, 0.2688304082%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lab(10% none none), hwb)}\n"),
+            "a {\
+         \n  b: hsl(0, 0%, 10.7703411095%);\
          \n}\n"
         );
     }

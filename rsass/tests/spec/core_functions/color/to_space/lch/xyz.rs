@@ -81,6 +81,17 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lch(none none none), xyz)}\n"),
+            "a {\
+         \n  b: color(xyz none none none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn chroma() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -109,6 +120,28 @@ mod missing {
              \na {b: color.to-space(lch(none 20 30deg), xyz)}\n"),
             "a {\
          \n  b: color(xyz 0.0037635667 -0.0002331742 -0.006995371);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_hue() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lch(none none 10deg), xyz)}\n"),
+            "a {\
+         \n  b: color(xyz 0 0 0);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lch(50% none none), xyz)}\n"),
+            "a {\
+         \n  b: color(xyz 0.1750611682 0.1841865185 0.2005897556);\
          \n}\n"
         );
     }

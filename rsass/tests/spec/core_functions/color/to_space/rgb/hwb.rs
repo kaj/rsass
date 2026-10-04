@@ -105,6 +105,17 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(rgb(none none none), hwb)}\n"),
+            "a {\
+         \n  b: red;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn blue() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

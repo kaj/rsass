@@ -15,6 +15,46 @@ fn named() {
          \n}\n"
     );
 }
+mod negative_zero {
+    use super::runner;
+
+    #[test]
+    fn alpha() {
+        assert_eq!(
+            runner().ok("a {b: hsl(0, 100%, 50%, -1 * 0%)}\n"),
+            "a {\
+         \n  b: hsla(0, 100%, 50%, 0);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn hue() {
+        assert_eq!(
+            runner().ok("a {b: hsl(-1 * 0, 100%, 50%)}\n"),
+            "a {\
+         \n  b: hsl(0, 100%, 50%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn lightness() {
+        assert_eq!(
+            runner().ok("a {b: hsl(0, 100%, -1 * 0%)}\n"),
+            "a {\
+         \n  b: hsl(0, 100%, 0%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn saturation() {
+        assert_eq!(
+            runner().ok("a {b: hsl(0, -1 * 0%, 50%)}\n"),
+            "a {\
+         \n  b: hsl(0, 0%, 50%);\
+         \n}\n"
+        );
+    }
+}
 #[test]
 fn opaque() {
     assert_eq!(

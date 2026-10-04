@@ -83,6 +83,19 @@ mod missing {
     }
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.to-space(lab(none none none), display-p3-linear)}\n"
+        ),
+        "a {\
+         \n  b: color(display-p3-linear none none none);\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn b() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -102,6 +115,19 @@ mod missing {
          \n  b: color(display-p3-linear 0.0182270941 -0.0044270743 -0.020004771);\
          \n}\n"
         );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.to-space(lab(10% none none), display-p3-linear)}\n"
+        ),
+        "a {\
+         \n  b: color(display-p3-linear 0.0112601993 0.0112601993 0.0112601993);\
+         \n}\n"
+    );
     }
 }
 mod out_of_range {

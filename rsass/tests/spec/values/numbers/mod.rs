@@ -14,6 +14,8 @@ mod error;
 
 mod modulo;
 
+mod negative_zero;
+
 mod precision;
 
 mod units;

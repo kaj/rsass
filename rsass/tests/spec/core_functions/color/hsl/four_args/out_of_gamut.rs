@@ -68,29 +68,32 @@ mod hue {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong result
         fn nan() {
             assert_eq!(
                 runner().ok("a {b: hsl(calc(NaN), 100%, 50%)}\n"),
                 "a {\
-         \n  b: hsl(calc(NaN), 100%, 50%);\
+         \n  b: hsl(0, 100%, 50%);\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("a {b: hsl(calc(-infinity), 100%, 50%)}\n"),
                 "a {\
-         \n  b: hsl(calc(NaN), 100%, 50%);\
+         \n  b: hsl(0, 100%, 50%);\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("a {b: hsl(calc(infinity), 100%, 50%)}\n"),
                 "a {\
-         \n  b: hsl(calc(NaN), 100%, 50%);\
+         \n  b: hsl(0, 100%, 50%);\
          \n}\n"
             );
         }
@@ -103,18 +106,19 @@ mod lightness {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong result
         fn nan() {
             assert_eq!(
-                runner().ok("a {b: hsl(0, 100%, calc(NaN))}\n"),
+                runner().ok("a {b: hsl(0, 100%, calc(NaN * 1%))}\n"),
                 "a {\
-         \n  b: hsl(0, 100%, calc(NaN * 1%));\
+         \n  b: hsl(0, 100%, 0%);\
          \n}\n"
             );
         }
         #[test]
         fn negative_infinity() {
             assert_eq!(
-                runner().ok("a {b: hsl(0, 100%, calc(-infinity))}\n"),
+                runner().ok("a {b: hsl(0, 100%, calc(-infinity * 1%))}\n"),
                 "a {\
          \n  b: hsl(0, 100%, calc(-infinity * 1%));\
          \n}\n"
@@ -123,7 +127,7 @@ mod lightness {
         #[test]
         fn positive_infinity() {
             assert_eq!(
-                runner().ok("a {b: hsl(0, 100%, calc(infinity))}\n"),
+                runner().ok("a {b: hsl(0, 100%, calc(infinity * 1%))}\n"),
                 "a {\
          \n  b: hsl(0, 100%, calc(infinity * 1%));\
          \n}\n"
@@ -149,7 +153,7 @@ mod saturation {
         #[test]
         fn nan() {
             assert_eq!(
-                runner().ok("a {b: hsl(0, calc(NaN), 50%)}\n"),
+                runner().ok("a {b: hsl(0, calc(NaN * 1%), 50%)}\n"),
                 "a {\
          \n  b: hsl(0, 0%, 50%);\
          \n}\n"
@@ -158,7 +162,7 @@ mod saturation {
         #[test]
         fn negative_infinity() {
             assert_eq!(
-                runner().ok("a {b: hsl(0, calc(-infinity), 50%)}\n"),
+                runner().ok("a {b: hsl(0, calc(-infinity * 1%), 50%)}\n"),
                 "a {\
          \n  b: hsl(0, 0%, 50%);\
          \n}\n"
@@ -167,7 +171,7 @@ mod saturation {
         #[test]
         fn positive_infinity() {
             assert_eq!(
-                runner().ok("a {b: hsl(0, calc(infinity), 50%)}\n"),
+                runner().ok("a {b: hsl(0, calc(infinity * 1%), 50%)}\n"),
                 "a {\
          \n  b: hsl(0, calc(infinity * 1%), 50%);\
          \n}\n"

@@ -72,18 +72,18 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
-    fn blue() {
+    fn x() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz 0.1 0.2 none), display-p3)}\n"),
+             \na {b: color.to-space(color(xyz none 0.2 0.3), display-p3)}\n"),
             "a {\
-         \n  b: color(display-p3 0.2785701294 0.5560005714 none);\
+         \n  b: color(display-p3 none 0.6339496775 0.5581173728);\
          \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
-    fn green() {
+    fn y() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz 0.1 none 0.3), display-p3)}\n"),
@@ -94,12 +94,12 @@ mod missing {
     }
     #[test]
     #[ignore] // unexepected error
-    fn red() {
+    fn z() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz none 0.2 0.3), display-p3)}\n"),
+             \na {b: color.to-space(color(xyz 0.1 0.2 none), display-p3)}\n"),
             "a {\
-         \n  b: color(display-p3 none 0.6339496775 0.5581173728);\
+         \n  b: color(display-p3 0.2785701294 0.5560005714 none);\
          \n}\n"
         );
     }

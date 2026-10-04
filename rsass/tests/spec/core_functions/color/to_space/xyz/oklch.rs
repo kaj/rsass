@@ -68,18 +68,29 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
-    fn blue() {
+    fn all() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz 0.1 0.2 none), oklch)}\n"),
+             \na {b: color.to-space(color(xyz none none none), oklch)}\n"),
             "a {\
-         \n  b: oklch(56.6867662885% 0.2192447326 136.5398255702deg);\
+         \n  b: oklch(none none none);\
          \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
-    fn green() {
+    fn x() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(color(xyz none 0.2 0.3), oklch)}\n"),
+            "a {\
+         \n  b: oklch(52.6994311398% 0.4939251964 184.7577868469deg);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn y() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz 0.1 none 0.3), oklch)}\n"),
@@ -90,12 +101,12 @@ mod missing {
     }
     #[test]
     #[ignore] // unexepected error
-    fn red() {
+    fn z() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz none 0.2 0.3), oklch)}\n"),
+             \na {b: color.to-space(color(xyz 0.1 0.2 none), oklch)}\n"),
             "a {\
-         \n  b: oklch(52.6994311398% 0.4939251964 184.7577868469deg);\
+         \n  b: oklch(56.6867662885% 0.2192447326 136.5398255702deg);\
          \n}\n"
         );
     }

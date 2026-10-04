@@ -25,7 +25,7 @@ mod legacy {
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(pink, $saturation: 5%, $space: hsl)}\n"),
             "a {\
-         \n  b: rgb(225.075, 221.925, 222.475);\
+         \n  b: rgb(88.2647058824%, 87.0294117647%, 87.2450980392%);\
          \n}\n"
         );
     }
@@ -36,7 +36,7 @@ mod legacy {
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(pink, $chroma: 0.01, $space: oklch)}\n"),
             "a {\
-         \n  b: rgb(217.7587741846, 208.8497862891, 210.1600712342);\
+         \n  b: rgb(85.3955977194%, 81.9018769761%, 82.4157142095%);\
          \n}\n"
         );
     }
@@ -73,7 +73,7 @@ mod missing {
                         runner().ok("@use \"sass:color\";\
              \na {b: color.change(pink, $red: none, $space: display-p3)}\n"),
                         "a {\
-         \n  b: rgb(0, 198.1453699836, 205.7002828396);\
+         \n  b: rgb(0%, 77.7040666602%, 80.6667775842%);\
          \n}\n"
                     );
                 }

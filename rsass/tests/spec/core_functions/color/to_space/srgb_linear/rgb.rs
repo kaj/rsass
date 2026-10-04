@@ -16,7 +16,7 @@ mod alpha {
              \na {b: color.to-space(color(srgb-linear 0.1 0.2 0.3 / 0.4), rgb)}\n"
         ),
         "a {\
-         \n  b: rgba(89.0435042202, 123.5549471428, 148.8770299654, 0.4);\
+         \n  b: rgba(34.9190212628%, 48.4529204482%, 58.383149006%, 0.4);\
          \n}\n"
     );
     }
@@ -29,7 +29,7 @@ mod alpha {
              \na {b: color.to-space(color(srgb-linear 0.1 0.2 0.3 / 0.0), rgb)}\n"
         ),
         "a {\
-         \n  b: rgba(89.0435042202, 123.5549471428, 148.8770299654, 0);\
+         \n  b: rgba(34.9190212628%, 48.4529204482%, 58.383149006%, 0);\
          \n}\n"
     );
     }
@@ -52,7 +52,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb-linear 0.5 0.5 0.5), rgb)}\n"),
         "a {\
-         \n  b: rgb(187.5160306784, 187.5160306784, 187.5160306784);\
+         \n  b: rgb(73.5356983052%, 73.5356983052%, 73.5356983052%);\
          \n}\n"
     );
 }
@@ -63,7 +63,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb-linear 0.2 0.4 0.8), rgb)}\n"),
         "a {\
-         \n  b: rgb(123.5549471428, 169.6221965809, 231.1145971027);\
+         \n  b: rgb(48.4529204482%, 66.5185084631%, 90.6331753344%);\
          \n}\n"
     );
 }
@@ -79,7 +79,7 @@ mod missing {
              \na {b: color.to-space(color(srgb-linear 0.1 0.2 none), rgb)}\n"
         ),
         "a {\
-         \n  b: rgb(89.0435042202, 123.5549471428, 0);\
+         \n  b: rgb(34.9190212628%, 48.4529204482%, 0%);\
          \n}\n"
     );
     }
@@ -92,7 +92,7 @@ mod missing {
              \na {b: color.to-space(color(srgb-linear 0.1 none 0.3), rgb)}\n"
         ),
         "a {\
-         \n  b: rgb(89.0435042202, 0, 148.8770299654);\
+         \n  b: rgb(34.9190212628%, 0%, 58.383149006%);\
          \n}\n"
     );
     }
@@ -105,7 +105,7 @@ mod missing {
              \na {b: color.to-space(color(srgb-linear none 0.2 0.3), rgb)}\n"
         ),
         "a {\
-         \n  b: rgb(0, 123.5549471428, 148.8770299654);\
+         \n  b: rgb(0%, 48.4529204482%, 58.383149006%);\
          \n}\n"
     );
     }

@@ -273,11 +273,12 @@ mod two_args {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn alpha() {
         assert_eq!(
             runner().ok("a {b: saturate(rgba(plum, 0.5), 100%)}\n"),
             "a {\
-         \n  b: rgba(255, 126, 255, 0.5);\
+         \n  b: rgba(100%, 49.4117647059%, 100%, 0.5);\
          \n}\n"
         );
     }
@@ -300,11 +301,12 @@ mod two_args {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn middle() {
         assert_eq!(
             runner().ok("a {b: saturate(plum, 14%)}\n"),
             "a {\
-         \n  b: rgb(230.03, 150.97, 230.03);\
+         \n  b: rgb(90.2078431373%, 59.2039215686%, 90.2078431373%);\
          \n}\n"
         );
     }
@@ -318,11 +320,12 @@ mod two_args {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn named() {
         assert_eq!(
             runner().ok("a {b: saturate($color: plum, $amount: 14%)}\n"),
             "a {\
-         \n  b: rgb(230.03, 150.97, 230.03);\
+         \n  b: rgb(90.2078431373%, 59.2039215686%, 90.2078431373%);\
          \n}\n"
         );
     }

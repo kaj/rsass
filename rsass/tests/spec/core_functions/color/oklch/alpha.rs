@@ -66,6 +66,19 @@ fn named() {
          \n}\n"
     );
 }
+#[test]
+#[ignore] // unexepected error
+fn negative_zero() {
+    assert_eq!(
+        runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(oklch(1% 0.2 3deg / -0));\n"),
+        "a {\
+         \n  value: oklch(1% 0.2 3deg / 0);\
+         \n  space: oklch;\
+         \n  channels: 1% 0.2 3deg / 0;\
+         \n}\n"
+    );
+}
 mod none {
     use super::runner;
 

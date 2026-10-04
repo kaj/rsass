@@ -14,7 +14,7 @@ mod foreign {
             runner().ok("@use \"sass:color\";\
              \na {b: color.channel(pink, \"blue\", $space: rec2020)}\n"),
             "a {\
-         \n  b: 0.7726929727;\
+         \n  b: 0.8069535686;\
          \n}\n"
         );
     }
@@ -25,7 +25,7 @@ mod foreign {
             runner().ok("@use \"sass:color\";\
              \na {b: color.channel(pink, \"green\", $space: rec2020)}\n"),
             "a {\
-         \n  b: 0.747938727;\
+         \n  b: 0.7857199421;\
          \n}\n"
         );
     }
@@ -36,7 +36,7 @@ mod foreign {
             runner().ok("@use \"sass:color\";\
              \na {b: color.channel(pink, \"red\", $space: rec2020)}\n"),
             "a {\
-         \n  b: 0.9098509852;\
+         \n  b: 0.9238307533;\
          \n}\n"
         );
     }

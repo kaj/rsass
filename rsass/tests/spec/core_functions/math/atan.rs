@@ -107,12 +107,13 @@ fn negative_infinity() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn negative_zero() {
     assert_eq!(
         runner().ok("@use \"sass:math\";\
              \na {b: math.atan(-0.0)}\n"),
         "a {\
-         \n  b: 0deg;\
+         \n  b: -0deg;\
          \n}\n"
     );
 }

@@ -161,7 +161,7 @@ fn weighted() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.mix(red, green, 20%, lch longer hue)}\n"),
         "a {\
-         \n  b: rgb(201.9125152451, 62.5456438786, 25.0531427989);\
+         \n  b: rgb(79.1813785275%, 24.5277034818%, 9.8247618819%);\
          \n}\n"
     );
 }

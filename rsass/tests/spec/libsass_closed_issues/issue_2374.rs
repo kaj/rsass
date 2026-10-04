@@ -37,31 +37,31 @@ fn test() {
          \n  background-color: hsl(53.8775510204, 100%, 101.568627451%);\
          \n}\
          \n.yellow-100 {\
-         \n  background-color: rgb(255, 254.7755102041, 252.8);\
+         \n  background-color: rgb(100%, 99.9119647859%, 99.137254902%);\
          \n}\
          \n.yellow-200 {\
-         \n  background-color: rgb(255, 253.7346938776, 242.6);\
+         \n  background-color: rgb(100%, 99.5038015206%, 95.137254902%);\
          \n}\
          \n.yellow-300 {\
-         \n  background-color: rgb(255, 252.693877551, 232.4);\
+         \n  background-color: rgb(100%, 99.0956382553%, 91.137254902%);\
          \n}\
          \n.yellow-400 {\
-         \n  background-color: rgb(255, 251.6530612245, 222.2);\
+         \n  background-color: rgb(100%, 98.68747499%, 87.137254902%);\
          \n}\
          \n.yellow-500 {\
-         \n  background-color: rgb(255, 250.612244898, 212);\
+         \n  background-color: rgb(100%, 98.2793117247%, 83.137254902%);\
          \n}\
          \n.yellow-600 {\
-         \n  background-color: rgb(255, 249.5714285714, 201.8);\
+         \n  background-color: rgb(100%, 97.8711484594%, 79.137254902%);\
          \n}\
          \n.yellow-700 {\
-         \n  background-color: rgb(255, 248.5306122449, 191.6);\
+         \n  background-color: rgb(100%, 97.4629851941%, 75.137254902%);\
          \n}\
          \n.yellow-800 {\
-         \n  background-color: rgb(255, 247.4897959184, 181.4);\
+         \n  background-color: rgb(100%, 97.0548219288%, 71.137254902%);\
          \n}\
          \n.yellow-900 {\
-         \n  background-color: rgb(255, 246.4489795918, 171.2);\
+         \n  background-color: rgb(100%, 96.6466586635%, 67.137254902%);\
          \n}\
          \n.yellow-0 {\
          \n  background-color: #ffff33;\

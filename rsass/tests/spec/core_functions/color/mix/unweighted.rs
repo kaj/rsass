@@ -5,13 +5,14 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn average() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
              \n// All channels should be averaged across the two colors.\
              \na {b: color.mix(#91e16f, #0144bf)}\n"),
         "a {\
-         \n  b: rgb(73, 146.5, 151);\
+         \n  b: rgb(28.6274509804%, 57.4509803922%, 59.2156862745%);\
          \n}\n"
     );
 }
@@ -29,6 +30,7 @@ fn identical() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn min_and_max() {
     assert_eq!(
         runner().ok(
@@ -37,7 +39,7 @@ fn min_and_max() {
              \na {b: color.mix(#ff00ff, #00ff00)}\n"
         ),
         "a {\
-         \n  b: rgb(127.5, 127.5, 127.5);\
+         \n  b: rgb(50%, 50%, 50%);\
          \n}\n"
     );
 }

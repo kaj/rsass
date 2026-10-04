@@ -103,7 +103,7 @@ mod argument {
                     "@use \"sass:meta\";\
              \na {b: meta.get-mixin(c, $module: 1)}\n"
                 ),
-                "Error: $module: 1 is not a string.\
+                "Error: $module: 1 is neither a string nor a module reference.\
          \n  ,\
          \n2 | a {b: meta.get-mixin(c, $module: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -168,7 +168,7 @@ mod module {
                 "@use \"sass:meta\";\
              \na {b: meta.get-mixin(\"red\", $module: \"color\")}\n"
             ),
-            "Error: There is no module with the namespace \"color\".\
+            "Error: There is no module with namespace \"color\".\
          \n  ,\
          \n2 | a {b: meta.get-mixin(\"red\", $module: \"color\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -186,7 +186,7 @@ mod module {
              \n@use \"sass:color\" as a-b;\
              \nc {d: meta.get-mixin(\"c\", $module: \"a_b\")}\n"
             ),
-            "Error: There is no module with the namespace \"a_b\".\
+            "Error: There is no module with namespace \"a_b\".\
          \n  ,\
          \n3 | c {d: meta.get-mixin(\"c\", $module: \"a_b\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -203,7 +203,7 @@ mod module {
                 "@use \"sass:meta\";\
              \na {b: meta.get-mixin(\"c\", $module: \"d\")}\n"
             ),
-            "Error: There is no module with the namespace \"d\".\
+            "Error: There is no module with namespace \"d\".\
          \n  ,\
          \n2 | a {b: meta.get-mixin(\"c\", $module: \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\

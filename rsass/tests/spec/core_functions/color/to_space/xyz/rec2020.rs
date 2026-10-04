@@ -16,7 +16,7 @@ mod alpha {
              \na {b: color.to-space(color(xyz 0.1 0.2 0.3 / 0.4), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.1079117715 0.501698873 0.516462928 / 0.4);\
+         \n  b: color(rec2020 0.2132921212 0.5717179697 0.584710702 / 0.4);\
          \n}\n"
     );
     }
@@ -29,7 +29,7 @@ mod alpha {
              \na {b: color.to-space(color(xyz 0.1 0.2 0.3 / 0.0), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.1079117715 0.501698873 0.516462928 / 0);\
+         \n  b: color(rec2020 0.2132921212 0.5717179697 0.584710702 / 0);\
          \n}\n"
     );
     }
@@ -52,7 +52,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz 0.5 0.5 0.5), rec2020)}\n"),
         "a {\
-         \n  b: color(rec2020 0.7433125628 0.6928455465 0.6746511829);\
+         \n  b: color(rec2020 0.7817466648 0.7382949204 0.7225800026);\
          \n}\n"
     );
 }
@@ -63,7 +63,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz 0.2 0.4 0.8), rec2020)}\n"),
         "a {\
-         \n  b: color(rec2020 -0.0073399546 0.7239127682 0.8607584595);\
+         \n  b: color(rec2020 -0.068949908 0.765067036 0.8821414151);\
          \n}\n"
     );
 }
@@ -72,34 +72,34 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
-    fn blue() {
-        assert_eq!(
-            runner().ok("@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz 0.1 0.2 none), rec2020)}\n"),
-            "a {\
-         \n  b: color(rec2020 0.2916789955 0.496779191 none);\
-         \n}\n"
-        );
-    }
-    #[test]
-    #[ignore] // unexepected error
-    fn green() {
-        assert_eq!(
-            runner().ok("@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz 0.1 none 0.3), rec2020)}\n"),
-            "a {\
-         \n  b: color(rec2020 0.2830292386 none 0.5249837189);\
-         \n}\n"
-        );
-    }
-    #[test]
-    #[ignore] // unexepected error
-    fn red() {
+    fn x() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz none 0.2 0.3), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 none 0.5663964614 0.5146878151);\
+         \n  b: color(rec2020 none 0.6284859295 0.5831497901);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn y() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(color(xyz 0.1 none 0.3), rec2020)}\n"),
+            "a {\
+         \n  b: color(rec2020 0.3760930504 none 0.5921986764);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn z() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(color(xyz 0.1 0.2 none), rec2020)}\n"),
+            "a {\
+         \n  b: color(rec2020 0.3839649655 0.5673833022 none);\
          \n}\n"
         );
     }
@@ -114,7 +114,7 @@ mod out_of_range {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz -999999 0 0), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 -702.5226404146 458.9706861542 -89.4449238228);\
+         \n  b: color(rec2020 -396.0810002167 267.0750149624 -58.7993825157);\
          \n}\n"
         );
     }
@@ -125,7 +125,7 @@ mod out_of_range {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz -1 0.4 2), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 -1.5202475993 1.156770634 1.350426083);\
+         \n  b: color(rec2020 -1.4315709021 1.1313819628 1.2920179406);\
          \n}\n"
         );
     }
@@ -137,7 +137,7 @@ fn white() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz 1 1 1), rec2020)}\n"),
         "a {\
-         \n  b: color(rec2020 1.0517415202 0.9828015442 0.9579473111);\
+         \n  b: color(rec2020 1.0435066041 0.9855054839 0.9645285853);\
          \n}\n"
     );
 }

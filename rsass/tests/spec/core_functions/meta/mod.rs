@@ -16,6 +16,8 @@ mod call;
 
 mod content_exists;
 
+mod css;
+
 mod feature_exists;
 
 mod function_exists;
@@ -24,11 +26,15 @@ mod get_function;
 
 mod get_mixin;
 
+mod get_module;
+
 mod global_variable_exists;
 
 mod inspect;
 
 mod keywords;
+
+mod load;
 
 mod load_css;
 

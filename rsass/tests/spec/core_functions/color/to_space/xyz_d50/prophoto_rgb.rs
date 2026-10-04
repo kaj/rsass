@@ -76,20 +76,20 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
-    fn blue() {
+    fn x() {
         assert_eq!(
         runner().ok(
             "@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz-d50 0.1 0.2 none), prophoto-rgb)}\n"
+             \na {b: color.to-space(color(xyz-d50 none 0.2 0.3), prophoto-rgb)}\n"
         ),
         "a {\
-         \n  b: color(prophoto-rgb 0.251671286 0.4600356682 none);\
+         \n  b: color(prophoto-rgb none 0.5196499466 0.5700273474);\
          \n}\n"
     );
     }
     #[test]
     #[ignore] // unexepected error
-    fn green() {
+    fn y() {
         assert_eq!(
         runner().ok(
             "@use \"sass:color\";\
@@ -102,14 +102,14 @@ mod missing {
     }
     #[test]
     #[ignore] // unexepected error
-    fn red() {
+    fn z() {
         assert_eq!(
         runner().ok(
             "@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz-d50 none 0.2 0.3), prophoto-rgb)}\n"
+             \na {b: color.to-space(color(xyz-d50 0.1 0.2 none), prophoto-rgb)}\n"
         ),
         "a {\
-         \n  b: color(prophoto-rgb none 0.5196499466 0.5700273474);\
+         \n  b: color(prophoto-rgb 0.251671286 0.4600356682 none);\
          \n}\n"
     );
     }

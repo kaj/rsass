@@ -60,6 +60,19 @@ fn named() {
          \n}\n"
     );
 }
+#[test]
+#[ignore] // unexepected error
+fn negative_zero() {
+    assert_eq!(
+        runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(oklab(1% 2 -3 / -0));\n"),
+        "a {\
+         \n  value: oklab(1% 2 -3 / 0);\
+         \n  space: oklab;\
+         \n  channels: 1% 2 -3 / 0;\
+         \n}\n"
+    );
+}
 mod none {
     use super::runner;
 

@@ -85,6 +85,17 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lch(none none none), srgb-linear)}\n"),
+            "a {\
+         \n  b: color(srgb-linear none none none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn chroma() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -113,6 +124,28 @@ mod missing {
              \na {b: color.to-space(lch(none 20 30deg), srgb-linear)}\n"),
             "a {\
          \n  b: color(srgb-linear 0.016044052 -0.0043759334 -0.0071369782);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_hue() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lch(none none 10deg), srgb-linear)}\n"),
+            "a {\
+         \n  b: color(srgb-linear 0 0 0);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lch(50% none none), srgb-linear)}\n"),
+            "a {\
+         \n  b: color(srgb-linear 0.1841865185 0.1841865185 0.1841865185);\
          \n}\n"
         );
     }

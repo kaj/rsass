@@ -25,7 +25,7 @@ mod legacy {
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(pink, $saturation: -5%, $space: hsl)}\n"),
             "a {\
-         \n  b: rgb(253.425, 193.575, 204.025);\
+         \n  b: rgb(99.3823529412%, 75.9117647059%, 80.0098039216%);\
          \n}\n"
         );
     }
@@ -36,7 +36,7 @@ mod legacy {
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(pink, $chroma: -0.01, $space: oklch)}\n"),
             "a {\
-         \n  b: rgb(249.5073881917, 194.8272088582, 204.1290059224);\
+         \n  b: rgb(97.846034585%, 76.4028270032%, 80.0505905578%);\
          \n}\n"
         );
     }

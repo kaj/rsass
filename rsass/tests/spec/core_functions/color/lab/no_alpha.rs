@@ -166,9 +166,9 @@ mod unitless {
                     runner().ok("@use \'core_functions/color/utils\';\
              \n@include utils.inspect(lab(1% calc(NaN) -3));\n"),
                     "a {\
-         \n  value: lab(1% calc(NaN) -3);\
+         \n  value: lab(1% 0 -3);\
          \n  space: lab;\
-         \n  channels: 1% calc(NaN) -3 / 1;\
+         \n  channels: 1% 0 -3 / 1;\
          \n}\n"
                 );
             }
@@ -198,6 +198,19 @@ mod unitless {
          \n}\n"
                 );
             }
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn negative_zero() {
+            assert_eq!(
+                runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% -0 -3));\n"),
+                "a {\
+         \n  value: lab(1% 0 -3);\
+         \n  space: lab;\
+         \n  channels: 1% 0 -3 / 1;\
+         \n}\n"
+            );
         }
     }
     mod ab {
@@ -256,9 +269,9 @@ mod unitless {
                     runner().ok("@use \'core_functions/color/utils\';\
              \n@include utils.inspect(lab(1% 2 calc(NaN)));\n"),
                     "a {\
-         \n  value: lab(1% 2 calc(NaN));\
+         \n  value: lab(1% 2 0);\
          \n  space: lab;\
-         \n  channels: 1% 2 calc(NaN) / 1;\
+         \n  channels: 1% 2 0 / 1;\
          \n}\n"
                 );
             }
@@ -288,6 +301,19 @@ mod unitless {
          \n}\n"
                 );
             }
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn negative_zero() {
+            assert_eq!(
+                runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(1% 2 -0));\n"),
+                "a {\
+         \n  value: lab(1% 2 0);\
+         \n  space: lab;\
+         \n  channels: 1% 2 0 / 1;\
+         \n}\n"
+            );
         }
     }
     mod lightness {
@@ -372,6 +398,19 @@ mod unitless {
          \n  value: lab(10% 2 -3);\
          \n  space: lab;\
          \n  channels: 10% 2 -3 / 1;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn negative_zero() {
+            assert_eq!(
+                runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lab(-0 2 -3));\n"),
+                "a {\
+         \n  value: lab(0% 2 -3);\
+         \n  space: lab;\
+         \n  channels: 0% 2 -3 / 1;\
          \n}\n"
             );
         }

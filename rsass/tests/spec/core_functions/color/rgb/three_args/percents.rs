@@ -8,21 +8,23 @@ mod all {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn percent() {
         assert_eq!(
             runner().ok("a {b: rgb(7.1%, 20.4%, 33.9%)}\n"),
             "a {\
-         \n  b: rgb(18.105, 52.02, 86.445);\
+         \n  b: rgb(7.1%, 20.4%, 33.9%);\
          \n}\n"
         );
     }
 }
 #[test]
+#[ignore] // wrong result
 fn boundaries() {
     assert_eq!(
         runner().ok("a {b: rgb(0%, 100%, 50%)}\n"),
         "a {\
-         \n  b: rgb(0, 255, 127.5);\
+         \n  b: rgb(0%, 100%, 50%);\
          \n}\n"
     );
 }
@@ -61,11 +63,12 @@ mod percent {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn green() {
         assert_eq!(
             runner().ok("a {b: rgb(190, 68%, 237)}\n"),
             "a {\
-         \n  b: rgb(190, 173.4, 237);\
+         \n  b: rgb(74.5098039216%, 68%, 92.9411764706%);\
          \n}\n"
         );
     }
@@ -74,11 +77,12 @@ mod unitless {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn green() {
         assert_eq!(
             runner().ok("a {b: rgb(74.7%, 173, 93%)}\n"),
             "a {\
-         \n  b: rgb(190.485, 173, 237.15);\
+         \n  b: rgb(74.7%, 67.8431372549%, 93%);\
          \n}\n"
         );
     }

@@ -16,7 +16,7 @@ mod alpha {
              \na {b: color.to-space(color(display-p3 0.1 0.2 0.3 / 0.4), rgb)}\n"
         ),
         "a {\
-         \n  b: rgba(15.1358007651, 51.7877986787, 78.726254489, 0.4);\
+         \n  b: rgba(5.9356081432%, 20.3089406583%, 30.8730409761%, 0.4);\
          \n}\n"
     );
     }
@@ -29,7 +29,7 @@ mod alpha {
              \na {b: color.to-space(color(display-p3 0.1 0.2 0.3 / 0.0), rgb)}\n"
         ),
         "a {\
-         \n  b: rgba(15.1358007651, 51.7877986787, 78.726254489, 0);\
+         \n  b: rgba(5.9356081432%, 20.3089406583%, 30.8730409761%, 0);\
          \n}\n"
     );
     }
@@ -52,7 +52,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(display-p3 0.5 0.5 0.5), rgb)}\n"),
         "a {\
-         \n  b: rgb(127.5, 127.5, 127.5);\
+         \n  b: rgb(50%, 50%, 50%);\
          \n}\n"
     );
 }
@@ -63,7 +63,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(display-p3 0.2 0.4 0.8), rgb)}\n"),
         "a {\
-         \n  b: rgb(26.5344066192, 103.5127809071, 211.0954947112);\
+         \n  b: rgb(10.4056496546%, 40.5932474145%, 82.7825469456%);\
          \n}\n"
     );
 }
@@ -77,7 +77,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(display-p3 0.1 0.2 none), rgb)}\n"),
             "a {\
-         \n  b: rgb(15.1358007651, 51.7877986787, 0);\
+         \n  b: rgb(5.9356081432%, 20.3089406583%, 0%);\
          \n}\n"
         );
     }
@@ -88,7 +88,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(display-p3 0.1 none 0.3), rgb)}\n"),
             "a {\
-         \n  b: rgb(28.9866805453, 0, 80.0096532626);\
+         \n  b: rgb(11.367325704%, 0%, 31.3763346128%);\
          \n}\n"
         );
     }
@@ -99,7 +99,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(display-p3 none 0.2 0.3), rgb)}\n"),
             "a {\
-         \n  b: rgb(0, 52.1258051255, 78.8241584227);\
+         \n  b: rgb(0%, 20.4414922061%, 30.9114346756%);\
          \n}\n"
         );
     }

@@ -10,6 +10,7 @@ fn runner() -> crate::TestRunner {
         .mock_file("error/before_load/_other.scss", "// This module defines no functions.\n")
         .mock_file("error/dash_sensitive/_other-module.scss", "// This module defines no functions.\n")
         .mock_file("error/global/_other.scss", "// This module defines no functions.\n")
+        .mock_file("module_value/_other.scss", "@function b() {@return b value}\n@function c() {@return c value}\n@function d() {@return d value}\n")
         .mock_file("multiple/_other.scss", "@function b() {@return b value}\n@function c() {@return c value}\n@function d() {@return d value}\n")
         .mock_file("named/_other.scss", "@function b() {@return b value}\n@function c() {@return c value}\n@function d() {@return d value}\n")
         .mock_file("through_forward/as/_forwarded.scss", "@function c() {@return c value}\n@function d() {@return d value}\n@function e() {@return e value}\n")
@@ -204,6 +205,7 @@ mod error {
         );
     }
     #[test]
+    #[ignore] // wrong error
     fn test_type() {
         let runner = runner().with_cwd("type");
         assert_eq!(
@@ -211,7 +213,7 @@ mod error {
                 "@use \"sass:meta\";\
              \n$a: meta.module-functions(1);\n"
             ),
-            "Error: $module: 1 is not a string.\
+            "Error: $module: 1 is neither a string nor a module reference.\
          \n  ,\
          \n2 | $a: meta.module-functions(1);\
          \n  |     ^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -219,6 +221,24 @@ mod error {
          \n  input.scss 2:5  root stylesheet",
         );
     }
+}
+#[test]
+#[ignore] // unexepected error
+fn module_value() {
+    let runner = runner().with_cwd("module_value");
+    assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \n@use \"../util\";\
+             \n@use \"other\";\n\
+             \n@include util.print-function-map(meta.module-functions(meta.get-module(\"other\")));\n"
+        ),
+        "a {\
+         \n  b: b value;\
+         \n  c: c value;\
+         \n  d: d value;\
+         \n}\n"
+    );
 }
 #[test]
 fn multiple() {

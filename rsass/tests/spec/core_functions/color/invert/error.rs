@@ -216,7 +216,7 @@ mod missing {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n    input.scss 1:7  root stylesheet\n\
-         \nError: $y: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: color(xyz 0.0237000113 none 0.0589013339)).\
+         \nError: $y: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: color(xyz 0.0060843403 none 0.022293654)).\
          \n  ,\
          \n1 | a {b: invert(color(rec2020 0.1 none 0.2), $space: xyz)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -239,7 +239,7 @@ mod missing {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n    input.scss 1:7  root stylesheet\n\
-         \nError: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: lch(48.649404846% 0 none)).\
+         \nError: $hue: Because the CSS working group is still deciding on the best behavior, Sass doesn\'t currently support modifying missing channels (color: lch(39.7321737367% 0 none)).\
          \n  ,\
          \n1 | a {b: invert(color(rec2020 0.4 0.4 0.4), $space: lch)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\

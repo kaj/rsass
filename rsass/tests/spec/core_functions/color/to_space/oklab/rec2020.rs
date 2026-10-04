@@ -14,7 +14,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(10% 0.2 0.3 / 0.4), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 0.1199234985 -0.0200899779 -0.1691453967 / 0.4);\
+         \n  b: color(rec2020 0.2247165405 -0.1048905172 -0.2710745546 / 0.4);\
          \n}\n"
         );
     }
@@ -25,7 +25,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(10% 0.2 0.3 / 0.0), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 0.1199234985 -0.0200899779 -0.1691453967 / 0);\
+         \n  b: color(rec2020 0.2247165405 -0.1048905172 -0.2710745546 / 0);\
          \n}\n"
         );
     }
@@ -48,7 +48,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(50% 0 0), rec2020)}\n"),
         "a {\
-         \n  b: color(rec2020 0.3319485778 0.3319485778 0.3319485778);\
+         \n  b: color(rec2020 0.4204482076 0.4204482076 0.4204482076);\
          \n}\n"
     );
 }
@@ -59,7 +59,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(50% 0.2 -0.3), rec2020)}\n"),
         "a {\
-         \n  b: color(rec2020 0.4424432682 -0.148148946 0.9623483256);\
+         \n  b: color(rec2020 0.5193268126 -0.251384226 0.9682456661);\
          \n}\n"
     );
 }
@@ -73,7 +73,18 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(10% none 0.3), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 0.0287100489 0.017107367 -0.1474743973);\
+         \n  b: color(rec2020 0.1217144828 0.0980967097 -0.2507496386);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(oklab(none none none), rec2020)}\n"),
+            "a {\
+         \n  b: color(rec2020 none none none);\
          \n}\n"
         );
     }
@@ -84,7 +95,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(10% 0.2 none), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 0.0529885714 -0.0188512419 0.0014800888);\
+         \n  b: color(rec2020 0.1571221358 -0.1021456253 0.0353819172);\
          \n}\n"
         );
     }
@@ -95,7 +106,18 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(none 0.2 0.3), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 -0.0027870985 0.0709375583 -0.2911317074);\
+         \n  b: color(rec2020 -0.0460583372 0.1774297951 -0.3834672783);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(oklab(10% none none), rec2020)}\n"),
+            "a {\
+         \n  b: color(rec2020 0.0562341325 0.0562341325 0.0562341325);\
          \n}\n"
         );
     }
@@ -110,7 +132,7 @@ mod out_of_range {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(oklab(50% -999999 0), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 -56131666.27802762 38257475.9243856 10955270.093935277);\
+         \n  b: color(rec2020 -13712704.330516009 9615330.225098789 3020647.9352328237);\
          \n}\n"
         );
     }
@@ -123,7 +145,7 @@ mod out_of_range {
              \na {b: color.to-space(color.change(oklab(0% -2 2), $lightness: -50%), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 -1.9250404072 2.5779940454 -5.4656767494);\
+         \n  b: color(rec2020 -1.760053313 2.2800532201 -4.489254188);\
          \n}\n"
     );
     }

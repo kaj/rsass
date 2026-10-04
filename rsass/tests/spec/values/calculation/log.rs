@@ -44,11 +44,12 @@ mod base {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn zero() {
         assert_eq!(
             runner().ok("a {b: log(2, 0)}\n"),
             "a {\
-         \n  b: 0;\
+         \n  b: -0;\
          \n}\n"
         );
     }

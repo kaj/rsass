@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("$zero: 0;\
@@ -18,8 +19,8 @@ fn test() {
              \n  near: $near * -1;\
              \n}\n"),
         "a {\
-         \n  zero: 0;\
-         \n  zero: 0;\
+         \n  zero: -0;\
+         \n  zero: -0;\
          \n}\
          \na {\
          \n  near: 0;\

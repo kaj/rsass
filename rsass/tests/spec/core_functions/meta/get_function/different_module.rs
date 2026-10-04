@@ -55,10 +55,30 @@ fn chosen_prefix() {
          \n}\n"
     );
 }
-#[test]
-fn defined() {
-    let runner = runner().with_cwd("defined");
-    assert_eq!(
+mod defined {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("defined")
+    }
+
+    #[test]
+    #[ignore] // unexepected error
+    fn module_value() {
+        let runner = runner().with_cwd("module_value");
+        assert_eq!(
+        runner.ok(
+            "@use \"sass:math\";\
+             \n@use \"sass:meta\";\
+             \na {b: meta.call(meta.get-function(\"round\", $module: meta.get-module(\"math\")), 0.6)}\n"
+        ),
+        "a {\
+         \n  b: 1;\
+         \n}\n"
+    );
+    }
+    #[test]
+    fn string() {
+        let runner = runner().with_cwd("string");
+        assert_eq!(
         runner.ok(
             "@use \"sass:math\";\
              \n@use \"sass:meta\";\
@@ -68,6 +88,7 @@ fn defined() {
          \n  b: 1;\
          \n}\n"
     );
+    }
 }
 #[test]
 fn named() {

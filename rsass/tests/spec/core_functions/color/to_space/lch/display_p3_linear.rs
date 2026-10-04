@@ -87,6 +87,19 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.to-space(lch(none none none), display-p3-linear)}\n"
+        ),
+        "a {\
+         \n  b: color(display-p3-linear none none none);\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn chroma() {
         assert_eq!(
         runner().ok(
@@ -119,6 +132,32 @@ mod missing {
         ),
         "a {\
          \n  b: color(display-p3-linear 0.012418728 -0.0036981084 -0.0065410926);\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_hue() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.to-space(lch(none none 10deg), display-p3-linear)}\n"
+        ),
+        "a {\
+         \n  b: color(display-p3-linear 0 0 0);\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.to-space(lch(50% none none), display-p3-linear)}\n"
+        ),
+        "a {\
+         \n  b: color(display-p3-linear 0.1841865185 0.1841865185 0.1841865185);\
          \n}\n"
     );
     }

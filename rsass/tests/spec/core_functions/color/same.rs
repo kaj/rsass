@@ -205,17 +205,19 @@ mod test_true {
         #[ignore] // unexepected error
         fn one_none() {
             assert_eq!(
-                runner().ok("@use \"sass:color\";\
+        runner().ok(
+            "@use \"sass:color\";\
              \na {\
              \n  b: color.same(\
              \n    color(rec2020 0.5 none 0.2),\
-             \n    oklab(44.66886691637825% 0.2366736512579 0.01872833430856)\
+             \n    oklab(39.853163697274695% 0.20545316630805804 0.044516505430218456)\
              \n  );\
-             \n}\n"),
-                "a {\
+             \n}\n"
+        ),
+        "a {\
          \n  b: true;\
          \n}\n"
-            );
+    );
         }
     }
     mod same_space {

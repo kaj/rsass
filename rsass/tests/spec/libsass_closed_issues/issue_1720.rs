@@ -13,7 +13,7 @@ fn test() {
              \n    a: a#{b//}c;\
              \n}\n"
         ),
-        "Error: expected \"}\".\
+        "Error: expected end of rule.\
          \n  ,\
          \n3 | }\
          \n  |  ^\

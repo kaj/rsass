@@ -81,6 +81,17 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(oklch(none none none), lch)}\n"),
+            "a {\
+         \n  b: lch(none none none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn chroma() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -109,6 +120,28 @@ mod missing {
              \na {b: color.to-space(oklch(none 0.1 30deg), lch)}\n"),
             "a {\
          \n  b: lch(none 0.9102620546 87.9725351921deg);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_hue() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(oklch(none none 10deg), lch)}\n"),
+            "a {\
+         \n  b: lch(none none none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(oklch(50% none none), lch)}\n"),
+            "a {\
+         \n  b: lch(42% none none);\
          \n}\n"
         );
     }

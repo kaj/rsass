@@ -11,22 +11,24 @@ mod negative {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong result
         fn finite() {
             assert_eq!(
                 runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(-0.0, 1)}\n"),
                 "a {\
-         \n  b: 0deg;\
+         \n  b: -0deg;\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(-0.0, math.div(1, 0))}\n"),
                 "a {\
-         \n  b: 0deg;\
+         \n  b: -0deg;\
          \n}\n"
             );
         }
@@ -71,22 +73,24 @@ mod negative {
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn zero() {
             assert_eq!(
                 runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(-0.0, 0)}\n"),
                 "a {\
-         \n  b: 0deg;\
+         \n  b: -0deg;\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn zero_fuzzy() {
             assert_eq!(
                 runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(-0.0, 0.000000000001)}\n"),
                 "a {\
-         \n  b: 0deg;\
+         \n  b: -0deg;\
          \n}\n"
             );
         }
@@ -109,12 +113,13 @@ mod negative_fuzzy {
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(-0.000000000001, math.div(1, 0))}\n"),
                 "a {\
-         \n  b: 0deg;\
+         \n  b: -0deg;\
          \n}\n"
             );
         }

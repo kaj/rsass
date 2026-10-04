@@ -5,12 +5,13 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn even() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
              \na {b: color.mix(rgba(#91e16f, 0.3), rgba(#0144bf, 0.3))}\n"),
         "a {\
-         \n  b: rgba(73, 146.5, 151, 0.3);\
+         \n  b: rgba(28.6274509804%, 57.4509803922%, 59.2156862745%, 0.3);\
          \n}\n"
     );
 }
@@ -25,12 +26,13 @@ fn first() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn firstwards() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
              \na {b: color.mix(rgba(#91e16f, 0.8), rgba(#0144bf, 0.3))}\n"),
         "a {\
-         \n  b: rgba(109, 185.75, 131, 0.55);\
+         \n  b: rgba(42.7450980392%, 72.8431372549%, 51.3725490196%, 0.55);\
          \n}\n"
     );
 }
@@ -45,12 +47,13 @@ fn last() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn lastwards() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
              \na {b: color.mix(rgba(#91e16f, 0.4), rgba(#0144bf, 0.9))}\n"),
         "a {\
-         \n  b: rgba(37, 107.25, 171, 0.65);\
+         \n  b: rgba(14.5098039216%, 42.0588235294%, 67.0588235294%, 0.65);\
          \n}\n"
     );
 }

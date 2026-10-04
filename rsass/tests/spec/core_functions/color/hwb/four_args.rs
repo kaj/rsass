@@ -41,6 +41,16 @@ mod alpha {
             );
         }
     }
+    #[test]
+    fn negative_zero() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.hwb(0, 30%, 40%, -0)}\n"),
+            "a {\
+         \n  b: hsla(0, 33.3333333333%, 45%, 0);\
+         \n}\n"
+        );
+    }
     mod percent {
         use super::runner;
 
@@ -188,35 +198,48 @@ mod blackness {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong result
         fn nan() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.hwb(0, 30%, calc(NaN * 1%), 0.5)}\n"),
                 "a {\
-         \n  b: hsla(calc(NaN), calc(NaN * 1%), calc(NaN * 1%), 0.5);\
+         \n  b: hsla(0, 100%, 65%, 0.5);\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.hwb(0, 30%, calc(-infinity * 1%), 0.5)}\n"),
                 "a {\
-         \n  b: hsla(calc(NaN), calc(NaN * 1%), calc(NaN * 1%), 0.5);\
+         \n  b: hsla(0, 0%, 0%, 0.5);\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.hwb(0, 30%, calc(infinity * 1%), 0.5)}\n"),
                 "a {\
-         \n  b: hsla(calc(NaN), calc(NaN * 1%), calc(NaN * 1%), 0.5);\
+         \n  b: hsla(0, 100%, 50%, 0.5);\
          \n}\n"
             );
         }
+    }
+    #[test]
+    fn negative_zero() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.hwb(0, 40%, -0%, 0.5)}\n"),
+            "a {\
+         \n  b: hsla(0, 100%, 70%, 0.5);\
+         \n}\n"
+        );
     }
     #[test]
     #[ignore] // unexepected error
@@ -243,7 +266,7 @@ mod hue {
                 runner().ok("@use \"sass:color\";\
              \na {b: color.hwb(calc(NaN), 30%, 40%, 0.5)}\n"),
                 "a {\
-         \n  b: hsla(0, 0%, 30%, 0.5);\
+         \n  b: hsla(0, 33.3333333333%, 45%, 0.5);\
          \n}\n"
             );
         }
@@ -254,7 +277,7 @@ mod hue {
                 runner().ok("@use \"sass:color\";\
              \na {b: color.hwb(calc(-infinity), 30%, 40%, 0.5)}\n"),
                 "a {\
-         \n  b: hsla(0, 0%, 30%, 0.5);\
+         \n  b: hsla(0, 33.3333333333%, 45%, 0.5);\
          \n}\n"
             );
         }
@@ -265,10 +288,20 @@ mod hue {
                 runner().ok("@use \"sass:color\";\
              \na {b: color.hwb(calc(infinity), 30%, 40%, 0.5)}\n"),
                 "a {\
-         \n  b: hsla(0, 0%, 30%, 0.5);\
+         \n  b: hsla(0, 33.3333333333%, 45%, 0.5);\
          \n}\n"
             );
         }
+    }
+    #[test]
+    fn negative_zero() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.hwb(-0, 30%, 40%, 0.5)}\n"),
+            "a {\
+         \n  b: hsla(0, 33.3333333333%, 45%, 0.5);\
+         \n}\n"
+        );
     }
     #[test]
     #[ignore] // unexepected error
@@ -321,35 +354,48 @@ mod whiteness {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong result
         fn nan() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.hwb(0, calc(NaN * 1%), 40%, 0.5)}\n"),
                 "a {\
-         \n  b: hsla(calc(NaN), calc(NaN * 1%), calc(NaN * 1%), 0.5);\
+         \n  b: hsla(0, 100%, 30%, 0.5);\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.hwb(0, calc(-infinity * 1%), 40%, 0.5)}\n"),
                 "a {\
-         \n  b: hsla(calc(NaN), calc(NaN * 1%), calc(NaN * 1%), 0.5);\
+         \n  b: hsla(0, 0%, 0%, 0.5);\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn positive_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.hwb(0, calc(infinity * 1%), 40%, 0.5)}\n"),
                 "a {\
-         \n  b: hsla(calc(NaN), calc(NaN * 1%), calc(NaN * 1%), 0.5);\
+         \n  b: hsla(0, 100%, 50%, 0.5);\
          \n}\n"
             );
         }
+    }
+    #[test]
+    fn negative_zero() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.hwb(0, -0%, 40%, 0.5)}\n"),
+            "a {\
+         \n  b: hsla(0, 100%, 30%, 0.5);\
+         \n}\n"
+        );
     }
     #[test]
     #[ignore] // unexepected error

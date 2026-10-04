@@ -23,6 +23,7 @@ mod mixed {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn firstwards() {
         assert_eq!(
         runner().ok(
@@ -30,11 +31,12 @@ mod mixed {
              \na {b: color.mix(rgba(#91e16f, 0.8), rgba(#0144bf, 0.3), 63%)}\n"
         ),
         "a {\
-         \n  b: rgba(121.4247787611, 199.296460177, 124.0973451327, 0.615);\
+         \n  b: rgba(47.6175602985%, 78.1554745792%, 48.6656255423%, 0.615);\
          \n}\n"
     );
     }
     #[test]
+    #[ignore] // wrong result
     fn lastwards() {
         assert_eq!(
         runner().ok(
@@ -42,7 +44,7 @@ mod mixed {
              \na {b: color.mix(rgba(#91e16f, 0.2), rgba(#0144bf, 0.7), 42%)}\n"
         ),
         "a {\
-         \n  b: rgba(29, 98.5277777778, 175.4444444444, 0.49);\
+         \n  b: rgba(11.3725490196%, 38.6383442266%, 68.8017429194%, 0.49);\
          \n}\n"
     );
     }

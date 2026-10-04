@@ -28,6 +28,10 @@ fn runner() -> crate::TestRunner {
             "// This module defines no variables.\n",
         )
         .mock_file(
+            "module_value/_other.scss",
+            "$c: c value;\n$d: d value;\n$e: e value;\n",
+        )
+        .mock_file(
             "multiple/_other.scss",
             "$c: c value;\n$d: d value;\n$e: e value;\n",
         )
@@ -234,6 +238,7 @@ mod error {
         );
     }
     #[test]
+    #[ignore] // wrong error
     fn test_type() {
         let runner = runner().with_cwd("type");
         assert_eq!(
@@ -241,7 +246,7 @@ mod error {
                 "@use \"sass:meta\";\
              \na {b: meta.inspect(meta.module-variables(1))}\n"
             ),
-            "Error: $module: 1 is not a string.\
+            "Error: $module: 1 is neither a string nor a module reference.\
          \n  ,\
          \n2 | a {b: meta.inspect(meta.module-variables(1))}\
          \n  |                    ^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -249,6 +254,21 @@ mod error {
          \n  input.scss 2:20  root stylesheet",
         );
     }
+}
+#[test]
+#[ignore] // unexepected error
+fn module_value() {
+    let runner = runner().with_cwd("module_value");
+    assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \n@use \"other\";\n\
+             \na {b: meta.inspect(meta.module-variables(meta.get-module(\"other\")))}\n"
+        ),
+        "a {\
+         \n  b: (\"c\": c value, \"d\": d value, \"e\": e value);\
+         \n}\n"
+    );
 }
 #[test]
 fn multiple() {

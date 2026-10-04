@@ -5,12 +5,13 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn alpha() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
              \na {b: color.complement(rgba(turquoise, 0.7))}\n"),
         "a {\
-         \n  b: rgba(224, 64, 80, 0.7);\
+         \n  b: rgba(87.8431372549%, 25.0980392157%, 31.3725490196%, 0.7);\
          \n}\n"
     );
 }

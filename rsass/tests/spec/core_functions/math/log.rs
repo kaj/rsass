@@ -68,12 +68,13 @@ mod base {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn zero() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
              \na {b: math.log(2, 0)}\n"),
             "a {\
-         \n  b: 0;\
+         \n  b: -0;\
          \n}\n"
         );
     }

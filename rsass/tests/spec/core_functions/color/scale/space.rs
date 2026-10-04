@@ -14,7 +14,7 @@ mod legacy {
             runner().ok("@use \"sass:color\";\
              \na {b: color.scale(red, $saturation: -10%, $space: hsl)}\n"),
             "a {\
-         \n  b: rgb(242.25, 12.75, 12.75);\
+         \n  b: rgb(95%, 5%, 5%);\
          \n}\n"
         );
     }

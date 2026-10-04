@@ -42,12 +42,13 @@ mod hue {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn angle() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(red, $hue: 60rad)}\n"),
             "a {\
-         \n  b: rgb(0, 179.576224164, 255);\
+         \n  b: rgb(0%, 70.4220486918%, 100%);\
          \n}\n"
         );
     }
@@ -120,32 +121,35 @@ mod saturation {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn percent() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(red, $saturation: -10%)}\n"),
             "a {\
-         \n  b: rgb(242.25, 12.75, 12.75);\
+         \n  b: rgb(95%, 5%, 5%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn unitless() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(red, $saturation: -10)}\n"),
             "a {\
-         \n  b: rgb(242.25, 12.75, 12.75);\
+         \n  b: rgb(95%, 5%, 5%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn unknown() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(red, $saturation: -10in)}\n"),
             "a {\
-         \n  b: rgb(242.25, 12.75, 12.75);\
+         \n  b: rgb(95%, 5%, 5%);\
          \n}\n"
         );
     }

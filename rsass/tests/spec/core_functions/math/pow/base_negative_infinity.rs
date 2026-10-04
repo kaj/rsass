@@ -88,12 +88,13 @@ mod with_exponent {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn negative_odd_integer() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
              \na {b: math.pow(math.div(-1, 0), -3)}\n"),
             "a {\
-         \n  b: 0;\
+         \n  b: -0;\
          \n}\n"
         );
     }

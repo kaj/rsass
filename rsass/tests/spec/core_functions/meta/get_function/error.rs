@@ -94,6 +94,7 @@ mod argument {
         }
 
         #[test]
+        #[ignore] // wrong error
         fn module() {
             let runner = runner().with_cwd("module");
             assert_eq!(
@@ -101,7 +102,7 @@ mod argument {
                     "@use \"sass:meta\";\
              \na {b: meta.get-function(c, $module: 1)}\n"
                 ),
-                "Error: $module: 1 is not a string.\
+                "Error: $module: 1 is neither a string nor a module reference.\
          \n  ,\
          \n2 | a {b: meta.get-function(c, $module: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -213,6 +214,7 @@ mod module {
     );
     }
     #[test]
+    #[ignore] // wrong error
     fn built_in_but_not_loaded() {
         let runner = runner().with_cwd("built_in_but_not_loaded");
         assert_eq!(
@@ -220,7 +222,7 @@ mod module {
                 "@use \"sass:meta\";\
              \na {b: meta.get-function(\"red\", $module: \"color\")}\n"
             ),
-            "Error: There is no module with the namespace \"color\".\
+            "Error: There is no module with namespace \"color\".\
          \n  ,\
          \n2 | a {b: meta.get-function(\"red\", $module: \"color\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -229,6 +231,7 @@ mod module {
         );
     }
     #[test]
+    #[ignore] // wrong error
     fn dash_sensitive() {
         let runner = runner().with_cwd("dash_sensitive");
         assert_eq!(
@@ -237,7 +240,7 @@ mod module {
              \n@use \"sass:meta\";\
              \nc {d: meta.get-function(\"c\", $module: \"a_b\")}\n"
             ),
-            "Error: There is no module with the namespace \"a_b\".\
+            "Error: There is no module with namespace \"a_b\".\
          \n  ,\
          \n3 | c {d: meta.get-function(\"c\", $module: \"a_b\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -246,6 +249,7 @@ mod module {
         );
     }
     #[test]
+    #[ignore] // wrong error
     fn non_existent() {
         let runner = runner().with_cwd("non_existent");
         assert_eq!(
@@ -253,7 +257,7 @@ mod module {
                 "@use \"sass:meta\";\
              \na {b: meta.get-function(\"c\", $module: \"d\")}\n"
             ),
-            "Error: There is no module with the namespace \"d\".\
+            "Error: There is no module with namespace \"d\".\
          \n  ,\
          \n2 | a {b: meta.get-function(\"c\", $module: \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\

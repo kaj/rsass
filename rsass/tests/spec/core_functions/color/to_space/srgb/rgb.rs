@@ -14,7 +14,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb 0.1 0.2 0.3 / 0.4), rgb)}\n"),
             "a {\
-         \n  b: rgba(25.5, 51, 76.5, 0.4);\
+         \n  b: rgba(10%, 20%, 30%, 0.4);\
          \n}\n"
         );
     }
@@ -25,7 +25,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb 0.1 0.2 0.3 / 0.0), rgb)}\n"),
             "a {\
-         \n  b: rgba(25.5, 51, 76.5, 0);\
+         \n  b: rgba(10%, 20%, 30%, 0);\
          \n}\n"
         );
     }
@@ -48,7 +48,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb 0.5 0.5 0.5), rgb)}\n"),
         "a {\
-         \n  b: rgb(127.5, 127.5, 127.5);\
+         \n  b: rgb(50%, 50%, 50%);\
          \n}\n"
     );
 }
@@ -73,7 +73,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb 0.1 0.2 none), rgb)}\n"),
             "a {\
-         \n  b: rgb(25.5, 51, 0);\
+         \n  b: rgb(10%, 20%, 0%);\
          \n}\n"
         );
     }
@@ -84,7 +84,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb 0.1 none 0.3), rgb)}\n"),
             "a {\
-         \n  b: rgb(25.5, 0, 76.5);\
+         \n  b: rgb(10%, 0%, 30%);\
          \n}\n"
         );
     }
@@ -95,7 +95,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(srgb none 0.2 0.3), rgb)}\n"),
             "a {\
-         \n  b: rgb(0, 51, 76.5);\
+         \n  b: rgb(0%, 20%, 30%);\
          \n}\n"
         );
     }

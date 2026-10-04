@@ -16,6 +16,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong error
 fn function() {
     let runner = runner().with_cwd("function");
     assert_eq!(
@@ -23,7 +24,7 @@ fn function() {
             "$variable: other.member();\
              \n@use \"other\";\n"
         ),
-        "Error: There is no module with the namespace \"other\".\
+        "Error: There is no module with namespace \"other\".\
          \n  ,\
          \n1 | $variable: other.member();\
          \n  |            ^^^^^^^^^^^^^^\
@@ -32,6 +33,7 @@ fn function() {
     );
 }
 #[test]
+#[ignore] // wrong error
 fn variable_declaration() {
     let runner = runner().with_cwd("variable_declaration");
     assert_eq!(
@@ -39,7 +41,7 @@ fn variable_declaration() {
             "other.$member: value;\
              \n@use \"other\";\n"
         ),
-        "Error: There is no module with the namespace \"other\".\
+        "Error: There is no module with namespace \"other\".\
          \n  ,\
          \n1 | other.$member: value;\
          \n  | ^^^^^^^^^^^^^^^^^^^^\
@@ -66,6 +68,7 @@ fn variable_declaration_without_namespace() {
     );
 }
 #[test]
+#[ignore] // wrong error
 fn variable_use() {
     let runner = runner().with_cwd("variable_use");
     assert_eq!(
@@ -73,7 +76,7 @@ fn variable_use() {
             "$variable: other.$member;\
              \n@use \"other\";\n"
         ),
-        "Error: There is no module with the namespace \"other\".\
+        "Error: There is no module with namespace \"other\".\
          \n  ,\
          \n1 | $variable: other.$member;\
          \n  |            ^^^^^^^^^^^^^\

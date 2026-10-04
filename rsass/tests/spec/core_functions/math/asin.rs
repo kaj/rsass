@@ -117,12 +117,13 @@ fn negative_decimal() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn negative_zero() {
     assert_eq!(
         runner().ok("@use \"sass:math\";\
              \na {b: math.asin(-0.0)}\n"),
         "a {\
-         \n  b: 0deg;\
+         \n  b: -0deg;\
          \n}\n"
     );
 }

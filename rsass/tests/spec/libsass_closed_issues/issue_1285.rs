@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -20,13 +21,13 @@ fn test() {
              \n  }\
              \n}\n"),
         ".box-1 {\
-         \n  color: rgb(229.5, 0, 0);\
+         \n  color: rgb(90%, 0%, 0%);\
          \n}\
          \n.box-2 {\
          \n  color: #cc0000;\
          \n}\
          \n.box-3 {\
-         \n  color: rgb(178.5, 0, 0);\
+         \n  color: rgb(70%, 0%, 0%);\
          \n}\
          \n.outside-child {\
          \n  background-color: blue;\

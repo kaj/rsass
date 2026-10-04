@@ -12,7 +12,7 @@ fn test() {
             "0//#{\
              \n{\n"
         ),
-        "Error: expected \"}\".\
+        "Error: expected end of rule.\
          \n  ,\
          \n2 | {\
          \n  |  ^\

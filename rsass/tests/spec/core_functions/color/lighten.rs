@@ -163,11 +163,12 @@ mod error {
     }
 }
 #[test]
+#[ignore] // wrong result
 fn fraction() {
     assert_eq!(
         runner().ok("a {b: lighten(red, 0.5%)}\n"),
         "a {\
-         \n  b: rgb(255, 2.55, 2.55);\
+         \n  b: rgb(100%, 1%, 1%);\
          \n}\n"
     );
 }
@@ -190,11 +191,12 @@ fn max_remaining() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn middle() {
     assert_eq!(
         runner().ok("a {b: lighten(red, 14%)}\n"),
         "a {\
-         \n  b: rgb(255, 71.4, 71.4);\
+         \n  b: rgb(100%, 28%, 28%);\
          \n}\n"
     );
 }
@@ -208,11 +210,12 @@ fn min() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok("a {b: lighten($color: red, $amount: 14%)}\n"),
         "a {\
-         \n  b: rgb(255, 71.4, 71.4);\
+         \n  b: rgb(100%, 28%, 28%);\
          \n}\n"
     );
 }

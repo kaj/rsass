@@ -29,6 +29,16 @@ mod alpha {
     }
     #[test]
     #[ignore] // wrong result
+    fn negative_zero() {
+        assert_eq!(
+            runner().ok("a {b: color(srgb 0 0 0 / -0)}\n"),
+            "a {\
+         \n  b: color(srgb 0 0 0 / 0);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
     fn positive_infinity() {
         assert_eq!(
             runner().ok("a {b: color(srgb 0 0 0 / calc(infinity))}\n"),
@@ -42,11 +52,12 @@ mod arg1 {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn nan() {
         assert_eq!(
             runner().ok("a {b: color(srgb calc(NaN) 0 0)}\n"),
             "a {\
-         \n  b: color(srgb calc(NaN) 0 0);\
+         \n  b: color(srgb 0 0 0);\
          \n}\n"
         );
     }
@@ -56,6 +67,15 @@ mod arg1 {
             runner().ok("a {b: color(srgb calc(-infinity) 0 0)}\n"),
             "a {\
          \n  b: color(srgb calc(-infinity) 0 0);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn negative_zero() {
+        assert_eq!(
+            runner().ok("a {b: color(srgb -0 0 0)}\n"),
+            "a {\
+         \n  b: color(srgb 0 0 0);\
          \n}\n"
         );
     }
@@ -78,7 +98,7 @@ mod before_alpha {
         assert_eq!(
             runner().ok("a {b: color(srgb 0 0 calc(NaN) / 0.5)}\n"),
             "a {\
-         \n  b: color(srgb 0 0 calc(NaN) / 0.5);\
+         \n  b: color(srgb 0 0 0 / 0.5);\
          \n}\n"
         );
     }

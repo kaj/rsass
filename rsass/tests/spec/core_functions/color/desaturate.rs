@@ -5,11 +5,12 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn alpha() {
     assert_eq!(
         runner().ok("a {b: desaturate(rgba(plum, 0.3), 100%)}\n"),
         "a {\
-         \n  b: rgba(190.5, 190.5, 190.5, 0.3);\
+         \n  b: rgba(74.7058823529%, 74.7058823529%, 74.7058823529%, 0.3);\
          \n}\n"
     );
 }
@@ -183,29 +184,32 @@ mod error {
     }
 }
 #[test]
+#[ignore] // wrong result
 fn max() {
     assert_eq!(
         runner().ok("a {b: desaturate(plum, 100%)}\n"),
         "a {\
-         \n  b: rgb(190.5, 190.5, 190.5);\
+         \n  b: rgb(74.7058823529%, 74.7058823529%, 74.7058823529%);\
          \n}\n"
     );
 }
 #[test]
+#[ignore] // wrong result
 fn max_remaining() {
     assert_eq!(
         runner().ok("a {b: desaturate(plum, 48%)}\n"),
         "a {\
-         \n  b: rgb(190.5, 190.5, 190.5);\
+         \n  b: rgb(74.7058823529%, 74.7058823529%, 74.7058823529%);\
          \n}\n"
     );
 }
 #[test]
+#[ignore] // wrong result
 fn middle() {
     assert_eq!(
         runner().ok("a {b: desaturate(plum, 14%)}\n"),
         "a {\
-         \n  b: rgb(211.97, 169.03, 211.97);\
+         \n  b: rgb(83.1254901961%, 66.2862745098%, 83.1254901961%);\
          \n}\n"
     );
 }
@@ -219,11 +223,12 @@ fn min() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok("a {b: desaturate($color: plum, $amount: 14%)}\n"),
         "a {\
-         \n  b: rgb(211.97, 169.03, 211.97);\
+         \n  b: rgb(83.1254901961%, 66.2862745098%, 83.1254901961%);\
          \n}\n"
     );
 }

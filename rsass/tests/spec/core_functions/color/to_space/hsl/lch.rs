@@ -81,6 +81,17 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hsl(none none none), lch)}\n"),
+            "a {\
+         \n  b: lch(none none none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn hue() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -98,6 +109,37 @@ mod missing {
              \na {b: color.to-space(hsl(10deg 20% none), lch)}\n"),
             "a {\
          \n  b: lch(none 0 none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_hue() {
+        assert_eq!(
+        runner().ok(
+            "// This seems unintuitive, in that one would expect the HSL hue to translate\
+             \n// into an LCH hue. However, CSS specifies the HSL -> LCH conversion as going\
+             \n// through sRGB, which discards hue information if there aren\'t also saturation\
+             \n// and lightness values. (This matches the behavior of `color-mix` in Chrome.)\
+             \n//\
+             \n// See discussion of this behavior in \
+             \n// https://github.com/w3c/csswg-drafts/issues/10210#issuecomment-5052906087.\
+             \n@use \"sass:color\";\
+             \na {b: color.to-space(hsl(10deg none none), lch)}\n"
+        ),
+        "a {\
+         \n  b: lch(none none none);\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hsl(none none 50%), lch)}\n"),
+            "a {\
+         \n  b: lch(53.3889647411% none none);\
          \n}\n"
         );
     }

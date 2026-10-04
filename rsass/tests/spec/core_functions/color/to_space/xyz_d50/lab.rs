@@ -72,18 +72,29 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
-    fn blue() {
+    fn all() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz-d50 0.1 0.2 none), lab)}\n"),
+             \na {b: color.to-space(color(xyz-d50 none none none), lab)}\n"),
             "a {\
-         \n  b: lab(51.8372115265% -57.4926250406 89.374502632);\
+         \n  b: lab(none none none);\
          \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
-    fn green() {
+    fn x() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(color(xyz-d50 none 0.2 0.3), lab)}\n"),
+            "a {\
+         \n  b: lab(51.8372115265% -223.4362565799 -25.7864288134);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn y() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz-d50 0.1 none 0.3), lab)}\n"),
@@ -94,12 +105,12 @@ mod missing {
     }
     #[test]
     #[ignore] // unexepected error
-    fn red() {
+    fn z() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz-d50 none 0.2 0.3), lab)}\n"),
+             \na {b: color.to-space(color(xyz-d50 0.1 0.2 none), lab)}\n"),
             "a {\
-         \n  b: lab(51.8372115265% -223.4362565799 -25.7864288134);\
+         \n  b: lab(51.8372115265% -57.4926250406 89.374502632);\
          \n}\n"
         );
     }

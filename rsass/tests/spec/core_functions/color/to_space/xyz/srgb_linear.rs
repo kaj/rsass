@@ -72,20 +72,20 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
-    fn blue() {
+    fn x() {
         assert_eq!(
         runner().ok(
             "@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz 0.1 0.2 none), srgb-linear)}\n"
+             \na {b: color.to-space(color(xyz none 0.2 0.3), srgb-linear)}\n"
         ),
         "a {\
-         \n  b: color(srgb-linear 0.0166203587 0.2782691367 none);\
+         \n  b: color(srgb-linear none 0.3876600175 0.2762960625);\
          \n}\n"
     );
     }
     #[test]
     #[ignore] // unexepected error
-    fn green() {
+    fn y() {
         assert_eq!(
         runner().ok(
             "@use \"sass:color\";\
@@ -98,14 +98,14 @@ mod missing {
     }
     #[test]
     #[ignore] // unexepected error
-    fn red() {
+    fn z() {
         assert_eq!(
         runner().ok(
             "@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz none 0.2 0.3), srgb-linear)}\n"
+             \na {b: color.to-space(color(xyz 0.1 0.2 none), srgb-linear)}\n"
         ),
         "a {\
-         \n  b: color(srgb-linear none 0.3876600175 0.2762960625);\
+         \n  b: color(srgb-linear 0.0166203587 0.2782691367 none);\
          \n}\n"
     );
     }

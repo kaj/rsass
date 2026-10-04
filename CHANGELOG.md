@@ -13,7 +13,7 @@ project adheres to
 * Refined custom-property handling for new tests.
 * Support css `@function` (PR #216).
 * Refactored to get items and values smaller in memory.
-* Updated sass-spec test suite to 2026-05-07.
+* Updated sass-spec test suite to 2026-09-29.
 * Use rust edition 2024 and let chains, so msrv is now 1.88.0.
 * Removed dependency `lazy-static`.
 

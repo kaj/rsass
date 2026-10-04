@@ -4,7 +4,8 @@ fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("different_module")
         .mock_file("chosen_prefix/_other.scss", "@use \"sass:color\";\n@mixin a($color) {c: color.channel($color, 'red')}\n")
-        .mock_file("defined/_other.scss", "@use \"sass:color\";\n@mixin a($color) {b: color.channel($color, 'red')}\n")
+        .mock_file("defined/module_value/_other.scss", "@use \"sass:color\";\n@mixin a($color) {b: color.channel($color, 'red')}\n")
+        .mock_file("defined/string/_other.scss", "@use \"sass:color\";\n@mixin a($color) {b: color.channel($color, 'red')}\n")
         .mock_file("named/_other.scss", "@use \"sass:color\";\n@mixin a($color) {b: color.channel($color, 'red')}\n")
         .mock_file("through_forward/as/_midstream.scss", "@forward \"upstream\" as c-*;\n")
         .mock_file("through_forward/as/_upstream.scss", "@mixin d() {b: d}\n")
@@ -32,11 +33,31 @@ fn chosen_prefix() {
          \n}\n"
     );
 }
-#[test]
-#[ignore] // unexepected error
-fn defined() {
-    let runner = runner().with_cwd("defined");
-    assert_eq!(
+mod defined {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("defined")
+    }
+
+    #[test]
+    #[ignore] // unexepected error
+    fn module_value() {
+        let runner = runner().with_cwd("module_value");
+        assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \n@use \"other\";\
+             \na {@include meta.apply(meta.get-mixin(\"a\", $module: meta.get-module(\"other\")), #abcdef)}\n"
+        ),
+        "a {\
+         \n  b: 171;\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn string() {
+        let runner = runner().with_cwd("string");
+        assert_eq!(
         runner.ok(
             "@use \"sass:meta\";\
              \n@use \"other\";\
@@ -46,6 +67,7 @@ fn defined() {
          \n  b: 171;\
          \n}\n"
     );
+    }
 }
 #[test]
 #[ignore] // unexepected error

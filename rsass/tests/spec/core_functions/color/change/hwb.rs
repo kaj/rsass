@@ -17,6 +17,7 @@ fn all() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn alpha_arg() {
     assert_eq!(
         runner().ok(
@@ -24,11 +25,12 @@ fn alpha_arg() {
              \na {b: color.change(blue, $hue: 150, $whiteness: 20%, $blackness: 40%, $alpha: 0.3)}\n"
         ),
         "a {\
-         \n  b: rgba(51, 153, 102, 0.3);\
+         \n  b: rgba(20%, 60%, 40%, 0.3);\
          \n}\n"
     );
 }
 #[test]
+#[ignore] // wrong result
 fn alpha_input() {
     assert_eq!(
         runner().ok(
@@ -36,7 +38,7 @@ fn alpha_input() {
              \na {b: color.change(rgba(blue, 0.7), $hue: 150, $whiteness: 20%, $blackness: 40%)}\n"
         ),
         "a {\
-         \n  b: rgba(51, 153, 102, 0.7);\
+         \n  b: rgba(20%, 60%, 40%, 0.7);\
          \n}\n"
     );
 }
@@ -64,12 +66,13 @@ mod blackness {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(#993333, $blackness: 100%)}\n"),
             "a {\
-         \n  b: rgb(42.5, 42.5, 42.5);\
+         \n  b: rgb(16.6666666667%, 16.6666666667%, 16.6666666667%);\
          \n}\n"
         );
     }
@@ -144,12 +147,13 @@ mod whiteness {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.change(#cc6666, $whiteness: 100%)}\n"),
             "a {\
-         \n  b: rgb(212.5, 212.5, 212.5);\
+         \n  b: rgb(83.3333333333%, 83.3333333333%, 83.3333333333%);\
          \n}\n"
         );
     }

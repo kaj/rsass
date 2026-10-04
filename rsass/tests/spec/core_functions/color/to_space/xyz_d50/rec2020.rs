@@ -16,7 +16,7 @@ mod alpha {
              \na {b: color.to-space(color(xyz-d50 0.1 0.2 0.3 / 0.4), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.0683739868 0.5055777091 0.6004180325 / 0.4);\
+         \n  b: color(rec2020 0.1747294041 0.5751337079 0.6581713933 / 0.4);\
          \n}\n"
     );
     }
@@ -29,7 +29,7 @@ mod alpha {
              \na {b: color.to-space(color(xyz-d50 0.1 0.2 0.3 / 0.0), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.0683739868 0.5055777091 0.6004180325 / 0);\
+         \n  b: color(rec2020 0.1747294041 0.5751337079 0.6581713933 / 0);\
          \n}\n"
     );
     }
@@ -52,7 +52,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz-d50 0.5 0.5 0.5), rec2020)}\n"),
         "a {\
-         \n  b: color(rec2020 0.7117581507 0.6973714052 0.7808630758);\
+         \n  b: color(rec2020 0.7546018898 0.7421998405 0.8139518386);\
          \n}\n"
     );
 }
@@ -63,7 +63,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz-d50 0.2 0.4 0.8), rec2020)}\n"),
         "a {\
-         \n  b: color(rec2020 -0.075615701 0.7287813238 0.9918551161);\
+         \n  b: color(rec2020 -0.1822145748 0.7692556516 0.993137764);\
          \n}\n"
     );
 }
@@ -72,40 +72,40 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
-    fn blue() {
-        assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz-d50 0.1 0.2 none), rec2020)}\n"
-        ),
-        "a {\
-         \n  b: color(rec2020 0.2651201665 0.5016141545 none);\
-         \n}\n"
-    );
-    }
-    #[test]
-    #[ignore] // unexepected error
-    fn green() {
-        assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.to-space(color(xyz-d50 0.1 none 0.3), rec2020)}\n"
-        ),
-        "a {\
-         \n  b: color(rec2020 0.2799117622 none 0.6111315018);\
-         \n}\n"
-    );
-    }
-    #[test]
-    #[ignore] // unexepected error
-    fn red() {
+    fn x() {
         assert_eq!(
         runner().ok(
             "@use \"sass:color\";\
              \na {b: color.to-space(color(xyz-d50 none 0.2 0.3), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 none 0.57127065 0.5978630317);\
+         \n  b: color(rec2020 none 0.6327456634 0.6559458093);\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn y() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.to-space(color(xyz-d50 0.1 none 0.3), rec2020)}\n"
+        ),
+        "a {\
+         \n  b: color(rec2020 0.3732526973 none 0.6674970467);\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn z() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.to-space(color(xyz-d50 0.1 0.2 none), rec2020)}\n"
+        ),
+        "a {\
+         \n  b: color(rec2020 0.3597521318 0.5716433477 none);\
          \n}\n"
     );
     }
@@ -120,7 +120,7 @@ mod out_of_range {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz-d50 -999999 0 0), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 -689.5826182995 463.8899975273 -113.049587293);\
+         \n  b: color(rec2020 -389.3221679147 269.7239004363 -73.0228219197);\
          \n}\n"
         );
     }
@@ -131,7 +131,7 @@ mod out_of_range {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz-d50 -1 0.4 2), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 -1.4925160884 1.1662135588 1.5466705118);\
+         \n  b: color(rec2020 -1.4088593501 1.1392552927 1.4531839464);\
          \n}\n"
         );
     }
@@ -143,7 +143,7 @@ fn white() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(xyz-d50 1 1 1), rec2020)}\n"),
         "a {\
-         \n  b: color(rec2020 1.0086369229 0.9889840495 1.1030370326);\
+         \n  b: color(rec2020 1.0072726765 0.9907179269 1.0864953536);\
          \n}\n"
     );
 }

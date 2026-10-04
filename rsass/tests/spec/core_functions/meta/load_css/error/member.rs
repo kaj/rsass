@@ -25,6 +25,7 @@ fn global() {
     );
 }
 #[test]
+#[ignore] // wrong error
 fn namespace() {
     let runner = runner().with_cwd("namespace");
     assert_eq!(
@@ -33,7 +34,7 @@ fn namespace() {
              \n@meta.load-css(\"other\");\n\
              \na {b: other.$c}\n"
         ),
-        "Error: There is no module with the namespace \"other\".\
+        "Error: There is no module with namespace \"other\".\
          \n  ,\
          \n4 | a {b: other.$c}\
          \n  |       ^^^^^^^^\

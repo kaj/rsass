@@ -16,7 +16,7 @@ mod alpha {
              \na {b: color.to-space(color(display-p3-linear 0.1 0.2 0.3 / 0.4), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.3386744281 0.4295143351 0.5387140347 / 0.4);\
+         \n  b: color(rec2020 0.4265164361 0.5078406298 0.6042488483 / 0.4);\
          \n}\n"
     );
     }
@@ -29,7 +29,7 @@ mod alpha {
              \na {b: color.to-space(color(display-p3-linear 0.1 0.2 0.3 / 0.0), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.3386744281 0.4295143351 0.5387140347 / 0);\
+         \n  b: color(rec2020 0.4265164361 0.5078406298 0.6042488483 / 0);\
          \n}\n"
     );
     }
@@ -56,7 +56,7 @@ fn gray() {
              \na {b: color.to-space(color(display-p3-linear 0.5 0.5 0.5), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.7054355531 0.7054355531 0.7054355531);\
+         \n  b: color(rec2020 0.7491535384 0.7491535384 0.7491535384);\
          \n}\n"
     );
 }
@@ -69,7 +69,7 @@ fn middle() {
              \na {b: color.to-space(color(display-p3-linear 0.2 0.4 0.8), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.5087906169 0.6251394888 0.8914365162);\
+         \n  b: color(rec2020 0.5779617947 0.6796747671 0.9082112067);\
          \n}\n"
     );
 }
@@ -85,7 +85,7 @@ mod missing {
              \na {b: color.to-space(color(display-p3-linear 0.1 0.2 none), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.3162343228 0.4249607248 none);\
+         \n  b: color(rec2020 0.4062428694 0.5037902303 none);\
          \n}\n"
     );
     }
@@ -98,7 +98,7 @@ mod missing {
              \na {b: color.to-space(color(display-p3-linear 0.1 none 0.3), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.2720431653 none 0.5353168234);\
+         \n  b: color(rec2020 0.3660758373 none 0.6012691496);\
          \n}\n"
     );
     }
@@ -111,7 +111,7 @@ mod missing {
              \na {b: color.to-space(color(display-p3-linear none 0.2 0.3), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 none 0.423943727 0.5388304424);\
+         \n  b: color(rec2020 none 0.5028852638 0.6043509288);\
          \n}\n"
     );
     }
@@ -128,7 +128,7 @@ mod out_of_range {
              \na {b: color.to-space(color(display-p3-linear -999999 0 0), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 -485.0647425281 -137.3886086146 26.7185039398);\
+         \n  b: color(rec2020 -281.1023466841 -87.4591218497 19.2550484771);\
          \n}\n"
     );
     }
@@ -141,7 +141,7 @@ mod out_of_range {
              \na {b: color.to-space(color(display-p3-linear -1 0.4 2), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 -0.7605208006 0.5913026458 1.394070004);\
+         \n  b: color(rec2020 -0.7965182173 0.6502284819 1.3279932207);\
          \n}\n"
     );
     }

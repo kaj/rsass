@@ -5,11 +5,12 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("a {b: adjust-hue(rgba(red, 0.1), 359)}\n"),
         "a {\
-         \n  b: rgba(255, 0, 4.25, 0.1);\
+         \n  b: rgba(100%, 0%, 1.6666666667%, 0.1);\
          \n}\n"
     );
 }

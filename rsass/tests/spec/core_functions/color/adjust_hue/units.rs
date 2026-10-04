@@ -5,11 +5,12 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn angle() {
     assert_eq!(
         runner().ok("a {b: adjust-hue(red, 60rad)}\n"),
         "a {\
-         \n  b: rgb(0, 179.576224164, 255);\
+         \n  b: rgb(0%, 70.4220486918%, 100%);\
          \n}\n"
     );
 }

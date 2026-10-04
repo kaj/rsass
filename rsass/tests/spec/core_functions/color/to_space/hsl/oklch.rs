@@ -81,6 +81,17 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hsl(none none none), oklch)}\n"),
+            "a {\
+         \n  b: oklch(none none none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn hue() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -98,6 +109,31 @@ mod missing {
              \na {b: color.to-space(hsl(10deg 20% none), oklch)}\n"),
             "a {\
          \n  b: oklch(none 0 none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_hue() {
+        assert_eq!(
+            runner().ok(
+                "// See comment in missing/non_hue/input.scss in lch.hrx.\
+             \n@use \"sass:color\";\
+             \na {b: color.to-space(hsl(10deg none none), oklch)}\n"
+            ),
+            "a {\
+         \n  b: oklch(none none none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hsl(none none 50%), oklch)}\n"),
+            "a {\
+         \n  b: oklch(59.8180730527% none none);\
          \n}\n"
         );
     }

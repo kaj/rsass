@@ -9,7 +9,7 @@ fn runner() -> crate::TestRunner {
 fn test() {
     assert_eq!(
         runner().err("öüäöüäöü{a:c"),
-        "Error: expected \"}\".\
+        "Error: expected end of rule.\
          \n  ,\
          \n1 | öüäöüäöü{a:c\
          \n  |             ^\

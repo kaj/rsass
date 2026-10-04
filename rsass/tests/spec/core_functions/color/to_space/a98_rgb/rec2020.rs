@@ -16,7 +16,7 @@ mod alpha {
              \na {b: color.to-space(color(a98-rgb 0.1 0.2 0.3 / 0.4), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.0494709718 0.1182706557 0.2275848731 / 0.4);\
+         \n  b: color(rec2020 0.1526889012 0.2231473214 0.3253061345 / 0.4);\
          \n}\n"
     );
     }
@@ -29,7 +29,7 @@ mod alpha {
              \na {b: color.to-space(color(a98-rgb 0.1 0.2 0.3 / 0.0), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.0494709718 0.1182706557 0.2275848731 / 0);\
+         \n  b: color(rec2020 0.1526889012 0.2231473214 0.3253061345 / 0);\
          \n}\n"
     );
     }
@@ -52,7 +52,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(a98-rgb 0.5 0.5 0.5), rec2020)}\n"),
         "a {\
-         \n  b: color(rec2020 0.4543095825 0.4543095825 0.4543095825);\
+         \n  b: color(rec2020 0.529851086 0.529851086 0.529851086);\
          \n}\n"
     );
 }
@@ -63,7 +63,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(a98-rgb 0.2 0.4 0.8), rec2020)}\n"),
         "a {\
-         \n  b: color(rec2020 0.2185447527 0.3379568627 0.7598138887);\
+         \n  b: color(rec2020 0.3169673802 0.4258693615 0.7959118383);\
          \n}\n"
     );
 }
@@ -79,7 +79,7 @@ mod missing {
              \na {b: color.to-space(color(a98-rgb 0.1 0.2 none), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.0350776367 0.1152389042 none);\
+         \n  b: color(rec2020 0.1323094167 0.2202666564 none);\
          \n}\n"
     );
     }
@@ -92,7 +92,7 @@ mod missing {
              \na {b: color.to-space(color(a98-rgb 0.1 none 0.3), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 0.0393483967 none 0.2248497454);\
+         \n  b: color(rec2020 0.1387973112 none 0.3227850322);\
          \n}\n"
     );
     }
@@ -105,7 +105,7 @@ mod missing {
              \na {b: color.to-space(color(a98-rgb none 0.2 0.3), rec2020)}\n"
         ),
         "a {\
-         \n  b: color(rec2020 none 0.116069056 0.2272691007);\
+         \n  b: color(rec2020 none 0.2210557359 0.3250151515);\
          \n}\n"
     );
     }
@@ -120,7 +120,7 @@ mod out_of_range {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(a98-rgb -999999 0 0), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 -898316.3792876494 -332882.1030921165 -174225.0344960701);\
+         \n  b: color(rec2020 -298102.1977103576 -118894.7270630609 -65284.631320063);\
          \n}\n"
         );
     }
@@ -131,7 +131,7 @@ mod out_of_range {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(a98-rgb -1 0.4 2), rec2020)}\n"),
             "a {\
-         \n  b: color(rec2020 -0.8122496028 0.2467395561 2.013750701);\
+         \n  b: color(rec2020 -0.8407922932 0.3429189392 1.8313548032);\
          \n}\n"
         );
     }

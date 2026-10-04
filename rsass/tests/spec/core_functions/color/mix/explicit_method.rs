@@ -39,7 +39,7 @@ fn srgb() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.mix(red, green, $method: xyz)}\n"),
         "a {\
-         \n  b: rgb(187.5160306784, 92.3735312967, 0);\
+         \n  b: rgb(73.5356983052%, 36.224914234%, 0%);\
          \n}\n"
     );
 }

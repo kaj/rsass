@@ -52,7 +52,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(a98-rgb 0.5 0.5 0.5), rgb)}\n"),
         "a {\
-         \n  b: rgb(128.5181884199, 128.5181884199, 128.5181884199);\
+         \n  b: rgb(50.3992895764%, 50.3992895764%, 50.3992895764%);\
          \n}\n"
     );
 }
@@ -88,7 +88,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(a98-rgb 0.1 none 0.3), rgb)}\n"),
             "a {\
-         \n  b: rgb(23.4831395969, 0, 76.8121443549);\
+         \n  b: rgb(9.2090743517%, 0%, 30.1224095509%);\
          \n}\n"
         );
     }
@@ -99,7 +99,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(color(a98-rgb none 0.2 0.3), rgb)}\n"),
             "a {\
-         \n  b: rgb(0, 47.5348659402, 76.1702902033);\
+         \n  b: rgb(0%, 18.6411238981%, 29.8707020405%);\
          \n}\n"
         );
     }

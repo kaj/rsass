@@ -93,19 +93,34 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
-    fn blue() {
+    fn all() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
-             \n@use \'core_functions/color/utils\';\
-             \na {b: color.to-space(color(xyz 0.1 0.2 none), hwb)}\n"),
+             \na {b: color.to-space(color(xyz none none none), hwb)}\n"),
             "a {\
-         \n  b: hsl(93.2964667331, 215.664278299%, 17.8710983929%);\
+         \n  b: red;\
          \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
-    fn green() {
+    fn x() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \n@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(color.to-space(color(xyz none 0.2 0.3), hwb));\n"
+        ),
+        "a {\
+         \n  value: hsl(355.8794204538, 2697.9214173204%, -2.5244914397%);\
+         \n  space: hwb;\
+         \n  channels: 175.8794204538deg -70.6332866707% 34.4156962088% / 1;\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn y() {
         assert_eq!(
         runner().ok(
             "@use \"sass:color\";\
@@ -121,19 +136,15 @@ mod missing {
     }
     #[test]
     #[ignore] // unexepected error
-    fn red() {
+    fn z() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
+            runner().ok("@use \"sass:color\";\
              \n@use \'core_functions/color/utils\';\
-             \n@include utils.inspect(color.to-space(color(xyz none 0.2 0.3), hwb));\n"
-        ),
-        "a {\
-         \n  value: hsl(355.8794204538, 2697.9214173204%, -2.5244914397%);\
-         \n  space: hwb;\
-         \n  channels: 175.8794204538deg -70.6332866707% 34.4156962088% / 1;\
+             \na {b: color.to-space(color(xyz 0.1 0.2 none), hwb)}\n"),
+            "a {\
+         \n  b: hsl(93.2964667331, 215.664278299%, 17.8710983929%);\
          \n}\n"
-    );
+        );
     }
 }
 mod out_of_range {

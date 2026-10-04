@@ -85,6 +85,17 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hwb(none none none), prophoto-rgb)}\n"),
+            "a {\
+         \n  b: color(prophoto-rgb none none none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn blackness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -102,6 +113,17 @@ mod missing {
              \na {b: color.to-space(hwb(none 20% 30%), prophoto-rgb)}\n"),
             "a {\
          \n  b: color(prophoto-rgb 0.4657013132 0.2352440242 0.1674964522);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_hue() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hwb(10deg none none), prophoto-rgb)}\n"),
+            "a {\
+         \n  b: color(prophoto-rgb 0.7079854223 0.3065255884 0.1127118493);\
          \n}\n"
         );
     }

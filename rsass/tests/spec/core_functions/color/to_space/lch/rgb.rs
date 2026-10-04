@@ -14,7 +14,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lch(10% 20 30deg / 0.4), rgb)}\n"),
             "a {\
-         \n  b: rgba(50.3195306005, 16.4012435608, 12.9749871225, 0.4);\
+         \n  b: rgba(19.7331492551%, 6.4318602199%, 5.0882302441%, 0.4);\
          \n}\n"
         );
     }
@@ -25,7 +25,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lch(10% 20 30deg / 0.0), rgb)}\n"),
             "a {\
-         \n  b: rgba(50.3195306005, 16.4012435608, 12.9749871225, 0);\
+         \n  b: rgba(19.7331492551%, 6.4318602199%, 5.0882302441%, 0);\
          \n}\n"
         );
     }
@@ -50,7 +50,7 @@ fn float() {
              \na {b: color.to-space(lch(10.123456789% 20.987654321 30.192837465deg), rgb)}\n"
         ),
         "a {\
-         \n  b: rgb(51.5386378704, 15.8847345936, 12.2512406149);\
+         \n  b: rgb(20.2112305374%, 6.2293076838%, 4.8044080843%);\
          \n}\n"
     );
 }
@@ -61,7 +61,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lch(50% 0 0deg), rgb)}\n"),
         "a {\
-         \n  b: rgb(118.9132853673, 118.9132853673, 118.9132853673);\
+         \n  b: rgb(46.6326609284%, 46.6326609284%, 46.6326609284%);\
          \n}\n"
     );
 }
@@ -72,7 +72,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lch(10% 20 30deg), rgb)}\n"),
         "a {\
-         \n  b: rgb(50.3195306005, 16.4012435608, 12.9749871225);\
+         \n  b: rgb(19.7331492551%, 6.4318602199%, 5.0882302441%);\
          \n}\n"
     );
 }
@@ -81,12 +81,23 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lch(none none none), rgb)}\n"),
+            "a {\
+         \n  b: black;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn chroma() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lch(10% none 30deg), rgb)}\n"),
             "a {\
-         \n  b: rgb(27.4643698292, 27.4643698292, 27.4643698292);\
+         \n  b: rgb(10.7703411095%, 10.7703411095%, 10.7703411095%);\
          \n}\n"
         );
     }
@@ -97,7 +108,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(lch(10% 20 none), rgb)}\n"),
             "a {\
-         \n  b: rgb(50.8524583137, 14.2717063113, 28.2183712056);\
+         \n  b: rgb(19.9421405152%, 5.5967475731%, 11.0660279238%);\
          \n}\n"
         );
     }
@@ -109,6 +120,28 @@ mod missing {
              \na {b: color.to-space(lch(none 20 30deg), rgb)}\n"),
             "a {\
          \n  b: hsl(6.9848409854, 394.5339053958%, 2.7008748146%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_hue() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lch(none none 10deg), rgb)}\n"),
+            "a {\
+         \n  b: black;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(lch(50% none none), rgb)}\n"),
+            "a {\
+         \n  b: rgb(46.6326609284%, 46.6326609284%, 46.6326609284%);\
          \n}\n"
         );
     }

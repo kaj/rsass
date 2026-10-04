@@ -212,6 +212,19 @@ mod unitless {
                 );
             }
         }
+        #[test]
+        #[ignore] // unexepected error
+        fn negative_zero() {
+            assert_eq!(
+                runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lch(1% -0 3deg));\n"),
+                "a {\
+         \n  value: lch(1% 0 3deg);\
+         \n  space: lch;\
+         \n  channels: 1% 0 3deg / 1;\
+         \n}\n"
+            );
+        }
     }
     mod hue {
         use super::runner;
@@ -252,9 +265,9 @@ mod unitless {
                     runner().ok("@use \'core_functions/color/utils\';\
              \n@include utils.inspect(lch(1% 2 calc(NaN)));\n"),
                     "a {\
-         \n  value: lch(1% 2 calc(NaN * 1deg));\
+         \n  value: lch(1% 2 0deg);\
          \n  space: lch;\
-         \n  channels: 1% 2 calc(NaN * 1deg) / 1;\
+         \n  channels: 1% 2 0deg / 1;\
          \n}\n"
                 );
             }
@@ -265,9 +278,9 @@ mod unitless {
                     runner().ok("@use \'core_functions/color/utils\';\
              \n@include utils.inspect(lch(1% 2 calc(-infinity)));\n"),
                     "a {\
-         \n  value: lch(1% 2 calc(NaN * 1deg));\
+         \n  value: lch(1% 2 0deg);\
          \n  space: lch;\
-         \n  channels: 1% 2 calc(NaN * 1deg) / 1;\
+         \n  channels: 1% 2 0deg / 1;\
          \n}\n"
                 );
             }
@@ -278,12 +291,25 @@ mod unitless {
                     runner().ok("@use \'core_functions/color/utils\';\
              \n@include utils.inspect(lch(1% 2 calc(infinity)));\n"),
                     "a {\
-         \n  value: lch(1% 2 calc(NaN * 1deg));\
+         \n  value: lch(1% 2 0deg);\
          \n  space: lch;\
-         \n  channels: 1% 2 calc(NaN * 1deg) / 1;\
+         \n  channels: 1% 2 0deg / 1;\
          \n}\n"
                 );
             }
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn negative_zero() {
+            assert_eq!(
+                runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lch(1% 2 -0));\n"),
+                "a {\
+         \n  value: lch(1% 2 0deg);\
+         \n  space: lch;\
+         \n  channels: 1% 2 0deg / 1;\
+         \n}\n"
+            );
         }
     }
     #[test]
@@ -370,6 +396,19 @@ mod unitless {
          \n}\n"
                 );
             }
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn negative_zero() {
+            assert_eq!(
+                runner().ok("@use \'core_functions/color/utils\';\
+             \n@include utils.inspect(lch(-0% 2 3deg));\n"),
+                "a {\
+         \n  value: lch(0% 2 3deg);\
+         \n  space: lch;\
+         \n  channels: 0% 2 3deg / 1;\
+         \n}\n"
+            );
         }
     }
 }

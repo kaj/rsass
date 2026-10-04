@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn all() {
     assert_eq!(
         runner().ok(
@@ -12,11 +13,12 @@ fn all() {
              \na {b: color.adjust(black, $hue: 12, $saturation: 24%, $lightness: 48%)}\n"
         ),
         "a {\
-         \n  b: rgb(151.776, 104.7744, 93.024);\
+         \n  b: rgb(59.52%, 41.088%, 36.48%);\
          \n}\n"
     );
 }
 #[test]
+#[ignore] // wrong result
 fn alpha_arg() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -30,11 +32,12 @@ fn alpha_arg() {
              \n  );\
              \n}\n"),
         "a {\
-         \n  b: rgba(151.776, 104.7744, 93.024, 0.3);\
+         \n  b: rgba(59.52%, 41.088%, 36.48%, 0.3);\
          \n}\n"
     );
 }
 #[test]
+#[ignore] // wrong result
 fn alpha_arg_above_max() {
     assert_eq!(
         runner().ok("// Regression test for sass/dart-sass#708.\
@@ -49,11 +52,12 @@ fn alpha_arg_above_max() {
              \n  );\
              \n}\n"),
         "a {\
-         \n  b: rgb(151.776, 104.7744, 93.024);\
+         \n  b: rgb(59.52%, 41.088%, 36.48%);\
          \n}\n"
     );
 }
 #[test]
+#[ignore] // wrong result
 fn alpha_input() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -66,7 +70,7 @@ fn alpha_input() {
              \n  );\
              \n}\n"),
         "a {\
-         \n  b: rgba(151.776, 104.7744, 93.024, 0.7);\
+         \n  b: rgba(59.52%, 41.088%, 36.48%, 0.7);\
          \n}\n"
     );
 }
@@ -84,32 +88,35 @@ mod hue {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn fraction() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(red, $hue: 0.5)}\n"),
             "a {\
-         \n  b: rgb(255, 2.125, 0);\
+         \n  b: rgb(100%, 0.8333333333%, 0%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(red, $hue: 359)}\n"),
             "a {\
-         \n  b: rgb(255, 0, 4.25);\
+         \n  b: rgb(100%, 0%, 1.6666666667%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn middle() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(red, $hue: 123)}\n"),
             "a {\
-         \n  b: rgb(0, 255, 12.75);\
+         \n  b: rgb(0%, 100%, 5%);\
          \n}\n"
         );
     }
@@ -178,32 +185,35 @@ mod lightness {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn fraction() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(red, $lightness: 0.5%)}\n"),
             "a {\
-         \n  b: rgb(255, 2.55, 2.55);\
+         \n  b: rgb(100%, 1%, 1%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn high() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(red, $lightness: 14%)}\n"),
             "a {\
-         \n  b: rgb(255, 71.4, 71.4);\
+         \n  b: rgb(100%, 28%, 28%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn low() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(red, $lightness: -14%)}\n"),
             "a {\
-         \n  b: rgb(183.6, 0, 0);\
+         \n  b: rgb(72%, 0%, 0%);\
          \n}\n"
         );
     }
@@ -249,6 +259,7 @@ mod lightness {
     }
 }
 #[test]
+#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok(
@@ -256,7 +267,7 @@ fn named() {
              \na {b: color.adjust($color: black, $hue: 12, $saturation: 24%, $lightness: 48%)}\n"
         ),
         "a {\
-         \n  b: rgb(151.776, 104.7744, 93.024);\
+         \n  b: rgb(59.52%, 41.088%, 36.48%);\
          \n}\n"
     );
 }
@@ -284,42 +295,46 @@ mod saturation {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn arg_below_min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(plum, $saturation: -200%)}\n"),
             "a {\
-         \n  b: rgb(190.5, 190.5, 190.5);\
+         \n  b: rgb(74.7058823529%, 74.7058823529%, 74.7058823529%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn below_min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(plum, $saturation: -100%)}\n"),
             "a {\
-         \n  b: rgb(190.5, 190.5, 190.5);\
+         \n  b: rgb(74.7058823529%, 74.7058823529%, 74.7058823529%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn high() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(plum, $saturation: 14%)}\n"),
             "a {\
-         \n  b: rgb(230.03, 150.97, 230.03);\
+         \n  b: rgb(90.2078431373%, 59.2039215686%, 90.2078431373%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn low() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(plum, $saturation: -14%)}\n"),
             "a {\
-         \n  b: rgb(211.97, 169.03, 211.97);\
+         \n  b: rgb(83.1254901961%, 66.2862745098%, 83.1254901961%);\
          \n}\n"
         );
     }
@@ -334,22 +349,24 @@ mod saturation {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(plum, $saturation: -100%)}\n"),
             "a {\
-         \n  b: rgb(190.5, 190.5, 190.5);\
+         \n  b: rgb(74.7058823529%, 74.7058823529%, 74.7058823529%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn min_remaining() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(plum, $saturation: -48%)}\n"),
             "a {\
-         \n  b: rgb(190.5, 190.5, 190.5);\
+         \n  b: rgb(74.7058823529%, 74.7058823529%, 74.7058823529%);\
          \n}\n"
         );
     }

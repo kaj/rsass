@@ -40,6 +40,8 @@ mod srgb;
 
 mod srgb_linear;
 
+mod unusual_numbers;
+
 mod xyz;
 
 mod xyz_d50;

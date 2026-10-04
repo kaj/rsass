@@ -13,54 +13,181 @@ mod explicit {
         mod legacy {
             use super::runner;
 
-            #[test]
-            #[ignore] // unexepected error
-            fn both() {
-                assert_eq!(
+            mod both {
+                use super::runner;
+
+                #[test]
+                #[ignore] // unexepected error
+                fn all() {
+                    assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.mix(rgb(none none none), rgb(none none none), $method: rec2020)}\n"
+        ),
+        "a {\
+         \n  b: black;\
+         \n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn set() {
+                    assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.mix(hsl(none none 50%), lab(80% none none), $method: rec2020)}\n"
+        ),
+        "a {\
+         \n  b: hsl(0, 0%, 63.8879192621%);\
+         \n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn single() {
+                    assert_eq!(
         runner().ok(
             "@use \"sass:color\";\
              \na {b: color.mix(rgb(0 none 200), rgb(200 none 0), $method: rec2020)}\n"
         ),
         "a {\
-         \n  b: rgb(129.0248146672, 0, 115.9531222724);\
+         \n  b: rgb(50.0525424686%, 0%, 44.1197051136%);\
          \n}\n"
     );
+                }
             }
-            #[test]
-            #[ignore] // unexepected error
-            fn color1() {
-                assert_eq!(
+            mod color1 {
+                use super::runner;
+
+                #[test]
+                #[ignore] // unexepected error
+                fn all() {
+                    assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.mix(rgb(none none none), rgb(200 100 0), $method: rec2020)}\n"
+        ),
+        "a {\
+         \n  b: #c86400;\
+         \n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn set() {
+                    assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.mix(hsl(none none 50%), lab(80% 10% 20%), $method: oklch)}\n"
+        ),
+        "a {\
+         \n  b: hsl(27.6264349345, 39.5108871342%, 61.2332568327%);\
+         \n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn single() {
+                    assert_eq!(
         runner().ok(
             "@use \"sass:color\";\
              \na {b: color.mix(rgb(none 100 200), rgb(200 100 0), $method: rec2020)}\n"
         ),
         "a {\
-         \n  b: rgb(199.7671172587, 91.8239078594, 117.7284104313);\
+         \n  b: rgb(78.3685527456%, 36.0116672853%, 45.3323453854%);\
          \n}\n"
     );
+                }
             }
-            #[test]
-            #[ignore] // unexepected error
-            fn color2() {
-                assert_eq!(
+            mod color2 {
+                use super::runner;
+
+                #[test]
+                #[ignore] // unexepected error
+                fn all() {
+                    assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.mix(rgb(200 100 0), rgb(none none none), $method: rec2020)}\n"
+        ),
+        "a {\
+         \n  b: #c86400;\
+         \n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn set() {
+                    assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.mix(hsl(120deg 10% 20%), lab(50% none none), $method: oklch)}\n"
+        ),
+        "a {\
+         \n  b: hsl(119.669130857, 6.6488786052%, 32.4911149973%);\
+         \n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn single() {
+                    assert_eq!(
         runner().ok(
             "@use \"sass:color\";\
              \na {b: color.mix(rgb(0 100 200), rgb(200 none 0), $method: rec2020)}\n"
         ),
         "a {\
-         \n  b: rgb(128.6114294932, 95.678836923, 112.8090426091);\
+         \n  b: rgb(50.1551278959%, 37.5727310145%, 42.8027026523%);\
          \n}\n"
     );
+                }
             }
         }
         mod modern {
             use super::runner;
 
-            #[test]
-            #[ignore] // unexepected error
-            fn both() {
-                assert_eq!(
-                    runner().ok("@use \"sass:color\";\
+            mod both {
+                use super::runner;
+
+                #[test]
+                #[ignore] // unexepected error
+                fn all() {
+                    assert_eq!(
+                        runner().ok("@use \"sass:color\";\
+             \na {\
+             \n  b: color.mix(\
+             \n    color(srgb none none none),\
+             \n    color(srgb none none none),\
+             \n    $method: rec2020\
+             \n  );\
+             \n}\n"),
+                        "a {\
+         \n  b: color(srgb none none none);\
+         \n}\n"
+                    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn set() {
+                    assert_eq!(
+                        runner().ok("@use \"sass:color\";\
+             \na {\
+             \n  b: color.mix(\
+             \n    lab(20% none none),\
+             \n    lch(50% none none),\
+             \n    $method: oklch\
+             \n  );\
+             \n}\n"),
+                        "a {\
+         \n  b: lab(35% none none);\
+         \n}\n"
+                    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn single() {
+                    assert_eq!(
+                        runner().ok("@use \"sass:color\";\
              \na {\
              \n  b: color.mix(\
              \n    color(srgb 0.1 0.2 none),\
@@ -68,16 +195,54 @@ mod explicit {
              \n    $method: rec2020\
              \n  );\
              \n}\n"),
-                    "a {\
-         \n  b: color(srgb 0.2110804397 0.2012136757 none);\
+                        "a {\
+         \n  b: color(srgb 0.210063151 0.2012856032 none);\
          \n}\n"
-                );
+                    );
+                }
             }
-            #[test]
-            #[ignore] // unexepected error
-            fn color1() {
-                assert_eq!(
-                    runner().ok("@use \"sass:color\";\
+            mod color1 {
+                use super::runner;
+
+                #[test]
+                #[ignore] // unexepected error
+                fn all() {
+                    assert_eq!(
+                        runner().ok("@use \"sass:color\";\
+             \na {\
+             \n  b: color.mix(\
+             \n    color(srgb none none none),\
+             \n    color(srgb 0.1 0.2 0.3),\
+             \n    $method: rec2020\
+             \n  );\
+             \n}\n"),
+                        "a {\
+         \n  b: color(srgb 0.1 0.2 0.3);\
+         \n}\n"
+                    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn set() {
+                    assert_eq!(
+                        runner().ok("@use \"sass:color\";\
+             \na {\
+             \n  b: color.mix(\
+             \n    lch(50% none none),\
+             \n    lab(80% 10% 20%),\
+             \n    $method: oklch\
+             \n  );\
+             \n}\n"),
+                        "a {\
+         \n  b: lch(64.9034695294% 28.3412220859 63.2701468478deg);\
+         \n}\n"
+                    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn single() {
+                    assert_eq!(
+                        runner().ok("@use \"sass:color\";\
              \na {\
              \n  b: color.mix(\
              \n    color(srgb none 0.1 0.2),\
@@ -85,16 +250,54 @@ mod explicit {
              \n    $method: rec2020\
              \n  );\
              \n}\n"),
-                    "a {\
-         \n  b: color(srgb 0.146201736 0.1492595622 0.2497768167);\
+                        "a {\
+         \n  b: color(srgb 0.1485286314 0.1448485586 0.2496395015);\
          \n}\n"
-                );
+                    );
+                }
             }
-            #[test]
-            #[ignore] // unexepected error
-            fn color2() {
-                assert_eq!(
-                    runner().ok("@use \"sass:color\";\
+            mod color2 {
+                use super::runner;
+
+                #[test]
+                #[ignore] // unexepected error
+                fn all() {
+                    assert_eq!(
+                        runner().ok("@use \"sass:color\";\
+             \na {\
+             \n  b: color.mix(\
+             \n    color(srgb 0.1 0.2 0.3),\
+             \n    color(srgb none none none),\
+             \n    $method: rec2020\
+             \n  );\
+             \n}\n"),
+                        "a {\
+         \n  b: color(srgb 0.1 0.2 0.3);\
+         \n}\n"
+                    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn set() {
+                    assert_eq!(
+                        runner().ok("@use \"sass:color\";\
+             \na {\
+             \n  b: color.mix(\
+             \n    lab(80% 10% 20%),\
+             \n    lch(50% none none),\
+             \n    $method: oklch\
+             \n  );\
+             \n}\n"),
+                        "a {\
+         \n  b: lab(64.9034695294% 12.7474400269 25.3125984854);\
+         \n}\n"
+                    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn single() {
+                    assert_eq!(
+                        runner().ok("@use \"sass:color\";\
              \na {\
              \n  b: color.mix(\
              \n    color(srgb 0.1 0.2 0.3),\
@@ -102,10 +305,11 @@ mod explicit {
              \n    $method: rec2020\
              \n  );\
              \n}\n"),
-                    "a {\
-         \n  b: color(srgb 0.0134568276 0.2030946777 0.2456679982);\
+                        "a {\
+         \n  b: color(srgb -0.0044280937 0.2034278916 0.2453243175);\
          \n}\n"
-                );
+                    );
+                }
             }
         }
     }

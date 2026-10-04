@@ -55,7 +55,7 @@ mod local_minde {
              \na {b: color.to-gamut(color.change(#abcdef, $red: 300), $method: local-minde)}\n"
         ),
         "a {\
-         \n  b: rgb(255, 222.6637650714, 237.9231048356);\
+         \n  b: rgb(100%, 87.3191235574%, 93.3031783669%);\
          \n}\n"
     );
     }

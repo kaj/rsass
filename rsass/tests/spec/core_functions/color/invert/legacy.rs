@@ -79,22 +79,24 @@ mod no_space {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong result
         fn high() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.invert(turquoise, 92%)}\n"),
                 "a {\
-         \n  b: rgb(180.84, 46.44, 59.88);\
+         \n  b: rgb(70.9176470588%, 18.2117647059%, 23.4823529412%);\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn low() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.invert(turquoise, 23%)}\n"),
                 "a {\
-         \n  b: rgb(93.21, 179.61, 170.97);\
+         \n  b: rgb(36.5529411765%, 70.4352941176%, 67.0470588235%);\
          \n}\n"
             );
         }
@@ -109,12 +111,13 @@ mod no_space {
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn middle() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.invert(turquoise, 50%)}\n"),
                 "a {\
-         \n  b: rgb(127.5, 127.5, 127.5);\
+         \n  b: rgb(50%, 50%, 50%);\
          \n}\n"
             );
         }
@@ -222,7 +225,7 @@ mod space {
             runner().ok("@use \"sass:color\";\
              \na {b: color.invert(#abcdef, $space: display-p3)}\n"),
             "a {\
-         \n  b: rgb(81.948808543, 49.5520621504, 10.5024231747);\
+         \n  b: rgb(32.1367876639%, 19.4321812355%, 4.1185973234%);\
          \n}\n"
         );
     }
@@ -260,22 +263,24 @@ mod units {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong result
         fn unitless() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.invert(turquoise, 10)}\n"),
                 "a {\
-         \n  b: rgb(76.7, 204.7, 191.9);\
+         \n  b: rgb(30.0784313725%, 80.2745098039%, 75.2549019608%);\
          \n}\n"
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn unknown() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
              \na {b: color.invert(turquoise, 10px)}\n"),
                 "a {\
-         \n  b: rgb(76.7, 204.7, 191.9);\
+         \n  b: rgb(30.0784313725%, 80.2745098039%, 75.2549019608%);\
          \n}\n"
             );
         }

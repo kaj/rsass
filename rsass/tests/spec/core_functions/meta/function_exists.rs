@@ -70,17 +70,57 @@ mod different_module {
          \n}\n"
         );
     }
-    #[test]
-    fn defined() {
-        let runner = runner().with_cwd("defined");
-        assert_eq!(
-            runner.ok("@use \"sass:meta\";\
+    mod defined {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("defined")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn module_value() {
+            let runner = runner().with_cwd("module_value");
+            assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
              \n@use \"sass:color\";\
-             \na {b: meta.function-exists(\"red\", \"color\")}\n"),
-            "a {\
+             \na {b: meta.function-exists(\"red\", meta.get-module(\"color\"))}\n"
+        ),
+        "a {\
          \n  b: true;\
          \n}\n"
-        );
+    );
+        }
+        #[test]
+        fn string() {
+            let runner = runner().with_cwd("string");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@use \"sass:color\";\
+             \na {b: meta.function-exists(\"red\", \"color\")}\n"),
+                "a {\
+         \n  b: true;\
+         \n}\n"
+            );
+        }
+    }
+    mod global {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("global")
+        }
+
+        #[test]
+        fn string() {
+            let runner = runner().with_cwd("string");
+            assert_eq!(
+                runner.ok("// Regression test\
+             \n@use \"sass:meta\";\
+             \n@use \"sass:list\";\
+             \na {b: meta.function-exists(\"rgb\", \"list\")}\n"),
+                "a {\
+         \n  b: false;\
+         \n}\n"
+            );
+        }
     }
     mod through_forward {
         fn runner() -> crate::TestRunner {
@@ -160,17 +200,38 @@ mod different_module {
          \n}\n"
         );
     }
-    #[test]
-    fn undefined() {
-        let runner = runner().with_cwd("undefined");
-        assert_eq!(
-            runner.ok("@use \"sass:meta\";\
+    mod undefined {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("undefined")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn module_value() {
+            let runner = runner().with_cwd("module_value");
+            assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
              \n@use \"sass:color\";\
-             \na {b: meta.function-exists(\"c\", \"color\")}\n"),
-            "a {\
+             \na {b: meta.function-exists(\"c\", meta.get-module(\"color\"))}\n"
+        ),
+        "a {\
          \n  b: false;\
          \n}\n"
-        );
+    );
+        }
+        #[test]
+        fn string() {
+            let runner = runner().with_cwd("string");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@use \"sass:color\";\
+             \na {b: meta.function-exists(\"c\", \"color\")}\n"),
+                "a {\
+         \n  b: false;\
+         \n}\n"
+            );
+        }
     }
 }
 mod error {
@@ -229,6 +290,7 @@ mod error {
             }
 
             #[test]
+            #[ignore] // wrong error
             fn module() {
                 let runner = runner().with_cwd("module");
                 assert_eq!(
@@ -236,7 +298,7 @@ mod error {
                         "@use \"sass:meta\";\
              \na {b: meta.function-exists(\"red\", 1)}\n"
                     ),
-                    "Error: $module: 1 is not a string.\
+                    "Error: $module: 1 is neither a string nor a module reference.\
          \n  ,\
          \n2 | a {b: meta.function-exists(\"red\", 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -292,6 +354,7 @@ mod error {
         }
 
         #[test]
+        #[ignore] // wrong error
         fn built_in_but_not_loaded() {
             let runner = runner().with_cwd("built_in_but_not_loaded");
             assert_eq!(
@@ -299,7 +362,7 @@ mod error {
                     "@use \"sass:meta\";\
              \na {b: meta.function-exists(\"red\", \"color\")}\n"
                 ),
-                "Error: There is no module with the namespace \"color\".\
+                "Error: There is no module with namespace \"color\".\
          \n  ,\
          \n2 | a {b: meta.function-exists(\"red\", \"color\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -308,6 +371,7 @@ mod error {
             );
         }
         #[test]
+        #[ignore] // wrong error
         fn dash_sensitive() {
             let runner = runner().with_cwd("dash_sensitive");
             assert_eq!(
@@ -316,7 +380,7 @@ mod error {
              \n@use \"sass:color\" as a-b;\
              \nc {d: meta.function-exists(\"c\", $module: \"a_b\")}\n"
                 ),
-                "Error: There is no module with the namespace \"a_b\".\
+                "Error: There is no module with namespace \"a_b\".\
          \n  ,\
          \n3 | c {d: meta.function-exists(\"c\", $module: \"a_b\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -325,6 +389,7 @@ mod error {
             );
         }
         #[test]
+        #[ignore] // wrong error
         fn non_existent() {
             let runner = runner().with_cwd("non_existent");
             assert_eq!(
@@ -332,7 +397,7 @@ mod error {
                     "@use \"sass:meta\";\
              \na {b: meta.function-exists(\"c\", \"d\")}\n"
                 ),
-                "Error: There is no module with the namespace \"d\".\
+                "Error: There is no module with namespace \"d\".\
          \n  ,\
          \n2 | a {b: meta.function-exists(\"c\", \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\

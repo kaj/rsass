@@ -14,7 +14,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(hsl(10deg 20% 30% / 0.4), rgb)}\n"),
             "a {\
-         \n  b: rgba(91.8, 66.3, 61.2, 0.4);\
+         \n  b: rgba(36%, 26%, 24%, 0.4);\
          \n}\n"
         );
     }
@@ -25,7 +25,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(hsl(10deg 20% 30% / 0.0), rgb)}\n"),
             "a {\
-         \n  b: rgba(91.8, 66.3, 61.2, 0);\
+         \n  b: rgba(36%, 26%, 24%, 0);\
          \n}\n"
         );
     }
@@ -50,7 +50,7 @@ fn float() {
              \na {b: color.to-space(hsl(20.123456789deg 30.987654321% 60.192837465%), rgb)}\n"
         ),
         "a {\
-         \n  b: rgb(184.9467656352, 143.1361700697, 122.0367054363);\
+         \n  b: rgb(72.5281433863%, 56.1318313999%, 47.8575315437%);\
          \n}\n"
     );
 }
@@ -61,7 +61,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(hsl(0deg 0% 50%), rgb)}\n"),
         "a {\
-         \n  b: rgb(127.5, 127.5, 127.5);\
+         \n  b: rgb(50%, 50%, 50%);\
          \n}\n"
     );
 }
@@ -72,7 +72,7 @@ fn middle() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(hsl(80deg 30% 60%), rgb)}\n"),
         "a {\
-         \n  b: rgb(163.2, 183.6, 122.4);\
+         \n  b: rgb(64%, 72%, 48%);\
          \n}\n"
     );
 }
@@ -81,12 +81,23 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hsl(none none none), rgb)}\n"),
+            "a {\
+         \n  b: black;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn hue() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(hsl(none 20% 30%), rgb)}\n"),
             "a {\
-         \n  b: rgb(91.8, 61.2, 61.2);\
+         \n  b: rgb(36%, 24%, 24%);\
          \n}\n"
         );
     }
@@ -103,12 +114,34 @@ mod missing {
     }
     #[test]
     #[ignore] // unexepected error
+    fn non_hue() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hsl(10deg none none), rgb)}\n"),
+            "a {\
+         \n  b: black;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hsl(none none 50%), rgb)}\n"),
+            "a {\
+         \n  b: rgb(50%, 50%, 50%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn saturation() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(hsl(10deg none 30%), rgb)}\n"),
             "a {\
-         \n  b: rgb(76.5, 76.5, 76.5);\
+         \n  b: rgb(30%, 30%, 30%);\
          \n}\n"
         );
     }

@@ -83,6 +83,17 @@ mod missing {
     }
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(oklab(none none none), prophoto-rgb)}\n"),
+            "a {\
+         \n  b: color(prophoto-rgb none none none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn b() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -103,6 +114,17 @@ mod missing {
          \n}\n"
         );
     }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(oklab(10% none none), prophoto-rgb)}\n"),
+            "a {\
+         \n  b: color(prophoto-rgb 0.016 0.016 0.016);\
+         \n}\n"
+        );
+    }
 }
 mod out_of_range {
     use super::runner;
@@ -112,9 +134,9 @@ mod out_of_range {
     fn far() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
-             \na {b: color.to-space(oklab(50% -999999 0), prophoto-rgb)}\n"),
+             \na {b: color.to-space(oklab(50% -99999 0), prophoto-rgb)}\n"),
             "a {\
-         \n  b: color(prophoto-rgb -2922132835.874805 1810415087.1875782 574653499.7241842);\
+         \n  b: color(prophoto-rgb -62953357.545661636 39003046.47732807 12380258.956467552);\
          \n}\n"
         );
     }

@@ -76,6 +76,19 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+        runner().ok(
+            "@use \"sass:color\";\
+             \na {b: color.to-space(color(display-p3 none none none), oklab)}\n"
+        ),
+        "a {\
+         \n  b: oklab(none none none);\
+         \n}\n"
+    );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn blue() {
         assert_eq!(
         runner().ok(

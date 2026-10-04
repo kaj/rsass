@@ -55,14 +55,12 @@ mod space {
     #[ignore] // unexepected error
     fn missing_converted() {
         assert_eq!(
-        runner().ok(
-            "@use \"sass:color\";\
-             \na {b: color.invert(color(rec2020 none none none), $space: lab)}\n"
-        ),
-        "a {\
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.invert(color(rec2020 none 0 0), $space: lab)}\n"),
+            "a {\
          \n  b: color(rec2020 1 1 1);\
          \n}\n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error

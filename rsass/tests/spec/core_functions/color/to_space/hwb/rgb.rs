@@ -14,7 +14,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(hwb(10deg 20% 30% / 0.4), rgb)}\n"),
             "a {\
-         \n  b: rgba(178.5, 72.25, 51, 0.4);\
+         \n  b: rgba(70%, 28.3333333333%, 20%, 0.4);\
          \n}\n"
         );
     }
@@ -25,7 +25,7 @@ mod alpha {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(hwb(10deg 20% 30% / 0.0), rgb)}\n"),
             "a {\
-         \n  b: rgba(178.5, 72.25, 51, 0);\
+         \n  b: rgba(70%, 28.3333333333%, 20%, 0);\
          \n}\n"
         );
     }
@@ -50,7 +50,7 @@ fn float() {
              \na {b: color.to-space(hwb(20.123456789deg 30.987654321% 40.192837465%), rgb)}\n"
         ),
         "a {\
-         \n  b: rgb(152.5082644643, 103.6663139681, 79.0185185186);\
+         \n  b: rgb(59.807162535%, 40.6534564581%, 30.987654321%);\
          \n}\n"
     );
 }
@@ -61,7 +61,7 @@ fn gray() {
         runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(hwb(0deg 50% 50%), rgb)}\n"),
         "a {\
-         \n  b: rgb(127.5, 127.5, 127.5);\
+         \n  b: rgb(50%, 50%, 50%);\
          \n}\n"
     );
 }
@@ -81,6 +81,17 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hwb(none none none), rgb)}\n"),
+            "a {\
+         \n  b: black;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn blackness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -97,7 +108,18 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(hwb(none 20% 30%), rgb)}\n"),
             "a {\
-         \n  b: rgb(178.5, 51, 51);\
+         \n  b: rgb(70%, 20%, 20%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_hue() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hwb(10deg none none), rgb)}\n"),
+            "a {\
+         \n  b: rgb(100%, 16.6666666667%, 0%);\
          \n}\n"
         );
     }
@@ -108,7 +130,7 @@ mod missing {
             runner().ok("@use \"sass:color\";\
              \na {b: color.to-space(hwb(10deg none 30%), rgb)}\n"),
             "a {\
-         \n  b: rgb(178.5, 29.75, 0);\
+         \n  b: rgb(70%, 11.6666666667%, 0%);\
          \n}\n"
         );
     }

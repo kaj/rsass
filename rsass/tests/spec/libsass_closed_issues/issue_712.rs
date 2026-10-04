@@ -18,16 +18,17 @@ fn test() {
              \n  }\
              \n}\n"
         ),
-        "Error: From line 1, column 1 of input.scss: \
-         \n  ,\
-         \n1 | .foo {\
-         \n  | ^^^^^\
-         \n  \'\
-         \nYou may not @extend selectors across media queries.\
-         \n  ,\
-         \n7 |     @extend .foo;\
-         \n  |     ^^^^^^^^^^^^\
-         \n  \'\
+        "Error: You may not @extend selectors across media queries.\
+         \n    ,\
+         \n1   | .foo {\
+         \n    | ==== extended selector\
+         \n... |\
+         \n5   | @media print {\
+         \n    |        ===== extension @media\
+         \n... |\
+         \n7   |     @extend .foo;\
+         \n    |     ^^^^^^^^^^^^ extension\
+         \n    \'\
          \n  input.scss 7:5  root stylesheet",
     );
 }

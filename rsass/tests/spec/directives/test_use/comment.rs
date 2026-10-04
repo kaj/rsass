@@ -23,6 +23,9 @@ fn runner() -> crate::TestRunner {
         .mock_file("before_keyword/silent/other.scss", "")
         .mock_file("before_url/loud/other.scss", "")
         .mock_file("before_url/silent/other.scss", "")
+        .mock_file("loud/repeated_use/_other.scss", "a {b: c}\n")
+        .mock_file("loud/skip/_midstream.scss", "@use \"upstream\";\n")
+        .mock_file("loud/skip/_upstream.scss", "a {b: c}\n")
 }
 
 mod after_close_paren {
@@ -216,6 +219,44 @@ mod before_url {
             runner.ok("@use //\
              \n  \"other\"\n"),
             ""
+        );
+    }
+}
+mod loud {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("loud")
+    }
+
+    #[test]
+    fn repeated_use() {
+        let runner = runner().with_cwd("repeated_use");
+        assert_eq!(
+            runner.ok("// Regression test for sass/dart-sass#2851\
+             \n/* before */\
+             \n@use \"other\" as *;\
+             \n/* between */\
+             \n@use \"other\" as *;\
+             \n/* after */\n"),
+            "/* before */\
+         \na {\
+         \n  b: c;\
+         \n}\
+         \n/* between */\
+         \n/* after */\n"
+        );
+    }
+    #[test]
+    fn skip() {
+        let runner = runner().with_cwd("skip");
+        assert_eq!(
+            runner.ok("// Regression test for sass/dart-sass#2851\
+             \n/* before */\
+             \n@use \"upstream\";\
+             \n@use \"midstream\";\n"),
+            "/* before */\
+         \na {\
+         \n  b: c;\
+         \n}\n"
         );
     }
 }

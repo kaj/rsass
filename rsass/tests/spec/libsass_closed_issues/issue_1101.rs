@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok(
@@ -15,7 +16,7 @@ fn test() {
              \n}"
         ),
         "foo {\
-         \n  bar: rgb(214.2, 214.2, 214.2);\
+         \n  bar: rgb(84%, 84%, 84%);\
          \n}\n"
     );
 }

@@ -17,6 +17,7 @@ fn all() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn alpha_arg() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -30,7 +31,7 @@ fn alpha_arg() {
              \n  );\
              \n}\n"),
         "a {\
-         \n  b: rgba(51, 153, 102, 0.3);\
+         \n  b: rgba(20%, 60%, 40%, 0.3);\
          \n}\n"
     );
 }
@@ -53,6 +54,7 @@ fn alpha_arg_above_max() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn alpha_input() {
     assert_eq!(
         runner().ok(
@@ -60,7 +62,7 @@ fn alpha_input() {
              \na {b: color.adjust(rgba(red, 0.7), $hue: 150, $whiteness: 20%, $blackness: 40%)}\n"
         ),
         "a {\
-         \n  b: rgba(51, 153, 102, 0.7);\
+         \n  b: rgba(20%, 60%, 40%, 0.7);\
          \n}\n"
     );
 }
@@ -88,22 +90,24 @@ mod blackness {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(#993333, $blackness: 100%)}\n"),
             "a {\
-         \n  b: rgb(31.875, 31.875, 31.875);\
+         \n  b: rgb(12.5%, 12.5%, 12.5%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn max_remaining() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(#993333, $blackness: 60%)}\n"),
             "a {\
-         \n  b: rgb(42.5, 42.5, 42.5);\
+         \n  b: rgb(16.6666666667%, 16.6666666667%, 16.6666666667%);\
          \n}\n"
         );
     }
@@ -175,22 +179,24 @@ mod whiteness {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(#cc6666, $whiteness: 100%)}\n"),
             "a {\
-         \n  b: rgb(223.125, 223.125, 223.125);\
+         \n  b: rgb(87.5%, 87.5%, 87.5%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn max_remaining() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.adjust(#cc6666, $whiteness: 60%)}\n"),
             "a {\
-         \n  b: rgb(212.5, 212.5, 212.5);\
+         \n  b: rgb(83.3333333333%, 83.3333333333%, 83.3333333333%);\
          \n}\n"
         );
     }

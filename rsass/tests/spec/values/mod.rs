@@ -18,6 +18,8 @@ mod maps;
 
 mod mixins;
 
+mod modules;
+
 mod numbers;
 
 mod strings;

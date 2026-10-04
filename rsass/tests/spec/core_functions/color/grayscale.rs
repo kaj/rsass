@@ -127,32 +127,35 @@ mod legacy {
     use super::runner;
 
     #[test]
+    #[ignore] // wrong result
     fn alpha() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.grayscale(rgba(#633736, 0.3))}\n"),
             "a {\
-         \n  b: rgba(76.5, 76.5, 76.5, 0.3);\
+         \n  b: rgba(30%, 30%, 30%, 0.3);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn max_saturation() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.grayscale(red)}\n"),
             "a {\
-         \n  b: rgb(127.5, 127.5, 127.5);\
+         \n  b: rgb(50%, 50%, 50%);\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn mid_saturation() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
              \na {b: color.grayscale(#633736)}\n"),
             "a {\
-         \n  b: rgb(76.5, 76.5, 76.5);\
+         \n  b: rgb(30%, 30%, 30%);\
          \n}\n"
         );
     }

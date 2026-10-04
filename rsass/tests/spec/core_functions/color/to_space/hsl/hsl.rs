@@ -20,6 +20,17 @@ mod missing {
 
     #[test]
     #[ignore] // unexepected error
+    fn all() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hsl(none none none), hsl)}\n"),
+            "a {\
+         \n  b: hsl(none none none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
     fn hue() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -37,6 +48,28 @@ mod missing {
              \na {b: color.to-space(hsl(10deg 20% none), hsl)}\n"),
             "a {\
          \n  b: hsl(10deg 20% none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_hue() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hsl(10deg none none), hsl)}\n"),
+            "a {\
+         \n  b: hsl(10deg none none);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn non_lightness() {
+        assert_eq!(
+            runner().ok("@use \"sass:color\";\
+             \na {b: color.to-space(hsl(none none 50%), hsl)}\n"),
+            "a {\
+         \n  b: hsl(none none 50%);\
          \n}\n"
         );
     }
