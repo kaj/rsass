@@ -5,7 +5,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn alpha() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\

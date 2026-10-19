@@ -8,7 +8,6 @@ mod a {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn full_lightness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -19,7 +18,6 @@ mod a {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn zero_lightness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -34,7 +32,6 @@ mod b {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn full_lightness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -45,7 +42,6 @@ mod b {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn zero_lightness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

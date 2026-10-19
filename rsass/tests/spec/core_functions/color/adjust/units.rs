@@ -42,7 +42,6 @@ mod hue {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn angle() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -121,7 +120,6 @@ mod saturation {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn percent() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -132,7 +130,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn unitless() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -143,7 +140,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn unknown() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

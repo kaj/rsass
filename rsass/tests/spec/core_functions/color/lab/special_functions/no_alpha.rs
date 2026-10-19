@@ -51,7 +51,6 @@ mod calc {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn arg_1() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -63,7 +62,6 @@ mod calc {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn arg_2() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -75,7 +73,6 @@ mod calc {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn arg_3() {
             assert_eq!(
                 runner().ok("@use \'core_functions/color/utils\';\
@@ -91,7 +88,6 @@ mod calc {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn arg_1() {
             assert_eq!(
         runner().ok(
@@ -106,7 +102,6 @@ mod calc {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn arg_2() {
             assert_eq!(
         runner().ok(
@@ -121,7 +116,6 @@ mod calc {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn arg_3() {
             assert_eq!(
         runner().ok(
@@ -144,7 +138,6 @@ mod clamp {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn arg_1() {
             assert_eq!(
         runner().ok(
@@ -159,7 +152,6 @@ mod clamp {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn arg_2() {
             assert_eq!(
         runner().ok(
@@ -174,7 +166,6 @@ mod clamp {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn arg_3() {
             assert_eq!(
         runner().ok(
@@ -194,7 +185,6 @@ mod env {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn arg_1() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -206,7 +196,6 @@ mod env {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn arg_2() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -218,7 +207,6 @@ mod env {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn arg_3() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -237,7 +225,6 @@ mod max {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn arg_1() {
             assert_eq!(
         runner().ok(
@@ -252,7 +239,6 @@ mod max {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn arg_2() {
             assert_eq!(
         runner().ok(
@@ -267,7 +253,6 @@ mod max {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn arg_3() {
             assert_eq!(
         runner().ok(
@@ -290,7 +275,6 @@ mod min {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn arg_1() {
             assert_eq!(
         runner().ok(
@@ -305,7 +289,6 @@ mod min {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn arg_2() {
             assert_eq!(
         runner().ok(
@@ -320,7 +303,6 @@ mod min {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn arg_3() {
             assert_eq!(
         runner().ok(
@@ -374,7 +356,6 @@ mod var {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn arg_1() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -386,7 +367,6 @@ mod var {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn arg_2() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -398,7 +378,6 @@ mod var {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn arg_3() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\

@@ -8,7 +8,6 @@ mod lightness {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn above() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -21,7 +20,6 @@ mod lightness {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn below() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -38,7 +36,6 @@ mod saturation {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn above() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\
@@ -51,7 +48,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn below() {
         assert_eq!(
             runner().ok("@use \'core_functions/color/utils\';\

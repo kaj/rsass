@@ -5,7 +5,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn legacy() {
     assert_eq!(
         runner().ok("a {b: scale-color(pink, $blue: 20%)}\n"),

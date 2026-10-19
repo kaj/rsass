@@ -118,7 +118,7 @@ impl Value {
                 if f == "var" {
                     "variable"
                 } else {
-                    "string"
+                    "call"
                 }
             }
             Self::Color(..) => "color",

@@ -28,6 +28,13 @@ impl Hwba {
         let alpha = alpha.clamp(0., 1.);
         Self { hue, w, b, alpha }
     }
+    pub(crate) fn is_normal(&self) -> bool {
+        let epsilon = 1e-7;
+        self.w >= 0.
+            && self.b >= 0.
+            && (self.w + self.b <= 1. + epsilon)
+            && (self.hue.is_finite() || self.w + self.b >= 1. - epsilon)
+    }
 
     /// Get the hue of this color.
     pub fn hue(&self) -> f64 {
