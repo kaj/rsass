@@ -10,4 +10,8 @@ mod custom_ident_include;
 
 mod double_underscore_name;
 
+mod error;
+
+mod normalize;
+
 mod whitespace;

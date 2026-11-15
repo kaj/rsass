@@ -20,17 +20,18 @@ fn test() {
              \n  squoted: \'#{\'#{$input}\'}\';\
              \n  squoted: \'#{\"[\'#{$input}\']\"}\';\
              \n}\n"),
-        ".result {\
-         \n  dquoted: \"\\\\0 _\\\\a _\\\\a \";\
-         \n  dquoted: \"[\\\\0 _\\\\a _\\\\a ]\";\
-         \n  dquoted: \"\\\\0 _\\\\a _\\\\a \";\
-         \n  dquoted: \"\\\\0 _\\\\a _\\\\a \";\
-         \n  dquoted: \"[\'\\\\0 _\\\\a _\\\\a \']\";\
-         \n  squoted: \"\\\\0 _\\\\a _\\\\a \";\
-         \n  squoted: \"[\\\\0 _\\\\a _\\\\a ]\";\
-         \n  squoted: \"\\\\0 _\\\\a _\\\\a \";\
-         \n  squoted: \"\\\\0 _\\\\a _\\\\a \";\
-         \n  squoted: \"[\'\\\\0 _\\\\a _\\\\a \']\";\
+        "@charset \"UTF-8\";\
+         \n.result {\
+         \n  dquoted: \"�_\\\\a _\\\\a \";\
+         \n  dquoted: \"[�_\\\\a _\\\\a ]\";\
+         \n  dquoted: \"�_\\\\a _\\\\a \";\
+         \n  dquoted: \"�_\\\\a _\\\\a \";\
+         \n  dquoted: \"[\'�_\\\\a _\\\\a \']\";\
+         \n  squoted: \"�_\\\\a _\\\\a \";\
+         \n  squoted: \"[�_\\\\a _\\\\a ]\";\
+         \n  squoted: \"�_\\\\a _\\\\a \";\
+         \n  squoted: \"�_\\\\a _\\\\a \";\
+         \n  squoted: \"[\'�_\\\\a _\\\\a \']\";\
          \n}\n"
     );
 }

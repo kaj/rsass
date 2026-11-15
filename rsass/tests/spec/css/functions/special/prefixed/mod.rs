@@ -4,6 +4,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("prefixed")
 }
 
+mod escaped;
+
 mod lowercase;
 
 mod uppercase;

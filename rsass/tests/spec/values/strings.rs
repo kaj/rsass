@@ -4,6 +4,36 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("strings")
 }
 
+mod escape {
+    use super::runner;
+
+    #[test]
+    fn max_valid() {
+        assert_eq!(
+        runner().ok(
+            "// Regression test. This used to be parsed incorrectly as U+FFFD REPLACEMENT\
+             \n// CHARACTER.\
+             \na {b: \"\\10FFFF\"}\n"
+        ),
+        "a {\
+         \n  b: \"\\10ffff\";\
+         \n}\n"
+    );
+    }
+    #[test]
+    fn min_invalid() {
+        assert_eq!(
+            runner().ok(
+                "// This one should be parsed as a replacement character.\
+             \na {b: \"\\110000\"}\n"
+            ),
+            "@charset \"UTF-8\";\
+         \na {\
+         \n  b: \"�\";\
+         \n}\n"
+        );
+    }
+}
 mod new_line {
     use super::runner;
 

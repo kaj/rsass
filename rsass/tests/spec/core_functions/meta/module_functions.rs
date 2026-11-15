@@ -10,6 +10,7 @@ fn runner() -> crate::TestRunner {
         .mock_file("error/before_load/_other.scss", "// This module defines no functions.\n")
         .mock_file("error/dash_sensitive/_other-module.scss", "// This module defines no functions.\n")
         .mock_file("error/global/_other.scss", "// This module defines no functions.\n")
+        .mock_file("escape/_other.scss", "@function \\24() {@return null}\n")
         .mock_file("module_value/_other.scss", "@function b() {@return b value}\n@function c() {@return c value}\n@function d() {@return d value}\n")
         .mock_file("multiple/_other.scss", "@function b() {@return b value}\n@function c() {@return c value}\n@function d() {@return d value}\n")
         .mock_file("named/_other.scss", "@function b() {@return b value}\n@function c() {@return c value}\n@function d() {@return d value}\n")
@@ -221,6 +222,19 @@ mod error {
          \n  input.scss 2:5  root stylesheet",
         );
     }
+}
+#[test]
+#[ignore] // unexepected error
+fn escape() {
+    let runner = runner().with_cwd("escape");
+    assert_eq!(
+        runner.ok("@use \"sass:meta\";\
+             \n@use \"other\";\n\
+             \na {b: meta.inspect(meta.module-functions(\"other\"))}\n"),
+        "a {\
+         \n  b: (\"\\\\$\": get-function(\"\\\\$\"));\
+         \n}\n"
+    );
 }
 #[test]
 #[ignore] // unexepected error

@@ -178,6 +178,117 @@ mod string {
          \n}\n"
         );
     }
+    mod escape {
+        use super::runner;
+
+        mod quoted {
+            use super::runner;
+
+            #[test]
+            #[ignore] // wrong result
+            fn dash_insensitive() {
+                assert_eq!(
+                    runner().ok("@use \"sass:meta\";\
+             \n@function a-b($arg) {@return $arg + 1}\
+             \nc {d: meta.call(\"a\\\\5f b\", 1)}\n"),
+                    "c {\
+         \n  d: a\\5f b(1);\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn non_normalized() {
+                assert_eq!(
+                    runner().ok("@use \"sass:meta\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.call(\"\\\\24\", 1)}\n"),
+                    "a {\
+         \n  b: \\24(1);\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn normalized() {
+                assert_eq!(
+                    runner().ok("@use \"sass:meta\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.call(\"\\\\$\", 1)}\n"),
+                    "a {\
+         \n  b: 2;\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn semantic() {
+                assert_eq!(
+                    runner().ok("@use \"sass:meta\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.call(\"$\", 1)}\n"),
+                    "a {\
+         \n  b: $(1);\
+         \n}\n"
+                );
+            }
+        }
+        mod unquoted {
+            use super::runner;
+
+            #[test]
+            #[ignore] // unexepected error
+            fn dash_insensitive() {
+                assert_eq!(
+                    runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.call(string.unquote(\"c\\\\5f d\"), 1)}\n"),
+                    "a {\
+         \n  b: c\\5f d(1);\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn non_normalized() {
+                assert_eq!(
+                    runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.call(string.unquote(\"\\\\24\"), 1)}\n"),
+                    "a {\
+         \n  b: \\24(1);\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn normalized() {
+                assert_eq!(
+                    runner().ok("@use \"sass:meta\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.call(\\$, 1)}\n"),
+                    "a {\
+         \n  b: 2;\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn semantic() {
+                assert_eq!(
+                    runner().ok("@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.call(string.unquote(\"$\"), 1)}\n"),
+                    "a {\
+         \n  b: $(1);\
+         \n}\n"
+                );
+            }
+        }
+    }
     #[test]
     fn local() {
         assert_eq!(

@@ -65,6 +65,24 @@ mod bubble {
 mod error {
     use super::runner;
 
+    #[test]
+    #[ignore] // missing error
+    fn escaped_exponent() {
+        assert_eq!(
+        runner().err(
+            "// Regression test. We used to interpret escaped \"e\" as exponents.\
+             \n@keyframes a {\
+             \n  1\\65 1% {b: c}\
+             \n}\n"
+        ),
+        "Error: expected \"%\".\
+         \n  ,\
+         \n3 |   1\\65 1% {b: c}\
+         \n  |    ^\
+         \n  \'\
+         \n  input.scss 3:4  root stylesheet",
+    );
+    }
     mod in_keyframe_block {
         use super::runner;
 

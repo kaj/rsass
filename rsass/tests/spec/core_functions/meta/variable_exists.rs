@@ -152,6 +152,129 @@ mod error {
         }
     }
 }
+mod escape {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("escape")
+    }
+
+    mod quoted {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("quoted")
+        }
+
+        #[test]
+        fn dash_insensitive() {
+            let runner = runner().with_cwd("dash_insensitive");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n$a-b: null;\
+             \nc {d: meta.variable-exists(\"a\\\\5f b\")}\n"),
+                "c {\
+         \n  d: false;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn non_normalized() {
+            let runner = runner().with_cwd("non_normalized");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n$\\$: null;\
+             \na {b: meta.variable-exists(\"\\\\24\")}\n"),
+                "a {\
+         \n  b: false;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn normalized() {
+            let runner = runner().with_cwd("normalized");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n$\\$: null;\
+             \na {b: meta.variable-exists(\"\\\\$\")}\n"),
+                "a {\
+         \n  b: true;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn semantic() {
+            let runner = runner().with_cwd("semantic");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n$\\$: null;\
+             \na {b: meta.variable-exists(\"$\")}\n"),
+                "a {\
+         \n  b: false;\
+         \n}\n"
+            );
+        }
+    }
+    mod unquoted {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("unquoted")
+        }
+
+        #[test]
+        fn dash_insensitive() {
+            let runner = runner().with_cwd("dash_insensitive");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n$a-b: null;\
+             \nc {d: meta.variable-exists(unquoted(\"a\\\\5f b\"))}\n"),
+                "c {\
+         \n  d: false;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn non_normalized() {
+            let runner = runner().with_cwd("non_normalized");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n$\\$: null;\
+             \na {b: meta.variable-exists(unquoted(\"\\\\24\"))}\n"),
+                "a {\
+         \n  b: false;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn normalized() {
+            let runner = runner().with_cwd("normalized");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n$\\$: null;\
+             \na {b: meta.variable-exists(\\$)}\n"),
+                "a {\
+         \n  b: true;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn semantic() {
+            let runner = runner().with_cwd("semantic");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n$\\$: null;\
+             \na {b: meta.variable-exists(string.unquote(\"$\"))}\n"),
+                "a {\
+         \n  b: false;\
+         \n}\n"
+            );
+        }
+    }
+}
 #[test]
 fn global() {
     let runner = runner().with_cwd("global");

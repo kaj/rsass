@@ -36,7 +36,12 @@ pub fn sass_string_allow_dash(input: Span) -> PResult<SassString> {
         },
     )
     .parse(input)?;
-    Ok((input, SassString::new(parts, Quotes::None)))
+    // Handle strange special case to match the specificiation
+    if matches!(&parts[..], [StringPart::Raw(s)] if s == "\0") {
+        Ok((input, SassString::from("\\0 ")))
+    } else {
+        Ok((input, SassString::new(parts, Quotes::None)))
+    }
 }
 
 pub fn custom_value(input: Span) -> PResult<SassString> {
@@ -170,7 +175,7 @@ fn unquoted_part(input: Span) -> PResult<String> {
 
 fn normalized_first_escaped_char(input: Span) -> PResult<String> {
     let (rest, c) = escaped_char(input)?;
-    let result = if c.is_alphabetic() || u32::from(c) >= 0xa1 {
+    let result = if c.is_alphabetic() || c == '\0' || u32::from(c) >= 0xa1 {
         format!("{c}")
     } else if !c.is_control() && !c.is_numeric() && c != '\n' && c != '\t' {
         format!("\\{c}")
@@ -181,7 +186,12 @@ fn normalized_first_escaped_char(input: Span) -> PResult<String> {
 }
 fn normalized_escaped_char(input: Span) -> PResult<String> {
     let (rest, c) = escaped_char(input)?;
-    let result = if c.is_alphanumeric() || c == '-' || u32::from(c) >= 0xa1 {
+    let result = if c.is_alphanumeric()
+        || c == '\0'
+        || c == '-'
+        || c == '_'
+        || u32::from(c) >= 0xa1
+    {
         format!("{c}")
     } else if !c.is_control() && c != '\n' && c != '\t' {
         format!("\\{c}")
@@ -275,7 +285,7 @@ pub fn special_url(input: Span) -> PResult<SassString> {
         string_part_interpolation,
         map(unquoted_part, StringPart::Raw),
         map(
-            map_res(is_a("\":.;,!+/="), input_to_string),
+            map_res(is_a("\":.;,!+/={}"), input_to_string),
             StringPart::Raw,
         ),
     )))
@@ -488,12 +498,17 @@ pub fn name(input: Span) -> PResult<String> {
 }
 
 pub fn unitname(input: Span) -> PResult<String> {
-    let (input, first) =
-        verify(alt((escaped_char, name_char)), |c| c.is_alphabetic())
-            .parse(input)?;
+    let (input, first) = alt((
+        map_res(tag("\\%"), input_to_string),
+        map(
+            verify(alt((escaped_char, name_char)), |c| c.is_alphabetic()),
+            |first| first.to_string(),
+        ),
+    ))
+    .parse(input)?;
     fold_many0(
         verify(alt((escaped_char, name_char)), |c| c.is_alphanumeric()),
-        move || first.to_string(),
+        move || first.clone(),
         |mut s, c| {
             s.push(c);
             s
@@ -519,20 +534,18 @@ fn escaped_char(input: Span) -> PResult<char> {
                         one_of("0123456789ABCDEFabcdef"),
                     )),
                     alt((
-                        value(true, tag(" ")),
-                        value(
-                            true,
-                            peek(not(one_of("0123456789ABCDEFabcdef"))),
-                        ),
-                        value(false, tag("")),
+                        value(true, tag(" ")), // Eat the space.
+                        value(false, peek(one_of("0123456789ABCDEFabcdef"))),
+                        value(true, tag("")),
                     )),
                 ),
                 |(code, term): (Span, bool)| {
                     if term || code.len() == 6 {
-                        std::char::from_u32(
+                        let n =
                             u32::from_str_radix(input_to_str(code).ok()?, 16)
-                                .ok()?,
-                        )
+                                .ok()?;
+                        char::from_u32(n)
+                            .or(Some(char::REPLACEMENT_CHARACTER))
                     } else {
                         None
                     }

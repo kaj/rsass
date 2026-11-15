@@ -219,6 +219,135 @@ mod error {
          \n  input.scss 3:7  root stylesheet",
         );
     }
+    mod escape {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("escape")
+        }
+
+        mod quoted {
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("quoted")
+            }
+
+            #[test]
+            #[ignore] // wrong error
+            fn dash_insensitive() {
+                let runner = runner().with_cwd("dash_insensitive");
+                assert_eq!(
+                    runner.err(
+                        "@use \"sass:color\" as a-b;\
+             \n@use \"sass:meta\";\
+             \nc {d: meta.get-module(\"a\\\\5f b\")}\n"
+                    ),
+                    "Error: There is no module with namespace \"a\\5f b\".\
+         \n  ,\
+         \n3 | c {d: meta.get-module(\"a\\\\5f b\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+                );
+            }
+            #[test]
+            #[ignore] // wrong error
+            fn non_normalized() {
+                let runner = runner().with_cwd("non_normalized");
+                assert_eq!(
+                    runner.err(
+                        "@use \"sass:color\" as \\$;\
+             \n@use \"sass:meta\";\
+             \na {b: meta.get-module(\"\\\\24\")}\n"
+                    ),
+                    "Error: There is no module with namespace \"\\24\".\
+         \n  ,\
+         \n3 | a {b: meta.get-module(\"\\\\24\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+                );
+            }
+            #[test]
+            #[ignore] // wrong error
+            fn semantic() {
+                let runner = runner().with_cwd("semantic");
+                assert_eq!(
+                    runner.err(
+                        "@use \"sass:color\" as \\$;\
+             \n@use \"sass:meta\";\
+             \na {b: meta.get-module(\"$\")}\n"
+                    ),
+                    "Error: There is no module with namespace \"$\".\
+         \n  ,\
+         \n3 | a {b: meta.get-module(\"$\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+                );
+            }
+        }
+        mod unquoted {
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("unquoted")
+            }
+
+            #[test]
+            #[ignore] // wrong error
+            fn dash_insensitive() {
+                let runner = runner().with_cwd("dash_insensitive");
+                assert_eq!(
+                    runner.err(
+                        "@use \"sass:color\" as a-b;\
+             \n@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \nc {d: meta.get-module(string.unquote(\"a\\\\5f b\"))}\n"
+                    ),
+                    "Error: There is no module with namespace \"a\\5f b\".\
+         \n  ,\
+         \n4 | c {d: meta.get-module(string.unquote(\"a\\\\5f b\"))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 4:7  root stylesheet",
+                );
+            }
+            #[test]
+            #[ignore] // wrong error
+            fn non_normalized() {
+                let runner = runner().with_cwd("non_normalized");
+                assert_eq!(
+                    runner.err(
+                        "@use \"sass:color\" as \\$;\
+             \n@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \na {b: meta.get-module(string.unquote(\"\\\\24\"))}\n"
+                    ),
+                    "Error: There is no module with namespace \"\\24\".\
+         \n  ,\
+         \n4 | a {b: meta.get-module(string.unquote(\"\\\\24\"))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 4:7  root stylesheet",
+                );
+            }
+            #[test]
+            #[ignore] // wrong error
+            fn semantic() {
+                let runner = runner().with_cwd("semantic");
+                assert_eq!(
+                    runner.err(
+                        "@use \"sass:color\" as \\$;\
+             \n@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \na {b: meta.get-module(string.unquote(\"$\"))}\n"
+                    ),
+                    "Error: There is no module with namespace \"$\".\
+         \n  ,\
+         \n4 | a {b: meta.get-module(string.unquote(\"$\"))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 4:7  root stylesheet",
+                );
+            }
+        }
+    }
     #[test]
     #[ignore] // wrong error
     fn non_existent() {
@@ -235,6 +364,54 @@ mod error {
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
         );
+    }
+}
+mod escape {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("escape")
+    }
+
+    mod quoted {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("quoted")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn normalized() {
+            let runner = runner().with_cwd("normalized");
+            assert_eq!(
+        runner.ok(
+            "@use \"sass:math\" as \\$;\
+             \n@use \"sass:meta\";\
+             \na {b: meta.global-variable-exists(\"e\", $module: meta.get-module(\"\\\\$\"))}\n"
+        ),
+        "a {\
+         \n  b: true;\
+         \n}\n"
+    );
+        }
+    }
+    mod unquoted {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("unquoted")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn normalized() {
+            let runner = runner().with_cwd("normalized");
+            assert_eq!(
+        runner.ok(
+            "@use \"sass:math\" as \\$;\
+             \n@use \"sass:meta\";\
+             \na {b: meta.global-variable-exists(\"e\", $module: meta.get-module(\\$))}\n"
+        ),
+        "a {\
+         \n  b: true;\
+         \n}\n"
+    );
+        }
     }
 }
 mod meta {

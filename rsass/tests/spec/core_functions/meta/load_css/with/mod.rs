@@ -12,6 +12,8 @@ mod doesnt_run_default;
 
 mod empty;
 
+mod escape;
+
 mod multi_load;
 
 mod multiple;

@@ -10,4 +10,6 @@ mod escaped;
 
 mod name;
 
+mod normalize;
+
 mod whitespace;
