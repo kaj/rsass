@@ -17,7 +17,7 @@ fn combining_character() {
         ),
         "@charset \"UTF-8\";\
          \na {\
-         \n  b: \"cd̈\";\
+         \n  b: \"cd\u{308}\";\
          \n}\n"
     );
 }

@@ -4,6 +4,15 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("unprefixed")
 }
 
+#[test]
+fn escaped() {
+    assert_eq!(
+        runner().ok("a {b: \\75 rl(http://example.org)}\n"),
+        "a {\
+         \n  b: url(http://example.org);\
+         \n}\n"
+    );
+}
 mod lowercase {
     use super::runner;
 

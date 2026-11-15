@@ -61,6 +61,30 @@ mod error {
         );
     }
 }
+mod escape {
+    use super::runner;
+
+    #[test]
+    fn normalized() {
+        assert_eq!(
+            runner().ok("@use \"sass:math\";\
+             \na {b: math.unit(1\\65 m)}\n"),
+            "a {\
+         \n  b: \"em\";\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn preserved() {
+        assert_eq!(
+            runner().ok("@use \"sass:math\";\
+             \na {b: math.unit(1\\%)}\n"),
+            "a {\
+         \n  b: \"\\\\%\";\
+         \n}\n"
+        );
+    }
+}
 #[test]
 fn multiple_denominators() {
     assert_eq!(

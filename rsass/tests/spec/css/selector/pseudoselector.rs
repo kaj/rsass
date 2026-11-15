@@ -4,6 +4,41 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("pseudoselector")
 }
 
+mod an_plus_b {
+    use super::runner;
+
+    mod escape {
+        use super::runner;
+
+        #[test]
+        fn even() {
+            assert_eq!(
+                runner().ok(":nth-child(\\65 ven) {a: b}\n"),
+                ":nth-child(even) {\
+         \n  a: b;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn n() {
+            assert_eq!(
+                runner().ok(":nth-child(1\\6e+2) {a: b}\n"),
+                ":nth-child(1n+2) {\
+         \n  a: b;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn odd() {
+            assert_eq!(
+                runner().ok(":nth-child(\\6f dd) {a: b}\n"),
+                ":nth-child(odd) {\
+         \n  a: b;\
+         \n}\n"
+            );
+        }
+    }
+}
 mod error {
     use super::runner;
 

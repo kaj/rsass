@@ -268,3 +268,149 @@ mod mixin {
         }
     }
 }
+mod rest {
+    use super::runner;
+
+    mod named {
+        use super::runner;
+
+        mod escape {
+            use super::runner;
+
+            mod literal {
+                use super::runner;
+
+                #[test]
+                #[ignore] // unexepected error
+                fn non_normalized() {
+                    assert_eq!(
+                        runner().ok("@use \'sass:meta\';\
+             \n@mixin a($args...) {b: meta.inspect(meta.keywords($args))}\
+             \nc {@include a($\\24: d)}\n"),
+                        "c {\
+         \n  b: (\\$: d);\
+         \n}\n"
+                    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn normalized() {
+                    assert_eq!(
+                        runner().ok("@use \'sass:meta\';\
+             \n@mixin a($args...) {b: meta.inspect(meta.keywords($args))}\
+             \nc {@include a($\\$: d)}\n"),
+                        "c {\
+         \n  b: (\\$: d);\
+         \n}\n"
+                    );
+                }
+            }
+            mod rest {
+                use super::runner;
+
+                mod quoted {
+                    use super::runner;
+
+                    #[test]
+                    #[ignore] // wrong result
+                    fn dash_insensitive() {
+                        assert_eq!(
+                            runner().ok("@use \'sass:meta\';\
+             \n@mixin a($args...) {b: meta.inspect(meta.keywords($args))}\
+             \nc {@include a((\"d\\\\5f e\": f)...)}\n"),
+                            "c {\
+         \n  b: (d\\5f e: f);\
+         \n}\n"
+                        );
+                    }
+                    #[test]
+                    #[ignore] // wrong result
+                    fn non_normalized() {
+                        assert_eq!(
+                            runner().ok("@use \'sass:meta\';\
+             \n@mixin a($args...) {b: meta.inspect(meta.keywords($args))}\
+             \nc {@include a((\"\\\\24\": d)...)}\n"),
+                            "c {\
+         \n  b: (\\24: d);\
+         \n}\n"
+                        );
+                    }
+                    #[test]
+                    #[ignore] // wrong result
+                    fn normalized() {
+                        assert_eq!(
+                            runner().ok("@use \'sass:meta\';\
+             \n@mixin a($args...) {b: meta.inspect(meta.keywords($args))}\
+             \nc {@include a((\"\\\\$\": d)...)}\n"),
+                            "c {\
+         \n  b: (\\$: d);\
+         \n}\n"
+                        );
+                    }
+                    #[test]
+                    fn semantic() {
+                        assert_eq!(
+                            runner().ok("@use \'sass:meta\';\
+             \n@mixin a($args...) {b: meta.inspect(meta.keywords($args))}\
+             \nc {@include a((\"$\": d)...)}\n"),
+                            "c {\
+         \n  b: ($: d);\
+         \n}\n"
+                        );
+                    }
+                }
+                mod unquoted {
+                    use super::runner;
+
+                    #[test]
+                    fn dash_insensitive() {
+                        assert_eq!(
+                            runner().ok("@use \'sass:meta\';\
+             \n@use \'sass:string\';\
+             \n@mixin a($args...) {b: meta.inspect(meta.keywords($args))}\
+             \nc {@include a((string.unquote(\"d\\\\5f e\"): f)...)}\n"),
+                            "c {\
+         \n  b: (d\\5f e: f);\
+         \n}\n"
+                        );
+                    }
+                    #[test]
+                    fn non_normalized() {
+                        assert_eq!(
+                            runner().ok("@use \'sass:meta\';\
+             \n@use \'sass:string\';\
+             \n@mixin a($args...) {b: meta.inspect(meta.keywords($args))}\
+             \nc {@include a((string.unquote(\"\\\\24\"): d)...)}\n"),
+                            "c {\
+         \n  b: (\\24: d);\
+         \n}\n"
+                        );
+                    }
+                    #[test]
+                    fn normalized() {
+                        assert_eq!(
+                            runner().ok("@use \'sass:meta\';\
+             \n@mixin a($args...) {b: meta.inspect(meta.keywords($args))}\
+             \nc {@include a((\\$: d)...)}\n"),
+                            "c {\
+         \n  b: (\\$: d);\
+         \n}\n"
+                        );
+                    }
+                    #[test]
+                    fn semantic() {
+                        assert_eq!(
+                            runner().ok("@use \'sass:meta\';\
+             \n@use \'sass:string\';\
+             \n@mixin a($args...) {b: meta.inspect(meta.keywords($args))}\
+             \nc {@include a((string.unquote(\"$\"): d)...)}\n"),
+                            "c {\
+         \n  b: ($: d);\
+         \n}\n"
+                        );
+                    }
+                }
+            }
+        }
+    }
+}

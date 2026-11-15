@@ -154,6 +154,135 @@ fn conflict() {
          \n  input.scss 5:7  root stylesheet",
     );
 }
+mod escape {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("escape")
+    }
+
+    mod quoted {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("quoted")
+        }
+
+        #[test]
+        #[ignore] // wrong error
+        fn dash_insensitive() {
+            let runner = runner().with_cwd("dash_insensitive");
+            assert_eq!(
+                runner.err(
+                    "@use \"sass:meta\";\
+             \n@mixin a-b {}\
+             \nc {d: meta.get-mixin(\"a\\\\5f b\")}\n"
+                ),
+                "Error: Mixin not found: \"a\\\\5f b\"\
+         \n  ,\
+         \n3 | c {d: meta.get-mixin(\"a\\\\5f b\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn non_normalized() {
+            let runner = runner().with_cwd("non_normalized");
+            assert_eq!(
+                runner.err(
+                    "@use \"sass:meta\";\
+             \n@mixin \\$ {}\
+             \na {b: meta.get-mixin(\"\\\\24\")}\n"
+                ),
+                "Error: Mixin not found: \"\\\\24\"\
+         \n  ,\
+         \n3 | a {b: meta.get-mixin(\"\\\\24\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn semantic() {
+            let runner = runner().with_cwd("semantic");
+            assert_eq!(
+                runner.err(
+                    "@use \"sass:meta\";\
+             \n@mixin \\$ {}\
+             \na {b: meta.get-mixin(\"$\")}\n"
+                ),
+                "Error: Mixin not found: \"$\"\
+         \n  ,\
+         \n3 | a {b: meta.get-mixin(\"$\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+            );
+        }
+    }
+    mod unquoted {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("unquoted")
+        }
+
+        #[test]
+        #[ignore] // wrong error
+        fn dash_insensitive() {
+            let runner = runner().with_cwd("dash_insensitive");
+            assert_eq!(
+                runner.err(
+                    "@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@mixin a-b {}\
+             \nc {d: meta.get-mixin(string.unquote(\"a\\\\5f b\"))}\n"
+                ),
+                "Error: Mixin not found: a\\5f b\
+         \n  ,\
+         \n4 | c {d: meta.get-mixin(string.unquote(\"a\\\\5f b\"))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 4:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn non_normalized() {
+            let runner = runner().with_cwd("non_normalized");
+            assert_eq!(
+                runner.err(
+                    "@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@mixin \\$ {}\
+             \na {b: meta.get-mixin(string.unquote(\"\\\\24\"))}\n"
+                ),
+                "Error: Mixin not found: \\24\
+         \n  ,\
+         \n4 | a {b: meta.get-mixin(string.unquote(\"\\\\24\"))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 4:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn semantic() {
+            let runner = runner().with_cwd("semantic");
+            assert_eq!(
+                runner.err(
+                    "@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@mixin \\$ {}\
+             \na {b: meta.get-mixin(string.unquote(\"$\"))}\n"
+                ),
+                "Error: Mixin not found: $\
+         \n  ,\
+         \n4 | a {b: meta.get-mixin(string.unquote(\"$\"))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 4:7  root stylesheet",
+            );
+        }
+    }
+}
 mod module {
     fn runner() -> crate::TestRunner {
         super::runner().with_cwd("module")

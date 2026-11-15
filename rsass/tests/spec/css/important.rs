@@ -28,3 +28,21 @@ mod error {
         }
     }
 }
+mod syntax {
+    use super::runner;
+
+    mod escaped {
+        use super::runner;
+
+        #[test]
+        #[ignore] // unexepected error
+        fn after_bang() {
+            assert_eq!(
+                runner().ok("a {b: c !\\69 mportant}\n"),
+                "a {\
+         \n  b: c !important;\
+         \n}\n"
+            );
+        }
+    }
+}

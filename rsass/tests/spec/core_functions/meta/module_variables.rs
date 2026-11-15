@@ -27,6 +27,7 @@ fn runner() -> crate::TestRunner {
             "error/global/_other.scss",
             "// This module defines no variables.\n",
         )
+        .mock_file("escaped/_other.scss", "$\\24: null;\n")
         .mock_file(
             "module_value/_other.scss",
             "$c: c value;\n$d: d value;\n$e: e value;\n",
@@ -254,6 +255,19 @@ mod error {
          \n  input.scss 2:20  root stylesheet",
         );
     }
+}
+#[test]
+#[ignore] // unexepected error
+fn escaped() {
+    let runner = runner().with_cwd("escaped");
+    assert_eq!(
+        runner.ok("@use \"sass:meta\";\
+             \n@use \"other\";\n\
+             \na {b: meta.inspect(meta.module-variables(\"other\"))}\n"),
+        "a {\
+         \n  b: (\"\\\\$\": null);\
+         \n}\n"
+    );
 }
 #[test]
 #[ignore] // unexepected error
