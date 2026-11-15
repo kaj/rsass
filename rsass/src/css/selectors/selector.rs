@@ -427,7 +427,7 @@ impl Selector {
     }
 
     /// Internal (the api is [`TryFrom`]).
-    pub(super) fn _try_from_value(v: &Value) -> Result<Self, BadSelector0> {
+    pub(super) fn try_from_value(v: &Value) -> Result<Self, BadSelector0> {
         match v {
             Value::List(list, None | Some(ListSeparator::Space), _) => list
                 .iter()
@@ -595,7 +595,7 @@ impl TryFrom<Value> for Selector {
     type Error = BadSelector;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
-        Self::_try_from_value(&value).map_err(move |e| e.ctx(value))
+        Self::try_from_value(&value).map_err(move |e| e.ctx(value))
     }
 }
 

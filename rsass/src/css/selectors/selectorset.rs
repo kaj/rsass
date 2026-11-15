@@ -147,12 +147,12 @@ fn value_to_selectors(v: &Value) -> Result<SelectorSet, BadSelector0> {
         Value::List(vv, Some(ListSeparator::Comma), _) => {
             let s = vv
                 .iter()
-                .map(Selector::_try_from_value)
+                .map(Selector::try_from_value)
                 .collect::<Result<_, _>>()?;
             Ok(SelectorSet { s })
         }
         v @ Value::List(..) => Ok(SelectorSet {
-            s: vec![Selector::_try_from_value(v)?],
+            s: vec![Selector::try_from_value(v)?],
         }),
         Value::Literal(s) => {
             if s.value().is_empty() {
