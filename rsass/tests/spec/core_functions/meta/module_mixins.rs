@@ -10,6 +10,7 @@ fn runner() -> crate::TestRunner {
         .mock_file("error/before_load/_other.scss", "// This module defines no mixins.\n")
         .mock_file("error/dash_sensitive/_other-module.scss", "// This module defines no mixins.\n")
         .mock_file("error/global/_other.scss", "// This module defines no mixins.\n")
+        .mock_file("escape/_other.scss", "@mixin \\24 {}\n")
         .mock_file("module_value/_other.scss", "@mixin b() {b: value}\n@mixin c() {c: value}\n@mixin d() {d: value}\n")
         .mock_file("multiple/_other.scss", "@mixin b() {b: value}\n@mixin c() {c: value}\n@mixin d() {d: value}\n")
         .mock_file("named/_other.scss", "@mixin b() {b: value}\n@mixin c() {c: value}\n@mixin d() {d: value}\n")
@@ -228,6 +229,19 @@ mod error {
          \n  input.scss 2:5  root stylesheet",
         );
     }
+}
+#[test]
+#[ignore] // unexepected error
+fn escape() {
+    let runner = runner().with_cwd("escape");
+    assert_eq!(
+        runner.ok("@use \"sass:meta\";\
+             \n@use \"other\";\n\
+             \na {b: meta.inspect(meta.module-mixins(\"other\"))}\n"),
+        "a {\
+         \n  b: (\"\\\\$\": get-mixin(\"\\\\$\"));\
+         \n}\n"
+    );
 }
 #[test]
 #[ignore] // unexepected error

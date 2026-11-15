@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("$input: \\0_\\a_\\A;\
@@ -15,12 +16,13 @@ fn test() {
              \n  output: #{\'#{$input}\'};\
              \n  output: #{\"[\'#{$input}\']\"};\
              \n}\n"),
-        ".result {\
-         \n  output: \\0 _\\a _\\a ;\
-         \n  output: [\\0 _\\a _\\a ];\
-         \n  output: \\0 _\\a _\\a ;\
-         \n  output: \\0 _\\a _\\a ;\
-         \n  output: [\'\\0 _\\a _\\a \'];\
+        "@charset \"UTF-8\";\
+         \n.result {\
+         \n  output: �_\\a _\\a ;\
+         \n  output: [�_\\a _\\a ];\
+         \n  output: �_\\a _\\a ;\
+         \n  output: �_\\a _\\a ;\
+         \n  output: [\'�_\\a _\\a \'];\
          \n}\n"
     );
 }

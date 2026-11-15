@@ -182,7 +182,7 @@ impl fmt::Display for CssString {
             if Some(c) == q {
                 out.write_char('\\')?;
                 out.write_char(c)?;
-            } else if is_private_use(c) {
+            } else if is_private_use(c) || c > '\u{100000}' {
                 write!(out, "\\{:x}", c as u32)?;
             } else {
                 out.write_char(c)?;

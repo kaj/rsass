@@ -12,7 +12,7 @@ fn dash_insensitive() {
     assert_eq!(
         runner.ok(
             "@use \"sass:meta\";\
-             \n@use \"../utils\";\
+             \n@use \"core_functions/meta/keywords/utils\";\
              \na {b: meta.inspect(utils.args-to-keywords($c-d: e, $f_g: h))}\n"
         ),
         "a {\
@@ -132,6 +132,176 @@ mod error {
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
             );
+        }
+    }
+}
+mod escape {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("escape")
+    }
+
+    mod literal {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("literal")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn non_normalized() {
+            let runner = runner().with_cwd("non_normalized");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@use \"core_functions/meta/keywords/utils\";\
+             \na {b: meta.inspect(utils.args-to-keywords($\\24: d))}\n"),
+                "a {\
+         \n  b: (\\$: d);\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn normalized() {
+            let runner = runner().with_cwd("normalized");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@use \"core_functions/meta/keywords/utils\";\
+             \na {b: meta.inspect(utils.args-to-keywords($\\$: d))}\n"),
+                "a {\
+         \n  b: (\\$: d);\
+         \n}\n"
+            );
+        }
+    }
+    mod rest {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("rest")
+        }
+
+        mod quoted {
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("quoted")
+            }
+
+            #[test]
+            #[ignore] // wrong result
+            fn dash_insensitive() {
+                let runner = runner().with_cwd("dash_insensitive");
+                assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \n@use \"core_functions/meta/keywords/utils\";\
+             \na {b: meta.inspect(utils.args-to-keywords((\"c\\\\5f d\": e)...))}\n"
+        ),
+        "a {\
+         \n  b: (c\\5f d: e);\
+         \n}\n"
+    );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn non_normalized() {
+                let runner = runner().with_cwd("non_normalized");
+                assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \n@use \"core_functions/meta/keywords/utils\";\
+             \na {b: meta.inspect(utils.args-to-keywords((\"\\\\24\": d)...))}\n"
+        ),
+        "a {\
+         \n  b: (\\24: d);\
+         \n}\n"
+    );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn normalized() {
+                let runner = runner().with_cwd("normalized");
+                assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \n@use \"core_functions/meta/keywords/utils\";\
+             \na {b: meta.inspect(utils.args-to-keywords((\"\\\\$\": d)...))}\n"
+        ),
+        "a {\
+         \n  b: (\\$: d);\
+         \n}\n"
+    );
+            }
+            #[test]
+            fn semantic() {
+                let runner = runner().with_cwd("semantic");
+                assert_eq!(
+                    runner.ok("@use \"sass:meta\";\
+             \n@use \"core_functions/meta/keywords/utils\";\
+             \na {b: meta.inspect(utils.args-to-keywords((\"$\": d)...))}\n"),
+                    "a {\
+         \n  b: ($: d);\
+         \n}\n"
+                );
+            }
+        }
+        mod unquoted {
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("unquoted")
+            }
+
+            #[test]
+            fn dash_insensitive() {
+                let runner = runner().with_cwd("dash_insensitive");
+                assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@use \"core_functions/meta/keywords/utils\";\
+             \na {b: meta.inspect(utils.args-to-keywords((string.unquote(\"c\\\\5f d\"): e)...))}\n"
+        ),
+        "a {\
+         \n  b: (c\\5f d: e);\
+         \n}\n"
+    );
+            }
+            #[test]
+            fn non_normalized() {
+                let runner = runner().with_cwd("non_normalized");
+                assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@use \"core_functions/meta/keywords/utils\";\
+             \na {b: meta.inspect(utils.args-to-keywords((string.unquote(\"\\\\24\"): d)...))}\n"
+        ),
+        "a {\
+         \n  b: (\\24: d);\
+         \n}\n"
+    );
+            }
+            #[test]
+            fn normalized() {
+                let runner = runner().with_cwd("normalized");
+                assert_eq!(
+                    runner.ok("@use \"sass:meta\";\
+             \n@use \"core_functions/meta/keywords/utils\";\
+             \na {b: meta.inspect(utils.args-to-keywords((\\$: d)...))}\n"),
+                    "a {\
+         \n  b: (\\$: d);\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn semantic() {
+                let runner = runner().with_cwd("semantic");
+                assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@use \"core_functions/meta/keywords/utils\";\
+             \na {b: meta.inspect(utils.args-to-keywords((string.unquote(\"$\"): d)...))}\n"
+        ),
+        "a {\
+         \n  b: ($: d);\
+         \n}\n"
+    );
+            }
         }
     }
 }

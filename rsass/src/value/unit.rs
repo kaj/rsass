@@ -1,7 +1,7 @@
 //! The Unit enum defines css units
 
 use std::f64::consts::FRAC_1_PI;
-use std::fmt;
+use std::fmt::{self, Write};
 
 /// Units in css.
 ///
@@ -253,7 +253,21 @@ impl fmt::Display for Unit {
             Self::Fr => write!(out, "fr"),
             Self::None => Ok(()),
 
-            Self::Unknown(ref name) => out.write_str(name),
+            Self::Unknown(ref name) => {
+                if let Some(s) = name.strip_prefix("e")
+                    && s.parse::<isize>().is_ok()
+                {
+                    // Looks like exponent, escape the e.
+                    out.write_str("\\65 ")?;
+                    out.write_str(s)
+                } else if name.starts_with('\\') {
+                    // Start with escape, escape that!
+                    out.write_char('\\')?;
+                    out.write_str(name)
+                } else {
+                    out.write_str(name)
+                }
+            }
         }
     }
 }

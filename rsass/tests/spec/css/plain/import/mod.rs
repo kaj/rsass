@@ -16,4 +16,6 @@ mod sass_takes_precedence;
 
 mod scss_takes_precedence;
 
+mod url;
+
 mod whitespace;

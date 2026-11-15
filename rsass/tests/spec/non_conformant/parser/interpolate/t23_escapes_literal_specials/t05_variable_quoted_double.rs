@@ -5,6 +5,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("$input: \\0_\\a_\\A;\
@@ -20,17 +21,18 @@ fn test() {
              \n  squoted: \'#{\'#{$input}\'}\';\
              \n  squoted: \'#{\"[\'#{$input}\']\"}\';\
              \n}\n"),
-        ".result {\
-         \n  dquoted: \"\\\\0 _\\\\a _\\\\a \";\
-         \n  dquoted: \"[\\\\0 _\\\\a _\\\\a ]\";\
-         \n  dquoted: \"\\\\0 _\\\\a _\\\\a \";\
-         \n  dquoted: \"\\\\0 _\\\\a _\\\\a \";\
-         \n  dquoted: \"[\'\\\\0 _\\\\a _\\\\a \']\";\
-         \n  squoted: \"\\\\0 _\\\\a _\\\\a \";\
-         \n  squoted: \"[\\\\0 _\\\\a _\\\\a ]\";\
-         \n  squoted: \"\\\\0 _\\\\a _\\\\a \";\
-         \n  squoted: \"\\\\0 _\\\\a _\\\\a \";\
-         \n  squoted: \"[\'\\\\0 _\\\\a _\\\\a \']\";\
+        "@charset \"UTF-8\";\
+         \n.result {\
+         \n  dquoted: \"�_\\\\a _\\\\a \";\
+         \n  dquoted: \"[�_\\\\a _\\\\a ]\";\
+         \n  dquoted: \"�_\\\\a _\\\\a \";\
+         \n  dquoted: \"�_\\\\a _\\\\a \";\
+         \n  dquoted: \"[\'�_\\\\a _\\\\a \']\";\
+         \n  squoted: \"�_\\\\a _\\\\a \";\
+         \n  squoted: \"[�_\\\\a _\\\\a ]\";\
+         \n  squoted: \"�_\\\\a _\\\\a \";\
+         \n  squoted: \"�_\\\\a _\\\\a \";\
+         \n  squoted: \"[\'�_\\\\a _\\\\a \']\";\
          \n}\n"
     );
 }

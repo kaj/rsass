@@ -412,6 +412,129 @@ mod same_module {
         super::runner().with_cwd("same_module")
     }
 
+    mod escape {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("escape")
+        }
+
+        mod quoted {
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("quoted")
+            }
+
+            #[test]
+            fn dash_insensitive() {
+                let runner = runner().with_cwd("dash_insensitive");
+                assert_eq!(
+                    runner.ok("@use \"sass:meta\";\
+             \n@mixin a-b {}\
+             \nc {d: meta.mixin-exists(\"a\\\\5f b\")}\n"),
+                    "c {\
+         \n  d: false;\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn non_normalized() {
+                let runner = runner().with_cwd("non_normalized");
+                assert_eq!(
+                    runner.ok("@use \"sass:meta\";\
+             \n@mixin \\$ {}\
+             \na {b: meta.mixin-exists(\"\\\\24\")}\n"),
+                    "a {\
+         \n  b: false;\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn normalized() {
+                let runner = runner().with_cwd("normalized");
+                assert_eq!(
+                    runner.ok("@use \"sass:meta\";\
+             \n@mixin \\$ {}\
+             \na {b: meta.mixin-exists(\"\\\\$\")}\n"),
+                    "a {\
+         \n  b: true;\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn semantic() {
+                let runner = runner().with_cwd("semantic");
+                assert_eq!(
+                    runner.ok("@use \"sass:meta\";\
+             \n@mixin \\$ {}\
+             \na {b: meta.mixin-exists(\"$\")}\n"),
+                    "a {\
+         \n  b: false;\
+         \n}\n"
+                );
+            }
+        }
+        mod unquoted {
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("unquoted")
+            }
+
+            #[test]
+            fn dash_insensitive() {
+                let runner = runner().with_cwd("dash_insensitive");
+                assert_eq!(
+                    runner.ok("@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@mixin a-b {}\
+             \nc {d: meta.mixin-exists(unquoted(\"a\\\\5f b\"))}\n"),
+                    "c {\
+         \n  d: false;\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn non_normalized() {
+                let runner = runner().with_cwd("non_normalized");
+                assert_eq!(
+                    runner.ok("@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@mixin \\$ {}\
+             \na {b: meta.mixin-exists(unquoted(\"\\\\24\"))}\n"),
+                    "a {\
+         \n  b: false;\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn normalized() {
+                let runner = runner().with_cwd("normalized");
+                assert_eq!(
+                    runner.ok("@use \"sass:meta\";\
+             \n@mixin \\$ {}\
+             \na {b: meta.mixin-exists(\\$)}\n"),
+                    "a {\
+         \n  b: true;\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn semantic() {
+                let runner = runner().with_cwd("semantic");
+                assert_eq!(
+                    runner.ok("@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@mixin \\$ {}\
+             \na {b: meta.mixin-exists(string.unquote(\"$\"))}\n"),
+                    "a {\
+         \n  b: false;\
+         \n}\n"
+                );
+            }
+        }
+    }
     #[test]
     fn global() {
         let runner = runner().with_cwd("global");

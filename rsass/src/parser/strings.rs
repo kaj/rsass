@@ -488,12 +488,17 @@ pub fn name(input: Span) -> PResult<String> {
 }
 
 pub fn unitname(input: Span) -> PResult<String> {
-    let (input, first) =
-        verify(alt((escaped_char, name_char)), |c| c.is_alphabetic())
-            .parse(input)?;
+    let (input, first) = alt((
+        map_res(tag("\\%"), input_to_string),
+        map(
+            verify(alt((escaped_char, name_char)), |c| c.is_alphabetic()),
+            |first| first.to_string(),
+        ),
+    ))
+    .parse(input)?;
     fold_many0(
         verify(alt((escaped_char, name_char)), |c| c.is_alphanumeric()),
-        move || first.to_string(),
+        move || first.clone(),
         |mut s, c| {
             s.push(c);
             s
@@ -529,10 +534,11 @@ fn escaped_char(input: Span) -> PResult<char> {
                 ),
                 |(code, term): (Span, bool)| {
                     if term || code.len() == 6 {
-                        std::char::from_u32(
+                        let n =
                             u32::from_str_radix(input_to_str(code).ok()?, 16)
-                                .ok()?,
-                        )
+                                .ok()?;
+                        char::from_u32(n)
+                            .or(Some(char::REPLACEMENT_CHARACTER))
                     } else {
                         None
                     }

@@ -4,6 +4,10 @@ fn runner() -> crate::TestRunner {
     super::runner()
         .with_cwd("in_css")
         .mock_file("string/plain.css", "@import \"whatever\";\n")
+        .mock_file(
+            "url/escaped/plain.css",
+            "@import \\75 rl(http://example.org);\n",
+        )
         .mock_file("url/quoted/plain.css", "@import url(\"whatever\");\n")
         .mock_file("url/unquoted/plain.css", "@import url(whatever);\n")
 }
@@ -18,6 +22,14 @@ mod url {
         super::runner().with_cwd("url")
     }
 
+    #[test]
+    fn escaped() {
+        let runner = runner().with_cwd("escaped");
+        assert_eq!(
+            runner.ok("@use \"plain\";\n"),
+            "@import url(http://example.org);\n"
+        );
+    }
     #[test]
     fn quoted() {
         let runner = runner().with_cwd("quoted");
