@@ -45,7 +45,6 @@ mod local {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn blackness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -56,7 +55,6 @@ mod local {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn hue() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -70,7 +68,6 @@ mod local {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn blackness() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -81,7 +78,6 @@ mod local {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn whiteness() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -93,7 +89,6 @@ mod local {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn whiteness() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

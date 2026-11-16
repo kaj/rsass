@@ -5,7 +5,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn all() {
     assert_eq!(
         runner().ok(
@@ -18,7 +17,6 @@ fn all() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn alpha_arg() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -37,7 +35,6 @@ fn alpha_arg() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn alpha_arg_above_max() {
     assert_eq!(
         runner().ok("// Regression test for sass/dart-sass#708.\
@@ -57,7 +54,6 @@ fn alpha_arg_above_max() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn alpha_input() {
     assert_eq!(
         runner().ok("@use \"sass:color\";\
@@ -88,7 +84,6 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn fraction() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -99,7 +94,6 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -110,7 +104,6 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn middle() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -185,7 +178,6 @@ mod lightness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn fraction() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -196,7 +188,6 @@ mod lightness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn high() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -207,7 +198,6 @@ mod lightness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn low() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -259,7 +249,6 @@ mod lightness {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn named() {
     assert_eq!(
         runner().ok(
@@ -295,7 +284,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn arg_below_min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -306,7 +294,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn below_min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -317,7 +304,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn high() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -328,7 +314,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn low() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -349,7 +334,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn min() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -360,7 +344,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn min_remaining() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

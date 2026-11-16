@@ -18,7 +18,6 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn non_legacy() {
         assert_eq!(
             runner().err(

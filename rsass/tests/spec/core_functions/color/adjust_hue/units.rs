@@ -5,7 +5,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn angle() {
     assert_eq!(
         runner().ok("a {b: adjust-hue(red, 60rad)}\n"),

@@ -8,7 +8,7 @@ mod list {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn after_space() {
         assert_eq!(
             runner().err("a {b: color(srgb (0.1 0.2 0.3))}\n"),
@@ -21,7 +21,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn bracketed() {
         assert_eq!(
             runner().err("a {b: color([srgb 0.1 0.2 0.3])}\n"),
@@ -34,7 +33,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn comma() {
         assert_eq!(
             runner().err("a {b: color((srgb, 0.1, 0.2, 0.3))}\n"),
@@ -50,7 +48,6 @@ mod list {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn one() {
             assert_eq!(
         runner().err(
@@ -67,7 +64,6 @@ mod list {
     );
         }
         #[test]
-        #[ignore] // missing error
         fn three() {
             assert_eq!(
                 runner().err(
@@ -84,7 +80,6 @@ mod list {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn too_few_channels() {
         assert_eq!(
             runner().err("a {b: color(srgb 0.1 0.2)}\n"),
@@ -97,7 +92,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_many_channels() {
         assert_eq!(
             runner().err("a {b: color(srgb 0.1 0.2 0.3 0.4)}\n"),
@@ -117,7 +111,6 @@ mod relative_color {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn alpha() {
             assert_eq!(
                 runner()
@@ -131,7 +124,6 @@ mod relative_color {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn no_alpha() {
             assert_eq!(
                 runner().err("a {b: color(\"from\" #aaa srgb r g b)}\n"),
@@ -148,7 +140,6 @@ mod relative_color {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn alpha() {
             assert_eq!(
                 runner().err("a {b: color(c #aaa srgb r g b / 25%)}\n"),
@@ -161,7 +152,6 @@ mod relative_color {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn no_alpha() {
             assert_eq!(
                 runner().err("a {b: color(c #aaa srgb r g b)}\n"),
@@ -179,7 +169,6 @@ mod too_few_args {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn no_channels() {
         assert_eq!(
             runner().err("a {b: color(srgb)}\n"),
@@ -192,7 +181,6 @@ mod too_few_args {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn no_space() {
         assert_eq!(
             runner().err("a {b: color(1 2 3)}\n"),
@@ -205,7 +193,6 @@ mod too_few_args {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn none() {
         assert_eq!(
             runner().err("a {b: color()}\n"),
@@ -223,7 +210,6 @@ mod too_few_args {
     }
 }
 #[test]
-#[ignore] // missing error
 fn too_many_args() {
     assert_eq!(
         runner().err("a {b: color(srgb 0.1 0.2 0.3 0.4)}\n"),
@@ -242,7 +228,6 @@ mod test_type {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn slash_list() {
             assert_eq!(
                 runner().err(
@@ -259,7 +244,6 @@ mod test_type {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn blue() {
         assert_eq!(
             runner().err("a {b: color(srgb 0.1 0.2 c)}\n"),
@@ -272,7 +256,6 @@ mod test_type {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn green() {
         assert_eq!(
             runner().err("a {b: color(srgb 0.1 c 0.3)}\n"),
@@ -285,7 +268,6 @@ mod test_type {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn red() {
         assert_eq!(
             runner().err("a {b: color(srgb c 0.2 0.3)}\n"),
@@ -305,7 +287,6 @@ mod unit {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn slash() {
             assert_eq!(
                 runner().err("a {b: color(srgb 0.1 0.2 0.3/0.4px)}\n"),
@@ -318,7 +299,6 @@ mod unit {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn slash_list() {
             assert_eq!(
                 runner().err(
@@ -335,7 +315,6 @@ mod unit {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn blue() {
         assert_eq!(
             runner().err("a {b: color(srgb 0.1 0.2 0.3px)}\n"),
@@ -348,7 +327,6 @@ mod unit {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn green() {
         assert_eq!(
             runner().err("a {b: color(srgb 0.1 0.2px 0.3)}\n"),
@@ -361,7 +339,6 @@ mod unit {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn red() {
         assert_eq!(
             runner().err("a {b: color(srgb 0.1px 0.2 0.3)}\n"),
@@ -375,7 +352,6 @@ mod unit {
     }
 }
 #[test]
-#[ignore] // missing error
 fn unknown_space() {
     assert_eq!(
         runner().err("a {b: color(foo 1 2 3)}\n"),

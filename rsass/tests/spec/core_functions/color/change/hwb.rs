@@ -17,7 +17,6 @@ fn all() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn alpha_arg() {
     assert_eq!(
         runner().ok(
@@ -30,7 +29,6 @@ fn alpha_arg() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn alpha_input() {
     assert_eq!(
         runner().ok(
@@ -66,7 +64,6 @@ mod blackness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -147,7 +144,6 @@ mod whiteness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\

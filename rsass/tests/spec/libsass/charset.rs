@@ -7,13 +7,15 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn test() {
     assert_eq!(
-        runner().ok("@use \"sass:string\";\
+        runner().ok(
+            "@use \"sass:string\";\
              \ndiv {\
-             \n  content: string.to-upper-case(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\");\
-             \n}\n"),
+             \n  content: string.to-upper-case(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\");\
+             \n}\n"
+        ),
         "@charset \"UTF-8\";\
          \ndiv {\
-         \n  content: \"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\";\
+         \n  content: \"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\
          \n}\n"
     );
 }

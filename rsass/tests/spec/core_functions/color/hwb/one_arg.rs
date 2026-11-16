@@ -89,7 +89,6 @@ mod alpha {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn var() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -127,7 +126,6 @@ mod blackness {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn alpha() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -138,7 +136,6 @@ mod blackness {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn no_alpha() {
             assert_eq!(
                 runner().ok("@use \"sass:color\";\
@@ -154,7 +151,6 @@ mod hue {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn var() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
@@ -240,7 +236,6 @@ mod relative_color {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong error
             fn alpha() {
                 assert_eq!(
                     runner().err("a {b: hwb(\"from\" #aaa h w b / 25%)}\n"),
@@ -253,7 +248,6 @@ mod relative_color {
                 );
             }
             #[test]
-            #[ignore] // wrong error
             fn no_alpha() {
                 assert_eq!(
                     runner().err("a {b: hwb(\"from\" #aaa h w b)}\n"),
@@ -270,7 +264,6 @@ mod relative_color {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong error
             fn alpha() {
                 assert_eq!(
                     runner().err("a {b: hwb(c #aaa h w b / 25%)}\n"),
@@ -283,7 +276,6 @@ mod relative_color {
                 );
             }
             #[test]
-            #[ignore] // wrong error
             fn no_alpha() {
                 assert_eq!(
                     runner().err("a {b: hwb(c #aaa h w b)}\n"),
@@ -376,7 +368,6 @@ mod whiteness {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn var() {
         assert_eq!(
             runner().ok("@use \"sass:color\";\
