@@ -39,6 +39,50 @@ mod dash_insensitive {
         );
     }
 }
+mod escape {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("escape")
+    }
+
+    mod quoted {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("quoted")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn normalized() {
+            let runner = runner().with_cwd("normalized");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@mixin \\$($v) {b: $v + 2}\
+             \na {@include meta.apply(meta.get-mixin(\"\\\\$\"), 10)}\n"),
+                "a {\
+         \n  b: 12;\
+         \n}\n"
+            );
+        }
+    }
+    mod unquoted {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("unquoted")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn normalized() {
+            let runner = runner().with_cwd("normalized");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@mixin \\$($v) {b: $v + 2}\
+             \na {@include meta.apply(meta.get-mixin(\\$), 10)}\n"),
+                "a {\
+         \n  b: 12;\
+         \n}\n"
+            );
+        }
+    }
+}
 #[test]
 #[ignore] // unexepected error
 fn redefined() {

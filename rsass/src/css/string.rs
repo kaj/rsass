@@ -78,7 +78,7 @@ impl CssString {
     /// Quote this string
     pub fn quote(self) -> Self {
         let value = if self.quotes.is_none() {
-            self.value.replace('\\', "\\\\")
+            self.value.replace('\\', "\\\\").replace('\0', "\\\\0 ")
         } else {
             self.value
         };
@@ -182,8 +182,10 @@ impl fmt::Display for CssString {
             if Some(c) == q {
                 out.write_char('\\')?;
                 out.write_char(c)?;
-            } else if is_private_use(c) {
+            } else if is_private_use(c) || c > '\u{100000}' {
                 write!(out, "\\{:x}", c as u32)?;
+            } else if c == '\0' {
+                out.write_char(char::REPLACEMENT_CHARACTER)?;
             } else {
                 out.write_char(c)?;
             }

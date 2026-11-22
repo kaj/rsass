@@ -13,7 +13,7 @@ fn global() {
     assert_eq!(
         runner.err(
             "@use \"sass:meta\";\
-             \n@meta.load-css(\"other\");\n\
+             \n@include meta.load-css(\"other\");\n\
              \na {b: $c}\n"
         ),
         "Error: Undefined variable.\
@@ -31,7 +31,7 @@ fn namespace() {
     assert_eq!(
         runner.err(
             "@use \"sass:meta\";\
-             \n@meta.load-css(\"other\");\n\
+             \n@include meta.load-css(\"other\");\n\
              \na {b: other.$c}\n"
         ),
         "Error: There is no module with namespace \"other\".\

@@ -6,6 +6,19 @@ fn runner() -> crate::TestRunner {
 
 #[test]
 #[ignore] // missing error
+fn escaped_u() {
+    assert_eq!(
+        runner().err("a {b: \\55+?}\n"),
+        "Error: Expected expression.\
+         \n  ,\
+         \n1 | a {b: \\55+?}\
+         \n  |           ^\
+         \n  \'\
+         \n  input.scss 1:11  root stylesheet",
+    );
+}
+#[test]
+#[ignore] // missing error
 fn ident_minus_space_ident() {
     assert_eq!(
         runner().err("a {b: U+abc- def}\n"),

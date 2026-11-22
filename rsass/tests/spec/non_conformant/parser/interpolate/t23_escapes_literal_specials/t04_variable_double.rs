@@ -15,12 +15,13 @@ fn test() {
              \n  output: #{\'#{$input}\'};\
              \n  output: #{\"[\'#{$input}\']\"};\
              \n}\n"),
-        ".result {\
-         \n  output: \\0 _\\a _\\a ;\
-         \n  output: [\\0 _\\a _\\a ];\
-         \n  output: \\0 _\\a _\\a ;\
-         \n  output: \\0 _\\a _\\a ;\
-         \n  output: [\'\\0 _\\a _\\a \'];\
+        "@charset \"UTF-8\";\
+         \n.result {\
+         \n  output: �_\\a _\\a ;\
+         \n  output: [�_\\a _\\a ];\
+         \n  output: �_\\a _\\a ;\
+         \n  output: �_\\a _\\a ;\
+         \n  output: [\'�_\\a _\\a \'];\
          \n}\n"
     );
 }

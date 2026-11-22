@@ -168,6 +168,133 @@ fn division() {
          \n  input.scss 2:7  root stylesheet",
     );
 }
+mod escape {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("escape")
+    }
+
+    mod quoted {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("quoted")
+        }
+
+        #[test]
+        fn dash_insensitive() {
+            let runner = runner().with_cwd("dash_insensitive");
+            assert_eq!(
+                runner.err(
+                    "@use \"sass:meta\";\
+             \n@function a-b($arg) {@return $arg + 1}\
+             \nc {d: meta.get-function(\"a\\\\5f b\")}\n"
+                ),
+                "Error: Function not found: \"a\\\\5f b\"\
+         \n  ,\
+         \n3 | c {d: meta.get-function(\"a\\\\5f b\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn non_normalized() {
+            let runner = runner().with_cwd("non_normalized");
+            assert_eq!(
+                runner.err(
+                    "@use \"sass:meta\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.get-function(\"\\\\24\")}\n"
+                ),
+                "Error: Function not found: \"\\\\24\"\
+         \n  ,\
+         \n3 | a {b: meta.get-function(\"\\\\24\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn semantic() {
+            let runner = runner().with_cwd("semantic");
+            assert_eq!(
+                runner.err(
+                    "@use \"sass:meta\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.get-function(\"$\")}\n"
+                ),
+                "Error: Function not found: \"$\"\
+         \n  ,\
+         \n3 | a {b: meta.get-function(\"$\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+            );
+        }
+    }
+    mod unquoted {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("unquoted")
+        }
+
+        #[test]
+        fn dash_insensitive() {
+            let runner = runner().with_cwd("dash_insensitive");
+            assert_eq!(
+                runner.err(
+                    "@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@function a-b($arg) {@return $arg + 1}\
+             \nc {d: meta.get-function(string.unquote(\"a\\\\5f b\"))}\n"
+                ),
+                "Error: Function not found: a\\5f b\
+         \n  ,\
+         \n4 | c {d: meta.get-function(string.unquote(\"a\\\\5f b\"))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 4:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn non_normalized() {
+            let runner = runner().with_cwd("non_normalized");
+            assert_eq!(
+                runner.err(
+                    "@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.get-function(string.unquote(\"\\\\24\"))}\n"
+                ),
+                "Error: Function not found: \\24\
+         \n  ,\
+         \n4 | a {b: meta.get-function(string.unquote(\"\\\\24\"))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 4:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn semantic() {
+            let runner = runner().with_cwd("semantic");
+            assert_eq!(
+                runner.err(
+                    "@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.get-function(string.unquote(\"$\"))}\n"
+                ),
+                "Error: Function not found: $\
+         \n  ,\
+         \n4 | a {b: meta.get-function(string.unquote(\"$\"))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 4:7  root stylesheet",
+            );
+        }
+    }
+}
 #[test]
 #[ignore] // wrong error
 fn function_exists() {

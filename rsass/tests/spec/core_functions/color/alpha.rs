@@ -106,13 +106,22 @@ mod error {
         );
     }
     #[test]
+    #[ignore] // wrong error
     fn quoted_string() {
         assert_eq!(
             runner().err(
                 "@use \"sass:color\";\
              \na {b: color.alpha(\"c=d\")}\n"
             ),
-            "Error: $color: \"c=d\" is not a color.\
+            "DEPRECATION WARNING [color-opacity]: color.alpha() is deprecated. Suggestion:\n\
+         \ncolor.channel($color, \"alpha\")\n\
+         \nMore info: https://sass-lang.com/d/color-opacity\n\
+         \n  ,\
+         \n2 | a {b: color.alpha(\"c=d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 2:7  root stylesheet\n\
+         \nError: $color: \"c=d\" is not a color.\
          \n  ,\
          \n2 | a {b: color.alpha(\"c=d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
@@ -150,13 +159,22 @@ mod error {
         );
     }
     #[test]
+    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err(
                 "@use \"sass:color\";\
              \na {b: color.alpha(1)}\n"
             ),
-            "Error: $color: 1 is not a color.\
+            "DEPRECATION WARNING [color-opacity]: color.alpha() is deprecated. Suggestion:\n\
+         \ncolor.channel($color, \"alpha\")\n\
+         \nMore info: https://sass-lang.com/d/color-opacity\n\
+         \n  ,\
+         \n2 | a {b: color.alpha(1)}\
+         \n  |       ^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 2:7  root stylesheet\n\
+         \nError: $color: 1 is not a color.\
          \n  ,\
          \n2 | a {b: color.alpha(1)}\
          \n  |       ^^^^^^^^^^^^^^\
@@ -168,13 +186,22 @@ mod error {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong error
         fn no_equals() {
             assert_eq!(
                 runner().err(
                     "@use \"sass:color\";\
              \na {b: color.alpha(cd)}\n"
                 ),
-                "Error: $color: cd is not a color.\
+                "DEPRECATION WARNING [color-opacity]: color.alpha() is deprecated. Suggestion:\n\
+         \ncolor.channel($color, \"alpha\")\n\
+         \nMore info: https://sass-lang.com/d/color-opacity\n\
+         \n  ,\
+         \n2 | a {b: color.alpha(cd)}\
+         \n  |       ^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 2:7  root stylesheet\n\
+         \nError: $color: cd is not a color.\
          \n  ,\
          \n2 | a {b: color.alpha(cd)}\
          \n  |       ^^^^^^^^^^^^^^^\
@@ -183,6 +210,7 @@ mod error {
             );
         }
         #[test]
+        #[ignore] // wrong error
         fn non_identifier_before_equals() {
             assert_eq!(
                 runner().err(
@@ -190,7 +218,15 @@ mod error {
              \n@use \"sass:string\";\
              \na {b: color.alpha(string.unquote(\"1=c\"))}\n"
                 ),
-                "Error: $color: 1=c is not a color.\
+                "DEPRECATION WARNING [color-opacity]: color.alpha() is deprecated. Suggestion:\n\
+         \ncolor.channel($color, \"alpha\")\n\
+         \nMore info: https://sass-lang.com/d/color-opacity\n\
+         \n  ,\
+         \n3 | a {b: color.alpha(string.unquote(\"1=c\"))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 3:7  root stylesheet\n\
+         \nError: $color: 1=c is not a color.\
          \n  ,\
          \n3 | a {b: color.alpha(string.unquote(\"1=c\"))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -210,7 +246,15 @@ mod error {
                     "@use \"sass:color\";\
              \na {b: color.opacity(var(--c))}\n"
                 ),
-                "Error: $color: var(--c) is not a color.\
+                "DEPRECATION WARNING [color-opacity]: color.opacity() is deprecated. Suggestion:\n\
+         \ncolor.channel($color, \"alpha\")\n\
+         \nMore info: https://sass-lang.com/d/color-opacity\n\
+         \n  ,\
+         \n2 | a {b: color.opacity(var(--c))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 2:7  root stylesheet\n\
+         \nError: $color: var(--c) is not a color.\
          \n  ,\
          \n2 | a {b: color.opacity(var(--c))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\

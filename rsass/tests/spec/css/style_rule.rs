@@ -295,3 +295,24 @@ mod declaration {
     );
     }
 }
+mod error {
+    use super::runner;
+
+    #[test]
+    #[ignore] // unexepected error
+    fn commented_closing_comment_in_interpolation() {
+        assert_eq!(
+        runner().ok(
+            "// Regression test for the second report in sass/dart-sass#2874. This isn\'t\
+             \n// actually unique to style rules; it would happen for any interpolation that\
+             \n// injects the left-hand edge of an error or warning. This is just the most\
+             \n// convenient way to reproduce it.\
+             \n#{\
+             \n  // */\
+             \n  \"++\"\
+             \n} {a: b}\n"
+        ),
+        ""
+    );
+    }
+}

@@ -4,9 +4,12 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("attribute")
 }
 
-#[test]
-fn backslash() {
-    assert_eq!(
+mod backslash {
+    use super::runner;
+
+    #[test]
+    fn alone() {
+        assert_eq!(
         runner().ok(
             "// Regression test for https://github.com/sass/dart-sass/issues/1423.\
              \n[a=\"\\\\\"] {c: d}\n"
@@ -15,6 +18,19 @@ fn backslash() {
          \n  c: d;\
          \n}\n"
     );
+    }
+    #[test]
+    fn escape_like() {
+        assert_eq!(
+        runner().ok(
+            "// Regression test for https://github.com/sass/dart-sass/issues/1423.\
+             \n[a=\"\\\\b\"] {c: d}\n"
+        ),
+        "[a=\"\\\\b\"] {\
+         \n  c: d;\
+         \n}\n"
+    );
+    }
 }
 #[test]
 fn dash_dash() {
@@ -29,6 +45,15 @@ fn dash_dash() {
         ),
         "[class=\"--foo\"], [class*=\"--foo\"] {\
          \n  x: y;\
+         \n}\n"
+    );
+}
+#[test]
+fn empty() {
+    assert_eq!(
+        runner().ok("[a=\"\"] {b: c}\n"),
+        "[a=\"\"] {\
+         \n  b: c;\
          \n}\n"
     );
 }

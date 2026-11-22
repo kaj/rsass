@@ -49,22 +49,182 @@ mod dash_insensitive {
         );
     }
 }
-#[test]
-fn plain_css() {
-    let runner = runner().with_cwd("plain_css");
-    assert_eq!(
-        runner.ok("@use \"sass:meta\";\
+mod escape {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("escape")
+    }
+
+    mod quoted {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("quoted")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn normalized() {
+            let runner = runner().with_cwd("normalized");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.call(meta.get-function(\"\\\\$\"), 1)}\n"),
+                "a {\
+         \n  b: 2;\
+         \n}\n"
+            );
+        }
+    }
+    mod unquoted {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("unquoted")
+        }
+
+        #[test]
+        #[ignore] // unexepected error
+        fn normalized() {
+            let runner = runner().with_cwd("normalized");
+            assert_eq!(
+                runner.ok("@use \"sass:meta\";\
+             \n@function \\$($arg) {@return $arg + 1}\
+             \na {b: meta.call(meta.get-function(\\$), 1)}\n"),
+                "a {\
+         \n  b: 2;\
+         \n}\n"
+            );
+        }
+    }
+}
+mod plain_css {
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("plain_css")
+    }
+
+    mod escape {
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("escape")
+        }
+
+        mod quoted {
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("quoted")
+            }
+
+            #[test]
+            #[ignore] // wrong result
+            fn non_normalized() {
+                let runner = runner().with_cwd("non_normalized");
+                assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \na {b: meta.call(meta.get-function(\"\\\\24\", $css: true), 1)}\n"
+        ),
+        "a {\
+         \n  b: \\24(1);\
+         \n}\n"
+    );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn normalized() {
+                let runner = runner().with_cwd("normalized");
+                assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \na {b: meta.call(meta.get-function(\"\\\\$\", $css: true), 1)}\n"
+        ),
+        "a {\
+         \n  b: \\$(1);\
+         \n}\n"
+    );
+            }
+            #[test]
+            fn semantic() {
+                let runner = runner().with_cwd("semantic");
+                assert_eq!(
+                    runner.ok("@use \"sass:meta\";\
+             \na {b: meta.call(meta.get-function(\"$\", $css: true), 1)}\n"),
+                    "a {\
+         \n  b: $(1);\
+         \n}\n"
+                );
+            }
+        }
+        mod unquoted {
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("unquoted")
+            }
+
+            #[test]
+            fn non_normalized() {
+                let runner = runner().with_cwd("non_normalized");
+                assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \na {b: meta.call(meta.get-function(string.unquote(\"\\\\24\"), $css: true), 1)}\n"
+        ),
+        "a {\
+         \n  b: \\24(1);\
+         \n}\n"
+    );
+            }
+            #[test]
+            fn normalized() {
+                let runner = runner().with_cwd("normalized");
+                assert_eq!(
+                    runner.ok("@use \"sass:meta\";\
+             \na {b: meta.call(meta.get-function(\\$, $css: true), 1)}\n"),
+                    "a {\
+         \n  b: \\$(1);\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn semantic() {
+                let runner = runner().with_cwd("semantic");
+                assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \na {b: meta.call(meta.get-function(string.unquote(\"$\"), $css: true), 1)}\n"
+        ),
+        "a {\
+         \n  b: $(1);\
+         \n}\n"
+    );
+            }
+        }
+    }
+    #[test]
+    fn ident() {
+        let runner = runner().with_cwd("ident");
+        assert_eq!(
+            runner.ok("@use \"sass:meta\";\
              \n$sass-fn: meta.get-function(round);\
              \n$css-fn: meta.get-function(round, $css: true);\n\
              \na {\
              \n  sass-fn: meta.call($sass-fn, 0.6);\
              \n  css-fn: meta.call($css-fn, 0.6);\
              \n}\n"),
-        "a {\
+            "a {\
          \n  sass-fn: 1;\
          \n  css-fn: round(0.6);\
          \n}\n"
+        );
+    }
+    #[test]
+    fn non_ident() {
+        let runner = runner().with_cwd("non_ident");
+        assert_eq!(
+        runner.ok(
+            "@use \"sass:meta\";\
+             \n@use \"sass:string\";\
+             \na {b: meta.call(meta.get-function(string.unquote(\"$\"), $css: true), 1)}\n"
+        ),
+        "a {\
+         \n  b: $(1);\
+         \n}\n"
     );
+    }
 }
 #[test]
 fn redefined() {

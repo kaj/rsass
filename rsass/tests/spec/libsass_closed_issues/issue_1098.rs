@@ -14,11 +14,12 @@ fn test() {
              \n color: #f00000\\9\\0;\
              \n color: #f00000\\9\\0\\;\
              \n}\n"),
-        "div {\
+        "@charset \"UTF-8\";\
+         \ndiv {\
          \n  opacity: 1\\9 ;\
          \n  width: 500px\\9 ;\
-         \n  color: #f00000\\9 \\0 ;\
-         \n  color: #f00000\\9 \\0 \\;;\
+         \n  color: #f00000\\9 �;\
+         \n  color: #f00000\\9 �\\;;\
          \n}\n"
     );
 }

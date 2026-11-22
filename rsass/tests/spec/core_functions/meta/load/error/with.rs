@@ -341,7 +341,7 @@ fn repeated_variable() {
             "@use \"sass:meta\";\
              \n$_: meta.load(\"other\", $with: (a-b: c, a_b: c));\n"
         ),
-        "Error: The variable $a-b was configured twice.\
+        "Error: The variable $a_b was configured twice.\
          \n  ,\
          \n2 | $_: meta.load(\"other\", $with: (a-b: c, a_b: c));\
          \n  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\

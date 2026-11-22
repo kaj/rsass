@@ -8,6 +8,8 @@ mod comments;
 
 mod double_flag;
 
+mod normalize;
+
 mod semi_global;
 
 mod whitespace;
